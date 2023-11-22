@@ -60,7 +60,7 @@ class Site(models.Model):
             opts['set'] = self.oai_set
 
         if force:
-            self.oaipmhrecord_set.all().delete()
+            self.datasource_set.all().delete()
 
         records = harvest_oai_pmh(url, opts)
         xapian_records = []
@@ -123,7 +123,7 @@ class Site(models.Model):
             ]
             opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
             opr_attrs['datetime'] = now
-            opr, opr_created = self.oaipmhrecord_set.update_or_create(
+            opr, opr_created = self.datasource_set.update_or_create(
                 oai_pmh_identifier=identifier,
                 defaults=opr_attrs
             )
@@ -237,14 +237,14 @@ class Entry(models.Model):
 
     def indexing_data(self):
         # we index the entries
-        oai_pmh_records = []
+        data_source_records = []
 
         if self.canonical_entry:
-            oai_pmh_records = []
+            data_source_records = []
         else:
-            oai_pmh_records = [ xopr for xopr in self.oaipmhrecord_set.all() ]
+            data_source_records = [ xopr for xopr in self.datasource_set.all() ]
             for variant in self.variant_entries.all():
-                oai_pmh_records.extend([ xopr for xopr in variant.oaipmhrecord_set.all() ])
+                data_source_records.extend([ xopr for xopr in variant.datasource_set.all() ])
 
         authors  = []
         for author in self.authors.all():
@@ -254,7 +254,7 @@ class Entry(models.Model):
                 authors.append(author.name)
 
         xapian_data_sources = []
-        for topr in oai_pmh_records:
+        for topr in data_source_records:
             dsd = {
                 "identifier": topr.oai_pmh_identifier,
                 "uri": topr.uri,
@@ -270,7 +270,7 @@ class Entry(models.Model):
             "subject": [ subject.name for subject in self.subjects.all() ],
             "date": [ self.year_edition ],
             "language": [ language.code for language in self.languages.all() ],
-            "hostname": sorted(list(set([ topr.site.hostname() for topr in oai_pmh_records ]))),
+            "hostname": sorted(list(set([ topr.site.hostname() for topr in data_source_records ]))),
             "description": [ self.description ],
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
@@ -281,7 +281,7 @@ class Entry(models.Model):
 # have multiple ones because it's coming from more sources.
 
 # DataSource
-class OaiPmhRecord(models.Model):
+class DataSource(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     oai_pmh_identifier = models.CharField(max_length=2048)
     datetime = models.DateTimeField()
