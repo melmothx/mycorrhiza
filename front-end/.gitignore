@@ -26,3 +26,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+# maintained in the camp
+vite.config.js
