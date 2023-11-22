@@ -4,7 +4,7 @@
 
 source venv/bin/activate
 
-VERSION=${1:-1.4.23}
+VERSION=${1:-1.4.24}
 
 if [ -z "$VERSION" ]; then
     echo "usage: $0 version_number" 1>&2
