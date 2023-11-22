@@ -106,7 +106,8 @@ class Site(models.Model):
 
             try:
                 for language in record.pop('languages', []):
-                    obj, created = Language.objects.get_or_create(code=aliases['language'].get(language, language))
+                    lang = language[0:3]
+                    obj, created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
                     languages.append(obj)
             except KeyError:
                 pass
