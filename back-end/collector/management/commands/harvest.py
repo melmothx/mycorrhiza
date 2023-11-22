@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from amwmeta.xapian import XAPIAN_DB
-from search.models import Site
+from collector.models import Site
 import shutil
 import logging
 logger = logging.getLogger(__name__)

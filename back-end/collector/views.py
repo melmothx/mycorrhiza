@@ -9,21 +9,10 @@ from django.urls import reverse
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from search.models import Work, Agent
+from .models import Work, Agent
 from amwmeta.xapian import MycorrhizaIndexer
 
 logger = logging.getLogger(__name__)
-
-# Create your views here.
-
-def index(request):
-    template = loader.get_template("search/index.html")
-    query_params = request.GET
-    context = search(query_params)
-    logger.debug(context)
-    baseurl = reverse('index')
-    context['paginations'] = paginator(context['pager'], baseurl, query_params)
-    return HttpResponse(template.render(context,request))
 
 def api(request):
     res = search(request.GET)

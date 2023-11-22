@@ -1,5 +1,5 @@
 from django.test import TestCase
-from search.models import Work, Agent
+from .models import Work, Agent
 
 class AliasesTestCase(TestCase):
     def setUp(self):
