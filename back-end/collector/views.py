@@ -9,7 +9,7 @@ from django.urls import reverse
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import Work, Agent
+from .models import Entry, Agent
 from amwmeta.xapian import MycorrhizaIndexer
 
 logger = logging.getLogger(__name__)
@@ -37,13 +37,13 @@ def api_merge(request, target):
         aliases = []
         abort = False
 
-        if target == 'works':
-            for pk in [ x['work_id'] for x in data ]:
+        if target == 'entries':
+            for pk in [ x['entry_id'] for x in data ]:
                 try:
-                    alias = Work.objects.get(pk=pk)
+                    alias = Entry.objects.get(pk=pk)
                     aliases.append(alias)
-                except Work.DoesNotExist:
-                    logger.debug("Invalid work " + pk)
+                except Entry.DoesNotExist:
+                    logger.debug("Invalid entry " + pk)
                     abort = True
             if abort:
                 out['error'] = "Invalid argument"
@@ -51,15 +51,15 @@ def api_merge(request, target):
                 out['error'] = "Missing arguments (at least 2)"
             else:
                 canonical = aliases[0]
-                canonical.canonical_work = None
+                canonical.canonical_entry = None
                 canonical.save()
 
                 reindex = aliases[:]
                 for aliased in aliases[1:]:
-                    aliased.canonical_work = canonical
+                    aliased.canonical_entry = canonical
                     aliased.save()
-                    for vw in aliased.variant_works.all():
-                        vw.canonical_work = canonical
+                    for vw in aliased.variant_entries.all():
+                        vw.canonical_entry = canonical
                         vw.save()
                         reindex.append(vw)
 
@@ -102,8 +102,8 @@ def api_merge(request, target):
 
                 indexer = MycorrhizaIndexer()
                 for agent in reindex:
-                    for work in agent.authored_works.all():
-                        indexer.index_record(work.indexing_data())
+                    for entry in agent.authored_entries.all():
+                        indexer.index_record(entry.indexing_data())
                 logger.debug(indexer.logs)
                 out['success'] = "Merged!"
 

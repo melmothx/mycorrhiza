@@ -161,7 +161,7 @@ class MycorrhizaIndexer:
         if len(record['data_sources']) > 0:
             is_deleted = False
 
-        identifier = record['work_id']
+        identifier = record['entry_id']
         doc = xapian.Document()
         self.termgenerator.set_document(doc)
 

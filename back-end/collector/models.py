@@ -135,40 +135,40 @@ class Site(models.Model):
                 except KeyError:
                     pass
 
-            # if the OAI-PMH record has already a work attached from a
+            # if the OAI-PMH record has already a entry attached from a
             # previous run, that's it, just update it.
-            work = opr.work
+            entry = opr.entry
 
             if record.pop('deleted'):
                 opr.delete()
-                if work:
-                    xapian_records.append(work.id)
+                if entry:
+                    xapian_records.append(entry.id)
                 continue
 
-            if not work:
-                # check if there's already a work with the same checksum.
+            if not entry:
+                # check if there's already a entry with the same checksum.
                 try:
-                    work = Work.objects.get(checksum=record['checksum'])
-                except Work.DoesNotExist:
-                    work = Work.objects.create(**record)
-                opr.work = work
+                    entry = Entry.objects.get(checksum=record['checksum'])
+                except Entry.DoesNotExist:
+                    entry = Entry.objects.create(**record)
+                opr.entry = entry
                 opr.save()
 
-            # update the work and assign the many to many
+            # update the entry and assign the many to many
             for attr, value in record.items():
-                setattr(work, attr, value)
-            work.subjects.set(subjects)
-            work.authors.set(authors)
-            work.languages.set(languages)
-            work.save()
-            xapian_records.append(work.id)
+                setattr(entry, attr, value)
+            entry.subjects.set(subjects)
+            entry.authors.set(authors)
+            entry.languages.set(languages)
+            entry.save()
+            xapian_records.append(entry.id)
 
         indexer = MycorrhizaIndexer()
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:
-            iwork = Work.objects.get(pk=id)
-            indexer.index_record(iwork.indexing_data())
+            ientry = Entry.objects.get(pk=id)
+            indexer.index_record(ientry.indexing_data())
 
         logs = indexer.logs
         if logs:
@@ -211,36 +211,39 @@ class Language(models.Model):
         return self.code
 
 # entry
-class Work(models.Model):
+class Entry(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True)
     description = models.TextField(null=True)
-    authors = models.ManyToManyField(Agent, related_name="authored_works")
+    authors = models.ManyToManyField(Agent, related_name="authored_entries")
     subjects = models.ManyToManyField(Subject)
     languages = models.ManyToManyField(Language)
     year_edition = models.IntegerField(null=True)
     year_first_edition = models.IntegerField(null=True)
     checksum = models.CharField(max_length=255)
 
-    canonical_work = models.ForeignKey(
+    canonical_entry = models.ForeignKey(
         'self',
         null=True,
         on_delete=models.SET_NULL,
-        related_name="variant_works",
+        related_name="variant_entries",
     )
+
+    class Meta:
+        verbose_name_plural = "Entries"
 
     def __str__(self):
         return self.title
 
     def indexing_data(self):
-        # we index the works
+        # we index the entries
         oai_pmh_records = []
 
-        if self.canonical_work:
+        if self.canonical_entry:
             oai_pmh_records = []
         else:
             oai_pmh_records = [ xopr for xopr in self.oaipmhrecord_set.all() ]
-            for variant in self.variant_works.all():
+            for variant in self.variant_entries.all():
                 oai_pmh_records.extend([ xopr for xopr in variant.oaipmhrecord_set.all() ])
 
         authors  = []
@@ -270,11 +273,11 @@ class Work(models.Model):
             "hostname": sorted(list(set([ topr.site.hostname() for topr in oai_pmh_records ]))),
             "description": [ self.description ],
             "data_sources": xapian_data_sources,
-            "work_id": self.id,
+            "entry_id": self.id,
         }
         return xapian_record
 
-# the OAI-PMH records will keep the URL of the record, so a work can
+# the OAI-PMH records will keep the URL of the record, so a entry can
 # have multiple ones because it's coming from more sources.
 
 # DataSource
@@ -284,7 +287,7 @@ class OaiPmhRecord(models.Model):
     datetime = models.DateTimeField()
     full_data = HStoreField()
 
-    work = models.ForeignKey(Work, null=True, on_delete=models.SET_NULL)
+    entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
 
     # if digital, provide the url
     uri = models.URLField(max_length=2048, null=True)
@@ -320,6 +323,8 @@ class NameAlias(models.Model):
                 name='unique_site_field_name_value_name'
             ),
         ]
+        verbose_name_plural = "Name Aliases"
+
     def __str__(self):
         return self.value_name + ' => ' + self.value_canonical
 

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Work, Agent
+from .models import Entry, Agent
 
 class AliasesTestCase(TestCase):
     def setUp(self):
@@ -7,18 +7,18 @@ class AliasesTestCase(TestCase):
         pincu = Agent.objects.create(name="Pincic Pallinic")
         pinco.canonical_agent = pincu
         pinco.save()
-        worka = Work.objects.create(title="Pizzaa",
+        entrya = Entry.objects.create(title="Pizzaa",
                                     checksum="XX")
-        worka.authors.set([ pinco ])
-        workb = Work.objects.create(title="Pizzab",
+        entrya.authors.set([ pinco ])
+        entryb = Entry.objects.create(title="Pizzab",
                                     checksum="XX")
-        workb.authors.set([ pincu ])
-        worka.canonical_work = workb
-        worka.save()
+        entryb.authors.set([ pincu ])
+        entrya.canonical_entry = entryb
+        entrya.save()
     def test_aliases_ok(self):
-        for work in Work.objects.all():
-            # print(work.indexing_data())
-            xapian = work.indexing_data()
+        for entry in Entry.objects.all():
+            # print(entry.indexing_data())
+            xapian = entry.indexing_data()
             print(xapian)
             # self.assertEqual(xapian['title'][0], 'Pizzab')
             self.assertEqual(xapian['creator'][0], 'Pincic Pallinic')
