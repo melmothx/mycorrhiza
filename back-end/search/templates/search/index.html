@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Search: {{ querystring }}
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'index' %}">
+  <div class="row mt-3 mb-3 g-3" id="search-facets">
+    <div class="col-12 input-group mb-3">
+      <input class="form-control" type="text" name="query" value="{% if querystring %}{{ querystring }}{% endif %}" placeholder="Search">
+      <button class="btn btn-primary" type="submit">{{ _("Search") }}</button>
+    </div>
+  </div>
+  <div class="row" id="search-results">
+    <div class="col-4">
+      {% if facets %}
+      {% for facet in facets %}
+      <fieldset>
+        <legend>{{ facet.name }}</legend>
+        {% for check in facet.values %}
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"
+                   name="filter_{{ facet.name }}"
+                   value="{{ check.term }}"
+                   {% if check.active %}checked{% endif %}>
+            {{ check.term }} ({{ check.count }})
+          </label>
+        </div>
+        {% endfor %}
+      </fieldset>
+      {% endfor %}
+      {% endif %}
+    </div>
+    <div class="col-8">
+      {% if matches  %}
+      {% for res in matches %}
+      <div class="card mb-2">
+        <div class="card-body">
+          {% for c in res.creator %}
+          <div>
+            <strong>{{ _('Author:') }}</strong> {{ c }}
+          </div>
+          {% endfor %}
+          <div>
+            <strong>{{ _('Title:') }}</strong>
+            {% for c in res.title %}
+            {{ c }}
+            {% endfor %}
+          </div>
+          {% for c in res.language %}
+          <div>
+            <strong>{{ _('Language:') }}</strong>
+            {{ c }}
+          </div>
+          {% endfor %}
+          {% for c in res.description %}
+          <p class="mt-2">
+            {{ c }}
+          </p>
+          {% endfor %}
+          <ul class="mt-2">
+            {% for identifier in res.identifiers %}
+            <li>{{ identifier }}</li>
+            {% endfor %}
+          </ul>
+          <small><code>{{ res.oai_pmh_identifier }}</code></small>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>{{ _("Nothing found") }}</p>
+      {% endif %}
+      {% if paginations %}
+      <nav>
+        <ul class="pagination">
+          {% for pagination in paginations %}
+          <li class="page-item {% if pagination.current %}active{% endif %}">
+            <a class="{{ pagination.class }}" href="{{ pagination.url }}">{{ pagination.label }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</form>
+<h3 class="mt-5">Debug</h3>
+<pre>
+{% debug %}
+</pre>
+{% endblock %}

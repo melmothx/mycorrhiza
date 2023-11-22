@@ -1,0 +1,332 @@
+from django.contrib.postgres.fields import HStoreField
+from django.db import models
+from datetime import datetime
+from amwmeta.harvest import harvest_oai_pmh, extract_fields
+from urllib.parse import urlparse
+from datetime import datetime, timezone
+from django.db import transaction
+from amwmeta.xapian import MycorrhizaIndexer
+import logging
+
+logger = logging.getLogger(__name__)
+
+class Site(models.Model):
+    OAI_DC = "oai_dc"
+    MARC21 = "marc21"
+    OAI_PMH_METADATA_FORMATS = [
+        (OAI_DC, "Dublin Core"),
+        (MARC21, "MARC XML"),
+    ]
+    SITE_TYPES = [
+        ('amusewiki', "Amusewiki"),
+        ('generic', "Generic"),
+    ]
+    title = models.CharField(max_length=255)
+    url = models.URLField(max_length=255)
+    last_harvested = models.DateTimeField(null=True, blank=True)
+    comment = models.TextField(blank=True)
+    oai_set = models.CharField(max_length=64, blank=True)
+    oai_metadata_format = models.CharField(max_length=32,
+                                           choices=OAI_PMH_METADATA_FORMATS,
+                                           default=OAI_DC)
+    site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
+
+    def __str__(self):
+        return self.title
+
+    def last_harvested_zulu(self):
+        dt = self.last_harvested
+        if dt:
+            # clone
+            return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            return None
+
+    def hostname(self):
+        return urlparse(self.url).hostname
+
+    def harvest(self, force):
+        url = self.url
+        hostname = urlparse(url).hostname
+        now = datetime.now(timezone.utc)
+        opts = {
+            "metadataPrefix": self.oai_metadata_format,
+        }
+        last_harvested = self.last_harvested_zulu()
+        logger.debug([ force, last_harvested ])
+        if last_harvested and not force:
+            opts['from'] = last_harvested
+        if self.oai_set:
+            opts['set'] = self.oai_set
+
+        if force:
+            self.oaipmhrecord_set.all().delete()
+
+        records = harvest_oai_pmh(url, opts)
+        xapian_records = []
+        logs = []
+        aliases = {
+            "author": {},
+            "subject": {},
+            "language": {},
+        }
+        for al in self.namealias_set.all():
+            aliases[al.field_name][al.value_name] = al.value_canonical
+
+        logger.debug(aliases)
+        counter = 0
+        for rec in records:
+            counter += 1
+            if counter % 10 == 0:
+                logger.debug(str(counter) + " records done")
+            full_data = rec.get_metadata()
+            record = extract_fields(full_data, hostname)
+            record['deleted'] = rec.deleted
+            record['identifier'] = rec.header.identifier
+            record['full_data'] = full_data
+
+            # logger.debug(record)
+            authors = []
+            subjects = []
+            languages = []
+            # handle the 3 lists
+            try:
+                for author in record.pop('authors', []):
+                    obj, created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
+                    authors.append(obj)
+            except KeyError:
+                pass
+
+            try:
+                for subject in record.pop('subjects', []):
+                    obj, created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
+                    subjects.append(obj)
+            except KeyError:
+                pass
+
+            try:
+                for language in record.pop('languages', []):
+                    obj, created = Language.objects.get_or_create(code=aliases['language'].get(language, language))
+                    languages.append(obj)
+            except KeyError:
+                pass
+
+            # logger.debug(record)
+            identifier = record.pop('identifier')
+            opr_attributes = [
+                'full_data',
+                'uri',
+                'uri_label',
+                'content_type',
+                'shelf_location_code',
+                'material_description',
+            ]
+            opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
+            opr_attrs['datetime'] = now
+            opr, opr_created = self.oaipmhrecord_set.update_or_create(
+                oai_pmh_identifier=identifier,
+                defaults=opr_attrs
+            )
+            for f_limit in [ 'title', 'subtitle' ]:
+                try:
+                    if record[f_limit]:
+                        if len(record[f_limit]) > 250:
+                            record[f_limit] = record[f_limit][0:250] + '...'
+                except KeyError:
+                    pass
+
+            # if the OAI-PMH record has already a work attached from a
+            # previous run, that's it, just update it.
+            work = opr.work
+
+            if record.pop('deleted'):
+                opr.delete()
+                if work:
+                    xapian_records.append(work.id)
+                continue
+
+            if not work:
+                # check if there's already a work with the same checksum.
+                try:
+                    work = Work.objects.get(checksum=record['checksum'])
+                except Work.DoesNotExist:
+                    work = Work.objects.create(**record)
+                opr.work = work
+                opr.save()
+
+            # update the work and assign the many to many
+            for attr, value in record.items():
+                setattr(work, attr, value)
+            work.subjects.set(subjects)
+            work.authors.set(authors)
+            work.languages.set(languages)
+            work.save()
+            xapian_records.append(work.id)
+
+        indexer = MycorrhizaIndexer()
+        all_ids = list(set(xapian_records))
+        logger.debug("Indexing " + str(all_ids))
+        for id in all_ids:
+            iwork = Work.objects.get(pk=id)
+            indexer.index_record(iwork.indexing_data())
+
+        logs = indexer.logs
+        if logs:
+            msg = "Total indexed: " + str(len(logs))
+            logger.info(msg)
+            logs.append(msg)
+            self.last_harvested = now
+            self.save()
+            self.harvest_set.create(datetime=now, logs="\n".join(logs))
+
+
+# these are a level up from the oai pmh records
+
+class Agent(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    description = models.TextField()
+    canonical_agent = models.ForeignKey(
+        'self',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="variant_agents",
+    )
+    def __str__(self):
+        return self.name
+
+
+# togliere
+class Subject(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+    def __str__(self):
+        return self.name
+
+
+class Language(models.Model):
+    code = models.CharField(max_length=4, unique=True, primary_key=True)
+    def __str__(self):
+        return self.code
+
+# entry
+class Work(models.Model):
+    title = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255, null=True)
+    description = models.TextField(null=True)
+    authors = models.ManyToManyField(Agent, related_name="authored_works")
+    subjects = models.ManyToManyField(Subject)
+    languages = models.ManyToManyField(Language)
+    year_edition = models.IntegerField(null=True)
+    year_first_edition = models.IntegerField(null=True)
+    checksum = models.CharField(max_length=255)
+
+    canonical_work = models.ForeignKey(
+        'self',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="variant_works",
+    )
+
+    def __str__(self):
+        return self.title
+
+    def indexing_data(self):
+        # we index the works
+        oai_pmh_records = []
+
+        if self.canonical_work:
+            oai_pmh_records = []
+        else:
+            oai_pmh_records = [ xopr for xopr in self.oaipmhrecord_set.all() ]
+            for variant in self.variant_works.all():
+                oai_pmh_records.extend([ xopr for xopr in variant.oaipmhrecord_set.all() ])
+
+        authors  = []
+        for author in self.authors.all():
+            if author.canonical_agent:
+                authors.append(author.canonical_agent.name)
+            else:
+                authors.append(author.name)
+
+        xapian_data_sources = []
+        for topr in oai_pmh_records:
+            dsd = {
+                "identifier": topr.oai_pmh_identifier,
+                "uri": topr.uri,
+                "uri_label": topr.uri_label,
+                "content_type": topr.content_type,
+                "shelf_location_code": topr.shelf_location_code,
+            }
+            xapian_data_sources.append(dsd)
+
+        xapian_record = {
+            "title": [ self.title, self.subtitle ],
+            "creator": authors,
+            "subject": [ subject.name for subject in self.subjects.all() ],
+            "date": [ self.year_edition ],
+            "language": [ language.code for language in self.languages.all() ],
+            "hostname": sorted(list(set([ topr.site.hostname() for topr in oai_pmh_records ]))),
+            "description": [ self.description ],
+            "data_sources": xapian_data_sources,
+            "work_id": self.id,
+        }
+        return xapian_record
+
+# the OAI-PMH records will keep the URL of the record, so a work can
+# have multiple ones because it's coming from more sources.
+
+# DataSource
+class OaiPmhRecord(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    oai_pmh_identifier = models.CharField(max_length=2048)
+    datetime = models.DateTimeField()
+    full_data = HStoreField()
+
+    work = models.ForeignKey(Work, null=True, on_delete=models.SET_NULL)
+
+    # if digital, provide the url
+    uri = models.URLField(max_length=2048, null=True)
+    uri_label = models.CharField(max_length=2048, null=True)
+    content_type = models.CharField(max_length=128, null=True)
+    # if this is the real book, if it exists: phisical description and call number
+    material_description = models.TextField(null=True)
+    shelf_location_code = models.CharField(max_length=255, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['site', 'oai_pmh_identifier'], name='unique_site_oai_pmh_identifier'),
+        ]
+    def __str__(self):
+        return self.oai_pmh_identifier
+
+class NameAlias(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    field_name = models.CharField(
+        max_length=32,
+        choices=[
+            ('author', 'Author'),
+            ('subject', 'Subject'),
+            ('language', 'Language')
+        ]
+    )
+    value_name = models.CharField(max_length=255, blank=False)
+    value_canonical = models.CharField(max_length=255, blank=False)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['site', 'field_name', 'value_name'],
+                name='unique_site_field_name_value_name'
+            ),
+        ]
+    def __str__(self):
+        return self.value_name + ' => ' + self.value_canonical
+
+# this is just to trace the harvesting
+class Harvest(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    datetime = models.DateTimeField()
+    logs = models.TextField()
+    def __str__(self):
+        return self.site.title + ' Harvest ' + self.datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
