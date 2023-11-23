@@ -21,7 +21,7 @@ FIELD_MAPPING = {
         'subject':  (3, 'XK', True),
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
-        'hostname': (6, 'H',  True),
+        'site':     (6, 'H',  True),
 }
 
 def search(query_params):
@@ -119,9 +119,9 @@ def search(query_params):
         spy = spies[spy_name]
         facet_values = {}
         for facet in spy.values():
-            # logger.info(facet.term)
-            for facet_value in json.loads(facet.term.decode('utf-8')):
-
+            # logger.debug(facet.term)
+            for facet_structure in json.loads(facet.term.decode('utf-8')):
+                facet_value = facet_structure['value']
                 facet_active = False
                 if facet_value in active_facets[spy_name]:
                     facet_active = True
@@ -130,10 +130,11 @@ def search(query_params):
                     facet_values[facet_value]['count'] += facet.termfreq
                 else:
                     facet_values[facet_value] = {
+                        "id": facet_structure['id'],
                         "term": str(facet_value),
                         "count": facet.termfreq,
                         "active": facet_active,
-                        "key": str(facet_value) + "|" + spy_name,
+                        "key": spy_name + str(facet_structure['id']),
                     }
 
         if len(facet_values):
@@ -173,8 +174,8 @@ class MycorrhizaIndexer:
                 for v in values:
                     if v:
                         if is_boolean:
-                            doc.add_boolean_term(prefix + str(v).lower())
-                        self.termgenerator.index_text(str(v), 1, prefix)
+                            doc.add_boolean_term(prefix + str(v['id']))
+                        self.termgenerator.index_text(str(v['value']), 1, prefix)
                         value_list.append(v)
 
                 doc.add_value(slot, json.dumps(value_list))
@@ -183,10 +184,8 @@ class MycorrhizaIndexer:
         self.termgenerator.increase_termpos()
         for field in ['title', 'creator', 'subject', 'description']:
             values = record.get(field)
-            if values:
-                for v in values:
-                    if v:
-                        self.termgenerator.index_text(v)
+            for v in values:
+                self.termgenerator.index_text(v['value'])
 
         doc.set_data(json.dumps(record))
         idterm = "Q{}".format(identifier)

@@ -8,10 +8,12 @@ class AliasesTestCase(TestCase):
         pinco.canonical_agent = pincu
         pinco.save()
         entrya = Entry.objects.create(title="Pizzaa",
-                                    checksum="XX")
+                                      year_edition="1900",
+                                      checksum="XX")
         entrya.authors.set([ pinco ])
         entryb = Entry.objects.create(title="Pizzab",
-                                    checksum="XX")
+                                      year_edition="1900",
+                                      checksum="XX")
         entryb.authors.set([ pincu ])
         entrya.canonical_entry = entryb
         entrya.save()
@@ -21,5 +23,6 @@ class AliasesTestCase(TestCase):
             xapian = entry.indexing_data()
             print(xapian)
             # self.assertEqual(xapian['title'][0], 'Pizzab')
-            self.assertEqual(xapian['creator'][0], 'Pincic Pallinic')
+            self.assertEqual(xapian['creator'][0]['value'], 'Pincic Pallinic')
+            self.assertEqual(xapian['date'][0]['value'], '1900')
 

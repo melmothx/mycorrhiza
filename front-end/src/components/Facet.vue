@@ -1,6 +1,6 @@
 <script>
   export default {
-      props: ['term', 'count', 'active', 'name'],
+      props: ['id', 'term', 'count', 'active', 'name'],
       emits: ['toggleFilter'],
   }
 </script>
@@ -9,7 +9,7 @@
     <label>
       <input type="checkbox" class="rounded focus:border-pink-500 text-pink-500 focus:ring-0"
              :checked="active"
-             @change="$emit('toggleFilter', term, name , $event.target.checked)" />
+             @change="$emit('toggleFilter', id, name , $event.target.checked)" />
       {{ term }} ({{ count }})
     </label>
   </div>

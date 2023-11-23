@@ -8,18 +8,10 @@
      },
      computed: {
          title() {
-             return this.record.title[0];
+             return this.record.title[0]['value'];
          },
          subtitle() {
-             return this.record.title[1];
-         },
-         authors() {
-             if (this.record.creator) {
-                 return this.record.creator.join(' ');
-             }
-             else {
-                 return '';
-             }
+             return this.record.title[1]['value'];
          },
      },
      methods: {
@@ -52,8 +44,8 @@
       <div v-if="record.creator">
         <div v-for="author in record.creator">
           <div class="drag-el cursor-grab active:cursor-grabbing drag-author bg-gray-100 px-3 py-1 rounded"
-               draggable="true" @dragstart="drag_author($event, author)">
-            {{ author }}
+               draggable="true" @dragstart="drag_author($event, author.id)">
+            {{ author.value }}
           </div>
         </div>
       </div>
@@ -65,12 +57,13 @@
       <div v-if="show_details" class="p-2">
         <div class="text-sm mb-3 pb-3 border-b" v-if="record.description">
           <template v-for="desc in record.description">
-            <p v-if="desc.length > 1">
-              {{ desc }}
+            <p>
+              {{ desc.value }}
             </p>
           </template>
         </div>
-        <div class="mb-2" v-for="source in record.data_sources" :key="source.identifier">
+        <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
+          <span class="font-semibold">{{ source.site_name }}: </span>
           <span v-if="source.uri">
             <a :href="source.uri" target="_blank">
               <span v-if="source.uri_label">
@@ -84,14 +77,14 @@
               </span>
             </a>
           </span>
-          <span v-else-if="source.shelf_location_code">
-            <code>{{ source.shelf_location_code }}</code>
-          </span>
-          <span v-else>
-            <code>{{ source.identifier }}</code>
-          </span>
+          <div if="source.shelf_location_code">
+            <span>Shelf Location Code:</span> <code>{{ source.shelf_location_code }}</code>
+          </div>
           <div v-if="source.material_description">
             {{ source.material_description }}
+          </div>
+          <div>
+            <code>ID: {{ source.identifier }}</code>
           </div>
         </div>
       </div>

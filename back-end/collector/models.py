@@ -249,10 +249,13 @@ class Entry(models.Model):
 
         authors  = []
         for author in self.authors.all():
+            real_author = author
             if author.canonical_agent:
-                authors.append(author.canonical_agent.name)
-            else:
-                authors.append(author.name)
+                real_author = author.canonical_agent
+            authors.append({
+                "id": real_author.id,
+                "value": real_author.name,
+            });
 
         xapian_data_sources = []
         for topr in data_source_records:
@@ -262,17 +265,28 @@ class Entry(models.Model):
                 "uri_label": topr.uri_label,
                 "content_type": topr.content_type,
                 "shelf_location_code": topr.shelf_location_code,
+                "site_name": topr.site.title,
             }
             xapian_data_sources.append(dsd)
 
+        entry_sites = {}
+        for topr in data_source_records:
+            if not entry_sites.get(topr.site_id):
+                entry_site = topr.site
+                entry_sites[topr.site_id] = {
+                    "id": entry_site.id,
+                    "value": entry_site.title,
+                }
+
         xapian_record = {
-            "title": [ self.title, self.subtitle ],
+            # these are the mapped ones
+            "title": [ { "id": self.id, "value": self.title }, { "id": self.id, "value": self.subtitle } ],
             "creator": authors,
-            "subject": [ subject.name for subject in self.subjects.all() ],
-            "date": [ self.year_edition ],
-            "language": [ language.code for language in self.languages.all() ],
-            "hostname": sorted(list(set([ topr.site.hostname() for topr in data_source_records ]))),
-            "description": [ self.description ],
+            "subject":  [ { "id": s.id, "value": s.name } for s in self.subjects.all() ],
+            "date":     [ { "id": d, "value": d } for d in [ self.year_edition ] if d ],
+            "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],
+            "site": list(entry_sites.values()),
+            "description": [ { "id": 0, "value": s } for s in [ self.description ] if s ],
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
         }

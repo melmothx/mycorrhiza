@@ -69,7 +69,7 @@
                  this.filters.push({ 'name': name, 'term': term });
              }
              else {
-                 this.filters = this.filters.filter((f) => f.name != name && f.term != term)
+                 this.filters = this.filters.filter((f) => f.name != name || f.term != term)
              }
              this.getResults();
          },
@@ -194,8 +194,13 @@
         <div v-for="facetblock in facets" :key="facetblock.name" class="mt-3">
           <h2 class="font-semibold capitalize mb-1">{{ facetblock.name }}</h2>
           <template v-for="facet in facetblock.values.filter((el) => el.count > (limit_facets || 0))" :key="facet.key">
-            <Facet :term="facet.term" :count="facet.count" :active="facet.active" :name="facetblock.name"
-           @toggle-filter="toggleFilter"
+            <Facet
+                :id="facet.id"
+                :term="facet.term"
+                :count="facet.count"
+                :active="facet.active"
+                :name="facetblock.name"
+                @toggle-filter="toggleFilter"
             />
           </template>
         </div>
