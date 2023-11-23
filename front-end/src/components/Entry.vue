@@ -25,11 +25,11 @@
      methods: {
          drag_title(e) {
              if (e) {
-                 console.log("Dragging work: " + this.record.work_id);
+                 console.log("Dragging entry: " + this.record.entry_id);
                  e.dataTransfer.dropEffect = 'copy';
                  e.dataTransfer.effectAllowed = 'copy';
-                 e.dataTransfer.setData('Work', this.record.work_id);
-                 e.dataTransfer.setData('WorkTitle', this.title);
+                 e.dataTransfer.setData('Entry', this.record.entry_id);
+                 e.dataTransfer.setData('EntryTitle', this.title);
              }
          },
          drag_author(e, author) {

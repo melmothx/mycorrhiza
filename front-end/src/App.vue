@@ -1,10 +1,10 @@
 <script>
  import Pagination from './components/Pagination.vue'
  import Facet from './components/Facet.vue'
- import Work  from './components/Work.vue'
+ import Entry  from './components/Entry.vue'
  import axios from 'axios'
  export default {
-     components: { Facet, Work, Pagination },
+     components: { Facet, Entry, Pagination },
      data() {
          return {
              flash_success: "",
@@ -17,7 +17,7 @@
              total_entries: 0,
              current_page: 1,
              limit_facets: 0,
-             merge_work_records: [],
+             merge_entry_records: [],
              merge_author_records: [],
              is_authenticated: false,
          }
@@ -73,13 +73,13 @@
              }
              this.getResults();
          },
-         onWorkDrop(e) {
+         onEntryDrop(e) {
              if (e) {
-                 const work = e.dataTransfer.getData('Work');
-                 const title = e.dataTransfer.getData('WorkTitle');
-                 if (work && title) {
-                     console.log("Dropping work: " + work + " " + title);
-                     this.merge_work_records.push({ "work_id": work,
+                 const entry = e.dataTransfer.getData('Entry');
+                 const title = e.dataTransfer.getData('EntryTitle');
+                 if (entry && title) {
+                     console.log("Dropping entry: " + entry + " " + title);
+                     this.merge_entry_records.push({ "entry_id": entry,
                                                     "title": title,
                      });
                  }
@@ -95,14 +95,14 @@
              }
          },
          clear_merge_records() {
-             this.merge_work_records = [];
+             this.merge_entry_records = [];
          },
          clear_merge_authors() {
              this.merge_author_records = [];
          },
          merge_records() {
              const vm = this;
-             axios.post('/search/api/merge/works', this.merge_work_records)
+             axios.post('/search/api/merge/entries', this.merge_entry_records)
                   .then(function(res) {
                       if (res.data && res.data.success) {
                           vm.clear_merge_records();
@@ -203,8 +203,8 @@
       <div>
         <Pagination :pager="pager" @get-page="getPage" />
         <div class="mb-2">
-          <template v-for="match in matches" :key="match.work_id">
-            <Work :record="match" />
+          <template v-for="match in matches" :key="match.entry_id">
+            <Entry :record="match" />
           </template>
         </div>
         <Pagination :pager="pager" @get-page="getPage" />
@@ -239,7 +239,7 @@
           </div>
 
           <div id="title-cards">
-            <div @drop="onWorkDrop($event)" @dragover.prevent @dragenter.prevent>
+            <div @drop="onEntryDrop($event)" @dragover.prevent @dragenter.prevent>
               <div class="bg-gray-200 font-semibold 
                           rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
                 <h5>Drop titles here for merging</h5>
@@ -247,7 +247,7 @@
               <div class="rounded-b border border-gray-300">
                 <ul role="list">
                   <li class="border-b p-2 font-serif text-sm"
-                      v-for="rec in merge_work_records" :key="rec.work_id">
+                      v-for="rec in merge_entry_records" :key="rec.entry_id">
                     {{ rec.title }}
                   </li>
                 </ul>
