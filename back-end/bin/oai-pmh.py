@@ -5,8 +5,9 @@ import xml.dom.minidom
 import pprint
 import sys
 sys.path.append('.')
-from amwmeta.harvest import MarcXMLRecord
+from amwmeta.harvest import MarcXMLRecord, extract_fields
 import argparse
+from urllib.parse import urlparse
 parser = argparse.ArgumentParser()
 parser.add_argument("endpoint", help="OAI-PMH endpoint URL")
 parser.add_argument("--identifier", help="OAI-PMH identifier")
@@ -23,8 +24,10 @@ if args.identifier:
     rec = sickle.GetRecord(metadataPrefix="marc21",
                            identifier=args.identifier)
     dom = xml.dom.minidom.parseString(rec.raw)
-    print (dom.toprettyxml(indent="  "))
-    pp.pprint(rec.get_metadata())
+    print(dom.toprettyxml(indent="  "))
+    data = rec.get_metadata();
+    pp.pprint(data)
+    pp.pprint(extract_fields(data, urlparse(args.endpoint).hostname))
 
 else:
     records = sickle.ListRecords(metadataPrefix="marc21")

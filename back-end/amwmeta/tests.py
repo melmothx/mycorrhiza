@@ -10,7 +10,7 @@ class HarvestTestCase(unittest.TestCase):
             "title": [ "First", " and second part" ],
             "creator": [ "Pinco", "Pallino" ],
             "subject": [ "Sub1", "Sub2" ],
-            "language": [ "en", "it" ],
+            "language": [ "eng", "ita", 'lasdfjlasdf' ],
             "date": [ "x 1900 x2023", "x 2012 xxx" ],
             "subtitle": [ "Sub ", " Title " ],
             "description": [ "desc1", "desc2" ],
@@ -32,7 +32,7 @@ class HarvestTestCase(unittest.TestCase):
             "title": [ "First", " and second part" ],
             "creator": [ "Pinco", "Pallino" ],
             "subject": [ "xx", "yz" ],
-            "language": [ "en", "it" ],
+            "language": [ "eng", "ita", "spurious" ],
             "date": [ "x 1999 1900 1800 x2023", "x 2012 xxx" ],
             "subtitle": [ "Sub ", " Title " ],
             "description": [ "desc1 xx ", "desc2 xafasd" ],
@@ -48,6 +48,7 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec2['uri'], "http://amusewiki.org/xx")
         self.assertEqual(rec2['uri_label'], "Y")
         self.assertEqual(rec2['content_type'], "Z")
+        self.assertEqual(rec2['languages'], [ "en", "it" ])
 
         self.assertEqual(rec['checksum'], rec2['checksum'], msg="Checksum ok")
         rec3 = extract_fields({
@@ -63,3 +64,16 @@ class HarvestTestCase(unittest.TestCase):
         }, "pippo.org")
         self.assertNotEqual(rec['checksum'], rec3['checksum'], msg="Checksum not matching, title changed")
         self.assertEqual(rec3['uri'], "http://example.com/xx")
+        self.assertEqual(rec3['languages'], [ "en", "it" ])
+        rec4 = extract_fields({
+            "title": [ "Firstx", " and second part" ],
+            "creator": [ "Pinco", "Pallino" ],
+            "subject": [ "xx", "yz" ],
+            "language": [ "enx", "itx" ],
+            "date": [ "x 1999 1900 x2023", "x 2012 xxx" ],
+            "subtitle": [ "Sub ", " Title " ],
+            "description": [ "desc1 xx ", "desc2 xafasd" ],
+            "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
+            "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
+        }, "pippo.org")
+        self.assertEqual(rec4['languages'], [ "enx", "itx" ])

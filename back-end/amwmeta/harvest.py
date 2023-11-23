@@ -58,9 +58,10 @@ class MarcXMLRecord(Record):
             ('uri_info', '856', ('u', 'q', 'y')),
             ('uri', '856', ('u')),
             # https://wiki.koha-community.org/wiki/Holdings_data_fields_(9xx)
+            ('koha_uri', '952', ('u')),
             ('shelf_location_code', '952', ('o')),
-            ('shelf_location_code', '852', ('c')),
             ('serial_enumeration_caption', '952', ('h')),
+            ('shelf_location_code', '852', ('c')),
             ('trade_price_value', '365', ('b')),
             ('trade_price_currency', '365', ('c')),
             ('subject', '653', ('a')),
@@ -104,10 +105,10 @@ def iso_lang_code(code):
     if not code:
         return None
 
-    if len(code) == 2:
-        return code.lower()
-
-    if len(code) == 3:
+    lang_code_re = re.compile(r'^[a-z]{2,3}$', re.IGNORECASE)
+    match = lang_code_re.match(code)
+    if match:
+        actual_code = match.group().lower()
         mapping = {
             'abk': 'ab',
             'aar': 'aa',
@@ -293,8 +294,10 @@ def iso_lang_code(code):
             'zha': 'za',
             'zul': 'zu',
         }
-        return mapping.get(code.lower(), code.lower())
-
+        return mapping.get(actual_code, actual_code)
+    else:
+        logger.info("Invalid language code passed: " + code)
+        return None
 
 def harvest_oai_pmh(url, opts):
     logger.debug([url, opts])
@@ -357,21 +360,34 @@ def extract_fields(record, hostname):
             out['content_type'] = good_uri.get('content_type', '')
             out['uri_label'] = good_uri.get('label', '')
 
+    if not out.get('uri'):
+        try:
+            out['uri'] = record['koha_uri'][0]
+        except IndexError:
+            pass
+
+    if record.get('shelf_location_code'):
+        out['shelf_location_code'] = ' / '.join(record.get('shelf_location_code'))
+
+    if record.get('physical_description'):
+        out['material_description'] = ' '.join(record.get('physical_description'))
+
     mapping = {
         "title": {
             "checksum": True,
         },
-        "authors": {
-            "list": "creator",
+        "creator": {
+            "list": "authors",
             "checksum": True,
         },
-        "subjects": {
-            "list": "subject",
+        "subject": {
+            "list": "subjects",
             "checksum": False,
         },
-        "languages": {
-            "list": "language",
+        "language": {
+            "list": "languages",
             "checksum": True,
+            "interpolate": iso_lang_code,
         },
         "subtitle": {},
         "description": {},
@@ -380,26 +396,31 @@ def extract_fields(record, hostname):
     for field in sorted(mapping):
         spec = mapping[field]
         checksum = spec.get('checksum', False)
-        if "list" in spec:
-            try:
-                out[field] = record[spec['list']]
-                if checksum:
-                    for f in out[field]:
-                        # logger.debug("adding " + f)
-                        sha.update(f.encode())
-            except KeyError:
-                out[field] = []
+        outfield = field
+        values = record.get(field, [])
+        interpolate = spec.get('interpolate')
+        if values and interpolate:
+            cleaned_values = []
+            for v in values:
+                cv = interpolate(v)
+                if cv:
+                    cleaned_values.append(cv)
+            values = cleaned_values
 
+        if "list" in spec:
+            outfield = spec['list']
+            out[outfield] = values
+            if checksum:
+                for f in out[outfield]:
+                    # logger.debug("adding " + f)
+                    sha.update(f.encode())
         else:
             # collapse
             words = re.compile(r"\w")
-            try:
-                out[field] = ' '.join([ s for s in record[field] if words.search(s)])
-                if checksum:
-                    # logger.debug("adding " + out[field])
-                    sha.update(out[field].encode())
-            except KeyError:
-                out[field] = None
+            out[outfield] = ' '.join([ s for s in values if words.search(s)])
+            if checksum:
+                # logger.debug("adding " + out[field])
+                sha.update(out[outfield].encode())
 
     out['checksum'] = sha.hexdigest()
     return out
