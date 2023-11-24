@@ -140,6 +140,7 @@
                 :count="facet.count"
                 :active="facet.active"
                 :name="facetblock.name"
+                :merge_type="facetblock.name == 'creator' ? 'author' : ''"
                 @toggle-filter="toggleFilter"
             />
           </template>
