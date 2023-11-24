@@ -14,6 +14,7 @@
              filters: [],
              pager: [],
              query: '',
+             searched_query: '',
              total_entries: 0,
              current_page: 1,
              limit_facets: 0,
@@ -55,6 +56,7 @@
                       vm.pager = res.data.pager;
                       vm.total_entries = res.data.total_entries;
                       vm.is_authenticated = res.data.is_authenticated;
+                      vm.searched_query = vm.query;
                   });
          },
          getPage(page) {
@@ -154,7 +156,14 @@
 
 <template>
   <form class="m-1 md:m-5" @submit.prevent="searchText">
-    <h1 class="text-3xl text-center font-semibold m-8">Search results ({{ total_entries }})</h1>
+    <h1 class="text-3xl text-center font-semibold m-8">
+      <template v-if="searched_query">
+        Search results for {{ searched_query }} ({{ total_entries }})
+      </template>
+      <template v-else>
+        All entries ({{ total_entries }})
+      </template>
+    </h1>
     <div v-if="flash_success" class="bg-green-100 border-green-600 text-green-800 border rounded p-2 flex justify-center cursor-pointer"
          @click="clear_flash_success">
       {{ flash_success }}
