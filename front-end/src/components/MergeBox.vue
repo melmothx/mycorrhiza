@@ -12,7 +12,14 @@
          }
      },
      methods: {
-         onDrop(e, op) {
+         drag_element(e, id, label) {
+             e.dataTransfer.dropEffect = 'copy';
+             e.dataTransfer.effectAllowed = 'copy';
+             e.dataTransfer.setData('ID', id);
+             e.dataTransfer.setData('Label', label);
+             e.dataTransfer.setData('Merge', this.merge_type);
+         },
+         drop_element(e, op) {
              const id = e.dataTransfer.getData('ID');
              const label = e.dataTransfer.getData('Label');
              const merge_type = e.dataTransfer.getData('Merge');
@@ -101,25 +108,28 @@
 </script>
 <template>
   <div>
-    <div @drop="onDrop($event)" @dragover.prevent @dragenter.prevent
+    <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
         class="bg-gray-200 font-semibold
                rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h2>Drop {{ merge_type }} here for merging</h2>
+      <h2><slot>Drop {{ merge_type }} here for merging</slot></h2>
     </div>
     <div v-if="canonical"
-         @drop="onDrop($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
+         @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
          class="border-r border-l border-t border-gray-300">
       <h3 class="font-serif p-2 font-semibold text-sm">
         {{ canonical.label }}
       </h3>
     </div>
     <div class="rounded-b border border-gray-300"
-         @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
+         @drop="drop_element($event)" @dragover.prevent @dragenter.prevent>
       <ul role="list" >
-        <li class="border-b p-2 font-serif text-sm"
-            v-for="entry in merge_list">
+        <template v-for="entry in merge_list">
+        <li class="border-b p-2 font-serif text-sm cursor-grab active:cursor-grabbing"
+            draggable="true"
+            @dragstart="drag_element($event, entry.id, entry.label)">
           {{ entry.label }}
         </li>
+        </template>
       </ul>
       <div class="flex justify-center items-center m-2">
         <div class="px-2">

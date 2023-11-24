@@ -157,10 +157,14 @@
       <div v-if="is_authenticated">
         <div class="sticky top-10">
           <div id="author-cards" class="mb-2">
-            <MergeBox merge_type="author" @refetch-results="getResults(1)" />
+            <MergeBox merge_type="author" @refetch-results="getResults(1)">
+              Merge authors here
+            </MergeBox>
           </div>
           <div id="title-cards">
-            <MergeBox merge_type="entry" @refetch-results="getResults()"/>
+            <MergeBox merge_type="entry" @refetch-results="getResults()">
+              Merge entries here
+            </MergeBox>
           </div>
         </div>
       </div>
