@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from datetime import datetime
 from amwmeta.harvest import harvest_oai_pmh, extract_fields
@@ -300,7 +299,7 @@ class DataSource(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     oai_pmh_identifier = models.CharField(max_length=2048)
     datetime = models.DateTimeField()
-    full_data = HStoreField()
+    full_data = models.JSONField()
 
     entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
 
