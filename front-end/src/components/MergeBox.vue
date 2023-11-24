@@ -14,7 +14,10 @@
          onDrop(e) {
              const id = e.dataTransfer.getData('ID');
              const label = e.dataTransfer.getData('Label');
-             if (id && label) {
+             const merge_type = e.dataTransfer.getData('Merge');
+             this.clear_flash_error();
+             this.clear_flash_success();
+             if (id && label && merge_type && merge_type == this.merge_type) {
                  console.log("Dropping entry: " + id + " " + label);
                  this.merge_list.push({
                      "id": id,

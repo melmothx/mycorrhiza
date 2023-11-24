@@ -36,8 +36,6 @@ def api_merge(request, target):
         logger.debug(data)
         canonical = None
         aliases = []
-        abort = False
-
         classes = {
             "entry" : Entry,
             "author" : Agent,
@@ -55,12 +53,15 @@ def api_merge(request, target):
                     logger.debug("Invalid entry " + pk)
 
             if canonical and aliases:
-                logger.info("Merging " + str(aliases) + " into " + str(canonical))
-                reindex = current_class.merge_records(canonical, aliases)
-                indexer = MycorrhizaIndexer()
-                indexer.index_entries(reindex)
-                logger.info(indexer.logs)
-                out['success'] = "Merged!"
+                if canonical.id not in [ x.id for x in aliases ]:
+                    logger.info("Merging " + str(aliases) + " into " + str(canonical))
+                    reindex = current_class.merge_records(canonical, aliases)
+                    indexer = MycorrhizaIndexer()
+                    indexer.index_entries(reindex)
+                    logger.info(indexer.logs)
+                    out['success'] = "Merged!"
+                else:
+                    out['error'] = "You can't merge an item with itself!"
             else:
                 out['error'] = "Bad arguments! Expecting valid canonical and a list of aliases!"
         else:
