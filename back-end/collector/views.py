@@ -30,83 +30,39 @@ def api_merge(request, target):
     try:
         data = json.loads(request.body)
     except json.JSONDecodeError:
-        out['error'] = "Invalid JSON";
+        out['error'] = "Invalid JSON!";
 
     if data:
         logger.debug(data)
+        canonical = None
         aliases = []
         abort = False
 
-        if target == 'entries':
-            for pk in [ x['entry_id'] for x in data ]:
+        classes = {
+            "entry" : Entry,
+            "author" : Agent,
+        }
+        if target in classes:
+            current_class = classes[target]
+            for pk in [ x['id'] for x in data ]:
                 try:
-                    alias = Entry.objects.get(pk=pk)
-                    aliases.append(alias)
-                except Entry.DoesNotExist:
+                    obj = current_class.objects.get(pk=pk)
+                    if canonical:
+                        aliases.append(obj)
+                    else:
+                        canonical = obj
+                except current_class.DoesNotExist:
                     logger.debug("Invalid entry " + pk)
-                    abort = True
-            if abort:
-                out['error'] = "Invalid argument"
-            elif len(aliases) < 2:
-                out['error'] = "Missing arguments (at least 2)"
-            else:
-                canonical = aliases[0]
-                canonical.canonical_entry = None
-                canonical.save()
 
-                reindex = aliases[:]
-                for aliased in aliases[1:]:
-                    aliased.canonical_entry = canonical
-                    aliased.save()
-                    for vw in aliased.variant_entries.all():
-                        vw.canonical_entry = canonical
-                        vw.save()
-                        reindex.append(vw)
-
+            if canonical and aliases:
+                logger.info("Merging " + str(aliases) + " into " + str(canonical))
+                reindex = current_class.merge_records(canonical, aliases)
                 indexer = MycorrhizaIndexer()
-                for w in reindex:
-                    indexer.index_record(w.indexing_data())
+                indexer.index_entries(reindex)
                 logger.info(indexer.logs)
                 out['success'] = "Merged!"
-                # now reindex
-
-
-
-        elif target == 'authors':
-            # receiving the list
-            for name in data:
-                try:
-                    alias = Agent.objects.get(name=name)
-                    aliases.append(alias)
-                except Agent.DoesNotExist:
-                    logger.debug("Invalid name " + name)
-                    abort = True
-            if abort:
-                out['error'] = "Invalid argument"
-            elif len(aliases) < 2:
-                out['error'] = "Missing arguments (at least 2)"
             else:
-                canonical = aliases[0]
-                canonical.canonical_agent = None
-                canonical.save()
-
-                reindex = aliases[:]
-
-                for aliased in aliases[1:]:
-                    aliased.canonical_agent = canonical
-                    aliased.save()
-                    for av in aliased.variant_agents.all():
-                        av.canonical_agent = canonical
-                        av.save()
-                        reindex.append(av)
-
-                indexer = MycorrhizaIndexer()
-                for agent in reindex:
-                    for entry in agent.authored_entries.all():
-                        indexer.index_record(entry.indexing_data())
-                logger.debug(indexer.logs)
-                out['success'] = "Merged!"
-
+                out['error'] = "Bad arguments! Expecting valid canonical and a list of aliases!"
         else:
             out['error'] = 'Invalid path'
     logger.debug(out)

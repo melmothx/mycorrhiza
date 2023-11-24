@@ -157,6 +157,10 @@ class MycorrhizaIndexer:
         self.termgenerator.set_stemmer(xapian.Stem("none"))
         self.logs = []
 
+    def index_entries(self, entries):
+        for e in entries:
+            self.index_record(e.indexing_data())
+
     def index_record(self, record):
         is_deleted = True
         if len(record['data_sources']) > 0:

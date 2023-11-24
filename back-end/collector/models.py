@@ -193,24 +193,40 @@ class Agent(models.Model):
         on_delete=models.SET_NULL,
         related_name="variant_agents",
     )
+
+    @classmethod
+    def merge_records(cls, canonical, aliases):
+        canonical.canonical_agent = None
+        canonical.save()
+        reindex_agents = aliases[:]
+        reindex_agents.append(canonical)
+        for aliased in aliases:
+            aliased.canonical_agent = canonical
+            aliased.save()
+            for va in aliased.variant_agents.all():
+                va.canonical_agent = canonical
+                va.save()
+                reindex_agents.append(va)
+        entries = []
+        for agent in reindex_agents:
+            for entry in agent.authored_entries.all():
+                entries.append(entry)
+        return entries
+
     def __str__(self):
         return self.name
 
-
-# togliere
 class Subject(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     def __str__(self):
         return self.name
 
-
 class Language(models.Model):
     code = models.CharField(max_length=4, unique=True, primary_key=True)
     def __str__(self):
         return self.code
 
-# entry
 class Entry(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True)
@@ -290,6 +306,23 @@ class Entry(models.Model):
             "entry_id": self.id,
         }
         return xapian_record
+
+    @classmethod
+    def merge_records(cls, canonical, aliases):
+        canonical.canonical_entry = None
+        canonical.save()
+        reindex = aliases[:]
+        reindex.append(canonical)
+        for aliased in aliases:
+            aliased.canonical_entry = canonical
+            aliased.save()
+            # update the current variant entries
+            for ve in aliased.variant_entries.all():
+                ve.canonical_entry = canonical
+                ve.save()
+                reindex.append(ve)
+        return reindex
+
 
 # the OAI-PMH records will keep the URL of the record, so a entry can
 # have multiple ones because it's coming from more sources.

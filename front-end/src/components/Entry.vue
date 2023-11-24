@@ -15,21 +15,14 @@
          },
      },
      methods: {
-         drag_title(e) {
+         drag_element(e, merge_type, id, label) {
              if (e) {
-                 console.log("Dragging entry: " + this.record.entry_id);
+                 console.log("Dragging entry: " + [merge_type, id, label].join(' '))
                  e.dataTransfer.dropEffect = 'copy';
                  e.dataTransfer.effectAllowed = 'copy';
-                 e.dataTransfer.setData('Entry', this.record.entry_id);
-                 e.dataTransfer.setData('EntryTitle', this.title);
-             }
-         },
-         drag_author(e, author) {
-             if (e) {
-                 console.log("Dragging author: " + author);
-                 e.dataTransfer.dropEffect = 'copy';
-                 e.dataTransfer.effectAllowed = 'copy';
-                 e.dataTransfer.setData('Author', author);
+                 e.dataTransfer.setData('ID', id);
+                 e.dataTransfer.setData('Label', label);
+                 e.dataTransfer.setData('Merge', merge_type);
              }
          },
          toggle_show_details() {
@@ -44,13 +37,14 @@
       <div v-if="record.creator">
         <div v-for="author in record.creator">
           <div class="drag-el cursor-grab active:cursor-grabbing drag-author bg-gray-100 px-3 py-1 rounded"
-               draggable="true" @dragstart="drag_author($event, author.id)">
+               draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
             {{ author.value }}
           </div>
         </div>
       </div>
       <div class="drag-el drag-title cursor-grab active:cursor-grabbing p-2"
-           draggable="true" @dragstart="drag_title($event)" @click="toggle_show_details">
+           draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)"
+           @click="toggle_show_details">
         <h2 class="font-semibold">{{ title }}</h2>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
       </div>
