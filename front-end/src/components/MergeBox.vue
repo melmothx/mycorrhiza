@@ -5,13 +5,14 @@
      emits: ['refetchResults'],
      data() {
          return {
+             canonical: null,
              merge_list: [],
              flash_success: "",
              flash_error: "",
          }
      },
      methods: {
-         onDrop(e) {
+         onDrop(e, op) {
              const id = e.dataTransfer.getData('ID');
              const label = e.dataTransfer.getData('Label');
              const merge_type = e.dataTransfer.getData('Merge');
@@ -19,13 +20,49 @@
              this.clear_flash_success();
              if (id && label && merge_type && merge_type == this.merge_type) {
                  console.log("Dropping entry: " + id + " " + label);
-                 this.merge_list.push({
-                     "id": id,
-                     "label": label,
-                 });
+                 if (op && op == 'set_canonical') {
+                     if (this.canonical) {
+                         this.merge_list.push(this.canonical);
+                     }
+                     this.canonical = null;
+                 }
+                 if (this.canonical) {
+                     this.merge_list.push({
+                         "id": id,
+                         "label": label,
+                     });
+                 }
+                 else {
+                     this.canonical = {
+                         "id": id,
+                         "label": label,
+                     };
+                 }
+                 // check if there are duplicates or worse, recursive
+                 if (this.canonical) {
+                     const canonical_id = this.canonical.id;
+                     const seen = {}
+                     seen[canonical_id] = true;
+                     let filtered = [];
+                     filtered = this.merge_list.filter(function(item, pos, self) {
+                         if (seen.hasOwnProperty(item.id)) {
+                             return false;
+                         }
+                         else {
+                             seen[item.id] = true;
+                             return true;
+                         }
+                     });
+                     console.log(filtered);
+                     this.merge_list = filtered;
+                 }
+             }
+             else {
+                 this.flash_error = "I cannot do that";
              }
          },
          clear_list() {
+             this.canonical = null;
              this.merge_list = [];
          },
          clear_flash_error() {
@@ -36,7 +73,9 @@
          },
          merge_records() {
              const vm = this;
-             axios.post('/search/api/merge/' + vm.merge_type, vm.merge_list)
+             const params = vm.merge_list.slice();
+             params.unshift(vm.canonical);
+             axios.post('/search/api/merge/' + vm.merge_type, params)
                   .then(function(res) {
                       console.log(res.data)
                       if (res.data && res.data.success) {
@@ -61,13 +100,22 @@
  }
 </script>
 <template>
-  <div @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
-    <div class="bg-gray-200 font-semibold 
-                rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h5>Drop {{ merge_type }} here for merging</h5>
+  <div>
+    <div @drop="onDrop($event)" @dragover.prevent @dragenter.prevent
+        class="bg-gray-200 font-semibold
+               rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
+      <h2>Drop {{ merge_type }} here for merging</h2>
     </div>
-    <div class="rounded-b border border-gray-300">
-      <ul role="list">
+    <div v-if="canonical"
+         @drop="onDrop($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
+         class="border-r border-l border-t border-gray-300">
+      <h3 class="font-serif p-2 font-semibold text-sm">
+        {{ canonical.label }}
+      </h3>
+    </div>
+    <div class="rounded-b border border-gray-300"
+         @drop="onDrop($event)" @dragover.prevent @dragenter.prevent>
+      <ul role="list" >
         <li class="border-b p-2 font-serif text-sm"
             v-for="entry in merge_list">
           {{ entry.label }}
