@@ -72,6 +72,11 @@
              this.canonical = null;
              this.merge_list = [];
          },
+         remove_from_list(id) {
+             if (id) {
+                 this.merge_list = this.merge_list.filter((i) => i.id != id);
+             }
+         },
          clear_flash_error() {
              this.flash_error = '';
          },
@@ -116,29 +121,41 @@
     <div v-if="canonical"
          @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
          class="border-r border-l border-t border-gray-300">
-      <h3 class="font-serif p-2 font-semibold text-sm">
-        {{ canonical.label }}
+      <h3 class="font-serif p-2 font-semibold text-sm flex justify-between">
+        <span>
+          {{ canonical.label }}
+        </span>
+        <span class="cursor-pointer font-bold"
+              title="Clear list" @click="clear_list">
+          <span class="border-2 rounded-lg text-red-800 hover:text-black border-red-800 border px-1 mt-1">
+            &#x2715;
+          </span>
+        </span>
       </h3>
     </div>
     <div class="rounded-b border border-gray-300"
          @drop="drop_element($event)" @dragover.prevent @dragenter.prevent>
       <ul role="list" >
-        <template v-for="entry in merge_list">
-        <li class="border-b p-2 font-serif text-sm cursor-grab active:cursor-grabbing"
-            draggable="true"
-            @dragstart="drag_element($event, entry.id, entry.label)">
-          {{ entry.label }}
+        <li v-for="entry in merge_list" class="border-b p-2 font-serif text-sm">
+          <div class="flex justify-between">
+            <span class="cursor-grab active:cursor-grabbing"
+                  draggable="true"
+                  @dragstart="drag_element($event, entry.id, entry.label)">
+              {{ entry.label }}
+            </span>
+            <span class="cursor-pointer font-bold"
+                  title="Remove" @click="remove_from_list(entry.id)">
+              <span class="border-2 rounded-lg hover:bg-red-300 text-red-800 border-red-800 px-1 mt-1">
+                &#x2715;
+              </span>
+            </span>
+          </div>
         </li>
-        </template>
       </ul>
       <div class="flex justify-center items-center m-2">
         <div class="px-2">
           <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
                   type="button" @click="merge_records">Merge</button>
-        </div>
-        <div class="px-2">
-          <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
-                  type="button" @click="clear_list">Clear</button>
         </div>
       </div>
       <div v-if="flash_error"
