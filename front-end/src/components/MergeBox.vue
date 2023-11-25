@@ -153,9 +153,11 @@
         </li>
       </ul>
       <div class="flex justify-center items-center m-2">
-        <div class="px-2">
-          <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
-                  type="button" @click="merge_records">Merge</button>
+        <div class="px-2 h-7">
+          <div v-if="canonical && merge_list.length">
+            <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
+                    type="button" @click="merge_records">Merge</button>
+          </div>
         </div>
       </div>
       <div v-if="flash_error"
