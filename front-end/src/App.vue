@@ -64,7 +64,7 @@
              this.current_page = page;
              this.getResults();
          },
-         toggleFilter(term, name, checked) {
+         toggleFilter(name, term, checked) {
              console.log(`Toggling ${checked} ${name} ${term}`);
              // go back to the first page
              this.current_page = 1;
@@ -76,6 +76,10 @@
              }
              this.getResults();
          },
+         remove_merged_filter(name, term) {
+             console.log(`Removing ${term} ${name}`);
+             this.filters = this.filters.filter((f) => f.name != name || f.term != term)
+         }
      },
      mounted() {
          this.searchText();
@@ -158,7 +162,10 @@
       <div v-if="is_authenticated">
         <div class="sticky top-10">
           <div id="author-cards" class="mb-2">
-            <MergeBox merge_type="author" @refetch-results="getResults(1)">
+            <MergeBox merge_type="author"
+                      remove_merged_filter="creator"
+                      @remove-merged-filter="remove_merged_filter"
+                      @refetch-results="getResults(1)">
               Merge authors here
             </MergeBox>
           </div>

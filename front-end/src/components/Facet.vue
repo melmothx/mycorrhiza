@@ -18,7 +18,7 @@
     <label>
       <input type="checkbox" class="rounded focus:border-pink-500 text-pink-500 focus:ring-0"
              :checked="active"
-             @change="$emit('toggleFilter', id, name , $event.target.checked)" />
+             @change="$emit('toggleFilter', name, id , $event.target.checked)" />
       <span class="ml-1">
         <template v-if="merge_type">
           <span class="cursor-grab active:cursor-grabbing"

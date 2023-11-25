@@ -1,8 +1,14 @@
 <script>
  import axios from 'axios'
  export default {
-     props: ['merge_type'],
-     emits: ['refetchResults'],
+     props: [
+         'merge_type',
+         'remove_merged_filter',
+     ],
+     emits: [
+         'refetchResults',
+         'removeMergedFilter'
+     ],
      data() {
          return {
              canonical: null,
@@ -91,6 +97,9 @@
                   .then(function(res) {
                       console.log(res.data)
                       if (res.data && res.data.success) {
+                          if (vm.remove_merged_filter) {
+                              vm.merge_list.forEach((el) => vm.$emit('removeMergedFilter', vm.remove_merged_filter, el.id));
+                          }
                           vm.clear_list();
                           // emit a refetch
                           // vm.getResults();
@@ -116,7 +125,7 @@
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
         class="bg-gray-200 font-semibold
                rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h2><slot>Drop {{ merge_type }} here for merging</slot></h2>
+      <h2 class="text-center"><slot>Drop {{ merge_type }} here for merging</slot></h2>
     </div>
     <div v-if="canonical"
          @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
