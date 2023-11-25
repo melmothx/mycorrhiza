@@ -135,10 +135,12 @@
                         focus:ring-0
                         rounded-l" id="limit-facets" type="number" v-model="limit_facets">
         </div>
-        <div v-for="facetblock in facets" :key="facetblock.name" class="mt-3">
-          <h2 class="font-semibold capitalize mb-1">{{ facetblock.name }}</h2>
-          <template v-for="facet in facetblock.values.filter((el) => el.count > (limit_facets || 0))" :key="facet.key">
-            <FacetButton
+        <div class="mt-2" v-for="facetblock in facets" :key="facetblock.name">
+          <h2 class="font-semibold capitalize">{{ facetblock.name }}</h2>
+          <div class="h-48 overflow-y-auto">
+            <template v-for="facet in facetblock.values.filter((el) => el.count > (limit_facets || 0))"
+                      :key="facet.key">
+              <FacetButton
                 :id="facet.id"
                 :term="facet.term"
                 :count="facet.count"
@@ -146,8 +148,9 @@
                 :name="facetblock.name"
                 :merge_type="facetblock.name == 'creator' ? 'author' : ''"
                 @toggle-filter="toggleFilter"
-            />
-          </template>
+              />
+            </template>
+          </div>
         </div>
       </div>
       <div>
