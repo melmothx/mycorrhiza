@@ -58,8 +58,8 @@
                      const seen = {}
                      seen[canonical_id] = true;
                      let filtered = [];
-                     filtered = this.merge_list.filter(function(item, pos, self) {
-                         if (seen.hasOwnProperty(item.id)) {
+                     filtered = this.merge_list.filter(function(item) {
+                         if (seen[item.id]) {
                              return false;
                          }
                          else {
@@ -155,7 +155,7 @@
     <div class="rounded-b border border-gray-300"
          @drop="drop_element($event)" @dragover.prevent @dragenter.prevent>
       <ul role="list" >
-        <li v-for="entry in merge_list" class="border-b p-2 font-serif text-sm">
+        <li v-for="entry in merge_list" :key="entry.id" class="border-b p-2 font-serif text-sm">
           <div class="flex justify-between">
             <span class="cursor-grab active:cursor-grabbing"
                   draggable="true"

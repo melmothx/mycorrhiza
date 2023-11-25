@@ -301,7 +301,7 @@ class Entry(models.Model):
             "date":     [ { "id": d, "value": d } for d in [ self.year_edition ] if d ],
             "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],
             "site": list(entry_sites.values()),
-            "description": [ { "id": 0, "value": s } for s in [ self.description ] if s ],
+            "description": [ { "id": "d" + str(self.id), "value": s } for s in [ self.description ] if s ],
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
         }

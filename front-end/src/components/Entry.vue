@@ -35,7 +35,7 @@
   <div class="border p-2 border-gray-200 rounded mt-2 font-serif">
     <div class="p-1">
       <div v-if="record.creator">
-        <div v-for="author in record.creator">
+        <div v-for="author in record.creator" :key="author.id">
           <div class="drag-el cursor-grab active:cursor-grabbing drag-author bg-gray-100 px-3 py-1 rounded"
                draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
             {{ author.value }}
@@ -49,12 +49,10 @@
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
       </div>
       <div v-if="show_details" class="p-2">
-        <div class="text-sm mb-3 pb-3 border-b" v-if="record.description">
-          <template v-for="desc in record.description">
-            <p>
-              {{ desc.value }}
-            </p>
-          </template>
+        <div v-for="desc in record.description" :key="desc.id" class="text-sm mb-3 pb-3 border-b">
+          <p>
+            {{ desc.value }}
+          </p>
         </div>
         <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
           <span class="font-semibold">{{ source.site_name }}: </span>
