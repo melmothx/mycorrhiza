@@ -15,6 +15,7 @@
              merge_list: [],
              flash_success: "",
              flash_error: "",
+             working: false,
          }
      },
      methods: {
@@ -93,6 +94,7 @@
              const vm = this;
              const params = vm.merge_list.slice();
              params.unshift(vm.canonical);
+             vm.working = true;
              axios.post('/search/api/merge/' + vm.merge_type, params)
                   .then(function(res) {
                       console.log(res.data)
@@ -112,8 +114,10 @@
                       else {
                           vm.flash_error = "Failed!"
                       }
+                      vm.working = false;
                   })
                   .catch(function(error) {
+                      vm.working = false;
                       console.log(error)
                   });
          }
@@ -125,7 +129,11 @@
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
         class="bg-gray-200 font-semibold
                rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h2 class="text-center"><slot>Drop {{ merge_type }} here for merging</slot></h2>
+      <h2 class="flex justify-center">
+        <span>
+          <slot>Drop {{ merge_type }} here for merging</slot>
+        </span>
+      </h2>
     </div>
     <div v-if="canonical"
          @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
@@ -134,8 +142,10 @@
         <span>
           {{ canonical.label }}
         </span>
-        <span class="cursor-pointer font-bold"
-              title="Clear list" @click="clear_list">
+        <span v-if="!working"
+              class="cursor-pointer font-bold"
+              title="Clear list"
+              @click="clear_list">
           <span class="border-2 rounded-lg text-red-800 hover:text-black border-red-800 border px-1 mt-1">
             &#x2715;
           </span>
@@ -152,8 +162,10 @@
                   @dragstart="drag_element($event, entry.id, entry.label)">
               {{ entry.label }}
             </span>
-            <span class="cursor-pointer font-bold"
-                  title="Remove" @click="remove_from_list(entry.id)">
+            <span v-if="!working"
+                  class="cursor-pointer font-bold"
+                  title="Remove"
+                  @click="remove_from_list(entry.id)">
               <span class="border-2 rounded-lg hover:bg-red-300 text-red-800 border-red-800 px-1 mt-1">
                 &#x2715;
               </span>
@@ -161,25 +173,26 @@
           </div>
         </li>
       </ul>
-      <div class="flex justify-center items-center m-2">
-        <div class="px-2 h-7">
-          <div v-if="canonical && merge_list.length">
-            <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
-                    type="button" @click="merge_records">Merge</button>
-          </div>
+      <div>
+        <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
+          <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
+                  type="button" @click="merge_records">Merge</button>
         </div>
-      </div>
-      <div v-if="flash_error"
-           @click="clear_flash_error"
-           class="flex justify-center items-center m-2 cursor-pointer text-pink-700
-                 mt-2 font-semibold">
-        {{ flash_error }}
-      </div>
-      <div v-if="flash_success"
-           @click="clear_flash_success"
-           class="flex justify-center items-center m-2 cursor-pointer text-green-800
-                 mt-2 font-bold">
-        {{ flash_success }}
+        <div v-if="flash_error"
+             @click="clear_flash_error"
+             class="flex justify-center items-center m-2 cursor-pointer text-pink-700
+                   mt-2 font-semibold">
+          {{ flash_error }}
+        </div>
+        <div v-if="flash_success"
+             @click="clear_flash_success"
+             class="flex justify-center items-center m-2 cursor-pointer text-green-800
+                   mt-2 font-bold">
+          {{ flash_success }}
+        </div>
+        <div v-if="working" class="m-2 text-center">
+          <span class="animate-ping rounded-full text-pink-800 p-2">Working</span>
+        </div>
       </div>
     </div>
   </div>
