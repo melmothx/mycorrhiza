@@ -1,11 +1,11 @@
 <script>
- import Pagination from './components/Pagination.vue'
- import Facet from './components/Facet.vue'
- import Entry  from './components/Entry.vue'
+ import PaginationBox from './components/PaginationBox.vue'
+ import FacetButton from './components/FacetButton.vue'
+ import EntryBox  from './components/EntryBox.vue'
  import MergeBox from './components/MergeBox.vue'
  import axios from 'axios'
  export default {
-     components: { Facet, Entry, Pagination, MergeBox },
+     components: { FacetButton, EntryBox, PaginationBox, MergeBox },
      data() {
          return {
              flash_success: "",
@@ -138,7 +138,7 @@
         <div v-for="facetblock in facets" :key="facetblock.name" class="mt-3">
           <h2 class="font-semibold capitalize mb-1">{{ facetblock.name }}</h2>
           <template v-for="facet in facetblock.values.filter((el) => el.count > (limit_facets || 0))" :key="facet.key">
-            <Facet
+            <FacetButton
                 :id="facet.id"
                 :term="facet.term"
                 :count="facet.count"
@@ -151,13 +151,13 @@
         </div>
       </div>
       <div>
-        <Pagination :pager="pager" @get-page="getPage" />
+        <PaginationBox :pager="pager" @get-page="getPage" />
         <div class="mb-2">
           <template v-for="match in matches" :key="match.entry_id">
-            <Entry :record="match" />
+            <EntryBox :record="match" />
           </template>
         </div>
-        <Pagination :pager="pager" @get-page="getPage" />
+        <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
       <div v-if="is_authenticated">
         <div class="sticky top-10">
