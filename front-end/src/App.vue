@@ -11,7 +11,7 @@
              flash_success: "",
              flash_error: "",
              matches: [],
-             facets: [],
+             facets: {},
              filters: [],
              pager: [],
              query: '',
@@ -98,6 +98,8 @@
         All entries ({{ total_entries }})
       </template>
     </h1>
+  </form>
+  <div class="m-1 md:m-5">
     <div v-if="flash_success" class="bg-green-100 border-green-600 text-green-800 border rounded p-2 flex justify-center cursor-pointer"
          @click="clear_flash_success">
       {{ flash_success }}
@@ -126,12 +128,21 @@
     </div>
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
-        <div class="mb-3" v-for="facetblock in facets" :key="facetblock.name">
-          <FacetBox
-              :values="facetblock.values"
-              :name="facetblock.name"
-              @toggle-app-filter="toggleFilter"
-          ></FacetBox>
+        <div class="sticky top-5">
+          <div v-if="facets.creator" class="mb-3">
+            <FacetBox
+                :values="facets.creator.values"
+                :name="facets.creator.name"
+                @toggle-app-filter="toggleFilter"
+            >Authors</FacetBox>
+          </div>
+          <div v-if="facets.creator" class="mb-3">
+            <FacetBox
+                :values="facets.site.values"
+                :name="facets.site.name"
+                @toggle-app-filter="toggleFilter"
+            >Sites</FacetBox>
+          </div>
         </div>
       </div>
       <div>
@@ -144,7 +155,7 @@
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
       <div v-if="is_authenticated">
-        <div class="sticky top-10">
+        <div class="sticky top-5">
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"
                       remove_merged_filter="creator"
@@ -161,6 +172,6 @@
         </div>
       </div>
     </div>
-  </form>
+  </div>
 </template>
 

@@ -82,7 +82,7 @@ def search(query_params):
     enquire = xapian.Enquire(db)
     enquire.set_query(query)
     matches = []
-    facets = []
+    facets = {}
     for field in FIELD_MAPPING:
         # boolean only
         if FIELD_MAPPING[field][2]:
@@ -138,10 +138,10 @@ def search(query_params):
                     }
 
         if len(facet_values):
-            facets.append({
+            facets[spy_name] = {
                 "name": spy_name,
                 "values": sorted(list(facet_values.values()), key=lambda el: (0 - el['count'], str(el['term']))),
-            })
+            }
 
     context['matches'] = matches
     context['facets'] = facets

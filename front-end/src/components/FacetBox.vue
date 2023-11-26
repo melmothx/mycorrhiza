@@ -20,7 +20,9 @@
 <template>
   <div class="rounded-lg p-0 border border-gray-300">
     <div class="flex justify-center align-center border-b p-2 bg-gray-100 rounded-t-lg">
-      <h2 class="font-semibold flex-grow capitalize py-2">{{ name }}</h2>
+      <h2 class="font-semibold flex-grow capitalize py-2">
+        <slot>{{ name }}</slot>
+      </h2>
       <input type="number" v-model="limit_facets"
              size="4" min="0" step="1"
              title="Minimum number of results"
