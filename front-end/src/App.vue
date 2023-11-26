@@ -18,7 +18,6 @@
              searched_query: '',
              total_entries: 0,
              current_page: 1,
-             limit_facets: 0,
              merge_entry_records: [],
              merge_author_records: [],
              is_authenticated: false,
@@ -112,9 +111,11 @@
       <div class="flex my-5">
         <input class="outline
                       outline-0
+                      border
                       border-gray-300
                       focus:border-pink-500
                       focus:ring-0
+                      px-2
                       rounded-l flex-grow"
                type="text" placeholder="Search" v-model="query"/>
         <button class="rounded-r bg-pink-500
@@ -125,17 +126,7 @@
     </div>
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
-        <div>
-          <label class="font-semibold" for="limit-facets">Minimum facets results</label><br>
-          <input class="rounded 
-                        outline
-                        outline-0
-                        border-gray-300
-                        focus:border-pink-500
-                        focus:ring-0
-                        rounded-l" id="limit-facets" type="number" v-model="limit_facets">
-        </div>
-        <div class="mt-2" v-for="facetblock in facets" :key="facetblock.name">
+        <div class="mb-3" v-for="facetblock in facets" :key="facetblock.name">
           <FacetBox
               :values="facetblock.values"
               :name="facetblock.name"
