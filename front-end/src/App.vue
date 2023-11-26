@@ -1,11 +1,11 @@
 <script>
  import PaginationBox from './components/PaginationBox.vue'
- import FacetButton from './components/FacetButton.vue'
+ import FacetBox from './components/FacetBox.vue'
  import EntryBox  from './components/EntryBox.vue'
  import MergeBox from './components/MergeBox.vue'
  import axios from 'axios'
  export default {
-     components: { FacetButton, EntryBox, PaginationBox, MergeBox },
+     components: { FacetBox, EntryBox, PaginationBox, MergeBox },
      data() {
          return {
              flash_success: "",
@@ -136,21 +136,11 @@
                         rounded-l" id="limit-facets" type="number" v-model="limit_facets">
         </div>
         <div class="mt-2" v-for="facetblock in facets" :key="facetblock.name">
-          <h2 class="font-semibold capitalize">{{ facetblock.name }}</h2>
-          <div class="h-48 overflow-y-auto">
-            <template v-for="facet in facetblock.values.filter((el) => el.count > (limit_facets || 0))"
-                      :key="facet.key">
-              <FacetButton
-                :id="facet.id"
-                :term="facet.term"
-                :count="facet.count"
-                :active="facet.active"
-                :name="facetblock.name"
-                :merge_type="facetblock.name == 'creator' ? 'author' : ''"
-                @toggle-filter="toggleFilter"
-              />
-            </template>
-          </div>
+          <FacetBox
+              :values="facetblock.values"
+              :name="facetblock.name"
+              @toggle-app-filter="toggleFilter"
+          ></FacetBox>
         </div>
       </div>
       <div>

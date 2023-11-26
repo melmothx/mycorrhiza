@@ -95,7 +95,10 @@
              const params = vm.merge_list.slice();
              params.unshift(vm.canonical);
              vm.working = true;
-             axios.post('/search/api/merge/' + vm.merge_type, params)
+             axios.post('/search/api/merge/' + vm.merge_type, params, {
+                 "xsrfCookieName": "csrftoken",
+                 "xsrfHeaderName": "X-CSRFToken",
+             })
                   .then(function(res) {
                       console.log(res.data)
                       if (res.data && res.data.success) {

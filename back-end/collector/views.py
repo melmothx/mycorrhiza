@@ -21,7 +21,6 @@ def api(request):
     res['is_authenticated'] = request.user.is_authenticated
     return JsonResponse(res)
 
-@csrf_exempt
 @login_required
 def api_merge(request, target):
     logger.debug(target)
