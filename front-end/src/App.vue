@@ -98,8 +98,6 @@
         All entries ({{ total_entries }})
       </template>
     </h1>
-  </form>
-  <div class="m-1 md:m-5">
     <div v-if="flash_success" class="bg-green-100 border-green-600 text-green-800 border rounded p-2 flex justify-center cursor-pointer"
          @click="clear_flash_success">
       {{ flash_success }}
@@ -126,6 +124,8 @@
                 type="submit">Search</button>
       </div>
     </div>
+  </form>
+  <div class="m-1 md:m-5">
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
         <div class="sticky top-5">
