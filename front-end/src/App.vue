@@ -136,7 +136,14 @@
                 @toggle-app-filter="toggleFilter"
             >Authors</FacetBox>
           </div>
-          <div v-if="facets.creator" class="mb-3">
+          <div v-if="facets.language" class="mb-3">
+            <FacetBox
+                :values="facets.language.values"
+                :name="facets.language.name"
+                @toggle-app-filter="toggleFilter"
+            >Language</FacetBox>
+          </div>
+          <div v-if="facets.site" class="mb-3">
             <FacetBox
                 :values="facets.site.values"
                 :name="facets.site.name"
