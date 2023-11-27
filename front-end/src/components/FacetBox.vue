@@ -7,6 +7,7 @@
       data() {
           return {
               limit_facets: null,
+              sort_method: "count",
           }
       },
       methods: {
@@ -15,6 +16,21 @@
               this.$emit('toggleAppFilter', this.name, id, checked);
           },
       },
+      computed: {
+          facet_list() {
+              let sort = this.sort_method || "count";
+              return this.values
+                         .filter((el) => el.count > (this.limit_facets || 0))
+                         .sort((a, b) => {
+                             if (sort === "term") {
+                                 return a.term.localeCompare(b.term);
+                             }
+                             else {
+                                 return b.count - a.count;
+                             }
+                         });
+          },
+      }
   }
 </script>
 <template>
@@ -23,10 +39,23 @@
       <h2 class="font-semibold flex-grow capitalize py-2">
         <slot>{{ name }}</slot>
       </h2>
+      <div class="text-sm px-2 bg-white rounded-l border-gray-300 border">
+        <div class="my-1">
+          <label>
+            <input class="text-pink-500 focus:ring-pink-500" type="radio" value="count" v-model="sort_method" >          Count
+          </label>
+        </div>
+        <div class="my-1">
+          <label>
+            <input class="text-pink-500 focus:ring-pink-500" type="radio" value="term" v-model="sort_method" >
+            Term
+          </label>
+        </div>
+      </div>
       <input type="number" v-model="limit_facets"
              size="4" min="0" step="1"
              title="Minimum number of results"
-             class="rounded
+             class="rounded-r
                    border
                    text-sm
                    border-gray-300
@@ -37,8 +66,7 @@
                    px-1 py-0 m-0" />
     </div>
     <div class="h-48 overflow-y-auto p-2">
-      <template v-for="facet in values.filter((el) => el.count > (limit_facets || 0))"
-                :key="facet.key">
+      <template v-for="facet in facet_list" :key="facet.key">
         <FacetButton
             :id="facet.id"
             :term="facet.term"
