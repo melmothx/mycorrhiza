@@ -129,13 +129,6 @@
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
         <div class="sticky top-5">
-          <div v-if="facets.creator" class="mb-3">
-            <FacetBox
-                :values="facets.creator.values"
-                :name="facets.creator.name"
-                @toggle-app-filter="toggleFilter"
-            >Authors</FacetBox>
-          </div>
           <div v-if="facets.language" class="mb-3">
             <FacetBox
                 :values="facets.language.values"
@@ -149,6 +142,13 @@
                 :name="facets.site.name"
                 @toggle-app-filter="toggleFilter"
             >Sites</FacetBox>
+          </div>
+          <div v-if="facets.creator" class="mb-3">
+            <FacetBox
+                :values="facets.creator.values"
+                :name="facets.creator.name"
+                @toggle-app-filter="toggleFilter"
+            >Authors</FacetBox>
           </div>
         </div>
       </div>
