@@ -9,16 +9,22 @@ from django.urls import reverse
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent
+from .models import Entry, Agent, Site
 from amwmeta.xapian import MycorrhizaIndexer
 
 logger = logging.getLogger(__name__)
 
 def api(request):
-    res = search(request.GET)
+    public_only = True
+    if request.user.is_authenticated:
+        public_only = False
+
+    active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
+
+    res = search(request.GET, public_only=public_only, active_sites=active_sites)
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
-    res['is_authenticated'] = request.user.is_authenticated
+    res['is_authenticated'] = not public_only
     return JsonResponse(res)
 
 @login_required

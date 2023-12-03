@@ -29,6 +29,8 @@ class Site(models.Model):
                                            choices=OAI_PMH_METADATA_FORMATS,
                                            default=OAI_DC)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
+    public = models.BooleanField(default=True, null=False)
+    active = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return self.title
@@ -273,15 +275,20 @@ class Entry(models.Model):
             });
 
         xapian_data_sources = []
+        record_is_public = False
         for topr in data_source_records:
+            site = topr.site
             dsd = {
                 "identifier": topr.oai_pmh_identifier,
                 "uri": topr.uri,
                 "uri_label": topr.uri_label,
                 "content_type": topr.content_type,
                 "shelf_location_code": topr.shelf_location_code,
-                "site_name": topr.site.title,
+                "public": site.public,
+                "site_name": site.title,
             }
+            if site.active and site.public:
+                record_is_public = True
             xapian_data_sources.append(dsd)
 
         entry_sites = {}
@@ -304,6 +311,7 @@ class Entry(models.Model):
             "description": [ { "id": "d" + str(self.id), "value": s } for s in [ self.description ] if s ],
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
+            "public": record_is_public,
         }
         return xapian_record
 

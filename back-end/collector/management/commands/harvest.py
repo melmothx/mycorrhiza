@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     logger.debug(str(counter) + " records done")
             return
 
-        rs = Site.objects
+        rs = Site.objects.filter(active=True)
         if options['site']:
             rs = rs.filter(url__contains=options['site'])
 
