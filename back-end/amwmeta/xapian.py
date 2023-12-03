@@ -23,8 +23,10 @@ FIELD_MAPPING = {
         'language': (5, 'L',  True),
         'site':     (6, 'H',  True),
 }
+# public prefix is 'P'
 
-def search(query_params):
+
+def search(query_params, public_only=True, active_sites={}):
     db = xapian.Database(XAPIAN_DB)
     querystring = query_params.get("query")
 
@@ -75,6 +77,9 @@ def search(query_params):
                 filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
     logger.info(filter_queries)
+    if public_only:
+        filter_queries.append(xapian.Query('P1'))
+
     if len(filter_queries):
         query = xapian.Query(xapian.Query.OP_FILTER, query,
                              xapian.Query(xapian.Query.OP_AND, filter_queries))
@@ -113,6 +118,8 @@ def search(query_params):
                     rec[field] = values
 
         # logger.info(rec)
+        if public_only:
+            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
         matches.append(rec)
 
     for spy_name in spies:
@@ -144,10 +151,14 @@ def search(query_params):
             }
 
     context['matches'] = matches
+    if public_only:
+        facets['site']['values'] = [ v for v in facets['site']['values'] if active_sites.get(v['id'], False) ]
+
     context['facets'] = facets
     context['filters'] = active_facets
     context['pager'] = pager
     context['querystring'] = querystring
+
     return context
 
 class MycorrhizaIndexer:
@@ -169,6 +180,11 @@ class MycorrhizaIndexer:
         identifier = record['entry_id']
         doc = xapian.Document()
         self.termgenerator.set_document(doc)
+
+        if record['public']:
+            doc.add_boolean_term('P1')
+        else:
+            doc.add_boolean_term('P0')
 
         for field in FIELD_MAPPING:
             values = record.get(field)
