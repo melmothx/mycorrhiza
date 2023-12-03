@@ -151,7 +151,7 @@ def search(query_params, public_only=True, active_sites={}):
             }
 
     context['matches'] = matches
-    if public_only:
+    if public_only and facets.get('site', False):
         facets['site']['values'] = [ v for v in facets['site']['values'] if active_sites.get(v['id'], False) ]
 
     context['facets'] = facets
