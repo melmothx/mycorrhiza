@@ -9,6 +9,7 @@ import logging
 from amwmeta.utils import DataPage
 from sickle.models import Record
 import re
+from unidecode import unidecode
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,14 @@ FIELD_MAPPING = {
 }
 # public prefix is 'P'
 
+SORTABLE_FIELDS = {
+    "date": (7, 'number'),
+    "title": (8, 'string'),
+}
+SORT_DIRECTIONS = {
+    "asc": False,
+    "desc": True,
+}
 
 def search(query_params, public_only=True, active_sites={}):
     db = xapian.Database(XAPIAN_DB)
@@ -86,6 +95,17 @@ def search(query_params, public_only=True, active_sites={}):
 
     enquire = xapian.Enquire(db)
     enquire.set_query(query)
+
+    sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
+    sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
+    # search without sort specified
+    if querystring and not query_params.get('sort_by'):
+        logger.info("Sorting by relevance")
+        enquire.set_sort_by_relevance_then_value(sort_by, sort_dir)
+    else:
+        logger.info("Sorting by value")
+        enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
+
     matches = []
     facets = {}
     for field in FIELD_MAPPING:
@@ -200,6 +220,16 @@ class MycorrhizaIndexer:
                         value_list.append(v)
 
                 doc.add_value(slot, json.dumps(value_list))
+
+        for field in SORTABLE_FIELDS:
+            slot, sort_type = SORTABLE_FIELDS[field]
+            sort_value = record.get(field)
+            if sort_value is not None and len(sort_value) > 0:
+                # print(sort_value)
+                if sort_type == 'number':
+                    doc.add_value(slot, xapian.sortable_serialise(sort_value[0]['value']))
+                elif sort_type == 'string':
+                    doc.add_value(slot, unidecode(' '.join([ v['value'] for v in sort_value ])).lower())
 
         # general search
         for field in ['title', 'creator', 'subject', 'description']:

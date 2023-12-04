@@ -13,6 +13,11 @@
          subtitle() {
              return this.record.title[1]['value'];
          },
+         date() {
+             if (this.record.date) {
+                 return this.record.date[0]['value'];
+             }
+         },
      },
      methods: {
          drag_element(e, merge_type, id, label) {
@@ -45,7 +50,11 @@
       <div class="drag-el drag-title cursor-grab active:cursor-grabbing p-2"
            draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)"
            @click="toggle_show_details">
-        <h2 class="font-semibold">{{ title }}</h2>
+        <h2 class="font-semibold">{{ title }}
+          <small v-if="date">
+            ({{ date }})
+          </small>
+        </h2>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
       </div>
       <div v-if="show_details" class="p-2">

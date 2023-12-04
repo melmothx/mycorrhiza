@@ -21,6 +21,8 @@
              merge_entry_records: [],
              merge_author_records: [],
              is_authenticated: false,
+             sort_by: "",
+             sort_direction: "desc",
          }
      },
      methods: {
@@ -42,6 +44,8 @@
              let params = new URLSearchParams;
              params.append('query', vm.query);
              params.append('page_number', vm.current_page);
+             params.append('sort_by', vm.sort_by);
+             params.append('sort_direction', vm.sort_direction);
              let filters = this.filters;
              for (let i = 0; i < filters.length; i++) {
                  params.append('filter_' +  filters[i].name, filters[i].term);
@@ -118,6 +122,30 @@
                       px-2
                       rounded-l flex-grow"
                type="text" placeholder="Search" v-model="query"/>
+        <select v-model="sort_by"
+                @change="getResults()"
+                class="outline
+                         outline-0
+                         border
+                         border-gray-300
+                         focus:border-pink-500
+                         focus:ring-0">
+          <option value="">Sort by Relevance</option>
+          <option value="title">Sort by Title</option>
+          <option value="date">Sort by Date</option>
+        </select>
+        <select v-if="sort_by"
+                v-model="sort_direction"
+                @change="getResults()"
+                class="outline
+                      outline-0
+                      border
+                      border-gray-300
+                      focus:border-pink-500
+                      focus:ring-0">
+          <option value="asc">Asc</option>
+          <option value="desc">Des</option>
+        </select>
         <button class="rounded-r bg-pink-500
                        hover:bg-pink-700 text-white
                        font-semibold mr-1 py-2 px-6 h-11"
@@ -149,6 +177,13 @@
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter"
             >Authors</FacetBox>
+          </div>
+          <div v-if="facets.date" class="mb-3">
+            <FacetBox
+                :values="facets.date.values"
+                :name="facets.date.name"
+                @toggle-app-filter="toggleFilter"
+            >Date</FacetBox>
           </div>
         </div>
       </div>
