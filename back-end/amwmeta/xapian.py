@@ -99,12 +99,11 @@ def search(query_params, public_only=True, active_sites={}):
     sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
     sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
     # search without sort specified
-    if querystring and not query_params.get('sort_by'):
-        logger.info("Sorting by relevance")
-        enquire.set_sort_by_relevance_then_value(sort_by, sort_dir)
-    else:
-        logger.info("Sorting by value")
+    if query_params.get('sort_by'):
+        # logger.info("Sorting by value then relevance: " + str(sort_by) + " " + str(sort_dir))
         enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
+    # otherwise keep the default ordering, decreasing relevance score
+
 
     matches = []
     facets = {}
