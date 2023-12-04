@@ -164,8 +164,6 @@ def search(query_params, public_only=True, active_sites={}):
 class MycorrhizaIndexer:
     def __init__(self):
         self.db = xapian.WritableDatabase(XAPIAN_DB, xapian.DB_CREATE_OR_OPEN)
-        self.termgenerator = xapian.TermGenerator()
-        self.termgenerator.set_stemmer(xapian.Stem("none"))
         self.logs = []
 
     def index_entries(self, entries):
@@ -174,12 +172,15 @@ class MycorrhizaIndexer:
 
     def index_record(self, record):
         is_deleted = True
+        termgenerator = xapian.TermGenerator()
+        termgenerator.set_stemmer(xapian.Stem("none"))
+
         if len(record['data_sources']) > 0:
             is_deleted = False
 
         identifier = record['entry_id']
         doc = xapian.Document()
-        self.termgenerator.set_document(doc)
+        termgenerator.set_document(doc)
 
         if record['public']:
             doc.add_boolean_term('P1')
@@ -195,17 +196,17 @@ class MycorrhizaIndexer:
                     if v:
                         if is_boolean:
                             doc.add_boolean_term(prefix + str(v['id']))
-                        self.termgenerator.index_text(str(v['value']), 1, prefix)
+                        termgenerator.index_text(str(v['value']), 1, prefix)
                         value_list.append(v)
 
                 doc.add_value(slot, json.dumps(value_list))
 
         # general search
-        self.termgenerator.increase_termpos()
         for field in ['title', 'creator', 'subject', 'description']:
+            termgenerator.increase_termpos()
             values = record.get(field)
             for v in values:
-                self.termgenerator.index_text(v['value'])
+                termgenerator.index_text(v['value'])
 
         doc.set_data(json.dumps(record))
         idterm = "Q{}".format(identifier)
