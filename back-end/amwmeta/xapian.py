@@ -229,7 +229,9 @@ class MycorrhizaIndexer:
                 if sort_type == 'number':
                     doc.add_value(slot, xapian.sortable_serialise(sort_value[0]['value']))
                 elif sort_type == 'string':
-                    doc.add_value(slot, unidecode(' '.join([ v['value'] for v in sort_value ])).lower())
+                    stripped = unidecode(' '.join([ v['value'] for v in sort_value ])).lower()
+                    stripped = re.sub(r'^[^a-z0-9]', '', stripped)
+                    doc.add_value(slot, stripped)
 
         # general search
         for field in ['title', 'creator', 'subject', 'description']:
