@@ -16,12 +16,21 @@ logger = logging.getLogger(__name__)
 
 def api(request):
     public_only = True
+    exclusions = []
     if request.user.is_authenticated:
         public_only = False
-
+        exclusions = []
+        for exclusion in request.user.exclusions.all():
+            exclusions.extend(exclusion.as_xapian_queries())
+        logger.debug(exclusions)
     active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
 
-    res = search(request.GET, public_only=public_only, active_sites=active_sites)
+    res = search(
+        request.GET,
+        public_only=public_only,
+        active_sites=active_sites,
+        exclusions=exclusions,
+    )
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
     res['is_authenticated'] = not public_only

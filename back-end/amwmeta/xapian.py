@@ -37,7 +37,7 @@ SORT_DIRECTIONS = {
     "desc": True,
 }
 
-def search(query_params, public_only=True, active_sites={}):
+def search(query_params, public_only=True, active_sites={}, exclusions=[]):
     db = xapian.Database(XAPIAN_DB)
     querystring = query_params.get("query")
 
@@ -94,6 +94,13 @@ def search(query_params, public_only=True, active_sites={}):
     if len(filter_queries):
         query = xapian.Query(xapian.Query.OP_FILTER, query,
                              xapian.Query(xapian.Query.OP_AND, filter_queries))
+
+    # blacklist
+    if exclusions:
+        query = xapian.Query(xapian.Query.OP_AND_NOT,
+                             query,
+                             xapian.Query(xapian.Query.OP_OR,
+                                          [ xapian.Query(q) for q in exclusions ]))
 
     enquire = xapian.Enquire(db)
     enquire.set_query(query)

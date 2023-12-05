@@ -419,10 +419,19 @@ class Harvest(models.Model):
         return self.site.title + ' Harvest ' + self.datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 class Exclusion(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exclusions")
     exclude_site   = models.ForeignKey(Site,  null=True, on_delete=models.SET_NULL)
     exclude_author = models.ForeignKey(Agent, null=True, on_delete=models.SET_NULL)
     exclude_entry  = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    def as_xapian_queries(self):
+        queries = []
+        if self.exclude_site:
+            queries.append('XH{}'.format(self.exclude_site.id))
+        if self.exclude_author:
+            queries.append('XA{}'.format(self.exclude_author.id))
+        if self.exclude_entry:
+            queries.append('Q{}'.format(self.exclude_entry.id))
+        return queries
