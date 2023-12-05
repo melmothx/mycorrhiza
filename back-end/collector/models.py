@@ -31,6 +31,8 @@ class Site(models.Model):
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     public = models.BooleanField(default=True, null=False)
     active = models.BooleanField(default=True, null=False)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -93,14 +95,14 @@ class Site(models.Model):
             # handle the 3 lists
             try:
                 for author in record.pop('authors', []):
-                    obj, created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
+                    obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
                     authors.append(obj)
             except KeyError:
                 pass
 
             try:
                 for subject in record.pop('subjects', []):
-                    obj, created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
+                    obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
                     subjects.append(obj)
             except KeyError:
                 pass
@@ -108,7 +110,7 @@ class Site(models.Model):
             try:
                 for language in record.pop('languages', []):
                     lang = language[0:3]
-                    obj, created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
+                    obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
                     languages.append(obj)
             except KeyError:
                 pass
@@ -195,6 +197,8 @@ class Agent(models.Model):
         on_delete=models.SET_NULL,
         related_name="variant_agents",
     )
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     @classmethod
     def merge_records(cls, canonical, aliases):
@@ -221,11 +225,17 @@ class Agent(models.Model):
 class Subject(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.name
 
 class Language(models.Model):
     code = models.CharField(max_length=4, unique=True, primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.code
 
@@ -246,6 +256,9 @@ class Entry(models.Model):
         on_delete=models.SET_NULL,
         related_name="variant_entries",
     )
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
 
     class Meta:
         verbose_name_plural = "Entries"
@@ -351,6 +364,8 @@ class DataSource(models.Model):
     # if this is the real book, if it exists: phisical description and call number
     material_description = models.TextField(null=True)
     shelf_location_code = models.CharField(max_length=255, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -371,6 +386,9 @@ class NameAlias(models.Model):
     )
     value_name = models.CharField(max_length=255, blank=False)
     value_canonical = models.CharField(max_length=255, blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
