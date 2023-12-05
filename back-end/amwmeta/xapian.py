@@ -202,6 +202,8 @@ class MycorrhizaIndexer:
         doc = xapian.Document()
         termgenerator.set_document(doc)
 
+        doc.add_boolean_term("XH{}".format(record['unique_source']))
+
         if record['public']:
             doc.add_boolean_term('P1')
         else:

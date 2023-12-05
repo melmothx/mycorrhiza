@@ -327,7 +327,11 @@ class Entry(models.Model):
             "public": record_is_public,
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "unique_source": 0,
         }
+        if len(xapian_record['site']) == 1:
+            xapian_record['unique_source'] = xapian_record['site'][0]['id']
+
         return xapian_record
 
     @classmethod

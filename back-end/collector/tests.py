@@ -64,6 +64,8 @@ class SitePrivateTestCase(TestCase):
                 )
     def test_indexing_data(self):
         entry = Entry.objects.first()
+
+        self.assertEqual(entry.indexing_data()['unique_source'], 0)
         self.assertEqual(entry.indexing_data()['public'], True)
 
         Site.objects.filter(public=True, active=True).update(active=False)
@@ -74,4 +76,32 @@ class SitePrivateTestCase(TestCase):
 
         Site.objects.filter(title="public-active").update(public=False)
         self.assertEqual(entry.indexing_data()['public'], False)
+
+        self.assertEqual(entry.indexing_data()['unique_source'], 0)
+
+
+class UniqueSiteTestCase(TestCase):
+    def setUp(self):
+        site = Site.objects.create(
+            title="Test",
+            url="https://name.org",
+            public=True,
+            active=True,
+        )
+        entry = Entry.objects.create(
+            title="Pizza",
+            year_edition="1900",
+            checksum="XX",
+        )
+        datasource = DataSource.objects.create(
+            site=site,
+            oai_pmh_identifier="XX",
+            datetime=datetime.now(timezone.utc),
+            entry=entry,
+            full_data={},
+        )
+    def test_unique_source(self):
+        entry = Entry.objects.first()
+        site = Site.objects.first()
+        self.assertEqual(entry.indexing_data()['unique_source'], site.id)
 
