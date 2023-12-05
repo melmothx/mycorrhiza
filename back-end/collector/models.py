@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from datetime import datetime, timezone
 from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
+from django.contrib.auth.models import User
 import logging
 
 logger = logging.getLogger(__name__)
@@ -416,3 +417,12 @@ class Harvest(models.Model):
     logs = models.TextField()
     def __str__(self):
         return self.site.title + ' Harvest ' + self.datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+class Exclusion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    exclude_site   = models.ForeignKey(Site,  null=True, on_delete=models.SET_NULL)
+    exclude_author = models.ForeignKey(Agent, null=True, on_delete=models.SET_NULL)
+    exclude_entry  = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
