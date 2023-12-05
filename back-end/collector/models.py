@@ -429,9 +429,9 @@ class Exclusion(models.Model):
     def as_xapian_queries(self):
         queries = []
         if self.exclude_site:
-            queries.append('XH{}'.format(self.exclude_site.id))
+            queries.append(('site', self.exclude_site.id))
         if self.exclude_author:
-            queries.append('XA{}'.format(self.exclude_author.id))
+            queries.append(('creator', self.exclude_author.id))
         if self.exclude_entry:
-            queries.append('Q{}'.format(self.exclude_entry.id))
+            queries.append(('entry', self.exclude_entry.id))
         return queries

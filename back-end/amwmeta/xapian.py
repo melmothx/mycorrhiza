@@ -37,6 +37,12 @@ SORT_DIRECTIONS = {
     "desc": True,
 }
 
+EXCLUSION_FIELDS = {
+    'site': 'XH',
+    'creator': 'XA',
+    'entry': 'Q',
+}
+
 def search(query_params, public_only=True, active_sites={}, exclusions=[]):
     db = xapian.Database(XAPIAN_DB)
     querystring = query_params.get("query")
@@ -87,7 +93,7 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
             if len(filters_ors):
                 filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
-    logger.info(filter_queries)
+    # logger.info(filter_queries)
     if public_only:
         filter_queries.append(xapian.Query('P1'))
 
@@ -97,10 +103,10 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
 
     # blacklist
     if exclusions:
+        excluded = [ xapian.Query(EXCLUSION_FIELDS[q[0]] + str(q[1])) for q in exclusions ]
         query = xapian.Query(xapian.Query.OP_AND_NOT,
                              query,
-                             xapian.Query(xapian.Query.OP_OR,
-                                          [ xapian.Query(q) for q in exclusions ]))
+                             xapian.Query(xapian.Query.OP_OR, excluded))
 
     enquire = xapian.Enquire(db)
     enquire.set_query(query)

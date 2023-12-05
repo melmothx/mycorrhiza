@@ -17,13 +17,14 @@ logger = logging.getLogger(__name__)
 def api(request):
     public_only = True
     exclusions = []
+    active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
     if request.user.is_authenticated:
         public_only = False
         exclusions = []
         for exclusion in request.user.exclusions.all():
             exclusions.extend(exclusion.as_xapian_queries())
-        logger.debug(exclusions)
-    active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
+        logger.debug("Exclusions: {}".format(exclusions))
+
 
     res = search(
         request.GET,
