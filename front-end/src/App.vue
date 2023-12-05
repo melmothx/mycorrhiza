@@ -21,7 +21,7 @@
              merge_entry_records: [],
              merge_author_records: [],
              is_authenticated: false,
-             sort_by: "",
+             sort_by: "created",
              sort_direction: "desc",
          }
      },
@@ -133,6 +133,8 @@
           <option value="">Sort by Relevance</option>
           <option value="title">Sort by Title</option>
           <option value="date">Sort by Date</option>
+          <option value="created">Acquisition</option>
+          <option value="last_modified">Update Date</option>
         </select>
         <select v-if="sort_by"
                 v-model="sort_direction"

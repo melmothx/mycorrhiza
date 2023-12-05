@@ -29,6 +29,8 @@ FIELD_MAPPING = {
 SORTABLE_FIELDS = {
     "date": (7, 'number'),
     "title": (8, 'string'),
+    "created": (9, 'timestamp'),
+    "last_modified": (10, 'timestamp'),
 }
 SORT_DIRECTIONS = {
     "asc": False,
@@ -96,11 +98,10 @@ def search(query_params, public_only=True, active_sites={}):
     enquire = xapian.Enquire(db)
     enquire.set_query(query)
 
-    sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
-    sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
-    # search without sort specified
     if query_params.get('sort_by'):
-        # logger.info("Sorting by value then relevance: " + str(sort_by) + " " + str(sort_dir))
+        sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
+        sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
+        logger.info("Sorting by " + str(sort_by) + " " + str(sort_dir))
         enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
     # otherwise keep the default ordering, decreasing relevance score
 
@@ -227,6 +228,9 @@ class MycorrhizaIndexer:
                 # print(sort_value)
                 if sort_type == 'number':
                     doc.add_value(slot, xapian.sortable_serialise(sort_value[0]['value']))
+                elif sort_type == 'timestamp':
+                    # logger.info("Adding " + str(slot) + " " + sort_value)
+                    doc.add_value(slot, sort_value)
                 elif sort_type == 'string':
                     stripped = unidecode(' '.join([ v['value'] for v in sort_value ])).lower()
                     stripped = re.sub(r'^[^a-z0-9]+', '', stripped)

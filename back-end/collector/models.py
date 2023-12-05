@@ -325,6 +325,8 @@ class Entry(models.Model):
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
             "public": record_is_public,
+            "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
         }
         return xapian_record
 
