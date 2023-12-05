@@ -258,7 +258,7 @@ class Entry(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-
+    indexed_data = models.JSONField(null=True)
 
     class Meta:
         verbose_name_plural = "Entries"
@@ -332,6 +332,8 @@ class Entry(models.Model):
         if len(xapian_record['site']) == 1:
             xapian_record['unique_source'] = xapian_record['site'][0]['id']
 
+        self.indexed_data = xapian_record
+        self.save()
         return xapian_record
 
     @classmethod
