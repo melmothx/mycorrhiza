@@ -1,6 +1,9 @@
 <script>
+ import ExclusionButton from './ExclusionButton.vue'
  export default {
-     props: ['record'],
+     components: { ExclusionButton },
+     props: [ 'record', 'can_set_exclusions' ],
+     emits: [ 'refetchResults' ],
      data() {
          return {
              show_details: false,
@@ -40,21 +43,44 @@
   <div class="border p-2 border-gray-200 rounded mt-2 font-serif">
     <div class="p-1">
       <div v-if="record.creator">
-        <div v-for="author in record.creator" :key="author.id">
-          <div class="drag-el cursor-grab active:cursor-grabbing drag-author bg-gray-100 px-3 py-1 rounded"
-               draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
+        <div v-for="author in record.creator" :key="author.id" class="flex">
+          <div class="flex-grow bg-gray-100 px-3 py-1 rounded">
             {{ author.value }}
+          </div>
+          <div>
+            <span class="drag-el cursor-grab active:cursor-grabbing drag-author
+                         border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
+                  draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
+              Merge
+            </span>
+          </div>
+          <div v-if="can_set_exclusions">
+            <ExclusionButton :object_id="author.id"
+                             object_type="author"
+                             @refetch-results="$emit('refetchResults')" />
           </div>
         </div>
       </div>
-      <div class="drag-el drag-title cursor-grab active:cursor-grabbing p-2"
-           draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)"
-           @click="toggle_show_details">
-        <h2 class="font-semibold">{{ title }}
-          <small v-if="date">
-            ({{ date }})
-          </small>
-        </h2>
+      <div>
+        <div class="font-semibold flex">
+          <h2 class="flex-grow cursor-pointer" @click="toggle_show_details">
+            {{ title }}
+            <small v-if="date">
+              ({{ date }})
+            </small>
+          </h2>
+          <div>
+            <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
+              draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
+              Merge
+            </span>
+          </div>
+          <div v-if="can_set_exclusions">
+            <ExclusionButton :object_id="record.entry_id"
+                             object_type="entry"
+                             @refetch-results="$emit('refetchResults')" />
+          </div>
+        </div>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
       </div>
       <div v-if="show_details" class="p-2">

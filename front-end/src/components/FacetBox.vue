@@ -3,7 +3,7 @@
  import ExclusionButton from './ExclusionButton.vue'
   export default {
       components: { FacetButton, ExclusionButton },
-      props: [ 'name', 'values' ],
+      props: [ 'name', 'values', 'can_set_exclusions' ],
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
@@ -60,19 +60,23 @@
     </div>
     <div class="h-48 overflow-y-auto p-2">
       <template v-for="facet in facet_list" :key="facet.key">
-        <FacetButton
-            :id="facet.id"
-            :term="facet.term"
-            :count="facet.count"
-            :active="facet.active"
-            :name="name"
-            :merge_type="name == 'creator' ? 'author' : ''"
-            @toggle-filter="toggleFilter"
-        />
-        <div v-if="name == 'site'">
-          <ExclusionButton :object_id="facet.id"
-                           :object_type="name"
-                           @refetch-results="refetchResults" />
+        <div class="flex">
+          <div class="flex-grow">
+            <FacetButton
+                :id="facet.id"
+                :term="facet.term"
+                :count="facet.count"
+                :active="facet.active"
+                :name="name"
+                :merge_type="name == 'creator' ? 'author' : ''"
+                @toggle-filter="toggleFilter"
+            />
+          </div>
+          <div class="ml-1" v-if="can_set_exclusions && name == 'site'">
+            <ExclusionButton :object_id="facet.id"
+                             :object_type="name"
+                             @refetch-results="refetchResults" />
+          </div>
         </div>
       </template>
     </div>

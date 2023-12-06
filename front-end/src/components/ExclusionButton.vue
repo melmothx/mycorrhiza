@@ -39,5 +39,6 @@
  }
 </script>
 <template>
-  <span class="text-sm" @click="set_exclusion">Trash</span>
+  <span class="text-sm cursor-pointer border-2 rounded-full px-2 bg-red-800 text-white font-semibold"
+        @click="set_exclusion">Trash</span>
 </template>

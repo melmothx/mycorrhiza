@@ -21,6 +21,7 @@
              merge_entry_records: [],
              merge_author_records: [],
              is_authenticated: false,
+             can_set_exclusions: false,
              sort_by: "created",
              sort_direction: "desc",
          }
@@ -60,6 +61,7 @@
                       vm.pager = res.data.pager;
                       vm.total_entries = res.data.total_entries;
                       vm.is_authenticated = res.data.is_authenticated;
+                      vm.can_set_exclusions = res.data.can_set_exclusions;
                       vm.searched_query = vm.query;
                   });
          },
@@ -133,8 +135,7 @@
           <option value="">Sort by Relevance</option>
           <option value="title">Sort by Title</option>
           <option value="date">Sort by Date</option>
-          <option value="created">Acquisition</option>
-          <option value="last_modified">Update Date</option>
+          <option value="created">Sort by Acquisition Date</option>
         </select>
         <select v-if="sort_by"
                 v-model="sort_direction"
@@ -170,9 +171,10 @@
             <FacetBox
                 :values="facets.site.values"
                 :name="facets.site.name"
+                :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
                 @refetch-results="getResults(1)">
-            >Sites</FacetBox>
+            Sites</FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
@@ -194,7 +196,7 @@
         <PaginationBox :pager="pager" @get-page="getPage" />
         <div class="mb-2">
           <template v-for="match in matches" :key="match.entry_id">
-            <EntryBox :record="match" />
+            <EntryBox :record="match" :can_set_exclusions="can_set_exclusions" @refetch-results="getResults(1)" />
           </template>
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
