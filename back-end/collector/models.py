@@ -300,6 +300,7 @@ class Entry(models.Model):
                 "shelf_location_code": topr.shelf_location_code,
                 "public": site.public,
                 "site_name": site.title,
+                "site_id": site.id,
             }
             if site.active and site.public:
                 record_is_public = True

@@ -18,13 +18,14 @@ def api(request):
     public_only = True
     exclusions = []
     active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
+    can_set_exclusions = False
     if request.user.is_authenticated:
         public_only = False
         exclusions = []
         for exclusion in request.user.exclusions.all():
             exclusions.extend(exclusion.as_xapian_queries())
         logger.debug("Exclusions: {}".format(exclusions))
-
+        can_set_exclusions = True
 
     res = search(
         request.GET,
@@ -35,7 +36,48 @@ def api(request):
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
     res['is_authenticated'] = not public_only
+    res['can_set_exclusions'] = can_set_exclusions
     return JsonResponse(res)
+
+@login_required
+def exclusions(request):
+    logger.debug(request.body)
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        user = request.user
+        op = data.get('op')
+        what = data.get('type')
+        object_id = data.get('id')
+        comment = data.get('comment')
+        if op and what and object_id:
+            if op == 'add' and comment:
+                if what in [ 'author', 'entry', 'site' ]:
+                    creation = {
+                        "comment": comment,
+                        "exclude_{}_id".format(what): object_id,
+                        "user": user,
+                    }
+                    logger.debug(creation)
+                    exclusion = user.exclusions.create(**creation)
+                    out['success'] = exclusion.id
+
+            elif op == 'remove':
+                pass
+            elif op == 'list':
+                pass
+            else:
+                out['error'] = "Invalid operation {}".format(op)
+        else:
+            out['error'] = "Missing parameters"
+    logger.debug(out)
+    return JsonResponse(out)
 
 @login_required
 def api_merge(request, target):

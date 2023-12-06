@@ -1,9 +1,10 @@
 <script>
  import FacetButton from './FacetButton.vue'
+ import ExclusionButton from './ExclusionButton.vue'
   export default {
-      components: { FacetButton },
+      components: { FacetButton, ExclusionButton },
       props: [ 'name', 'values' ],
-      emits: [ 'toggleAppFilter' ],
+      emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
               limit_facets: null,
@@ -15,6 +16,10 @@
               console.log(`Relaying ${this.name} ${id} ${checked}`);
               this.$emit('toggleAppFilter', this.name, id, checked);
           },
+          refetchResults() {
+              console.log("Relaying refetch results")
+              this.$emit('refetchResults');
+          }
       },
       computed: {
           facet_list() {
@@ -64,6 +69,11 @@
             :merge_type="name == 'creator' ? 'author' : ''"
             @toggle-filter="toggleFilter"
         />
+        <div v-if="name == 'site'">
+          <ExclusionButton :object_id="facet.id"
+                           :object_type="name"
+                           @refetch-results="refetchResults" />
+        </div>
       </template>
     </div>
   </div>

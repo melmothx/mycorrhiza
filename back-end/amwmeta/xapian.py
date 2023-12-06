@@ -66,6 +66,13 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
         else:
             queryparser.add_prefix(field, FIELD_MAPPING[field][1])
 
+    exsites = {}
+    for exclusion in exclusions:
+        if exclusion[0] == 'site':
+            exsites[exclusion[1]] = True
+    logger.debug("Excludes sites: {}, Active: {}".format(exsites, active_sites))
+
+
     context = {}
     spies = {}
     if querystring:
@@ -151,8 +158,20 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
                     rec[field] = values
 
         # logger.info(rec)
+
+        # if there are excluded sites, also remove them from here.
+        # Sole source are already filtered out.
+
+        # TODO There the case where the other one is private and does
+        # not show up. In that case it will have no link and no
+        # reference. So it's not showing up because it's excluded,
+        # while the other is private, so it's not seen as an unique
+        # source
+
         if public_only:
             rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
+        if exclusions:
+            rec['data_sources'] = [ ds for ds in rec['data_sources'] if not exsites.get(ds['site_id']) ]
         matches.append(rec)
 
     for spy_name in spies:
@@ -184,8 +203,13 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
             }
 
     context['matches'] = matches
+
     if public_only and facets.get('site', False):
-        facets['site']['values'] = [ v for v in facets['site']['values'] if active_sites.get(v['id'], False) ]
+        facets['site']['values'] = [ v for v in facets['site']['values'] if active_sites.get(v['id']) ]
+
+    # if there are excluded sites, remove them as well
+    if exclusions and facets.get('site', False):
+        facets['site']['values'] = [ v for v in facets['site']['values'] if not exsites.get(v['id']) ]
 
     context['facets'] = facets
     context['filters'] = active_facets

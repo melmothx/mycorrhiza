@@ -171,6 +171,7 @@
                 :values="facets.site.values"
                 :name="facets.site.name"
                 @toggle-app-filter="toggleFilter"
+                @refetch-results="getResults(1)">
             >Sites</FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
