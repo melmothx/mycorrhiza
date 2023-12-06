@@ -2,7 +2,7 @@
  import ExclusionButton from './ExclusionButton.vue'
  export default {
      components: { ExclusionButton },
-     props: [ 'record', 'can_set_exclusions' ],
+     props: [ 'record', 'can_set_exclusions', 'can_merge' ],
      emits: [ 'refetchResults' ],
      data() {
          return {
@@ -47,7 +47,7 @@
           <div class="flex-grow bg-gray-100 px-3 py-1 rounded">
             {{ author.value }}
           </div>
-          <div>
+          <div v-if="can_merge">
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
                          border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
                   draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
@@ -69,7 +69,7 @@
               ({{ date }})
             </small>
           </h2>
-          <div>
+          <div v-if="can_merge">
             <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
               draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
               Merge

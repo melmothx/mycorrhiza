@@ -196,7 +196,10 @@
         <PaginationBox :pager="pager" @get-page="getPage" />
         <div class="mb-2">
           <template v-for="match in matches" :key="match.entry_id">
-            <EntryBox :record="match" :can_set_exclusions="can_set_exclusions" @refetch-results="getResults(1)" />
+            <EntryBox :record="match"
+                      :can_set_exclusions="can_set_exclusions"
+                      :can_merge="is_authenticated"
+                      @refetch-results="getResults(1)" />
           </template>
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
