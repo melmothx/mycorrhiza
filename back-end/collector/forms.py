@@ -1,6 +1,14 @@
-from django import forms
-class SpreadsheetForm(forms.Form):
-    error_css_class = "error"
-    required_css_class = "required"
-    comments = forms.CharField(label="Comments", max_length=200)
-    sheet = forms.FileField()
+from django.forms import ModelForm
+from .models import SpreadsheetUpload
+class SpreadsheetForm(ModelForm):
+    class Meta:
+        error_css_class = "error"
+        required_css_class = "required"
+        model = SpreadsheetUpload
+        fields = [
+            "spreadsheet",
+            "comment",
+            "site",
+            "csv_type",
+            "replace_all",
+        ]

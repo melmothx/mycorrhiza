@@ -36,7 +36,7 @@ class Site(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return "{}".format(self.hostname())
 
     def last_harvested_zulu(self):
         dt = self.last_harvested
@@ -440,3 +440,27 @@ class Exclusion(models.Model):
         if self.exclude_entry:
             queries.append(('entry', self.exclude_entry.id))
         return queries
+
+class SpreadsheetUpload(models.Model):
+    CSV_TYPES = [
+        ('calibre', 'Calibre'),
+    ]
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="uploaded_spreadsheets",
+    )
+    spreadsheet = models.FileField(upload_to="spreadsheets/%Y/%m/%d/")
+    comment = models.TextField(blank=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
+    replace_all = models.BooleanField(default=False, null=False)
+    processed = models.DateTimeField(null=True, blank=True)
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    sites = models.ManyToManyField(Site)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)

@@ -130,13 +130,34 @@ def api_merge(request, target):
 
 @login_required
 def upload_spreadsheet(request):
+    user = request.user
+    if user.is_superuser:
+        queryset = Site.objects
+    else:
+        queryset = user.profile.sites
+
+    form = SpreadsheetForm()
     if request.method == "POST":
         form = SpreadsheetForm(request.POST, request.FILES)
-        if form.is_valid():
-            logger.debug("Form is valid")
-            messages.success(request, "Spreadsheet loaded")
-            return HttpResponseRedirect(reverse("spreadsheet"))
-    else:
-        form = SpreadsheetForm()
+
+    form.fields["site"].queryset = queryset
+
+    if request.method == "POST" and form.is_valid():
+        logger.debug("Form is valid")
+        new_sheet = form.save()
+        new_sheet.user = user
+        new_sheet.save()
+        messages.success(request, "Spreadsheet loaded")
+        return HttpResponseRedirect(reverse("process_spreadsheet", args=[new_sheet.id]))
 
     return render(request, "collector/spreadsheet.html", { "form": form })
+
+@login_required
+def process_spreadsheet(request, target):
+    if request.method == "POST" and request.POST and request.POST["process"]:
+        messages.success(request, "Spreadsheet Processed")
+        return HttpResponseRedirect(reverse("spreadsheet"))
+    else:
+        return render(request,
+                      "collector/process_spreadsheet.html",
+                      {"target": target})

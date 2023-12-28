@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block title %}Process Spreadsheet{% endblock %}
+
+{% block content %}
+<form action="{% url 'process_spreadsheet' target %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %} 
+  <button type="submit" name="process" value="1">Process</button>
+</form>
+{% endblock %}
