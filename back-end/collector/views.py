@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import loader
 import json
 from amwmeta.xapian import search
@@ -11,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .models import Entry, Agent, Site
 from amwmeta.xapian import MycorrhizaIndexer
+from .forms import SpreadsheetForm
+from django.contrib import messages
 
 logger = logging.getLogger(__name__)
 
@@ -125,3 +127,16 @@ def api_merge(request, target):
             out['error'] = 'Invalid path'
     logger.debug(out)
     return JsonResponse(out)
+
+@login_required
+def upload_spreadsheet(request):
+    if request.method == "POST":
+        form = SpreadsheetForm(request.POST, request.FILES)
+        if form.is_valid():
+            logger.debug("Form is valid")
+            messages.success(request, "Spreadsheet loaded")
+            return HttpResponseRedirect(reverse("spreadsheet"))
+    else:
+        form = SpreadsheetForm()
+
+    return render(request, "collector/spreadsheet.html", { "form": form })
