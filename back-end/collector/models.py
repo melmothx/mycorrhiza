@@ -169,6 +169,10 @@ class Site(models.Model):
             xapian_records.append(entry.id)
 
         indexer = MycorrhizaIndexer()
+        if force:
+            logger.debug("Removing all related entries in Xapian db")
+            indexer.db.delete_document("XH{}".format(self.id))
+
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:
