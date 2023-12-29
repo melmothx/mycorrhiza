@@ -50,6 +50,16 @@ class Site(models.Model):
     def hostname(self):
         return urlparse(self.url).hostname
 
+    def record_aliases(self):
+        aliases = {
+            "author": {},
+            "subject": {},
+            "language": {},
+        }
+        for al in self.namealias_set.all():
+            aliases[al.field_name][al.value_name] = al.value_canonical
+        return aliases
+
     def harvest(self, force):
         url = self.url
         hostname = urlparse(url).hostname
@@ -70,14 +80,7 @@ class Site(models.Model):
         records = harvest_oai_pmh(url, opts)
         xapian_records = []
         logs = []
-        aliases = {
-            "author": {},
-            "subject": {},
-            "language": {},
-        }
-        for al in self.namealias_set.all():
-            aliases[al.field_name][al.value_name] = al.value_canonical
-
+        aliases = self.record_aliases()
         logger.debug(aliases)
         counter = 0
         for rec in records:
@@ -90,84 +93,9 @@ class Site(models.Model):
             record['identifier'] = rec.header.identifier
             record['full_data'] = full_data
 
-            # logger.debug(record)
-            authors = []
-            subjects = []
-            languages = []
-            # handle the 3 lists
-            try:
-                for author in record.pop('authors', []):
-                    obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
-                    authors.append(obj)
-            except KeyError:
-                pass
-
-            try:
-                for subject in record.pop('subjects', []):
-                    obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
-                    subjects.append(obj)
-            except KeyError:
-                pass
-
-            try:
-                for language in record.pop('languages', []):
-                    lang = language[0:3]
-                    obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
-                    languages.append(obj)
-            except KeyError:
-                pass
-
-            # logger.debug(record)
-            identifier = record.pop('identifier')
-            opr_attributes = [
-                'full_data',
-                'uri',
-                'uri_label',
-                'content_type',
-                'shelf_location_code',
-                'material_description',
-            ]
-            opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
-            opr_attrs['datetime'] = now
-            opr, opr_created = self.datasource_set.update_or_create(
-                oai_pmh_identifier=identifier,
-                defaults=opr_attrs
-            )
-            for f_limit in [ 'title', 'subtitle' ]:
-                try:
-                    if record[f_limit]:
-                        if len(record[f_limit]) > 250:
-                            record[f_limit] = record[f_limit][0:250] + '...'
-                except KeyError:
-                    pass
-
-            # if the OAI-PMH record has already a entry attached from a
-            # previous run, that's it, just update it.
-            entry = opr.entry
-
-            if record.pop('deleted'):
-                opr.delete()
-                if entry:
-                    xapian_records.append(entry.id)
-                continue
-
-            if not entry:
-                # check if there's already a entry with the same checksum.
-                try:
-                    entry = Entry.objects.get(checksum=record['checksum'])
-                except Entry.DoesNotExist:
-                    entry = Entry.objects.create(**record)
-                opr.entry = entry
-                opr.save()
-
-            # update the entry and assign the many to many
-            for attr, value in record.items():
-                setattr(entry, attr, value)
-            entry.subjects.set(subjects)
-            entry.authors.set(authors)
-            entry.languages.set(languages)
-            entry.save()
-            xapian_records.append(entry.id)
+            entry = self.process_harvested_record(record, aliases, now)
+            if entry:
+                xapian_records.append(entry.id)
 
         indexer = MycorrhizaIndexer()
         if force:
@@ -188,6 +116,86 @@ class Site(models.Model):
             self.last_harvested = now
             self.save()
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
+
+    def process_harvested_record(self, record, aliases, now):
+        authors = []
+        subjects = []
+        languages = []
+        # handle the 3 lists
+        try:
+            for author in record.pop('authors', []):
+                obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
+                authors.append(obj)
+        except KeyError:
+            pass
+
+        try:
+            for subject in record.pop('subjects', []):
+                obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
+                subjects.append(obj)
+        except KeyError:
+            pass
+
+        try:
+            for language in record.pop('languages', []):
+                lang = language[0:3]
+                obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
+                languages.append(obj)
+        except KeyError:
+            pass
+
+        # logger.debug(record)
+        identifier = record.pop('identifier')
+        opr_attributes = [
+            'full_data',
+            'uri',
+            'uri_label',
+            'content_type',
+            'shelf_location_code',
+            'material_description',
+        ]
+        opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
+        opr_attrs['datetime'] = now
+        opr, opr_created = self.datasource_set.update_or_create(
+            oai_pmh_identifier=identifier,
+            defaults=opr_attrs
+        )
+        for f_limit in [ 'title', 'subtitle' ]:
+            try:
+                if record[f_limit]:
+                    if len(record[f_limit]) > 250:
+                        record[f_limit] = record[f_limit][0:250] + '...'
+            except KeyError:
+                pass
+
+        # if the OAI-PMH record has already a entry attached from a
+        # previous run, that's it, just update it.
+        entry = opr.entry
+
+        if record.pop('deleted'):
+            opr.delete()
+            if entry:
+                xapian_records.append(entry.id)
+            return
+
+        if not entry:
+            # check if there's already a entry with the same checksum.
+            try:
+                entry = Entry.objects.get(checksum=record['checksum'])
+            except Entry.DoesNotExist:
+                entry = Entry.objects.create(**record)
+            opr.entry = entry
+            opr.save()
+
+        # update the entry and assign the many to many
+        for attr, value in record.items():
+            setattr(entry, attr, value)
+        entry.subjects.set(subjects)
+        entry.authors.set(authors)
+        entry.languages.set(languages)
+        entry.save()
+        return entry
+
 
 
 # these are a level up from the oai pmh records
