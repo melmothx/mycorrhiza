@@ -7,6 +7,7 @@ from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
 import logging
+import csv
 
 logger = logging.getLogger(__name__)
 
@@ -458,6 +459,24 @@ class SpreadsheetUpload(models.Model):
     csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
     replace_all = models.BooleanField(default=False, null=False)
     processed = models.DateTimeField(null=True, blank=True)
+    def validate_csv(self):
+        with open(self.spreadsheet.path, newline='', encoding='utf-8-sig') as csvfile:
+            try:
+                dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            except csv.Error:
+                return None
+            csvfile.seek(0)
+            reader = csv.DictReader(csvfile, dialect=dialect)
+            sample = None
+            for row in reader:
+                sample = row
+                break
+            logger.debug(sample)
+            return sample
+
+    def process_csv(self):
+        self.processed = datetime.now(timezone.utc)
+        self.save()
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")

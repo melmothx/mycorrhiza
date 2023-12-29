@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
 from django.template import loader
 import json
 from amwmeta.xapian import search
@@ -9,10 +9,11 @@ from django.urls import reverse
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site
+from .models import Entry, Agent, Site, SpreadsheetUpload
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
+from http import HTTPStatus
 
 logger = logging.getLogger(__name__)
 
@@ -147,17 +148,30 @@ def upload_spreadsheet(request):
         new_sheet = form.save()
         new_sheet.user = user
         new_sheet.save()
-        messages.success(request, "Spreadsheet loaded")
         return HttpResponseRedirect(reverse("process_spreadsheet", args=[new_sheet.id]))
 
     return render(request, "collector/spreadsheet.html", { "form": form })
 
 @login_required
 def process_spreadsheet(request, target):
-    if request.method == "POST" and request.POST and request.POST["process"]:
-        messages.success(request, "Spreadsheet Processed")
-        return HttpResponseRedirect(reverse("spreadsheet"))
+    sheet = get_object_or_404(SpreadsheetUpload, pk=target)
+    if sheet and sheet.user and sheet.user.id == request.user.id:
+        sample = sheet.validate_csv()
+        if sample:
+            if request.method == "POST" and request.POST and request.POST["process"]:
+                messages.success(request, "Spreadsheet Processed")
+                return HttpResponseRedirect(reverse("spreadsheet"))
+            else:
+                return render(
+                    request,
+                    "collector/process_spreadsheet.html",
+                    {
+                        "target": target,
+                        "sample": sample,
+                    }
+                )
+        else:
+            messages.error(request, "Invalid CSV")
+            return HttpResponseRedirect(reverse("spreadsheet"))
     else:
-        return render(request,
-                      "collector/process_spreadsheet.html",
-                      {"target": target})
+        raise Http404("You did not upload such sheet")
