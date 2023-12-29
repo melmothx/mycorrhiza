@@ -8,7 +8,7 @@ from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
 import logging
 from amwmeta.sheets import parse_sheet, normalize_records
-
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +75,16 @@ class Site(models.Model):
         if self.oai_set:
             opts['set'] = self.oai_set
 
+        xapian_records = []
         if force:
+            # before deleting, store the entry ids so we can reindex
+            # them. Entries without associated datasources will be
+            # removed from the index.
+            xapian_records = [ i.entry_id for i in self.datasource_set.all() ]
             self.datasource_set.all().delete()
 
         records = harvest_oai_pmh(url, opts)
-        xapian_records = []
+
         aliases = self.record_aliases()
         counter = 0
         for rec in records:
@@ -100,10 +105,6 @@ class Site(models.Model):
 
     def index_harvested_records(self, xapian_records, force, now):
         indexer = MycorrhizaIndexer()
-        if force:
-            logger.debug("Removing all related entries in Xapian db")
-            indexer.db.delete_document("H{}".format(self.id))
-
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:
@@ -452,6 +453,11 @@ class Exclusion(models.Model):
             queries.append(('entry', self.exclude_entry.id))
         return queries
 
+def spreadsheet_upload_directory(instance, filename):
+    choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return "spreadsheets/{0}-{1}.csv".format(int(datetime.now().timestamp()),
+                                             "".join(random.choice(choices) for i in range(20)))
+
 class SpreadsheetUpload(models.Model):
     CSV_TYPES = [
         ('calibre', 'Calibre'),
@@ -462,7 +468,7 @@ class SpreadsheetUpload(models.Model):
         on_delete=models.SET_NULL,
         related_name="uploaded_spreadsheets",
     )
-    spreadsheet = models.FileField(upload_to="spreadsheets/%Y/%m/%d/")
+    spreadsheet = models.FileField(upload_to=spreadsheet_upload_directory)
     comment = models.TextField(blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -482,8 +488,11 @@ class SpreadsheetUpload(models.Model):
         aliases = site.record_aliases()
         xapian_records = []
         if self.replace_all:
+            # see above in site.harvest()
+            xapian_records = [ i.entry_id for i in site.datasource_set.all() ]
             site.datasource_set.all().delete()
 
+        logger.debug("Reindexing: {}".format(xapian_records))
         for full in records:
             logger.debug(full)
             record = extract_fields(full, hostname)

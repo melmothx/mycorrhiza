@@ -133,9 +133,9 @@ def api_merge(request, target):
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
-        queryset = Site.objects
+        queryset = Site.objects.filter(active=True).order_by("url")
     else:
-        queryset = user.profile.sites
+        queryset = user.profile.sites.filter(active=True).order_by("url")
 
     form = SpreadsheetForm()
     if request.method == "POST":
