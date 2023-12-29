@@ -7,7 +7,8 @@ from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
 import logging
-import csv
+from amwmeta.sheets import parse_sheet, normalize_records
+
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class Site(models.Model):
 
     def harvest(self, force):
         url = self.url
-        hostname = urlparse(url).hostname
+        hostname = self.hostname()
         now = datetime.now(timezone.utc)
         opts = {
             "metadataPrefix": self.oai_metadata_format,
@@ -79,9 +80,7 @@ class Site(models.Model):
 
         records = harvest_oai_pmh(url, opts)
         xapian_records = []
-        logs = []
         aliases = self.record_aliases()
-        logger.debug(aliases)
         counter = 0
         for rec in records:
             counter += 1
@@ -96,11 +95,14 @@ class Site(models.Model):
             entry = self.process_harvested_record(record, aliases, now)
             if entry:
                 xapian_records.append(entry.id)
+        # and index
+        self.index_harvested_records(xapian_records, force, now)
 
+    def index_harvested_records(self, xapian_records, force, now):
         indexer = MycorrhizaIndexer()
         if force:
             logger.debug("Removing all related entries in Xapian db")
-            indexer.db.delete_document("XH{}".format(self.id))
+            indexer.db.delete_document("H{}".format(self.id))
 
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
@@ -467,23 +469,33 @@ class SpreadsheetUpload(models.Model):
     csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
     replace_all = models.BooleanField(default=False, null=False)
     processed = models.DateTimeField(null=True, blank=True)
+
     def validate_csv(self):
-        with open(self.spreadsheet.path, newline='', encoding='utf-8-sig') as csvfile:
-            try:
-                dialect = csv.Sniffer().sniff(csvfile.read(1024))
-            except csv.Error:
-                return None
-            csvfile.seek(0)
-            reader = csv.DictReader(csvfile, dialect=dialect)
-            sample = None
-            for row in reader:
-                sample = row
-                break
-            logger.debug(sample)
-            return sample
+        return parse_sheet(self.csv_type, self.spreadsheet.path, sample=True)
 
     def process_csv(self):
-        self.processed = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc)
+        records = normalize_records(self.csv_type,
+                                    parse_sheet(self.csv_type, self.spreadsheet.path))
+        site = self.site
+        hostname = site.hostname()
+        aliases = site.record_aliases()
+        xapian_records = []
+        if self.replace_all:
+            site.datasource_set.all().delete()
+
+        for full in records:
+            logger.debug(full)
+            record = extract_fields(full, hostname)
+            if full.get('identifier'):
+                record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])
+            record['full_data'] = full
+            record['deleted'] = False
+            entry = site.process_harvested_record(record, aliases, now)
+            if entry:
+                xapian_records.append(entry.id)
+        site.index_harvested_records(xapian_records, self.replace_all, now)
+        self.processed = now
         self.save()
 
 class Profile(models.Model):

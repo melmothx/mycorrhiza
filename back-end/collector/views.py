@@ -159,6 +159,7 @@ def process_spreadsheet(request, target):
         sample = sheet.validate_csv()
         if sample:
             if request.method == "POST" and request.POST and request.POST["process"]:
+                sheet.process_csv()
                 messages.success(request, "Spreadsheet Processed")
                 return HttpResponseRedirect(reverse("spreadsheet"))
             else:

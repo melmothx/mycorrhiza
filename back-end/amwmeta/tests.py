@@ -1,9 +1,11 @@
 import unittest
 from .harvest import extract_fields
+from .sheets import normalize_records
 
 
 class HarvestTestCase(unittest.TestCase):
     def setUp(self):
+        print("Setting up amwmeta tests")
         pass
     def test_extraction(self):
         rec = extract_fields({
@@ -77,3 +79,36 @@ class HarvestTestCase(unittest.TestCase):
             "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
         }, "pippo.org")
         self.assertEqual(rec4['languages'], [ "enx", "itx" ])
+
+    def test_sheet(self):
+        rec = {
+            'authors': 'Giovanni Nikiforos',
+            'title': 'Fauna del Mediterraneo',
+            'formats': '',
+            'pubdate': '2002-07-15T21:42:54+02:00',
+            'publisher': 'Giunti Editore',
+            'comments': "Una guida completa per conoscere e saper riconoscere le molteplici varietà di forme viventi che animano il Mar Mediterraneo. Un'opera esaustiva che tratta più di 3.500 specie, tutte rappresentate e illustrate a colori, con chiavi di identificazione che rendono semplice e immediata l'identificazione di ciascun animale, chiamato con il proprio nome scientifico quanto con il più comune nome italiano.",
+            'cover': '',
+            'timestamp': '2023-07-09T21:42:47+02:00',
+            'size': '',
+            'isbn': '9788809062979',
+            'identifiers': 'google:_vRFPQAACAAJ,isbn:9788809062979',
+            'languages': 'ita',
+            'library_name': 'Elenco libri cartacei',
+            'author_sort': 'Nikiforos, Giovanni',
+            'title_sort': 'Fauna del Mediterraneo',
+            'series': '',
+            'series_index': '1.0',
+            'tags': 'Animals, Biologia, Marine Life, Nature',
+            'rating': '',
+            'id': '1',
+            'uuid': '65ea26c3-1cbb-4308-8eb2-a0daaa198e15',
+            '#isbn': '9788809062979',
+            '#formats': '',
+        }
+        got = normalize_records('calibre', [rec])[0]
+        # print(got)
+        self.assertEqual(got['language'], ['ita'])
+        oai = extract_fields(got, 'pippo.org')
+        self.assertEqual(oai['languages'][0], 'it')
+        self.assertIn('checksum', oai)
