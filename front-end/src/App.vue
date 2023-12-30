@@ -3,9 +3,10 @@
  import FacetBox from './components/FacetBox.vue'
  import EntryBox  from './components/EntryBox.vue'
  import MergeBox from './components/MergeBox.vue'
+ import NavBar from './components/NavBar.vue'
  import axios from 'axios'
  export default {
-     components: { FacetBox, EntryBox, PaginationBox, MergeBox },
+     components: { FacetBox, EntryBox, PaginationBox, MergeBox, NavBar },
      data() {
          return {
              flash_success: "",
@@ -95,6 +96,7 @@
 </script>
 
 <template>
+  <NavBar @refetch-results="getResults(1)"/>
   <form class="m-1 md:m-5" @submit.prevent="searchText">
     <h1 class="text-3xl text-center font-semibold m-8">
       <template v-if="searched_query">

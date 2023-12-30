@@ -8,6 +8,7 @@ import logging
 from django.urls import reverse
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Entry, Agent, Site, SpreadsheetUpload
 from amwmeta.xapian import MycorrhizaIndexer
@@ -16,6 +17,29 @@ from django.contrib import messages
 from http import HTTPStatus
 
 logger = logging.getLogger(__name__)
+
+def api_login(request):
+    out = { "logged_in": None, "error": None }
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+    user = authenticate(request, username=data.get('username'), password=data.get('password'))
+    if user is not None:
+        login(request, user)
+        out['logged_in'] = user.get_username()
+    else:
+        out['error'] = 'Invalid login'
+    logger.debug(out)
+    return JsonResponse(out)
+
+def api_logout(request):
+    logout(request)
+    return JsonResponse({ "ok": "Logged out" })
+
+def api_user(request):
+    # guaranteed to return the empty string
+    return JsonResponse({ "logged_in": request.user.get_username() })
 
 def api(request):
     public_only = True
