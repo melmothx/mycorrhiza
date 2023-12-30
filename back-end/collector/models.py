@@ -7,6 +7,8 @@ from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
 import logging
+from amwmeta.sheets import parse_sheet, normalize_records
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ class Site(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return "{}".format(self.hostname())
 
     def last_harvested_zulu(self):
         dt = self.last_harvested
@@ -49,9 +51,19 @@ class Site(models.Model):
     def hostname(self):
         return urlparse(self.url).hostname
 
+    def record_aliases(self):
+        aliases = {
+            "author": {},
+            "subject": {},
+            "language": {},
+        }
+        for al in self.namealias_set.all():
+            aliases[al.field_name][al.value_name] = al.value_canonical
+        return aliases
+
     def harvest(self, force):
         url = self.url
-        hostname = urlparse(url).hostname
+        hostname = self.hostname()
         now = datetime.now(timezone.utc)
         opts = {
             "metadataPrefix": self.oai_metadata_format,
@@ -63,21 +75,17 @@ class Site(models.Model):
         if self.oai_set:
             opts['set'] = self.oai_set
 
+        xapian_records = []
         if force:
+            # before deleting, store the entry ids so we can reindex
+            # them. Entries without associated datasources will be
+            # removed from the index.
+            xapian_records = [ i.entry_id for i in self.datasource_set.all() ]
             self.datasource_set.all().delete()
 
         records = harvest_oai_pmh(url, opts)
-        xapian_records = []
-        logs = []
-        aliases = {
-            "author": {},
-            "subject": {},
-            "language": {},
-        }
-        for al in self.namealias_set.all():
-            aliases[al.field_name][al.value_name] = al.value_canonical
 
-        logger.debug(aliases)
+        aliases = self.record_aliases()
         counter = 0
         for rec in records:
             counter += 1
@@ -89,90 +97,14 @@ class Site(models.Model):
             record['identifier'] = rec.header.identifier
             record['full_data'] = full_data
 
-            # logger.debug(record)
-            authors = []
-            subjects = []
-            languages = []
-            # handle the 3 lists
-            try:
-                for author in record.pop('authors', []):
-                    obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
-                    authors.append(obj)
-            except KeyError:
-                pass
+            entry = self.process_harvested_record(record, aliases, now)
+            if entry:
+                xapian_records.append(entry.id)
+        # and index
+        self.index_harvested_records(xapian_records, force, now)
 
-            try:
-                for subject in record.pop('subjects', []):
-                    obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
-                    subjects.append(obj)
-            except KeyError:
-                pass
-
-            try:
-                for language in record.pop('languages', []):
-                    lang = language[0:3]
-                    obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
-                    languages.append(obj)
-            except KeyError:
-                pass
-
-            # logger.debug(record)
-            identifier = record.pop('identifier')
-            opr_attributes = [
-                'full_data',
-                'uri',
-                'uri_label',
-                'content_type',
-                'shelf_location_code',
-                'material_description',
-            ]
-            opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
-            opr_attrs['datetime'] = now
-            opr, opr_created = self.datasource_set.update_or_create(
-                oai_pmh_identifier=identifier,
-                defaults=opr_attrs
-            )
-            for f_limit in [ 'title', 'subtitle' ]:
-                try:
-                    if record[f_limit]:
-                        if len(record[f_limit]) > 250:
-                            record[f_limit] = record[f_limit][0:250] + '...'
-                except KeyError:
-                    pass
-
-            # if the OAI-PMH record has already a entry attached from a
-            # previous run, that's it, just update it.
-            entry = opr.entry
-
-            if record.pop('deleted'):
-                opr.delete()
-                if entry:
-                    xapian_records.append(entry.id)
-                continue
-
-            if not entry:
-                # check if there's already a entry with the same checksum.
-                try:
-                    entry = Entry.objects.get(checksum=record['checksum'])
-                except Entry.DoesNotExist:
-                    entry = Entry.objects.create(**record)
-                opr.entry = entry
-                opr.save()
-
-            # update the entry and assign the many to many
-            for attr, value in record.items():
-                setattr(entry, attr, value)
-            entry.subjects.set(subjects)
-            entry.authors.set(authors)
-            entry.languages.set(languages)
-            entry.save()
-            xapian_records.append(entry.id)
-
+    def index_harvested_records(self, xapian_records, force, now):
         indexer = MycorrhizaIndexer()
-        if force:
-            logger.debug("Removing all related entries in Xapian db")
-            indexer.db.delete_document("XH{}".format(self.id))
-
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:
@@ -187,6 +119,86 @@ class Site(models.Model):
             self.last_harvested = now
             self.save()
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
+
+    def process_harvested_record(self, record, aliases, now):
+        authors = []
+        subjects = []
+        languages = []
+        # handle the 3 lists
+        try:
+            for author in record.pop('authors', []):
+                obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
+                authors.append(obj)
+        except KeyError:
+            pass
+
+        try:
+            for subject in record.pop('subjects', []):
+                obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
+                subjects.append(obj)
+        except KeyError:
+            pass
+
+        try:
+            for language in record.pop('languages', []):
+                lang = language[0:3]
+                obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
+                languages.append(obj)
+        except KeyError:
+            pass
+
+        # logger.debug(record)
+        identifier = record.pop('identifier')
+        opr_attributes = [
+            'full_data',
+            'uri',
+            'uri_label',
+            'content_type',
+            'shelf_location_code',
+            'material_description',
+        ]
+        opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
+        opr_attrs['datetime'] = now
+        opr, opr_created = self.datasource_set.update_or_create(
+            oai_pmh_identifier=identifier,
+            defaults=opr_attrs
+        )
+        for f_limit in [ 'title', 'subtitle' ]:
+            try:
+                if record[f_limit]:
+                    if len(record[f_limit]) > 250:
+                        record[f_limit] = record[f_limit][0:250] + '...'
+            except KeyError:
+                pass
+
+        # if the OAI-PMH record has already a entry attached from a
+        # previous run, that's it, just update it.
+        entry = opr.entry
+
+        if record.pop('deleted'):
+            opr.delete()
+            if entry:
+                xapian_records.append(entry.id)
+            return
+
+        if not entry:
+            # check if there's already a entry with the same checksum.
+            try:
+                entry = Entry.objects.get(checksum=record['checksum'])
+            except Entry.DoesNotExist:
+                entry = Entry.objects.create(**record)
+            opr.entry = entry
+            opr.save()
+
+        # update the entry and assign the many to many
+        for attr, value in record.items():
+            setattr(entry, attr, value)
+        entry.subjects.set(subjects)
+        entry.authors.set(authors)
+        entry.languages.set(languages)
+        entry.save()
+        return entry
+
 
 
 # these are a level up from the oai pmh records
@@ -440,3 +452,63 @@ class Exclusion(models.Model):
         if self.exclude_entry:
             queries.append(('entry', self.exclude_entry.id))
         return queries
+
+def spreadsheet_upload_directory(instance, filename):
+    choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return "spreadsheets/{0}-{1}.csv".format(int(datetime.now().timestamp()),
+                                             "".join(random.choice(choices) for i in range(20)))
+
+class SpreadsheetUpload(models.Model):
+    CSV_TYPES = [
+        ('calibre', 'Calibre'),
+    ]
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="uploaded_spreadsheets",
+    )
+    spreadsheet = models.FileField(upload_to=spreadsheet_upload_directory)
+    comment = models.TextField(blank=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
+    replace_all = models.BooleanField(default=False, null=False)
+    processed = models.DateTimeField(null=True, blank=True)
+
+    def validate_csv(self):
+        return parse_sheet(self.csv_type, self.spreadsheet.path, sample=True)
+
+    def process_csv(self):
+        now = datetime.now(timezone.utc)
+        records = normalize_records(self.csv_type,
+                                    parse_sheet(self.csv_type, self.spreadsheet.path))
+        site = self.site
+        hostname = site.hostname()
+        aliases = site.record_aliases()
+        xapian_records = []
+        if self.replace_all:
+            # see above in site.harvest()
+            xapian_records = [ i.entry_id for i in site.datasource_set.all() ]
+            site.datasource_set.all().delete()
+
+        logger.debug("Reindexing: {}".format(xapian_records))
+        for full in records:
+            logger.debug(full)
+            record = extract_fields(full, hostname)
+            if full.get('identifier'):
+                record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])
+            record['full_data'] = full
+            record['deleted'] = False
+            entry = site.process_harvested_record(record, aliases, now)
+            if entry:
+                xapian_records.append(entry.id)
+        site.index_harvested_records(xapian_records, self.replace_all, now)
+        self.processed = now
+        self.save()
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    sites = models.ManyToManyField(Site)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)

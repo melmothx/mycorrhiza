@@ -20,6 +20,9 @@
              if (this.record.date) {
                  return this.record.date[0]['value'];
              }
+             else {
+                 return "";
+             }
          },
      },
      methods: {
