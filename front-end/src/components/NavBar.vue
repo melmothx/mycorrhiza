@@ -24,7 +24,8 @@
                   });
          },
          login() {
-             const vm = this
+             const vm = this;
+             vm.message = "";
              axios.post('/search/api/auth/login', {
                  "username": this.username,
                  "password": this.password,
@@ -61,7 +62,7 @@
     <div class="flex-grow"></div>
     <div v-if="authenticated">
       <span class="px-3">Hello, {{ authenticated }}!</span>
-      <button class="rounded bg-pink-500 hover:bg-pink-700 text-white px-2"
+      <button class="rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2"
           type="button" @click="logout">Logout</button>
     </div>
     <div v-else>
@@ -70,11 +71,11 @@
                type="text" v-model="username" required>
         <input class="outline outline-0 border border-gray-300 focus:border-pink-500 focus:ring-0 px-2 h-6"
                type="password" v-model="password" required>
-        <button class="rounded-r bg-pink-500 hover:bg-pink-700 text-white h-6 px-2"
+        <button class="rounded-r bg-pink-500 hover:bg-pink-700 text-white font-semibold h-6 px-2"
                 type="submit">Login</button>
       </form>
     </div>
-    <div class="" v-if="message">
+    <div class="px-2 text-red-700 font-bold" v-if="message">
       {{ message }}
     </div>
   </div>
