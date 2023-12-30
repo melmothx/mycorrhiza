@@ -177,9 +177,7 @@ class Site(models.Model):
 
         if record.pop('deleted'):
             opr.delete()
-            if entry:
-                xapian_records.append(entry.id)
-            return
+            return entry
 
         if not entry:
             # check if there's already a entry with the same checksum.
