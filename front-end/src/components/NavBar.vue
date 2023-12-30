@@ -44,16 +44,16 @@
              });
          },
          logout() {
-             const vm = this
+             const vm = this;
              axios.get('/search/api/auth/logout')
                   .then(function(res) {
                       vm.$emit('refetchResults');
-                      vm.check()
+                      vm.check();
                   });
          },
      },
      mounted() {
-         this.check()
+         this.check();
      },
  }
 </script>
