@@ -225,6 +225,7 @@ class MycorrhizaIndexer:
 
     def index_entries(self, entries):
         for e in entries:
+            logger.debug("Xapian indexing {}".format(e.id))
             self.index_record(e.indexing_data())
 
     def index_record(self, record):

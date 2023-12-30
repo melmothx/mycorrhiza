@@ -107,6 +107,31 @@ def exclusions(request):
     return JsonResponse(out)
 
 @login_required
+def api_set_translations(request):
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        # reindex all
+        reindex = [  x['id'] for x in data ]
+        original = Entry.objects.get(pk=data.pop(0)['id'])
+        original.original_entry = None
+        original.save()
+        translations = [ x['id'] for x in data ]
+        Entry.objects.filter(id__in=[ x['id'] for x in data ]).update(original_entry=original)
+        indexer = MycorrhizaIndexer()
+        indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
+        out['success'] = "Translations set!"
+
+    logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
 def api_merge(request, target):
     logger.debug(target)
     out = {}

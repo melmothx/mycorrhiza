@@ -216,9 +216,14 @@
               Merge authors here
             </MergeBox>
           </div>
-          <div id="title-cards">
+          <div id="title-cards" class="mb-2">
             <MergeBox merge_type="entry" @refetch-results="getResults()">
               Merge entries here
+            </MergeBox>
+          </div>
+          <div id="translation-cards" class="mb-2">
+            <MergeBox merge_type="entry" api_call="set-translations" @refetch-results="getResults()">
+              Set translations here
             </MergeBox>
           </div>
         </div>

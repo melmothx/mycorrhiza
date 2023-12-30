@@ -275,6 +275,13 @@ class Entry(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     indexed_data = models.JSONField(null=True)
 
+    original_entry = models.ForeignKey(
+        'self',
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="translations",
+    )
+
     class Meta:
         verbose_name_plural = "Entries"
 
@@ -357,7 +364,6 @@ class Entry(models.Model):
         canonical.canonical_entry = None
         canonical.save()
         reindex = aliases[:]
-        reindex.append(canonical)
         for aliased in aliases:
             aliased.canonical_entry = canonical
             aliased.save()
@@ -366,6 +372,10 @@ class Entry(models.Model):
                 ve.canonical_entry = canonical
                 ve.save()
                 reindex.append(ve)
+        logger.debug(reindex)
+        # update the translations
+        Entry.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
+        reindex.append(canonical)
         return reindex
 
 

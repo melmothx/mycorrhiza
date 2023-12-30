@@ -4,6 +4,7 @@
      props: [
          'merge_type',
          'remove_merged_filter',
+         'api_call',
      ],
      emits: [
          'refetchResults',
@@ -95,7 +96,8 @@
              const params = vm.merge_list.slice();
              params.unshift(vm.canonical);
              vm.working = true;
-             axios.post('/search/api/merge/' + vm.merge_type, params, {
+             const api_call = vm.api_call || ('merge/' + vm.merge_type);
+             axios.post('/search/api/' + api_call, params, {
                  "xsrfCookieName": "csrftoken",
                  "xsrfHeaderName": "X-CSRFToken",
              })
