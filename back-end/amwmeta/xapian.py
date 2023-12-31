@@ -43,7 +43,7 @@ EXCLUSION_FIELDS = {
     'entry': 'Q',
 }
 
-def search(query_params, public_only=True, active_sites={}, exclusions=[]):
+def search(query_params, active_sites=[], exclusions=[]):
     db = xapian.Database(XAPIAN_DB)
     querystring = query_params.get("query")
 
@@ -101,7 +101,10 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
                 filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
     # logger.info(filter_queries)
-    if public_only:
+    if active_sites:
+        filter_queries.append(xapian.Query(xapian.Query.OP_OR, [ xapian.Query('H{}'.format(i)) for i in active_sites ]))
+    else:
+        # this shouldn't happen
         filter_queries.append(xapian.Query('P1'))
 
     if len(filter_queries):
@@ -168,7 +171,9 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
         # while the other is private, so it's not seen as an unique
         # source
 
-        if public_only:
+        if active_sites:
+            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['site_id'] in active_sites ]
+        else:
             rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
         if exclusions:
             rec['data_sources'] = [ ds for ds in rec['data_sources'] if not exsites.get(ds['site_id']) ]
@@ -204,8 +209,8 @@ def search(query_params, public_only=True, active_sites={}, exclusions=[]):
 
     context['matches'] = matches
 
-    if public_only and facets.get('site', False):
-        facets['site']['values'] = [ v for v in facets['site']['values'] if active_sites.get(v['id']) ]
+    if facets.get('site', False):
+        facets['site']['values'] = [ v for v in facets['site']['values'] if v['id'] in active_sites ]
 
     # if there are excluded sites, remove them as well
     if exclusions and facets.get('site', False):

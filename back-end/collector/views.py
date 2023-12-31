@@ -43,20 +43,28 @@ def api_user(request):
 
 def api(request):
     public_only = True
+
+    user = request.user
+    active_sites = [ site.id for site in Site.objects.filter(active=True, public=True).all() ]
+    if user.is_authenticated and user.is_superuser:
+        # exclude only the inactive
+        active_sites = [ site.id for site in Site.objects.filter(active=True).all() ]
+    elif user.is_authenticated and user.profile:
+        # add the private one from the profile
+        active_sites.extend([ site.id for site in user.profile.sites.filter(active=True, public=False).all() ])
+    logger.debug("User sites: {}".format(active_sites))
+
     exclusions = []
-    active_sites = { site.id: site.public and site.active for site in Site.objects.all() }
     can_set_exclusions = False
-    if request.user.is_authenticated:
-        public_only = False
+    if user.is_authenticated:
         exclusions = []
-        for exclusion in request.user.exclusions.all():
+        for exclusion in user.exclusions.all():
             exclusions.extend(exclusion.as_xapian_queries())
         logger.debug("Exclusions: {}".format(exclusions))
         can_set_exclusions = True
 
     res = search(
         request.GET,
-        public_only=public_only,
         active_sites=active_sites,
         exclusions=exclusions,
     )
