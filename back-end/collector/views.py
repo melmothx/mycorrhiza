@@ -70,7 +70,7 @@ def api(request):
     )
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
-    res['is_authenticated'] = not public_only
+    res['is_authenticated'] = user.is_authenticated
     res['can_set_exclusions'] = can_set_exclusions
     return JsonResponse(res)
 
