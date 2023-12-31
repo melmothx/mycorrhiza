@@ -74,6 +74,16 @@ def api(request):
     res['can_set_exclusions'] = can_set_exclusions
     return JsonResponse(res)
 
+def get_entry(request, entry_id):
+    entry = Entry.objects.get(pk=entry_id)
+    # TODO: check permission.
+    record = entry.indexed_data
+    titles = record['title']
+    record['title'] = titles[0]['value']
+    record['subtitle'] = titles[1]['value']
+    record['authors'] = record.pop('creator')
+    return JsonResponse(record)
+
 @login_required
 def exclusions(request):
     logger.debug(request.body)

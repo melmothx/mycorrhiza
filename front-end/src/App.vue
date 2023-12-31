@@ -2,8 +2,14 @@
  import { ref } from 'vue'
  import NavBar from './components/NavBar.vue'
  import SearchPage from './components/SearchPage.vue'
+ import EntryPage from './components/EntryPage.vue'
  export default {
-     components: { NavBar, SearchPage },
+     components: { NavBar, SearchPage, EntryPage },
+     data() {
+         return {
+             entry_id: 0,
+         }
+     },
      setup() {
          const search_page = ref(null)
          return {
@@ -14,12 +20,22 @@
          refetch_results() {
              this.search_page.getResults(1);
          },
+         set_entry_id(id) {
+             this.entry_id = 0;
+             console.log("Setting entry:" + id);
+             this.entry_id = id;
+         }
      },
  }
 </script>
 
 <template>
   <NavBar @refetch-results="refetch_results" />
-  <SearchPage ref="search_page" />
+  <div v-if="entry_id">
+    <EntryPage :entry_id="entry_id" @close="set_entry_id(0)" />
+  </div>
+  <div>
+    <SearchPage ref="search_page" @set-entry-id="set_entry_id" />
+  </div>
 </template>
 
