@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 import logging
 from amwmeta.sheets import parse_sheet, normalize_records
 import random
+import requests
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,7 @@ class Site(models.Model):
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     public = models.BooleanField(default=True, null=False)
     active = models.BooleanField(default=True, null=False)
+    amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -61,7 +64,20 @@ class Site(models.Model):
             aliases[al.field_name][al.value_name] = al.value_canonical
         return aliases
 
+    def update_amusewiki_formats(self):
+        if self.site_type == 'amusewiki':
+            base_uri = urlparse(self.url)
+            endpoint = "{0}://{1}/api/format-definitions".format(base_uri.scheme,
+                                                                 base_uri.hostname)
+            r = requests.get(endpoint)
+            if r.status_code == 200:
+                self.amusewiki_formats = r.json()
+                self.save()
+            else:
+                logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
+
     def harvest(self, force):
+        self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
         now = datetime.now(timezone.utc)
@@ -288,6 +304,33 @@ class Entry(models.Model):
     def __str__(self):
         return self.title
 
+    def display_dict(self):
+        out = {}
+        for f in [ 'id', 'title', 'subtitle', 'description',
+                   'year_edition', 'year_first_edition' ]:
+            out[f] = getattr(self, f)
+        return out
+
+    def display_data(self, site_ids=[]):
+        indexed = self.indexed_data
+        record = self.display_dict()
+        record['authors'] = indexed.get('creator')
+        data_sources = []
+        for ds in indexed.get('data_sources'):
+            # only the sites explicitely set in the argument
+            if ds['site_id'] in site_ids:
+                if ds['site_type'] == 'amusewiki':
+                    ds['downloads'] = Site.objects.get(pk=ds['site_id']).amusewiki_formats
+                data_sources.append(ds)
+        record['data_sources'] = data_sources
+
+        original = self.original_entry
+        if original:
+            record['original_entry'] = original.display_dict()
+        record['translations'] = [ tr.display_dict() for tr in self.translations.all() ]
+
+        return record
+
     def indexing_data(self):
         # we index the entries
         data_source_records = []
@@ -314,6 +357,7 @@ class Entry(models.Model):
         for topr in data_source_records:
             site = topr.site
             dsd = {
+                "data_source_id": topr.id,
                 "identifier": topr.oai_pmh_identifier,
                 "uri": topr.uri,
                 "uri_label": topr.uri_label,
@@ -322,6 +366,7 @@ class Entry(models.Model):
                 "public": site.public,
                 "site_name": site.title,
                 "site_id": site.id,
+                "site_type": site.site_type,
             }
             if site.active and site.public:
                 record_is_public = True
@@ -407,6 +452,32 @@ class DataSource(models.Model):
         ]
     def __str__(self):
         return self.oai_pmh_identifier
+
+    def amusewiki_base_url(self):
+        site = self.site
+        if site.site_type == 'amusewiki':
+            return re.sub(r'((\.[a-z0-9]+)+)$',
+                          '',
+                          self.uri)
+        else:
+            return None
+
+    def get_remote_file(self, ext):
+        amusewiki_url = self.amusewiki_base_url()
+        if amusewiki_url:
+            return requests.get(amusewiki_url + ext)
+        else:
+            return None
+
+    def full_text(self):
+        amusewiki_url = self.amusewiki_base_url()
+        if amusewiki_url:
+            r = requests.get(amusewiki_url + '.bare.html')
+            if r.status_code == 200:
+                r.encoding = 'UTF-8'
+                return r.text
+        else:
+            return None
 
 class NameAlias(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)

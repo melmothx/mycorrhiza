@@ -3,12 +3,7 @@
  export default {
      components: { ExclusionButton },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
-     emits: [ 'refetchResults' ],
-     data() {
-         return {
-             show_details: false,
-         }
-     },
+     emits: [ 'refetchResults', 'selectEntry' ],
      computed: {
          title() {
              return this.record.title[0]['value'];
@@ -35,9 +30,6 @@
                  e.dataTransfer.setData('Label', label);
                  e.dataTransfer.setData('Merge', merge_type);
              }
-         },
-         toggle_show_details() {
-             this.show_details = this.show_details ? false : true;
          },
      },
  }
@@ -66,7 +58,7 @@
       </div>
       <div>
         <div class="font-semibold flex">
-          <h2 class="flex-grow cursor-pointer" @click="toggle_show_details">
+          <h2 class="flex-grow cursor-pointer" @click="$emit('selectEntry')">
             {{ title }}
             <small v-if="date">
               ({{ date }})
@@ -85,37 +77,10 @@
           </div>
         </div>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
-      </div>
-      <div v-if="show_details" class="p-2">
-        <div v-for="desc in record.description" :key="desc.id" class="text-sm mb-3 pb-3 border-b">
+        <div v-for="desc in record.description" :key="desc.id" class="text-sm pb-3 mt-2">
           <p>
             {{ desc.value }}
           </p>
-        </div>
-        <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
-          <span class="font-semibold">{{ source.site_name }}: </span>
-          <span v-if="source.uri">
-            <a :href="source.uri" target="_blank">
-              <span v-if="source.uri_label">
-                {{ source.uri_label }}
-              </span>
-              <span v-else>
-                {{ source.uri }}
-              </span>
-              <span v-if="source.content_type">
-                ({{ source.content_type }})
-              </span>
-            </a>
-          </span>
-          <div if="source.shelf_location_code">
-            <span>Shelf Location Code:</span> <code>{{ source.shelf_location_code }}</code>
-          </div>
-          <div v-if="source.material_description">
-            {{ source.material_description }}
-          </div>
-          <div>
-            <code>ID: {{ source.identifier }}</code>
-          </div>
         </div>
       </div>
     </div>

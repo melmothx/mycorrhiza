@@ -6,6 +6,7 @@
  import axios from 'axios'
  export default {
      components: { FacetBox, EntryBox, PaginationBox, MergeBox },
+     emits: ['setEntryId' ],
      data() {
          return {
              flash_success: "",
@@ -198,6 +199,7 @@
             <EntryBox :record="match"
                       :can_set_exclusions="can_set_exclusions"
                       :can_merge="is_authenticated"
+                      @select-entry="$emit('setEntryId', match.entry_id)"
                       @refetch-results="getResults(1)" />
           </template>
         </div>
