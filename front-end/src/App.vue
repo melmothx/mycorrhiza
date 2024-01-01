@@ -21,7 +21,6 @@
              this.search_page.getResults(1);
          },
          set_entry_id(id) {
-             this.entry_id = 0;
              console.log("Setting entry:" + id);
              this.entry_id = id;
          }
@@ -32,7 +31,10 @@
 <template>
   <NavBar @refetch-results="refetch_results" />
   <div v-if="entry_id">
-    <EntryPage :entry_id="entry_id" @close="set_entry_id(0)" />
+    <EntryPage :entry_id="entry_id"
+               @close="set_entry_id(0)"
+               @change-id="set_entry_id"
+    />
   </div>
   <div>
     <SearchPage ref="search_page" @set-entry-id="set_entry_id" />

@@ -10,7 +10,7 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
@@ -41,10 +41,7 @@ def api_user(request):
     # guaranteed to return the empty string
     return JsonResponse({ "logged_in": request.user.get_username() })
 
-def api(request):
-    public_only = True
-
-    user = request.user
+def _active_sites(user):
     active_sites = [ site.id for site in Site.objects.filter(active=True, public=True).all() ]
     if user.is_authenticated and user.is_superuser:
         # exclude only the inactive
@@ -52,6 +49,13 @@ def api(request):
     elif user.is_authenticated and user.profile:
         # add the private one from the profile
         active_sites.extend([ site.id for site in user.profile.sites.filter(active=True, public=False).all() ])
+    return active_sites
+
+def api(request):
+    public_only = True
+
+    user = request.user
+    active_sites = _active_sites(user)
     logger.debug("User sites: {}".format(active_sites))
 
     exclusions = []
@@ -75,14 +79,20 @@ def api(request):
     return JsonResponse(res)
 
 def get_entry(request, entry_id):
-    entry = Entry.objects.get(pk=entry_id)
-    # TODO: check permission.
-    record = entry.indexed_data
-    titles = record['title']
-    record['title'] = titles[0]['value']
-    record['subtitle'] = titles[1]['value']
-    record['authors'] = record.pop('creator')
+    entry = get_object_or_404(Entry, pk=entry_id)
+    record = entry.display_data(site_ids=_active_sites(request.user))
+    if not record['data_sources']:
+        raise Http404("No data sources!")
     return JsonResponse(record)
+
+# should this be login required?
+def get_datasource_full_text(request, ds_id):
+    ds = get_object_or_404(DataSource, pk=ds_id)
+    out = {}
+    if ds.site_id in _active_sites(request.user):
+        out['html'] = ds.full_text()
+    logger.debug(out)
+    return JsonResponse(out)
 
 @login_required
 def exclusions(request):
