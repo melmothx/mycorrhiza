@@ -453,13 +453,26 @@ class DataSource(models.Model):
     def __str__(self):
         return self.oai_pmh_identifier
 
-    def full_text(self):
+    def amusewiki_base_url(self):
         site = self.site
         if site.site_type == 'amusewiki':
-            bare = re.sub(r'((\.[a-z0-9]+)+)$',
+            return re.sub(r'((\.[a-z0-9]+)+)$',
                           '',
                           self.uri)
-            r = requests.get(bare + '.bare.html')
+        else:
+            return None
+
+    def get_remote_file(self, ext):
+        amusewiki_url = self.amusewiki_base_url()
+        if amusewiki_url:
+            return requests.get(amusewiki_url + ext)
+        else:
+            return None
+
+    def full_text(self):
+        amusewiki_url = self.amusewiki_base_url()
+        if amusewiki_url:
+            r = requests.get(amusewiki_url + '.bare.html')
             if r.status_code == 200:
                 r.encoding = 'UTF-8'
                 return r.text

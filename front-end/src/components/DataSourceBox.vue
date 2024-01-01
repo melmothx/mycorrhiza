@@ -18,16 +18,16 @@
                         }
                     });
          },
-         get_binary_file() {
-             console.log("Getting the binary file")
-         },
+         get_binary_file(id, ext) {
+             return '/search/api/download/' + id + ext;
+         }
      }
  }
 </script>
 <template>
   <div>
     <span class="font-semibold">{{ source.site_name }}: </span>
-    <span v-if="source.uri">
+    <span v-if="source.uri && source.public">
       <a :href="source.uri" target="_blank">
         <span v-if="source.uri_label">
           {{ source.uri_label }}
@@ -53,9 +53,9 @@
     </div>
     <div v-if="source.downloads">
       <div v-for="dl in source.downloads" :key="dl.code">
-        <button @click="get_binary_file(source.data_source_id, dl.ext)">
+        <a target="_blank" :href="get_binary_file(source.data_source_id, dl.ext)">
           {{ dl.desc }}
-        </button>
+        </a>
       </div>
     </div>
     <div v-if="source.material_description">

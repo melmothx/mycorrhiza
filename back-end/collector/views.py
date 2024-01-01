@@ -15,6 +15,7 @@ from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,26 @@ def get_datasource_full_text(request, ds_id):
         out['html'] = ds.full_text()
     logger.debug(out)
     return JsonResponse(out)
+
+def download_datasource(request, target):
+    check = re.compile(r'(\d+)(\.[a-z0-9]+)$')
+    m = check.match(target)
+    if m:
+        ds_id = m.group(1)
+        ds = get_object_or_404(DataSource, pk=ds_id)
+        ext = m.group(2)
+        if ds.site_id in _active_sites(request.user):
+            r = ds.get_remote_file(ext)
+            if r.status_code == 200:
+                logger.debug(r)
+                response = HttpResponse(r.content, content_type=r.headers['content-type'])
+                return response
+            else:
+                raise Http404("File not found!")
+        else:
+            raise Http404("Not such DS")
+    else:
+        raise Http404("Not found")
 
 @login_required
 def exclusions(request):

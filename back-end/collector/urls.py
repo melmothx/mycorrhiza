@@ -9,6 +9,7 @@ urlpatterns = [
     path("api/auth/user", views.api_user, name="api_user"),
     path("api/entry/<entry_id>", views.get_entry, name="api_get_entry"),
     path("api/full-text/<ds_id>", views.get_datasource_full_text, name="api_full_text"),
+    path("api/download/<target>", views.download_datasource, name="api_download_datasource"),
     path("api/merge/<target>", views.api_merge, name="api_merge"),
     path("api/set-translations", views.api_set_translations, name="api_set_translations"),
     path("api/exclusions", views.exclusions, name="exclusions"),
