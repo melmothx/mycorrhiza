@@ -53,7 +53,7 @@
     </div>
     <div v-if="source.downloads">
       <div v-for="dl in source.downloads" :key="dl.code">
-        <a target="_blank" :href="get_binary_file(source.data_source_id, dl.ext)">
+        <a :href="get_binary_file(source.data_source_id, dl.ext)">
           {{ dl.desc }}
         </a>
       </div>

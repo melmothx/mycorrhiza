@@ -96,7 +96,7 @@ def get_datasource_full_text(request, ds_id):
     return JsonResponse(out)
 
 def download_datasource(request, target):
-    check = re.compile(r'(\d+)(\.[a-z0-9]+)$')
+    check = re.compile(r'(\d+)((\.[a-z0-9]+)+)$')
     m = check.match(target)
     if m:
         ds_id = m.group(1)
@@ -105,8 +105,8 @@ def download_datasource(request, target):
         if ds.site_id in _active_sites(request.user):
             r = ds.get_remote_file(ext)
             if r.status_code == 200:
-                logger.debug(r)
                 response = HttpResponse(r.content, content_type=r.headers['content-type'])
+                response.headers['Content-Disposition'] = 'attachment; filename="{}"'.format(re.split(r'/', r.url)[-1])
                 return response
             else:
                 raise Http404("File not found!")

@@ -465,6 +465,7 @@ class DataSource(models.Model):
     def get_remote_file(self, ext):
         amusewiki_url = self.amusewiki_base_url()
         if amusewiki_url:
+            logger.debug("AMW url is " + amusewiki_url)
             return requests.get(amusewiki_url + ext)
         else:
             return None
