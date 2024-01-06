@@ -58,7 +58,7 @@
       </div>
       <div>
         <div class="font-semibold flex">
-          <h2 class="flex-grow cursor-pointer" @click="$emit('selectEntry')">
+          <h2 class="flex-grow cursor-pointer" @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
             <small v-if="date">
               ({{ date }})

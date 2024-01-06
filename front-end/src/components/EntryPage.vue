@@ -4,7 +4,6 @@
  import axios from 'axios'
  export default {
      props: [ 'entry_id' ],
-     emit: [ 'close', 'changeId' ],
      components: { EntryDetails, DataSourceBox },
      data() {
          return {
@@ -41,7 +40,7 @@
         </div>
         <div>
           <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
-                  type="button" @click="$emit('close')">Close</button>
+                  type="button" @click="$router.go(-1)">Close</button>
         </div>
       </div>
       <div v-if="record.original_entry"
