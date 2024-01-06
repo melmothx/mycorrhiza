@@ -14,6 +14,12 @@ import re
 
 logger = logging.getLogger(__name__)
 
+class Library(models.Model):
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
 class Site(models.Model):
     OAI_DC = "oai_dc"
     MARC21 = "marc21"
@@ -39,6 +45,10 @@ class Site(models.Model):
     amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    library = models.ForeignKey(Library,
+                                null=True,
+                                on_delete=models.SET_NULL,
+                                related_name="sites")
 
     def __str__(self):
         return "{}".format(self.hostname())
