@@ -26,7 +26,7 @@
 </script>
 <template>
   <div>
-    <span class="font-semibold">{{ source.site_name }}: </span>
+    <span class="font-semibold">{{ source.library_name }}: </span>
     <span v-if="source.uri && source.public">
       <a :href="source.uri" target="_blank">
         <span v-if="source.uri_label">
