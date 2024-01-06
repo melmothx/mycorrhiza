@@ -55,8 +55,6 @@ class Site(models.Model):
                                            null=True,
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
-    # to be removed, see site.public
-    public = models.BooleanField(default=True, null=False)
     active = models.BooleanField(default=True, null=False)
     amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
