@@ -232,12 +232,12 @@ def api_merge(request, target):
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
-        queryset = Site.objects.filter(active=True, site_types="csv").order_by("url")
+        queryset = Site.objects.filter(active=True, site_type="csv").order_by("url")
     else:
         active_libraries = _active_libraries(user)
         queryset = Site.objects.filter(library_id__in=active_libraries,
                                        active=True,
-                                       site_types="csv").order_by("url")
+                                       site_type="csv").order_by("url")
 
     form = SpreadsheetForm()
     if request.method == "POST":
