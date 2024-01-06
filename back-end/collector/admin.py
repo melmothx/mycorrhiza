@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
@@ -12,12 +11,17 @@ class ProfileInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = [ProfileInline]
 
+@admin.register(Site)
+class SiteAdmin(admin.ModelAdmin):
+    exclude = ["last_harvested", "amusewiki_formats"]
+
+
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
+
 # Register your models here.
-admin.site.register(Site)
 admin.site.register(Harvest)
 admin.site.register(Agent)
 admin.site.register(Subject)

@@ -17,11 +17,14 @@ logger = logging.getLogger(__name__)
 class Library(models.Model):
     name = models.CharField(max_length=255)
     url = models.URLField(max_length=255,
+                          blank=True,
                           null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    class Meta:
+        verbose_name_plural = "Libraries"
 
 class Site(models.Model):
     OAI_DC = "oai_dc"
@@ -32,7 +35,8 @@ class Site(models.Model):
     ]
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),
-        ('generic', "Generic"),
+        ('generic', "Generic OAI-PMH"),
+        ('csv', "CSV Upload"),
     ]
     library = models.ForeignKey(Library,
                                 null=False,
@@ -42,10 +46,12 @@ class Site(models.Model):
     url = models.URLField(max_length=255)
     last_harvested = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
-    oai_set = models.CharField(max_length=64, blank=True)
+    oai_set = models.CharField(max_length=64,
+                               blank=True,
+                               null=True)
     oai_metadata_format = models.CharField(max_length=32,
-                                           choices=OAI_PMH_METADATA_FORMATS,
-                                           default=OAI_DC)
+                                           null=True,
+                                           choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     public = models.BooleanField(default=True, null=False)
     active = models.BooleanField(default=True, null=False)
