@@ -3,7 +3,7 @@
  export default {
      components: { ExclusionButton },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
-     emits: [ 'refetchResults', 'selectEntry' ],
+     emits: [ 'refetchResults' ],
      computed: {
          title() {
              return this.record.title[0]['value'];

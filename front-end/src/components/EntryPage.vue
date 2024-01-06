@@ -13,11 +13,17 @@
      methods: {
          fetch_record() {
              const vm = this;
-             console.log("Fetch " + vm.entry_id);
-             axios.get('/search/api/entry/' + vm.entry_id)
-                  .then(function(res) {
-                      vm.record = res.data;
-                  });
+             if (vm.entry_id) {
+                 console.log("Fetch " + vm.entry_id);
+                 axios.get('/search/api/entry/' + vm.entry_id)
+                      .then(function(res) {
+                          vm.record = res.data;
+                      });
+             }
+             else {
+                 console.log("Resetting");
+                 vm.record = {}
+             }
          },
      },
      mounted () {
@@ -40,7 +46,7 @@
         </div>
         <div>
           <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
-                  type="button" @click="$router.go(-1)">Close</button>
+                  type="button" @click="$router.push({ name: 'home' })">Close</button>
         </div>
       </div>
       <div v-if="record.original_entry"
