@@ -72,7 +72,7 @@
                 @toggle-filter="toggleFilter"
             />
           </div>
-          <div class="ml-1" v-if="can_set_exclusions && name == 'site'">
+          <div class="ml-1" v-if="can_set_exclusions && name == 'library'">
             <ExclusionButton :object_id="facet.id"
                              :object_type="name"
                              @refetch-results="refetchResults" />

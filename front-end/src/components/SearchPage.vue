@@ -166,14 +166,14 @@
                 @toggle-app-filter="toggleFilter"
             >Language</FacetBox>
           </div>
-          <div v-if="facets.site" class="mb-3">
+          <div v-if="facets.library" class="mb-3">
             <FacetBox
-                :values="facets.site.values"
-                :name="facets.site.name"
+                :values="facets.library.values"
+                :name="facets.library.name"
                 :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
                 @refetch-results="getResults(1)">
-            Sites</FacetBox>
+            Libraries</FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox

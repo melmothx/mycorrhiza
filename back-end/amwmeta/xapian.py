@@ -22,7 +22,7 @@ FIELD_MAPPING = {
         'subject':  (3, 'XK', True),
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
-        'site':     (6, 'H',  True),
+        'library':     (6, 'H',  True),
 }
 # public prefix is 'P'
 
@@ -37,13 +37,14 @@ SORT_DIRECTIONS = {
     "desc": True,
 }
 
+# XH is unique source
 EXCLUSION_FIELDS = {
-    'site': 'XH',
+    'library': 'XH',
     'creator': 'XA',
     'entry': 'Q',
 }
 
-def search(query_params, active_sites=[], exclusions=[]):
+def search(query_params, active_libraries=[], exclusions=[]):
     db = xapian.Database(XAPIAN_DB)
     querystring = query_params.get("query")
 
@@ -66,12 +67,8 @@ def search(query_params, active_sites=[], exclusions=[]):
         else:
             queryparser.add_prefix(field, FIELD_MAPPING[field][1])
 
-    exsites = {}
-    for exclusion in exclusions:
-        if exclusion[0] == 'site':
-            exsites[exclusion[1]] = True
-    logger.debug("Excludes sites: {}, Active: {}".format(exsites, active_sites))
-
+    excluded_libraries = { i[1]: True for i in exclusions if i[0] == 'library' }
+    logger.debug("Excluded libraries: {}".format(excluded_libraries))
 
     context = {}
     spies = {}
@@ -101,8 +98,8 @@ def search(query_params, active_sites=[], exclusions=[]):
                 filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
     # logger.info(filter_queries)
-    if active_sites:
-        filter_queries.append(xapian.Query(xapian.Query.OP_OR, [ xapian.Query('H{}'.format(i)) for i in active_sites ]))
+    if active_libraries:
+        filter_queries.append(xapian.Query(xapian.Query.OP_OR, [ xapian.Query('H{}'.format(i)) for i in active_libraries ]))
     else:
         # this shouldn't happen
         filter_queries.append(xapian.Query('P1'))
@@ -171,12 +168,12 @@ def search(query_params, active_sites=[], exclusions=[]):
         # while the other is private, so it's not seen as an unique
         # source
 
-        if active_sites:
-            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['site_id'] in active_sites ]
+        if active_libraries:
+            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['library_id'] in active_libraries ]
         else:
             rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
         if exclusions:
-            rec['data_sources'] = [ ds for ds in rec['data_sources'] if not exsites.get(ds['site_id']) ]
+            rec['data_sources'] = [ ds for ds in rec['data_sources'] if not excluded_libraries.get(ds['library_id']) ]
         matches.append(rec)
 
     for spy_name in spies:
@@ -209,12 +206,12 @@ def search(query_params, active_sites=[], exclusions=[]):
 
     context['matches'] = matches
 
-    if facets.get('site', False):
-        facets['site']['values'] = [ v for v in facets['site']['values'] if v['id'] in active_sites ]
+    if facets.get('library'):
+        facets['library']['values'] = [ v for v in facets['library']['values'] if v['id'] in active_libraries ]
 
-    # if there are excluded sites, remove them as well
-    if exclusions and facets.get('site', False):
-        facets['site']['values'] = [ v for v in facets['site']['values'] if not exsites.get(v['id']) ]
+    # if there are excluded libraries, remove them as well
+    if exclusions and facets.get('library'):
+        facets['library']['values'] = [ v for v in facets['library']['values'] if not excluded_libraries.get(v['id']) ]
 
     context['facets'] = facets
     context['filters'] = active_facets

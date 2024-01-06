@@ -19,6 +19,8 @@ class Library(models.Model):
     url = models.URLField(max_length=255,
                           blank=True,
                           null=True)
+    public = models.BooleanField(default=False, null=False)
+    active = models.BooleanField(default=True, null=False)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -53,6 +55,7 @@ class Site(models.Model):
                                            null=True,
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
+    # to be removed, see site.public
     public = models.BooleanField(default=True, null=False)
     active = models.BooleanField(default=True, null=False)
     amusewiki_formats = models.JSONField(null=True)
@@ -330,14 +333,14 @@ class Entry(models.Model):
             out[f] = getattr(self, f)
         return out
 
-    def display_data(self, site_ids=[]):
+    def display_data(self, library_ids=[]):
         indexed = self.indexed_data
         record = self.display_dict()
         record['authors'] = indexed.get('creator')
         data_sources = []
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
-            if ds['site_id'] in site_ids:
+            if ds['library_id'] in library_ids:
                 if ds['site_type'] == 'amusewiki':
                     ds['downloads'] = Site.objects.get(pk=ds['site_id']).amusewiki_formats
                 data_sources.append(ds)
@@ -375,6 +378,7 @@ class Entry(models.Model):
         record_is_public = False
         for topr in data_source_records:
             site = topr.site
+            library = site.library
             dsd = {
                 "data_source_id": topr.id,
                 "identifier": topr.oai_pmh_identifier,
@@ -382,22 +386,24 @@ class Entry(models.Model):
                 "uri_label": topr.uri_label,
                 "content_type": topr.content_type,
                 "shelf_location_code": topr.shelf_location_code,
-                "public": site.public,
+                "public": library.public,
                 "site_name": site.title,
                 "site_id": site.id,
                 "site_type": site.site_type,
+                "library_id" : library.id,
+                "library_name": library.name,
             }
-            if site.active and site.public:
+            if library.active and library.public:
                 record_is_public = True
             xapian_data_sources.append(dsd)
 
-        entry_sites = {}
+        entry_libraries = {}
         for topr in data_source_records:
-            if not entry_sites.get(topr.site_id):
-                entry_site = topr.site
-                entry_sites[topr.site_id] = {
-                    "id": entry_site.id,
-                    "value": entry_site.title,
+            if not entry_libraries.get(topr.site.library_id):
+                entry_library = topr.site.library
+                entry_libraries[entry_library.id] = {
+                    "id": entry_library.id,
+                    "value": entry_library.name,
                 }
 
         xapian_record = {
@@ -407,7 +413,7 @@ class Entry(models.Model):
             "subject":  [ { "id": s.id, "value": s.name } for s in self.subjects.all() ],
             "date":     [ { "id": d, "value": d } for d in [ self.year_edition ] if d ],
             "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],
-            "site": list(entry_sites.values()),
+            "library": list(entry_libraries.values()),
             "description": [ { "id": "d" + str(self.id), "value": s } for s in [ self.description ] if s ],
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
@@ -416,8 +422,8 @@ class Entry(models.Model):
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
         }
-        if len(xapian_record['site']) == 1:
-            xapian_record['unique_source'] = xapian_record['site'][0]['id']
+        if len(xapian_record['library']) == 1:
+            xapian_record['unique_source'] = xapian_record['library'][0]['id']
 
         self.indexed_data = xapian_record
         self.save()
@@ -536,7 +542,7 @@ class Harvest(models.Model):
 
 class Exclusion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exclusions")
-    exclude_site   = models.ForeignKey(Site,  null=True, on_delete=models.SET_NULL)
+    exclude_library = models.ForeignKey(Library, null=True, on_delete=models.SET_NULL)
     exclude_author = models.ForeignKey(Agent, null=True, on_delete=models.SET_NULL)
     exclude_entry  = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
     comment = models.TextField()
@@ -544,12 +550,12 @@ class Exclusion(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     def as_xapian_queries(self):
         queries = []
-        if self.exclude_site:
-            queries.append(('site', self.exclude_site.id))
+        if self.exclude_library:
+            queries.append(('library', self.exclude_library_id))
         if self.exclude_author:
-            queries.append(('creator', self.exclude_author.id))
+            queries.append(('creator', self.exclude_author_id))
         if self.exclude_entry:
-            queries.append(('entry', self.exclude_entry.id))
+            queries.append(('entry', self.exclude_entry_id))
         return queries
 
 def spreadsheet_upload_directory(instance, filename):
@@ -608,6 +614,6 @@ class SpreadsheetUpload(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    sites = models.ManyToManyField(Site)
+    libraries = models.ManyToManyField(Library)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
