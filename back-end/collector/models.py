@@ -20,6 +20,8 @@ class Library(models.Model):
                           null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
 
 class Site(models.Model):
     OAI_DC = "oai_dc"
@@ -32,6 +34,10 @@ class Site(models.Model):
         ('amusewiki', "Amusewiki"),
         ('generic', "Generic"),
     ]
+    library = models.ForeignKey(Library,
+                                null=False,
+                                on_delete=models.CASCADE,
+                                related_name="sites")
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=255)
     last_harvested = models.DateTimeField(null=True, blank=True)
@@ -46,13 +52,9 @@ class Site(models.Model):
     amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    library = models.ForeignKey(Library,
-                                null=False,
-                                on_delete=models.CASCADE,
-                                related_name="sites")
 
     def __str__(self):
-        return "{}".format(self.hostname())
+        return "{} ({} - {})".format(self.title, self.site_type, self.url)
 
     def last_harvested_zulu(self):
         dt = self.last_harvested
