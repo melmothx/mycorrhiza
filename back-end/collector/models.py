@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 class Library(models.Model):
     name = models.CharField(max_length=255)
-    url = models.URLField(max_length=255)
+    url = models.URLField(max_length=255,
+                          null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -46,8 +47,8 @@ class Site(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     library = models.ForeignKey(Library,
-                                null=True,
-                                on_delete=models.SET_NULL,
+                                null=False,
+                                on_delete=models.CASCADE,
                                 related_name="sites")
 
     def __str__(self):
