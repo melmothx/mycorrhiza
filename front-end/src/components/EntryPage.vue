@@ -50,13 +50,13 @@
         </div>
       </div>
       <div v-if="record.original_entry"
-           @click="$emit('changeId', record.original_entry.id)"
+           @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"
            class="border rounded my-1 p-1 cursor-pointer">
         <EntryDetails :record="record.original_entry">Original title:</EntryDetails>
       </div>
       <div v-if="record.translations && record.translations.length > 0">
         <div v-for="translation in record.translations" :key="translation.id">
-          <div @click="$emit('changeId', translation.id)"
+          <div @click="$router.push({ name: 'entry', params: { id: translation.id } })"
             class="border rounded my-1 p-1 cursor-pointer">
             <EntryDetails :record="translation">Translation:</EntryDetails>
           </div>
