@@ -23,9 +23,6 @@ admin.site.register(User, UserAdmin)
 
 # Register your models here.
 admin.site.register(Harvest)
-admin.site.register(Agent)
-admin.site.register(Subject)
-admin.site.register(Entry)
 admin.site.register(Language)
 admin.site.register(NameAlias)
 admin.site.register(SpreadsheetUpload)

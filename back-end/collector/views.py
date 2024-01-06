@@ -10,7 +10,7 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
@@ -42,22 +42,23 @@ def api_user(request):
     # guaranteed to return the empty string
     return JsonResponse({ "logged_in": request.user.get_username() })
 
-def _active_sites(user):
-    active_sites = [ site.id for site in Site.objects.filter(active=True, public=True).all() ]
+def _active_libraries(user):
+    active_libraries = [ lib.id for lib in Library.objects.filter(active=True, public=True).all() ]
     if user.is_authenticated and user.is_superuser:
         # exclude only the inactive
-        active_sites = [ site.id for site in Site.objects.filter(active=True).all() ]
+        active_libraries = [ lib.id for lib in Library.objects.filter(active=True).all() ]
     elif user.is_authenticated and user.profile:
         # add the private one from the profile
-        active_sites.extend([ site.id for site in user.profile.sites.filter(active=True, public=False).all() ])
-    return active_sites
+        active_libraries.extend([ lib.id for lib in user.profile.libraries.filter(active=True, public=False).all() ])
+    logger.debug("Active libs are {}".format(active_libraries))
+    return active_libraries
 
 def api(request):
     public_only = True
 
     user = request.user
-    active_sites = _active_sites(user)
-    logger.debug("User sites: {}".format(active_sites))
+    active_libraries = _active_libraries(user)
+    logger.debug("User libraries: {}".format(active_libraries))
 
     exclusions = []
     can_set_exclusions = False
@@ -70,7 +71,7 @@ def api(request):
 
     res = search(
         request.GET,
-        active_sites=active_sites,
+        active_libraries=active_libraries,
         exclusions=exclusions,
     )
     res['total_entries'] = res['pager'].total_entries
@@ -81,7 +82,7 @@ def api(request):
 
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
-    record = entry.display_data(site_ids=_active_sites(request.user))
+    record = entry.display_data(library_ids=_active_libraries(request.user))
     if not record['data_sources']:
         raise Http404("No data sources!")
     return JsonResponse(record)
@@ -90,7 +91,7 @@ def get_entry(request, entry_id):
 def get_datasource_full_text(request, ds_id):
     ds = get_object_or_404(DataSource, pk=ds_id)
     out = {}
-    if ds.site_id in _active_sites(request.user):
+    if ds.site.library_id in _active_libraries(request.user):
         out['html'] = ds.full_text()
     logger.debug(out)
     return JsonResponse(out)
@@ -102,7 +103,7 @@ def download_datasource(request, target):
         ds_id = m.group(1)
         ds = get_object_or_404(DataSource, pk=ds_id)
         ext = m.group(2)
-        if ds.site_id in _active_sites(request.user):
+        if ds.site.library_id in _active_libraries(request.user):
             r = ds.get_remote_file(ext)
             if r.status_code == 200:
                 response = HttpResponse(r.content, content_type=r.headers['content-type'])
@@ -134,7 +135,7 @@ def exclusions(request):
         comment = data.get('comment')
         if op and what and object_id:
             if op == 'add' and comment:
-                if what in [ 'author', 'entry', 'site' ]:
+                if what in [ 'author', 'entry', 'library' ]:
                     creation = {
                         "comment": comment,
                         "exclude_{}_id".format(what): object_id,
@@ -231,9 +232,12 @@ def api_merge(request, target):
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
-        queryset = Site.objects.filter(active=True).order_by("url")
+        queryset = Site.objects.filter(active=True, site_type="csv").order_by("url")
     else:
-        queryset = user.profile.sites.filter(active=True).order_by("url")
+        active_libraries = _active_libraries(user)
+        queryset = Site.objects.filter(library_id__in=active_libraries,
+                                       active=True,
+                                       site_type="csv").order_by("url")
 
     form = SpreadsheetForm()
     if request.method == "POST":

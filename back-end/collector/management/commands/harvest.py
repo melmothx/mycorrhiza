@@ -46,7 +46,7 @@ class Command(BaseCommand):
                     logger.debug(str(counter) + " records done")
             return
 
-        rs = Site.objects.filter(active=True)
+        rs = Site.objects.filter(active=True, site_type__in=['amusewiki', 'generic'])
         if options['site']:
             rs = rs.filter(url__contains=options['site'])
 
