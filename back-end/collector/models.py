@@ -303,30 +303,43 @@ class Entry(models.Model):
     def __str__(self):
         return self.title
 
-    def display_dict(self):
+    def display_dict(self, library_ids):
         out = {}
+        indexed = self.indexed_data
         for f in [ 'id', 'title', 'subtitle' ]:
             out[f] = getattr(self, f)
-        return out
-
-    def display_data(self, library_ids=[]):
-        indexed = self.indexed_data
-        record = self.display_dict()
-        record['authors'] = indexed.get('creator')
+        out['authors'] = indexed.get('creator')
+        out['languages'] = indexed.get('language')
         data_sources = []
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
-                if ds['site_type'] == 'amusewiki':
-                    ds['downloads'] = Site.objects.get(pk=ds['site_id']).amusewiki_formats
                 data_sources.append(ds)
-        record['data_sources'] = data_sources
+        out['data_sources'] = data_sources
+        return out
 
+    def display_data(self, library_ids=[]):
+        record = self.display_dict(library_ids)
         original = self.original_entry
         if original:
-            record['original_entry'] = original.display_dict()
-        record['translations'] = [ tr.display_dict() for tr in self.translations.all() ]
+            original_data = original.display_dict(library_ids)
 
+            # if we can't see the entry because there is no data
+            # source for that, it does not exist
+            if original_data.get('data_sources'):
+                record['original_entry'] = original_data
+        else:
+            original = self
+
+        translations = []
+        # and then the translations
+        for tr in original.translations.all():
+            if tr.id != self.id:
+                tr_data = tr.display_dict(library_ids)
+                # ditto. No DS, it does not exist
+                if tr_data.get('data_sources'):
+                    translations.append(tr_data)
+        record['translations'] = translations
         return record
 
     def indexing_data(self):
@@ -368,6 +381,11 @@ class Entry(models.Model):
                 "site_type": site.site_type,
                 "library_id" : library.id,
                 "library_name": library.name,
+                "description": topr.description,
+                "year_edition": topr.year_edition,
+                "year_first_edition": topr.year_first_edition,
+                "material_description": topr.material_description,
+                "downloads": site.amusewiki_formats,
             }
             if library.active and library.public:
                 record_is_public = True

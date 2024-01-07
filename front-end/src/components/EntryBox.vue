@@ -11,14 +11,6 @@
          subtitle() {
              return this.record.title[1]['value'];
          },
-         date() {
-             if (this.record.date) {
-                 return this.record.date[0]['value'];
-             }
-             else {
-                 return "";
-             }
-         },
      },
      methods: {
          drag_element(e, merge_type, id, label) {
@@ -60,10 +52,12 @@
         <div class="font-semibold flex">
           <h2 class="flex-grow cursor-pointer" @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
-            <small v-if="date">
-              ({{ date }})
-            </small>
           </h2>
+          <div v-if="record.language">
+            <div class="px-2" v-for="l in record.language" :key="l.id">
+              ({{ l.value }})
+            </div>
+          </div>
           <div v-if="can_merge">
             <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
               draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
@@ -77,11 +71,6 @@
           </div>
         </div>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
-        <div v-for="desc in record.description" :key="desc.id" class="text-sm pb-3 mt-2">
-          <p>
-            {{ desc.value }}
-          </p>
-        </div>
       </div>
     </div>
   </div>

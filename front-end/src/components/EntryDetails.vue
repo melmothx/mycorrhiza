@@ -4,23 +4,23 @@
   }
 </script>
 <template>
-  <h3><slot></slot></h3>
+  <h2><slot></slot></h2>
   <div v-if="record.authors">
     <div v-for="author in record.authors" :key="author.id">
       {{ author.value }}
     </div>
   </div>
-  <strong v-if="record.title">
-    {{ record.title }}
-  </strong>
-  <strong v-if="record.subtitle">
+  <div class="flex">
+    <h3 class="font-semibold mr-1" v-if="record.title">
+      {{ record.title }}
+    </h3>
+    <div v-if="record.languages">
+      <div v-for="l in record.languages" :key="l.id">
+        ({{ l.value }})
+      </div>
+    </div>
+  </div>
+  <h4 class="italic" v-if="record.subtitle">
     {{ record.subtitle }}
-  </strong>
-  <span v-if="record.year_edition">
-    ({{ record.year_edition }})
-  </span>
-  <span v-if="record.year_first_edition">
-    (First edition: {{ record.year_first_edition }})
-  </span>
-  <p v-if="record.description">{{ record.description }}</p>
+  </h4>
 </template>

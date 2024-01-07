@@ -278,11 +278,20 @@ class MycorrhizaIndexer:
                     doc.add_value(slot, stripped)
 
         # general search
-        for field in ['title', 'creator', 'description']:
+        for field in ['title', 'creator']:
             termgenerator.increase_termpos()
             values = record.get(field)
             for v in values:
                 termgenerator.index_text(v['value'])
+
+        for field in ['description', 'material_description']:
+            termgenerator.increase_termpos()
+            for dsd in record['data_sources']:
+                value = dsd.get(field)
+                if value:
+                    logger.debug("Indexing {} {}".format(field, value))
+                    termgenerator.index_text(value)
+
 
         doc.set_data(json.dumps(record))
         idterm = "Q{}".format(identifier)

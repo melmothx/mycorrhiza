@@ -26,7 +26,13 @@
 </script>
 <template>
   <div>
-    <span class="font-semibold">{{ source.library_name }}: </span>
+    <h4 class="font-semibold">
+      <span>{{ source.library_name }}</span>
+      <span class="px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
+    </h4>
+    <div v-if="source.description">
+      {{ source.description }}
+    </div>
     <span v-if="source.uri && source.public">
       <a :href="source.uri" target="_blank">
         <span v-if="source.uri_label">

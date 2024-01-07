@@ -39,7 +39,7 @@
 </script>
 <template>
   <div class="fixed top-0 left-0 right-0 z-50 bg-white h-full overflow-y-auto">
-    <div class="border rounded m-5 p-2 font-serif">
+    <div class="m-5 p-2 font-serif">
       <div class="flex">
         <div class="flex-grow">
           <EntryDetails :record="record"></EntryDetails>
@@ -48,6 +48,10 @@
           <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
                   type="button" @click="$router.push({ name: 'home' })">Close</button>
         </div>
+      </div>
+      <hr class="my-3" />
+      <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
+        <DataSourceBox :source="source"></DataSourceBox>
       </div>
       <div v-if="record.original_entry"
            @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"
@@ -61,9 +65,6 @@
             <EntryDetails :record="translation">Translation:</EntryDetails>
           </div>
         </div>
-      </div>
-      <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
-        <DataSourceBox :source="source"></DataSourceBox>
       </div>
     </div>
   </div>
