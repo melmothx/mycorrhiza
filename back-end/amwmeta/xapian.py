@@ -19,7 +19,6 @@ XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
 FIELD_MAPPING = {
         'title':    (1, 'S',  False),
         'creator':  (2, 'XA', True),
-        'subject':  (3, 'XK', True),
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
         'library':     (6, 'H',  True),
@@ -279,7 +278,7 @@ class MycorrhizaIndexer:
                     doc.add_value(slot, stripped)
 
         # general search
-        for field in ['title', 'creator', 'subject', 'description']:
+        for field in ['title', 'creator', 'description']:
             termgenerator.increase_termpos()
             values = record.get(field)
             for v in values:

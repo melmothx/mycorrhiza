@@ -382,16 +382,14 @@ def extract_fields(record, hostname):
             "list": "authors",
             "checksum": True,
         },
-        "subject": {
-            "list": "subjects",
-            "checksum": False,
-        },
         "language": {
             "list": "languages",
             "checksum": True,
             "interpolate": iso_lang_code,
         },
-        "subtitle": {},
+        "subtitle": {
+            "checksum": True,
+        },
         "description": {},
     }
     sha = hashlib.sha256()

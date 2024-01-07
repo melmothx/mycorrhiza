@@ -77,8 +77,9 @@ class Site(models.Model):
     def record_aliases(self):
         aliases = {
             "author": {},
-            "subject": {},
             "language": {},
+            "title": {},
+            "subtitle": {},
         }
         for al in self.namealias_set.all():
             aliases[al.field_name][al.value_name] = al.value_canonical
@@ -158,20 +159,11 @@ class Site(models.Model):
 
     def process_harvested_record(self, record, aliases, now):
         authors = []
-        subjects = []
         languages = []
-        # handle the 3 lists
         try:
             for author in record.pop('authors', []):
                 obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
                 authors.append(obj)
-        except KeyError:
-            pass
-
-        try:
-            for subject in record.pop('subjects', []):
-                obj, was_created = Subject.objects.get_or_create(name=aliases['subject'].get(subject, subject))
-                subjects.append(obj)
         except KeyError:
             pass
 
@@ -192,6 +184,9 @@ class Site(models.Model):
             'content_type',
             'shelf_location_code',
             'material_description',
+            'year_edition',
+            'year_first_edition',
+            'description',
         ]
         opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
         opr_attrs['datetime'] = now
@@ -199,18 +194,15 @@ class Site(models.Model):
             oai_pmh_identifier=identifier,
             defaults=opr_attrs
         )
-        for f_limit in [ 'title', 'subtitle' ]:
-            try:
-                if record[f_limit]:
-                    if len(record[f_limit]) > 250:
-                        record[f_limit] = record[f_limit][0:250] + '...'
-            except KeyError:
-                pass
+        for f in [ 'title', 'subtitle' ]:
+            f_value = record.get(f)
+            if f_value and len(f_value) > 250:
+                f_value = f_value[0:250] + '...'
+            record[f] = aliases[f].get(f_value, f_value)
 
         # if the OAI-PMH record has already a entry attached from a
         # previous run, that's it, just update it.
         entry = opr.entry
-
         if record.pop('deleted'):
             opr.delete()
             return entry
@@ -227,7 +219,7 @@ class Site(models.Model):
         # update the entry and assign the many to many
         for attr, value in record.items():
             setattr(entry, attr, value)
-        entry.subjects.set(subjects)
+
         entry.authors.set(authors)
         entry.languages.set(languages)
         entry.save()
@@ -273,15 +265,6 @@ class Agent(models.Model):
     def __str__(self):
         return self.name
 
-class Subject(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-    created = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
 class Language(models.Model):
     code = models.CharField(max_length=4, unique=True, primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -293,12 +276,8 @@ class Language(models.Model):
 class Entry(models.Model):
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255, null=True)
-    description = models.TextField(null=True)
     authors = models.ManyToManyField(Agent, related_name="authored_entries")
-    subjects = models.ManyToManyField(Subject)
     languages = models.ManyToManyField(Language)
-    year_edition = models.IntegerField(null=True)
-    year_first_edition = models.IntegerField(null=True)
     checksum = models.CharField(max_length=255)
 
     canonical_entry = models.ForeignKey(
@@ -326,8 +305,7 @@ class Entry(models.Model):
 
     def display_dict(self):
         out = {}
-        for f in [ 'id', 'title', 'subtitle', 'description',
-                   'year_edition', 'year_first_edition' ]:
+        for f in [ 'id', 'title', 'subtitle' ]:
             out[f] = getattr(self, f)
         return out
 
@@ -396,6 +374,8 @@ class Entry(models.Model):
             xapian_data_sources.append(dsd)
 
         entry_libraries = {}
+        descriptions = []
+        dates = {}
         for topr in data_source_records:
             if not entry_libraries.get(topr.site.library_id):
                 entry_library = topr.site.library
@@ -403,16 +383,24 @@ class Entry(models.Model):
                     "id": entry_library.id,
                     "value": entry_library.name,
                 }
+            if topr.description:
+                descriptions.append({
+                    "id": "d" + str(topr.id),
+                    "value": topr.description,
+                })
+            if topr.year_first_edition:
+                dates[topr.year_first_edition] = True
+            if topr.year_edition:
+                dates[topr.year_edition] = True
 
         xapian_record = {
             # these are the mapped ones
             "title": [ { "id": self.id, "value": self.title }, { "id": self.id, "value": self.subtitle } ],
             "creator": authors,
-            "subject":  [ { "id": s.id, "value": s.name } for s in self.subjects.all() ],
-            "date":     [ { "id": d, "value": d } for d in [ self.year_edition ] if d ],
+            "date":     [ { "id": d, "value": d } for d in sorted(list(set(dates))) ],
             "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],
             "library": list(entry_libraries.values()),
-            "description": [ { "id": "d" + str(self.id), "value": s } for s in [ self.description ] if s ],
+            "description": descriptions,
             "data_sources": xapian_data_sources,
             "entry_id": self.id,
             "public": record_is_public,
@@ -420,6 +408,7 @@ class Entry(models.Model):
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
         }
+        # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:
             xapian_record['unique_source'] = xapian_record['library'][0]['id']
 
@@ -458,6 +447,10 @@ class DataSource(models.Model):
     full_data = models.JSONField()
 
     entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
+
+    description = models.TextField(null=True)
+    year_edition = models.IntegerField(null=True)
+    year_first_edition = models.IntegerField(null=True)
 
     # if digital, provide the url
     uri = models.URLField(max_length=2048, null=True)
@@ -509,7 +502,8 @@ class NameAlias(models.Model):
         max_length=32,
         choices=[
             ('author', 'Author'),
-            ('subject', 'Subject'),
+            ('title', 'Title'),
+            ('subtitle', 'Subtitle'),
             ('language', 'Language')
         ]
     )
