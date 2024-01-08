@@ -576,6 +576,7 @@ def spreadsheet_upload_directory(instance, filename):
 class SpreadsheetUpload(models.Model):
     CSV_TYPES = [
         ('calibre', 'Calibre'),
+        ('abebooks_home_base', 'Abebooks Home Base'),
     ]
     user = models.ForeignKey(
         User,

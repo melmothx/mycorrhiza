@@ -105,6 +105,16 @@ def iso_lang_code(code):
     if not code:
         return None
 
+    full_names = {
+        "france": "fr",
+        "francese": "fr",
+        "inglese": "en",
+        "italiano": "it",
+        "spagnolo": "es",
+        "tedesco": "de",
+    }
+
+
     lang_code_re = re.compile(r'^[a-z]{2,3}$', re.IGNORECASE)
     match = lang_code_re.match(code)
     if match:
@@ -296,8 +306,7 @@ def iso_lang_code(code):
         }
         return mapping.get(actual_code, actual_code)
     else:
-        logger.info("Invalid language code passed: " + code)
-        return None
+        return full_names.get(code.lower())
 
 def harvest_oai_pmh(url, opts):
     logger.debug([url, opts])

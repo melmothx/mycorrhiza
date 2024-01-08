@@ -13,6 +13,13 @@ def parse_sheet(csv_type, sheet, **options):
                 "delimiter": ",",
                 "doublequote": True,
             },
+        },
+        "abebooks_home_base": {
+            "encoding": "latin-1",
+            "csv": {
+                "delimiter": ",",
+                "doublequote": True,
+            },
         }
     }
     with open(sheet, newline='', encoding=args[csv_type]['encoding']) as csvfile:
@@ -38,7 +45,21 @@ def normalize_records(csv_type, records):
             ('subject', 'tags', re.compile(r'\s*,\s*')),
             ('identifier', 'uuid', None),
             ('identifier', 'id', None),
+        ],
+        "abebooks_home_base": [
+            ('title', 'Title', None),
+            ('date', 'Publisher Year', None),
+            ('publisher', 'publisher', None),
+            ('description', 'Description', None),
+            ('description', 'Synopsis', None),
+            ('place_date_of_publication_distribution', 'Publisher Place', None),
+            ('isbn', 'Isbn', None),
+            ('language', 'Language', re.compile(r'\s*,\s*')),
+            ('creator', 'Author', re.compile(r'\s*/\s*')),
+            ('subject', 'Keywords', None),
+            ('identifier', 'Book ID', None),
         ]
+
     }
     # let it crash with missing type
     out = []
