@@ -567,6 +567,22 @@ class Exclusion(models.Model):
         if self.exclude_entry:
             queries.append(('entry', self.exclude_entry_id))
         return queries
+    def as_json_data(self):
+        out = {
+            "id": self.id,
+            "comment": self.comment,
+            "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        }
+        if self.exclude_library:
+            out['type'] = 'library'
+            out['target'] = self.exclude_library.name
+        elif self.exclude_author:
+            out['type'] = 'author'
+            out['target'] = self.exclude_author.name
+        elif self.exclude_entry:
+            out['type'] = 'entry'
+            out['target'] = self.exclude_entry.title
+        return out
 
 def spreadsheet_upload_directory(instance, filename):
     choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

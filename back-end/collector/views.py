@@ -10,12 +10,13 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
 import re
+# from django.db import connection
 
 logger = logging.getLogger(__name__)
 
@@ -121,10 +122,14 @@ def exclusions(request):
     logger.debug(request.body)
     out = {}
     data = None
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        out['error'] = "Invalid JSON!";
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            out['error'] = "Invalid JSON!";
+
+    if request.method == 'GET':
+        out['exclusions'] = [ i.as_json_data() for i in request.user.exclusions.all() ]
 
     if data:
         logger.debug(data)
@@ -133,8 +138,8 @@ def exclusions(request):
         what = data.get('type')
         object_id = data.get('id')
         comment = data.get('comment')
-        if op and what and object_id:
-            if op == 'add' and comment:
+        if op and object_id:
+            if op == 'add' and comment and what:
                 if what in [ 'author', 'entry', 'library' ]:
                     creation = {
                         "comment": comment,
@@ -144,11 +149,17 @@ def exclusions(request):
                     logger.debug(creation)
                     exclusion = user.exclusions.create(**creation)
                     out['success'] = exclusion.id
+            elif op == 'delete':
+                try:
+                    target = user.exclusions.get(pk=object_id)
+                    # logger.debug(connection.queries[-1])
+                    target.delete()
+                    # logger.debug(connection.queries[-1])
+                except Exclusion.DoesNotExist:
+                    out['error'] = "Invalid Key"
+                    # logger.debug(connection.queries[-1])
 
-            elif op == 'remove':
-                pass
-            elif op == 'list':
-                pass
+
             else:
                 out['error'] = "Invalid operation {}".format(op)
         else:
