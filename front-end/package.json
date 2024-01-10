@@ -9,9 +9,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "vue": "^3.3.11",
-    "vue-router": "^4.2.5",
-    "axios": "^1.5.1"
+    "axios": "^1.6.5",
+    "vue": "^3.4.5",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
