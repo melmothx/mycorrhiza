@@ -21,7 +21,7 @@ FIELD_MAPPING = {
         'creator':  (2, 'XA', True),
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
-        'library':     (6, 'H',  True),
+        'library':     (6, 'XH',  True),
 }
 # public prefix is 'P'
 
@@ -98,7 +98,7 @@ def search(query_params, active_libraries=[], exclusions=[]):
 
     # logger.info(filter_queries)
     if active_libraries:
-        filter_queries.append(xapian.Query(xapian.Query.OP_OR, [ xapian.Query('H{}'.format(i)) for i in active_libraries ]))
+        filter_queries.append(xapian.Query(xapian.Query.OP_OR, [ xapian.Query('XH{}'.format(i)) for i in active_libraries ]))
     else:
         # this shouldn't happen
         filter_queries.append(xapian.Query('P1'))
@@ -115,6 +115,7 @@ def search(query_params, active_libraries=[], exclusions=[]):
                              xapian.Query(xapian.Query.OP_OR, excluded))
 
     enquire = xapian.Enquire(db)
+    logger.debug(query)
     enquire.set_query(query)
 
     if query_params.get('sort_by'):
@@ -256,8 +257,10 @@ class MycorrhizaIndexer:
                 for v in values:
                     if v:
                         if is_boolean:
+                            logger.debug("Adding boolean {}".format(prefix + str(v['id'])))
                             doc.add_boolean_term(prefix + str(v['id']))
-                        termgenerator.index_text(str(v['value']), 1, prefix)
+                        else:
+                            termgenerator.index_text(str(v['value']), 1, prefix)
                         value_list.append(v)
 
                 doc.add_value(slot, json.dumps(value_list))

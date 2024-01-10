@@ -20,6 +20,8 @@ class Command(BaseCommand):
         parser.add_argument("--nuke-aliases",
                             action="store_true",
                             help="Remove all the aliases and variant relationships (only if --force without --site)")
+        parser.add_argument("--entry",
+                            help="Reindex a single entry")
 
     def handle(self, *args, **options):
         logger.debug(options)
@@ -35,6 +37,12 @@ class Command(BaseCommand):
                 Agent.objects.filter(canonical_agent_id__isnull=False).update(canonical_agent=None)
                 Entry.objects.filter(canonical_entry_id__isnull=False).update(canonical_entry=None)
                 print(connection.queries)
+
+        if options['entry']:
+            indexer = MycorrhizaIndexer()
+            entry = Entry.objects.get(pk=options['entry'])
+            indexer.index_record(entry.indexing_data())
+            return
 
         if options['reindex']:
             indexer = MycorrhizaIndexer()
