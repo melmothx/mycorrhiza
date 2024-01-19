@@ -27,8 +27,26 @@
 <template>
   <div>
     <h4 class="font-semibold">
-      <span>{{ source.library_name }}</span>
+      <span class="text-red-800">{{ source.library_name }}</span>
       <span class="px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
+    </h4>
+    <div v-if="source.authors">
+      <div v-for="author in source.authors" :key="author">
+        {{ author }}
+      </div>
+    </div>
+    <div class="flex">
+      <h3 class="font-semibold mr-1" v-if="source.title">
+        {{ source.title }}
+      </h3>
+      <div v-if="source.languages">
+        <div v-for="lang in source.languages" :key="l">
+          ({{ lang }})
+        </div>
+      </div>
+    </div>
+    <h4 class="italic" v-if="source.subtitle">
+      {{ source.subtitle }}
     </h4>
     <div v-if="source.description">
       {{ source.description }}

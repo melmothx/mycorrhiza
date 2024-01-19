@@ -1,4 +1,3 @@
-from .harvest import extract_fields, iso_lang_code
 import csv
 import logging
 import re

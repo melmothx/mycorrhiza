@@ -346,9 +346,10 @@ class Entry(models.Model):
         # we index the entries
         data_source_records = []
 
-        if self.canonical_entry:
-            data_source_records = []
-        else:
+        # if canonical entry is set, it was merged so it will not be
+        # indexed as such.
+
+        if not self.canonical_entry:
             data_source_records = [ xopr for xopr in self.datasource_set.all() ]
             for variant in self.variant_entries.all():
                 data_source_records.extend([ xopr for xopr in variant.datasource_set.all() ])
@@ -368,9 +369,14 @@ class Entry(models.Model):
         for topr in data_source_records:
             site = topr.site
             library = site.library
+            original_entry = topr.entry
             dsd = {
                 "data_source_id": topr.id,
                 "identifier": topr.oai_pmh_identifier,
+                "title": original_entry.title,
+                "subtitle": original_entry.subtitle,
+                "authors": [ author.name for author in original_entry.authors.all() ],
+                "languages": [ lang.code for lang in original_entry.languages.all() ],
                 "uri": topr.uri,
                 "uri_label": topr.uri_label,
                 "content_type": topr.content_type,

@@ -257,7 +257,7 @@ class MycorrhizaIndexer:
                 for v in values:
                     if v:
                         if is_boolean:
-                            logger.debug("Adding boolean {}".format(prefix + str(v['id'])))
+                            # logger.debug("Adding boolean {}".format(prefix + str(v['id'])))
                             doc.add_boolean_term(prefix + str(v['id']))
                         else:
                             termgenerator.index_text(str(v['value']), 1, prefix)
@@ -285,14 +285,32 @@ class MycorrhizaIndexer:
             termgenerator.increase_termpos()
             values = record.get(field)
             for v in values:
+                # logger.debug("Indexing {} {}".format(field, v['value']))
                 termgenerator.index_text(v['value'])
+
+        # This can be used to prevent phrase searches from spanning
+        # two unconnected blocks of text (e.g. the title and body
+        # text).
+        termgenerator.increase_termpos()
+
+        # index the original authors and titles as received,
+        # regardless of the merging (which is the boolean ones).
+
+        for dsd in record['data_sources']:
+            # index the original author as a string
+            for value in dsd.get('authors'):
+                termgenerator.index_text(value)
+            for field in [ 'title', 'subtitle' ]:
+                value = dsd.get(field)
+                if value:
+                    termgenerator.index_text(value)
 
         for field in ['description', 'material_description']:
             termgenerator.increase_termpos()
             for dsd in record['data_sources']:
                 value = dsd.get(field)
                 if value:
-                    logger.debug("Indexing {} {}".format(field, value))
+                    # logger.debug("Indexing {} {}".format(field, value))
                     termgenerator.index_text(value)
 
 
