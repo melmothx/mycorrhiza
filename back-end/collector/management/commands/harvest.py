@@ -4,6 +4,7 @@ from collector.models import Site, Entry, Agent
 import shutil
 import logging
 from django.db import connection
+import requests.exceptions
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
@@ -59,4 +60,7 @@ class Command(BaseCommand):
             rs = rs.filter(url__contains=options['site'])
 
         for site in rs.all():
-            site.harvest(options['force'])
+            try:
+                site.harvest(options['force'])
+            except requests.exceptions.ConnectionError:
+                print("Failure on connection to {}, skpping".format(site.url))
