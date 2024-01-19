@@ -65,10 +65,12 @@ class MarcXMLRecord(Record):
             ('trade_price_value', '365', ('b')),
             ('trade_price_currency', '365', ('c')),
             ('subject', '653', ('a')),
+            ('aggregation', '773', ('t', 'g', 'z', 'q', 'd')),
         ]
         structured = {
             'uri_info': ('uri', 'content_type', 'label'),
             'agent_details': ('name', 'dates', 'relationship', 'relator_term'),
+            'aggregation': ('name', 'issue', 'isbn', 'order', 'place_date_publisher'),
         }
         out = {}
         # expecting just one though
