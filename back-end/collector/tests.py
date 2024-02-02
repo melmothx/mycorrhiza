@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Entry, Agent, Site, DataSource
+from .models import Entry, Agent, Site, DataSource, Library
 from datetime import datetime, timezone
 
 class AliasesTestCase(TestCase):
@@ -9,11 +9,9 @@ class AliasesTestCase(TestCase):
         pinco.canonical_agent = pincu
         pinco.save()
         entrya = Entry.objects.create(title="Pizzaa",
-                                      year_edition="1900",
                                       checksum="XX")
         entrya.authors.set([ pinco ])
         entryb = Entry.objects.create(title="Pizzab",
-                                      year_edition="1900",
                                       checksum="XX")
         entryb.authors.set([ pincu ])
         entrya.canonical_entry = entryb
@@ -25,7 +23,6 @@ class AliasesTestCase(TestCase):
             print(xapian)
             # self.assertEqual(xapian['title'][0], 'Pizzab')
             self.assertEqual(xapian['creator'][0]['value'], 'Pincic Pallinic')
-            self.assertEqual(xapian['date'][0]['value'], 1900)
 
 class SitePrivateTestCase(TestCase):
     def setUp(self):
@@ -33,7 +30,6 @@ class SitePrivateTestCase(TestCase):
         counter = 0
         entry = Entry.objects.create(
             title="Pizza",
-            year_edition="1900",
             checksum="XX",
         )
         for public in (True, False):
@@ -48,10 +44,15 @@ class SitePrivateTestCase(TestCase):
                     name = name + "-active"
                 else:
                     name = name + "-inactive"
+                library = Library.objects.create(
+                    name=name,
+                    public=public,
+                    active=active,
+                )
                 site = Site.objects.create(
+                    library=library,
                     title=name,
                     url="https://name.org",
-                    public=public,
                     active=active,
                 )
                 identifier = "oai:" + name + str(counter)
@@ -68,13 +69,13 @@ class SitePrivateTestCase(TestCase):
         self.assertEqual(entry.indexing_data()['unique_source'], 0)
         self.assertEqual(entry.indexing_data()['public'], True)
 
-        Site.objects.filter(public=True, active=True).update(active=False)
+        Library.objects.filter(public=True, active=True).update(active=False)
         self.assertEqual(entry.indexing_data()['public'], False)
 
-        Site.objects.filter(title="public-active").update(active=True)
+        Library.objects.filter(name="public-active").update(active=True)
         self.assertEqual(entry.indexing_data()['public'], True)
 
-        Site.objects.filter(title="public-active").update(public=False)
+        Library.objects.filter(name="public-active").update(public=False)
         self.assertEqual(entry.indexing_data()['public'], False)
 
         self.assertEqual(entry.indexing_data()['unique_source'], 0)
@@ -82,15 +83,19 @@ class SitePrivateTestCase(TestCase):
 
 class UniqueSiteTestCase(TestCase):
     def setUp(self):
-        site = Site.objects.create(
-            title="Test",
+        library = Library.objects.create(
+            name="Test",
             url="https://name.org",
             public=True,
             active=True,
         )
+        site = Site.objects.create(
+            library=library,
+            title="Test",
+            url="https://name.org",
+        )
         entry = Entry.objects.create(
             title="Pizza",
-            year_edition="1900",
             checksum="XX",
         )
         datasource = DataSource.objects.create(

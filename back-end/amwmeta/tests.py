@@ -22,7 +22,6 @@ class HarvestTestCase(unittest.TestCase):
         # print(rec)
         self.assertEqual(rec['title'], "First  and second part")
         self.assertEqual(rec['authors'], [ "Pinco", "Pallino" ])
-        self.assertEqual(rec['subjects'], [ "Sub1", "Sub2" ])
         self.assertEqual(rec['languages'], [ "en", "it" ])
         self.assertEqual(rec['subtitle'], "Sub   Title ")
         self.assertEqual(rec['year_first_edition'], "1900")
