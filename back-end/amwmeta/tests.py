@@ -28,6 +28,8 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec['year_edition'], "2023")
         self.assertEqual(rec['uri'], "http://example.com/xx")
         self.assertEqual(rec['uri_label'], "XX")
+        self.assertEqual(rec['aggregation_names'], [])
+        self.assertEqual(rec['aggregations'], [])
 
         rec2 = extract_fields({
             "title": [ "First", " and second part" ],
@@ -50,8 +52,7 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec2['uri_label'], "Y")
         self.assertEqual(rec2['content_type'], "Z")
         self.assertEqual(rec2['languages'], [ "en", "it" ])
-
-        self.assertEqual(rec['checksum'], rec2['checksum'], msg="Checksum ok")
+        self.assertEqual(rec2['checksum'], rec['checksum'], msg="Checksum ok")
         rec3 = extract_fields({
             "title": [ "Firstx", " and second part" ],
             "creator": [ "Pinco", "Pallino" ],
@@ -63,7 +64,7 @@ class HarvestTestCase(unittest.TestCase):
             "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
             "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
         }, "pippo.org")
-        self.assertNotEqual(rec['checksum'], rec3['checksum'], msg="Checksum not matching, title changed")
+        self.assertNotEqual(rec3['checksum'], rec['checksum'], msg="Checksum not matching, title changed")
         self.assertEqual(rec3['uri'], "http://example.com/xx")
         self.assertEqual(rec3['languages'], [ "en", "it" ])
         rec4 = extract_fields({
@@ -78,6 +79,62 @@ class HarvestTestCase(unittest.TestCase):
             "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
         }, "pippo.org")
         self.assertEqual(rec4['languages'], [ "enx", "itx" ])
+
+        rec5 = extract_fields({
+            "title": [ "Firstx", " and second part" ],
+            "creator": [ "Pinco", "Pallino" ],
+            "subject": [ "xx", "yz" ],
+            "language": [ "enx", "itx" ],
+            "date": [ "x 1999 1900 x2023", "x 2012 xxx" ],
+            "subtitle": [ "Sub ", " Title " ],
+            "description": [ "desc1 xx ", "desc2 xafasd" ],
+            "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
+            "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
+             "aggregation": [{'issue': '101',
+                              'name': 'My Aggregation',
+                              'order': '21',
+                              'place_date_publisher': 'March 19-April 1, 1970'}],
+
+        }, "pippo.org")
+        self.assertNotEqual(rec5['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
+        self.assertEqual(rec5['aggregation_names'], [ 'My Aggregation 101' ])
+        self.assertEqual(rec5['aggregations'], [{'issue': '101',
+                                                 'name': 'My Aggregation',
+                                                 'order': '21',
+                                                 'place_date_publisher': 'March 19-April 1, 1970'}])
+
+        rec6 = extract_fields({
+            "title": [ "Firstx", " and second part" ],
+            "creator": [ "Pinco", "Pallino" ],
+            "subject": [ "xx", "yz" ],
+            "language": [ "enx", "itx" ],
+            "date": [ "x 1999 1900 x2023", "x 2012 xxx" ],
+            "subtitle": [ "Sub ", " Title " ],
+            "description": [ "desc1 xx ", "desc2 xafasd" ],
+            "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
+            "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
+             "aggregation": [{ 'name': 'My Aggregation' }]
+        }, "pippo.org")
+        self.assertNotEqual(rec6['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
+        self.assertEqual(rec6['aggregation_names'], [ 'My Aggregation' ])
+        self.assertEqual(rec6['aggregations'], [{ 'name': 'My Aggregation' }])
+
+        rec7 = extract_fields({
+            "title": [ "Firstx", " and second part" ],
+            "creator": [ "Pinco", "Pallino" ],
+            "subject": [ "xx", "yz" ],
+            "language": [ "enx", "itx" ],
+            "date": [ "x 1999 1900 x2023", "x 2012 xxx" ],
+            "subtitle": [ "Sub ", " Title " ],
+            "description": [ "desc1 xx ", "desc2 xafasd" ],
+            "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
+            "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
+             "aggregation": [{ 'issue': 'No name' }]
+        }, "pippo.org")
+        self.assertEqual(rec7['checksum'], rec4['checksum'], "Checksum equal because of invalid aggregation")
+        self.assertEqual(rec7['aggregation_names'], [])
+        self.assertEqual(rec7['aggregations'], [])
+
 
     def test_sheet(self):
         rec = {

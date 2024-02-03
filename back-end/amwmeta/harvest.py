@@ -385,12 +385,26 @@ def extract_fields(record, hostname):
     if record.get('physical_description'):
         out['material_description'] = ' '.join(record.get('physical_description'))
 
+    out['aggregations'] = []
+    record['aggregation_names'] = []
+    for agg in record.get('aggregation', []):
+        if agg.get('name'):
+            full_name = [ agg.get('name') ]
+            if agg.get('issue'):
+                full_name.append(agg.get('issue'))
+            record['aggregation_names'].append(' '.join(full_name))
+            out['aggregations'].append(agg)
+
     mapping = {
         "title": {
             "checksum": True,
         },
         "creator": {
             "list": "authors",
+            "checksum": True,
+        },
+        "aggregation_names": {
+            "list": "aggregation_names",
             "checksum": True,
         },
         "language": {
