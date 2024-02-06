@@ -160,23 +160,23 @@ class Site(models.Model):
     def process_harvested_record(self, record, aliases, now):
         authors = []
         languages = []
-        try:
-            for author in record.pop('authors', []):
-                obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
-                authors.append(obj)
-        except KeyError:
-            pass
+        for author in record.pop('authors', []):
+            author_name = author
+            if aliases and aliases.get('author'):
+                author_name=aliases['author'].get(author, author)
+            obj, was_created = Agent.objects.get_or_create(name=author_name)
+            authors.append(obj)
 
-        try:
-            for language in record.pop('languages', []):
-                lang = language[0:3]
-                obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
-                languages.append(obj)
-        except KeyError:
-            pass
+        for language in record.pop('languages', []):
+            lang = language[0:3]
+            if aliases and aliases.get('language'):
+                lang = aliases['language'].get(lang, lang)
+            obj, was_created = Language.objects.get_or_create(code=lang)
+            languages.append(obj)
 
         # logger.debug(record)
         identifier = record.pop('identifier')
+
         opr_attributes = [
             'full_data',
             'uri',
@@ -198,7 +198,9 @@ class Site(models.Model):
             f_value = record.get(f)
             if f_value and len(f_value) > 250:
                 f_value = f_value[0:250] + '...'
-            record[f] = aliases[f].get(f_value, f_value)
+            if aliases and aliases.get(f):
+                f_value = aliases[f].get(f_value, f_value)
+            record[f] = f_value
 
         # if the OAI-PMH record has already a entry attached from a
         # previous run, that's it, just update it.
