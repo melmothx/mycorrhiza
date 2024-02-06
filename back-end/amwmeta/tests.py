@@ -101,7 +101,10 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec5['aggregations'], [{'issue': '101',
                                                  'name': 'My Aggregation',
                                                  'order': '21',
-                                                 'place_date_publisher': 'March 19-April 1, 1970'}])
+                                                 'place_date_publisher': 'March 19-April 1, 1970',
+                                                 'identifier': 'aggregation:pippo.org:My Aggregation:101',
+                                                 'full_aggregation_name': 'My Aggregation 101',
+                                                 }])
 
         rec6 = extract_fields({
             "title": [ "Firstx", " and second part" ],
@@ -117,7 +120,11 @@ class HarvestTestCase(unittest.TestCase):
         }, "pippo.org")
         self.assertNotEqual(rec6['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
         self.assertEqual(rec6['aggregation_names'], [ 'My Aggregation' ])
-        self.assertEqual(rec6['aggregations'], [{ 'name': 'My Aggregation' }])
+        self.assertEqual(rec6['aggregations'], [{
+            'name': 'My Aggregation',
+            'full_aggregation_name': 'My Aggregation',
+            'identifier': 'aggregation:pippo.org:My Aggregation',
+        }])
 
         rec7 = extract_fields({
             "title": [ "Firstx", " and second part" ],

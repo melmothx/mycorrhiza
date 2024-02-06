@@ -390,9 +390,13 @@ def extract_fields(record, hostname):
     for agg in record.get('aggregation', []):
         if agg.get('name'):
             full_name = [ agg.get('name') ]
+            agg['identifier'] = 'aggregation:{}:{}'.format(hostname, agg['name'])
             if agg.get('issue'):
                 full_name.append(agg.get('issue'))
-            record['aggregation_names'].append(' '.join(full_name))
+                agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, agg['name'], agg['issue'])
+            full_name_str = ' '.join(full_name)
+            agg['full_aggregation_name'] = full_name_str
+            record['aggregation_names'].append(full_name_str)
             out['aggregations'].append(agg)
 
     mapping = {
