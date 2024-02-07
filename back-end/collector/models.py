@@ -209,6 +209,9 @@ class Site(models.Model):
             opr.delete()
             return entry
 
+        if not record.get('checksum'):
+            raise Exception("Expecting checksum in normal entry")
+
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
@@ -281,7 +284,7 @@ class Entry(models.Model):
     authors = models.ManyToManyField(Agent, related_name="authored_entries")
     languages = models.ManyToManyField(Language)
     checksum = models.CharField(max_length=255)
-
+    is_aggregation = models.BooleanField(default=False)
     canonical_entry = models.ForeignKey(
         'self',
         null=True,
@@ -487,6 +490,7 @@ class DataSource(models.Model):
     shelf_location_code = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    is_aggregation = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -521,6 +525,36 @@ class DataSource(models.Model):
                 return r.text
         else:
             return None
+
+
+# linking table between entries for aggregations
+
+class AggregationEntry(models.Model):
+    aggregation = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregated_entries")
+    aggregated  = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregation_entries")
+    order = models.IntegerField(null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['aggregation', 'aggregated'],
+                name='unique_entry_aggregation_aggregated'
+            ),
+        ]
+        verbose_name_plural = "Aggregation Entries"
+
+# linking table between datasource for aggregations
+
+class AggregationDataSource(models.Model):
+    aggregation = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregated_data_sources")
+    aggregated  = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregation_data_sources")
+    order = models.IntegerField(null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['aggregation', 'aggregated'],
+                name='unique_data_source_aggregation_aggregated'
+            ),
+        ]
 
 class NameAlias(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)

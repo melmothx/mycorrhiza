@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Entry, Agent, Site, DataSource, Library
+from .models import Entry, Agent, Site, DataSource, Library, Language
 from datetime import datetime, timezone
 
 class AliasesTestCase(TestCase):
@@ -20,7 +20,7 @@ class AliasesTestCase(TestCase):
         for entry in Entry.objects.all():
             # print(entry.indexing_data())
             xapian = entry.indexing_data()
-            print(xapian)
+            # print(xapian)
             # self.assertEqual(xapian['title'][0], 'Pizzab')
             self.assertEqual(xapian['creator'][0]['value'], 'Pincic Pallinic')
 
@@ -110,3 +110,47 @@ class UniqueSiteTestCase(TestCase):
         site = Site.objects.first()
         self.assertEqual(entry.indexing_data()['unique_source'], site.id)
 
+class AggregationProcessingTestCase(TestCase):
+    def setUp(self):
+        print("Setting up aggregation testing")
+        library = Library.objects.create(
+            name="Test",
+            url="https://name.org",
+            public=True,
+            active=True,
+        )
+        site = Site.objects.create(
+            library=library,
+            title="Test",
+            url="https://name.org",
+        )
+    def test_processing(self):
+        site = Site.objects.first()
+        record = {
+            'aggregations': [{
+                'issue': '1',
+                'name': 'Pizza',
+                'order': '21',
+                'place_date_publisher': 'March 19-April 1, 1970',
+                'full_aggregation_name': 'Pizza',
+                'identifier': 'aggregation:name.org:Pizza:1',
+            }],
+            'authors': ['Pinco Pallino'],
+            'checksum': 'b173c30f6ca88428bdba283dbfa4aa182bc297d9de3158fc95be368f22b60969',
+            'content_type': 'text/html',
+            'description': 'Random desc',
+            'languages': ['en'],
+            'subtitle': '',
+            'title': 'My Article',
+            'uri': 'https://amusewiki.org/library/manual',
+            'uri_label': 'Landing page',
+            'year_edition': '2022',
+            'identifier': 'xyz',
+            'full_data': {},
+            'deleted': False,
+        }
+        site.process_harvested_record(record, None, datetime.now(timezone.utc))
+        self.assertEqual(Agent.objects.count(), 1)
+        self.assertEqual(Language.objects.count(), 1)
+        self.assertEqual(Entry.objects.count(), 2, "One for the article and one for the aggregation")
+        self.assertEqual(DataSource.objects.count(), 2, "One for the article and one for the aggregation")

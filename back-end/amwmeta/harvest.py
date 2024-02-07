@@ -391,6 +391,7 @@ def extract_fields(record, hostname):
     for agg in record.get('aggregation', []):
         aggregation_name = agg.get('name')
         if aggregation_name:
+            asha = hashlib.sha256()
             full_name = [ aggregation_name ]
             item_identifier = agg.get('item_identifier')
             identifier = item_identifier if item_identifier else aggregation_name
@@ -404,6 +405,8 @@ def extract_fields(record, hostname):
 
             full_name_str = ' '.join(full_name)
             agg['full_aggregation_name'] = full_name_str
+            asha.update(full_name_str.encode())
+            agg['checksum'] = asha.hexdigest()
             record['aggregation_names'].append(agg['identifier'])
             out['aggregations'].append(agg)
 
@@ -460,5 +463,7 @@ def extract_fields(record, hostname):
                 sha.update(out[outfield].encode())
 
     out['checksum'] = sha.hexdigest()
+    # this was used only for the checksum
+    out.pop('aggregation_names')
     return out
 

@@ -28,7 +28,6 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec['year_edition'], "2023")
         self.assertEqual(rec['uri'], "http://example.com/xx")
         self.assertEqual(rec['uri_label'], "XX")
-        self.assertEqual(rec['aggregation_names'], [])
         self.assertEqual(rec['aggregations'], [])
 
         rec2 = extract_fields({
@@ -97,7 +96,6 @@ class HarvestTestCase(unittest.TestCase):
 
         }, "pippo.org")
         self.assertNotEqual(rec5['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
-        self.assertEqual(rec5['aggregation_names'], [ 'aggregation:pippo.org:My Aggregation:101' ])
         self.assertEqual(rec5['aggregations'], [{'issue': '101',
                                                  'name': 'My Aggregation',
                                                  'order': '21',
@@ -119,7 +117,6 @@ class HarvestTestCase(unittest.TestCase):
              "aggregation": [{ 'name': 'My Aggregation' }]
         }, "pippo.org")
         self.assertNotEqual(rec6['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
-        self.assertEqual(rec6['aggregation_names'], [ 'aggregation:pippo.org:My Aggregation' ])
         self.assertEqual(rec6['aggregations'], [{
             'name': 'My Aggregation',
             'full_aggregation_name': 'My Aggregation',
@@ -139,7 +136,6 @@ class HarvestTestCase(unittest.TestCase):
              "aggregation": [{ 'issue': 'No name' }]
         }, "pippo.org")
         self.assertEqual(rec7['checksum'], rec4['checksum'], "Checksum equal because of invalid aggregation")
-        self.assertEqual(rec7['aggregation_names'], [])
         self.assertEqual(rec7['aggregations'], [])
 
         rec8 = extract_fields({
