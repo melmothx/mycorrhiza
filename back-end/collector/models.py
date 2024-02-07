@@ -532,7 +532,7 @@ class DataSource(models.Model):
 class AggregationEntry(models.Model):
     aggregation = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregated_entries")
     aggregated  = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregation_entries")
-    order = models.IntegerField(null=True)
+    sorting_pos = models.IntegerField(null=True)
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -547,7 +547,7 @@ class AggregationEntry(models.Model):
 class AggregationDataSource(models.Model):
     aggregation = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregated_data_sources")
     aggregated  = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregation_data_sources")
-    order = models.IntegerField(null=True)
+    sorting_pos = models.IntegerField(null=True)
     class Meta:
         constraints = [
             models.UniqueConstraint(
