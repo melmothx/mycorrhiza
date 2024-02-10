@@ -197,11 +197,13 @@ class AggregationProcessingTestCase(TestCase):
         # twice so we test the idempotency
         site.process_harvested_record(copy.deepcopy(record), None, datetime.now(timezone.utc))
         site.process_harvested_record(copy.deepcopy(record), None, datetime.now(timezone.utc))
-        for entry in Entry.objects.filter(is_aggregation=True).all():
-            print("# Aggregation: " + entry.title)
         self.assertEqual(Agent.objects.count(), 3)
         self.assertEqual(Language.objects.count(), 1)
         self.assertEqual(Entry.objects.count(), 3,
                          "One entry for the article and two for the aggregations")
         self.assertEqual(DataSource.objects.count(), 3,
                          "One DS for the article and two for the aggregations")
+        self.assertEqual(Entry.objects.filter(is_aggregation=True).count(), 2)
+        self.assertEqual(DataSource.objects.filter(is_aggregation=True).count(), 2)
+        for entry in Entry.objects.filter(is_aggregation=True).all():
+            print(entry.indexing_data())

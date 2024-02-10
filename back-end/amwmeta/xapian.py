@@ -268,6 +268,7 @@ class MycorrhizaIndexer:
         for field in SORTABLE_FIELDS:
             slot, sort_type = SORTABLE_FIELDS[field]
             sort_value = record.get(field)
+            # print("Sort value for {} is {}".format(field, sort_value))
             if sort_value is not None and len(sort_value) > 0:
                 # print(sort_value)
                 if sort_type == 'number':

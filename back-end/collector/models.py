@@ -233,7 +233,7 @@ class Site(models.Model):
             ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
 
         for f in [ 'title', 'subtitle' ]:
-            f_value = record.get(f)
+            f_value = record.get(f, '')
             if f_value and len(f_value) > 250:
                 f_value = f_value[0:250] + '...'
             if aliases and aliases.get(f):
@@ -255,7 +255,7 @@ class Site(models.Model):
             try:
                 entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
             except Entry.DoesNotExist:
-                entry = Entry.objects.create(**record)
+                entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
             ds.entry = entry
             ds.save()
 
@@ -434,7 +434,7 @@ class Entry(models.Model):
                 "year_edition": topr.year_edition,
                 "year_first_edition": topr.year_first_edition,
                 "material_description": topr.material_description,
-                "downloads": site.amusewiki_formats,
+                "downloads": [] if topr.is_aggregation else site.amusewiki_formats,
             }
             if library.active and library.public:
                 record_is_public = True
