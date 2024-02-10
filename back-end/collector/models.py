@@ -97,7 +97,7 @@ class Site(models.Model):
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
 
-    def harvest(self, force):
+    def harvest(self, force=False, oai_set=None):
         self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
@@ -107,9 +107,14 @@ class Site(models.Model):
         }
         last_harvested = self.last_harvested_zulu()
         logger.debug([ force, last_harvested ])
+        set_last_harvested = True
         if last_harvested and not force:
             opts['from'] = last_harvested
-        if self.oai_set:
+        if oai_set:
+            opts['set'] = oai_set
+            set_last_harvested = False
+            opts.pop('from', None)
+        elif self.oai_set:
             opts['set'] = self.oai_set
 
         xapian_records = []
@@ -137,9 +142,9 @@ class Site(models.Model):
             for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
         # and index
-        self.index_harvested_records(xapian_records, force, now)
+        self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
 
-    def index_harvested_records(self, xapian_records, force, now):
+    def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
         indexer = MycorrhizaIndexer()
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
@@ -152,8 +157,10 @@ class Site(models.Model):
             msg = "Total indexed: " + str(len(logs))
             logger.info(msg)
             logs.append(msg)
-            self.last_harvested = now
-            self.save()
+            if set_last_harvested:
+                logger.info("Setting last harvested to {}".format(now))
+                self.last_harvested = now
+                self.save()
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
 
     def process_harvested_record(self, record, aliases, now):
@@ -707,7 +714,7 @@ class SpreadsheetUpload(models.Model):
             record['deleted'] = False
             for entry in site.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
-        site.index_harvested_records(xapian_records, self.replace_all, now)
+        site.index_harvested_records(xapian_records, force=self.replace_all, now=now)
         self.processed = now
         self.save()
 
