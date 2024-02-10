@@ -134,8 +134,7 @@ class Site(models.Model):
             record['identifier'] = rec.header.identifier
             record['full_data'] = full_data
 
-            entry = self.process_harvested_record(record, aliases, now)
-            if entry:
+            for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
         # and index
         self.index_harvested_records(xapian_records, force, now)
@@ -158,6 +157,28 @@ class Site(models.Model):
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
 
     def process_harvested_record(self, record, aliases, now):
+        aggregations = record.pop('aggregations', [])
+        entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
+        out = [ entry ]
+        for agg in aggregations:
+            agg_record = {
+                "title": agg['full_aggregation_name'],
+                "full_data": agg,
+                "identifier": agg['identifier'],
+                "uri": agg.get('linkage'),
+                "uri_label": ds.uri_label,
+                "year_edition": ds.year_edition,
+                "year_first_edition": ds.year_first_edition,
+                "content_type": ds.content_type,
+                "deleted": False,
+                "checksum": agg['checksum'],
+            }
+            agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
+            out.append(agg_entry)
+        return out
+
+    def _process_single_harvested_record(self, record, aliases, now, is_aggregation=False):
+
         authors = []
         languages = []
         for author in record.pop('authors', []):
@@ -174,10 +195,12 @@ class Site(models.Model):
             obj, was_created = Language.objects.get_or_create(code=lang)
             languages.append(obj)
 
+
+
         # logger.debug(record)
         identifier = record.pop('identifier')
 
-        opr_attributes = [
+        ds_attributes = [
             'full_data',
             'uri',
             'uri_label',
@@ -188,12 +211,20 @@ class Site(models.Model):
             'year_first_edition',
             'description',
         ]
-        opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
-        opr_attrs['datetime'] = now
-        opr, opr_created = self.datasource_set.update_or_create(
-            oai_pmh_identifier=identifier,
-            defaults=opr_attrs
-        )
+        ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
+        ds_attrs['datetime'] = now
+        ds_identifiers = {
+            "oai_pmh_identifier": identifier,
+            "is_aggregation": is_aggregation,
+        }
+        try:
+            ds = self.datasource_set.get(**ds_identifiers)
+            for attr, value in ds_attrs.items():
+                setattr(ds, attr, value)
+            ds.save()
+        except DataSource.DoesNotExist:
+            ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
+
         for f in [ 'title', 'subtitle' ]:
             f_value = record.get(f)
             if f_value and len(f_value) > 250:
@@ -204,10 +235,10 @@ class Site(models.Model):
 
         # if the OAI-PMH record has already a entry attached from a
         # previous run, that's it, just update it.
-        entry = opr.entry
+        entry = ds.entry
         if record.pop('deleted'):
-            opr.delete()
-            return entry
+            ds.delete()
+            return (entry, None)
 
         if not record.get('checksum'):
             raise Exception("Expecting checksum in normal entry")
@@ -215,11 +246,11 @@ class Site(models.Model):
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
-                entry = Entry.objects.get(checksum=record['checksum'])
+                entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
             except Entry.DoesNotExist:
                 entry = Entry.objects.create(**record)
-            opr.entry = entry
-            opr.save()
+            ds.entry = entry
+            ds.save()
 
         # update the entry and assign the many to many
         for attr, value in record.items():
@@ -228,7 +259,7 @@ class Site(models.Model):
         entry.authors.set(authors)
         entry.languages.set(languages)
         entry.save()
-        return entry
+        return (entry, ds)
 
 
 
@@ -674,8 +705,7 @@ class SpreadsheetUpload(models.Model):
                 record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])
             record['full_data'] = full
             record['deleted'] = False
-            entry = site.process_harvested_record(record, aliases, now)
-            if entry:
+            for entry in site.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
         site.index_harvested_records(xapian_records, self.replace_all, now)
         self.processed = now

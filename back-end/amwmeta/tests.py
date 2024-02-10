@@ -5,7 +5,6 @@ from .sheets import normalize_records
 
 class HarvestTestCase(unittest.TestCase):
     def setUp(self):
-        print("Setting up amwmeta tests")
         pass
     def test_extraction(self):
         rec = extract_fields({
@@ -96,12 +95,13 @@ class HarvestTestCase(unittest.TestCase):
 
         }, "pippo.org")
         self.assertNotEqual(rec5['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
+        self.assertTrue(rec5['aggregations'][0].pop('checksum'))
         self.assertEqual(rec5['aggregations'], [{'issue': '101',
                                                  'name': 'My Aggregation',
                                                  'order': '21',
                                                  'place_date_publisher': 'March 19-April 1, 1970',
                                                  'identifier': 'aggregation:pippo.org:My Aggregation:101',
-                                                 'full_aggregation_name': 'My Aggregation 101',
+                                                 'full_aggregation_name': 'My Aggregation 101 (March 19-April 1, 1970)',
                                                  }])
 
         rec6 = extract_fields({
@@ -117,6 +117,7 @@ class HarvestTestCase(unittest.TestCase):
              "aggregation": [{ 'name': 'My Aggregation' }]
         }, "pippo.org")
         self.assertNotEqual(rec6['checksum'], rec4['checksum'], "Checksum changed because of aggregation")
+        self.assertTrue(rec6['aggregations'][0].pop('checksum'))
         self.assertEqual(rec6['aggregations'], [{
             'name': 'My Aggregation',
             'full_aggregation_name': 'My Aggregation',

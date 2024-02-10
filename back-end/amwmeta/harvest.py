@@ -402,6 +402,8 @@ def extract_fields(record, hostname):
                 # extend the identifier only if we need a surrogate
                 if not item_identifier:
                     agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, identifier, agg['issue'])
+            if agg.get('place_date_publisher'):
+                full_name.append("({})".format(agg['place_date_publisher']))
 
             full_name_str = ' '.join(full_name)
             agg['full_aggregation_name'] = full_name_str

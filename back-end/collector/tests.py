@@ -1,6 +1,8 @@
 from django.test import TestCase
 from .models import Entry, Agent, Site, DataSource, Library, Language
 from datetime import datetime, timezone
+from amwmeta.harvest import extract_fields
+import copy
 
 class AliasesTestCase(TestCase):
     def setUp(self):
@@ -112,7 +114,6 @@ class UniqueSiteTestCase(TestCase):
 
 class AggregationProcessingTestCase(TestCase):
     def setUp(self):
-        print("Setting up aggregation testing")
         library = Library.objects.create(
             name="Test",
             url="https://name.org",
@@ -126,31 +127,81 @@ class AggregationProcessingTestCase(TestCase):
         )
     def test_processing(self):
         site = Site.objects.first()
-        record = {
-            'aggregations': [{
-                'issue': '1',
-                'name': 'Pizza',
-                'order': '21',
-                'place_date_publisher': 'March 19-April 1, 1970',
-                'full_aggregation_name': 'Pizza',
-                'identifier': 'aggregation:name.org:Pizza:1',
-            }],
-            'authors': ['Pinco Pallino'],
-            'checksum': 'b173c30f6ca88428bdba283dbfa4aa182bc297d9de3158fc95be368f22b60969',
-            'content_type': 'text/html',
-            'description': 'Random desc',
-            'languages': ['en'],
-            'subtitle': '',
-            'title': 'My Article',
-            'uri': 'https://amusewiki.org/library/manual',
-            'uri_label': 'Landing page',
-            'year_edition': '2022',
-            'identifier': 'xyz',
-            'full_data': {},
-            'deleted': False,
-        }
-        site.process_harvested_record(record, None, datetime.now(timezone.utc))
-        self.assertEqual(Agent.objects.count(), 1)
+        marc = {'added_entry_personal_name': [],
+                'added_entry_place_publisher_date': [],
+                'added_entry_relator_term': [],
+                'added_entry_title': [],
+                'agent_details': [{'name': 'Pinco Pallino', 'relator_term': 'author'},
+                                  {'name': 'Marco Pessotto', 'relator_term': 'author'},
+                                  {'name': 'Tizio Caio Sempronio', 'relator_term': 'author'}],
+                'aggregation': [{'issue': '2',
+                                 'item_identifier': 'test-1',
+                                 'linkage': 'https://staging.amusewiki.org/aggregation/test-1',
+                                 'name': 'First Test',
+                                 'order': '1',
+                                 'place_date_publisher': 'A Nice place 2023'},
+                                {'issue': '2',
+                                 'item_identifier': 'test-2',
+                                 'linkage': 'https://staging.amusewiki.org/aggregation/test-2',
+                                 'name': 'Second Test',
+                                 'order': '1',
+                                 'place_date_publisher': 'Another place'}],
+                'content_type': ['text'],
+                'country_of_publishing': [],
+                'creator': ['Pinco Pallino', 'Marco Pessotto', 'Tizio Caio Sempronio'],
+                'cumulative_index_aids_note': [],
+                'date': ['2022'],
+                'description': ['Everything you have to know about the Text::Amuse markup. '
+                                'Last updated for version 1.81 (1.81 March 29, 2022).',
+                                'Catalog Number: x145'],
+                'dissertation_note': [],
+                'edition_statement': [],
+                'former_title': [],
+                'general_note': [],
+                'identifier': [],
+                'isbn': [],
+                'issn': [],
+                'issuing_body_note': [],
+                'koha_uri': [],
+                'language': ['en'],
+                'national_bibliography_number': [],
+                'numbering_peculiarities__note': [],
+                'physical_description': [],
+                'place_date_of_publication_distribution': ['2022'],
+                'preceding_entry_place_publisher_date': [],
+                'preceding_entry_relationship_information': [],
+                'preceding_entry_title': [],
+                'publisher': [],
+                'rights': [],
+                'serial_enumeration_caption': [],
+                'shelf_location_code': ['SLC-123'],
+                'subject': ['doc', 'howto'],
+                'subtitle': ['The writer’s guide'],
+                'supplement_relationship_information': [],
+                'terms_of_availability': [],
+                'title': ['The Text::Amuse markup manual'],
+                'title_for_search': [],
+                'trade_price_currency': [],
+                'trade_price_value': ['43'],
+                'uri': ['https://staging.amusewiki.org/library/manual'],
+                'uri_info': [{'content_type': 'text/html',
+                              'label': 'Landing page',
+                              'uri': 'https://staging.amusewiki.org/library/manual'}],
+                'with_note': [],
+                'wrong_issn': []}
+        hostname = 'staging.amusewiki.org'
+        record = extract_fields(marc, hostname)
+        record['identifier'] = 'oai:{}:{}'.format(hostname, 'pizza-pizza')
+        record['full_data'] = record
+        record['deleted'] = False
+        # twice so we test the idempotency
+        site.process_harvested_record(copy.deepcopy(record), None, datetime.now(timezone.utc))
+        site.process_harvested_record(copy.deepcopy(record), None, datetime.now(timezone.utc))
+        for entry in Entry.objects.filter(is_aggregation=True).all():
+            print("# Aggregation: " + entry.title)
+        self.assertEqual(Agent.objects.count(), 3)
         self.assertEqual(Language.objects.count(), 1)
-        self.assertEqual(Entry.objects.count(), 2, "One for the article and one for the aggregation")
-        self.assertEqual(DataSource.objects.count(), 2, "One for the article and one for the aggregation")
+        self.assertEqual(Entry.objects.count(), 3,
+                         "One entry for the article and two for the aggregations")
+        self.assertEqual(DataSource.objects.count(), 3,
+                         "One DS for the article and two for the aggregations")
