@@ -140,7 +140,10 @@ class Site(models.Model):
             record['full_data'] = full_data
 
             for entry in self.process_harvested_record(record, aliases, now):
-                xapian_records.append(entry.id)
+                if entry is None:
+                    logger.info("Skipping {} deleted? {}, returned None".format(rec.header.identifier, rec.deleted))
+                else:
+                    xapian_records.append(entry.id)
         # and index
         self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
 
@@ -166,22 +169,49 @@ class Site(models.Model):
     def process_harvested_record(self, record, aliases, now):
         aggregations = record.pop('aggregations', [])
         entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
-        out = [ entry ]
-        for agg in aggregations:
-            agg_record = {
-                "title": agg['full_aggregation_name'],
-                "full_data": agg,
-                "identifier": agg['identifier'],
-                "uri": agg.get('linkage'),
-                "uri_label": ds.uri_label,
-                "year_edition": ds.year_edition,
-                "year_first_edition": ds.year_first_edition,
-                "content_type": ds.content_type,
-                "deleted": False,
-                "checksum": agg['checksum'],
-            }
-            agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
-            out.append(agg_entry)
+        out = []
+        if entry and ds:
+            out.append(entry)
+            for agg in aggregations:
+                agg_record = {
+                    "title": agg['full_aggregation_name'],
+                    "full_data": agg,
+                    "identifier": agg['identifier'],
+                    "uri": agg.get('linkage'),
+                    "uri_label": ds.uri_label,
+                    "year_edition": ds.year_edition,
+                    "year_first_edition": ds.year_first_edition,
+                    "content_type": ds.content_type,
+                    "deleted": False,
+                    "checksum": agg['checksum'],
+                }
+                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
+                out.append(agg_entry)
+                entry_rel = {
+                    "aggregation": entry,
+                    "aggregated": agg_entry,
+                }
+                ds_rel_spec = {
+                    "aggregation": ds,
+                    "aggregated": agg_ds,
+                }
+                try:
+                    AggregationEntry.objects.get(**entry_rel)
+                except AggregationEntry.DoesNotExist:
+                    AggregationEntry.objects.create(**entry_rel)
+
+                try:
+                    relation = AggregationDataSource.objects.get(**ds_rel_spec)
+                except AggregationDataSource.DoesNotExist:
+                    relation = AggregationDataSource.objects.create(**ds_rel_spec)
+
+                if agg.get('order'):
+                    try:
+                        relation.sorting_pos = agg.get('order')
+                        relation.save()
+                    except ValueError:
+                        relation.sorting_pos = None
+                        relation.save()
         return out
 
     def _process_single_harvested_record(self, record, aliases, now, is_aggregation=False):
@@ -570,7 +600,6 @@ class DataSource(models.Model):
 class AggregationEntry(models.Model):
     aggregation = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregated_entries")
     aggregated  = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregation_entries")
-    sorting_pos = models.IntegerField(null=True)
     class Meta:
         constraints = [
             models.UniqueConstraint(
