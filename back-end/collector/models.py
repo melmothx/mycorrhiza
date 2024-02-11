@@ -188,12 +188,12 @@ class Site(models.Model):
                 agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
                 out.append(agg_entry)
                 entry_rel = {
-                    "aggregation": entry,
-                    "aggregated": agg_entry,
+                    "aggregation": agg_entry,
+                    "aggregated": entry,
                 }
                 ds_rel_spec = {
-                    "aggregation": ds,
-                    "aggregated": agg_ds,
+                    "aggregation": agg_ds,
+                    "aggregated": ds,
                 }
                 try:
                     AggregationEntry.objects.get(**entry_rel)
@@ -440,34 +440,10 @@ class Entry(models.Model):
         xapian_data_sources = []
         record_is_public = False
         for topr in data_source_records:
-            site = topr.site
-            library = site.library
-            original_entry = topr.entry
-            dsd = {
-                "data_source_id": topr.id,
-                "identifier": topr.oai_pmh_identifier,
-                "title": original_entry.title,
-                "subtitle": original_entry.subtitle,
-                "authors": [ author.name for author in original_entry.authors.all() ],
-                "languages": [ lang.code for lang in original_entry.languages.all() ],
-                "uri": topr.uri,
-                "uri_label": topr.uri_label,
-                "content_type": topr.content_type,
-                "shelf_location_code": topr.shelf_location_code,
-                "public": library.public,
-                "site_name": site.title,
-                "site_id": site.id,
-                "site_type": site.site_type,
-                "library_id" : library.id,
-                "library_name": library.name,
-                "description": topr.description,
-                "year_edition": topr.year_edition,
-                "year_first_edition": topr.year_first_edition,
-                "material_description": topr.material_description,
-                "downloads": [] if topr.is_aggregation else site.amusewiki_formats,
-            }
-            if library.active and library.public:
-                record_is_public = True
+            dsd = topr.indexing_data()
+            # at DS level
+            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.all() ]
+            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.all() ]
             xapian_data_sources.append(dsd)
 
         entry_libraries = {}
@@ -594,6 +570,34 @@ class DataSource(models.Model):
         else:
             return None
 
+    def indexing_data(self):
+        site = self.site
+        library = site.library
+        original_entry = self.entry
+        ds = {
+            "data_source_id": self.id,
+            "identifier": self.oai_pmh_identifier,
+            "title": original_entry.title,
+            "subtitle": original_entry.subtitle,
+            "authors": [ author.name for author in original_entry.authors.all() ],
+            "languages": [ lang.code for lang in original_entry.languages.all() ],
+            "uri": self.uri,
+            "uri_label": self.uri_label,
+            "content_type": self.content_type,
+            "shelf_location_code": self.shelf_location_code,
+            "public": library.public,
+            "site_name": site.title,
+            "site_id": site.id,
+            "site_type": site.site_type,
+            "library_id" : library.id,
+            "library_name": library.name,
+            "description": self.description,
+            "year_edition": self.year_edition,
+            "year_first_edition": self.year_first_edition,
+            "material_description": self.material_description,
+            "downloads": [] if self.is_aggregation else site.amusewiki_formats,
+        }
+        return ds
 
 # linking table between entries for aggregations
 
