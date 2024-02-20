@@ -445,6 +445,8 @@ class Entry(models.Model):
             dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.all() ]
             dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.all() ]
             xapian_data_sources.append(dsd)
+            if dsd['public']:
+                record_is_public = True
 
         entry_libraries = {}
         descriptions = []
@@ -585,7 +587,7 @@ class DataSource(models.Model):
             "uri_label": self.uri_label,
             "content_type": self.content_type,
             "shelf_location_code": self.shelf_location_code,
-            "public": library.public,
+            "public": False,
             "site_name": site.title,
             "site_id": site.id,
             "site_type": site.site_type,
@@ -597,6 +599,8 @@ class DataSource(models.Model):
             "material_description": self.material_description,
             "downloads": [] if self.is_aggregation else site.amusewiki_formats,
         }
+        if library.active and library.public:
+            ds['public'] = True
         return ds
 
 # linking table between entries for aggregations

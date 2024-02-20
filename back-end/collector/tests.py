@@ -3,6 +3,8 @@ from .models import Entry, Agent, Site, DataSource, Library, Language
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 import copy
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 
 class AliasesTestCase(TestCase):
     def setUp(self):
@@ -68,6 +70,7 @@ class SitePrivateTestCase(TestCase):
     def test_indexing_data(self):
         entry = Entry.objects.first()
 
+        # pp.pprint(entry.indexing_data())
         self.assertEqual(entry.indexing_data()['unique_source'], 0)
         self.assertEqual(entry.indexing_data()['public'], True)
 
@@ -205,5 +208,5 @@ class AggregationProcessingTestCase(TestCase):
                          "One DS for the article and two for the aggregations")
         self.assertEqual(Entry.objects.filter(is_aggregation=True).count(), 2)
         self.assertEqual(DataSource.objects.filter(is_aggregation=True).count(), 2)
-        for entry in Entry.objects.filter(is_aggregation=True).all():
-            print(entry.indexing_data())
+        # for entry in Entry.objects.filter(is_aggregation=True).all():
+            # pp.pprint(entry.indexing_data())
