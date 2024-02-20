@@ -22,6 +22,8 @@ FIELD_MAPPING = {
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
         'library':     (6, 'XH',  True),
+        'aggregation': (11, 'XG', True),
+        'aggregated':  (12, 'XP', True),
 }
 # public prefix is 'P'
 
@@ -314,6 +316,19 @@ class MycorrhizaIndexer:
                     # logger.debug("Indexing {} {}".format(field, value))
                     termgenerator.index_text(value)
 
+        # if aggregation or aggregated, index titles and authors of
+        # the related one as well.
+
+        for dsd in record['data_sources']:
+            for aggfield in ['aggregations', 'aggregated']:
+                for agg in dsd[aggfield]:
+                    termgenerator.increase_termpos()
+                    for author in agg.get('authors', []):
+                        termgenerator.index_text(author)
+                    for field in ['title', 'description']:
+                        value = agg.get(field)
+                        if value:
+                            termgenerator.index_text(value)
 
         doc.set_data(json.dumps(record))
         idterm = "Q{}".format(identifier)

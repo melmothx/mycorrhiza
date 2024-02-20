@@ -158,7 +158,7 @@ class Site(models.Model):
         logs = indexer.logs
         if logs:
             msg = "Total indexed: " + str(len(logs))
-            logger.info(msg)
+            # logger.info(msg)
             logs.append(msg)
             if set_last_harvested:
                 logger.info("Setting last harvested to {}".format(now))
@@ -482,6 +482,9 @@ class Entry(models.Model):
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
+            "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
+            "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
+            "is_aggregation": self.is_aggregation,
         }
         # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:
@@ -504,7 +507,7 @@ class Entry(models.Model):
                 ve.canonical_entry = canonical
                 ve.save()
                 reindex.append(ve)
-        logger.debug(reindex)
+        # logger.debug(reindex)
         # update the translations
         Entry.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
         reindex.append(canonical)
@@ -743,7 +746,7 @@ class SpreadsheetUpload(models.Model):
 
         logger.debug("Reindexing: {}".format(xapian_records))
         for full in records:
-            logger.debug(full)
+            # logger.debug(full)
             record = extract_fields(full, hostname)
             if full.get('identifier'):
                 record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])

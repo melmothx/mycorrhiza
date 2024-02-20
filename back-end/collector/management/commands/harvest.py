@@ -5,6 +5,8 @@ import shutil
 import logging
 from django.db import connection
 import requests.exceptions
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
@@ -45,7 +47,9 @@ class Command(BaseCommand):
         if options['entry']:
             indexer = MycorrhizaIndexer()
             entry = Entry.objects.get(pk=options['entry'])
-            indexer.index_record(entry.indexing_data())
+            data = entry.indexing_data()
+            pp.pprint(data)
+            indexer.index_record(data)
             return
 
         if options['reindex']:
