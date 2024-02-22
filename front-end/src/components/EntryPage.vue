@@ -52,6 +52,22 @@
       <hr class="my-3" />
       <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
+        <div v-if="source.aggregated && source.aggregated.length > 0">
+          <div v-for="agg in source.aggregated" :key="agg.id">
+            <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
+            class="border rounded my-1 p-1 cursor-pointer">
+              <DataSourceBox :source="agg" :short="1">Contains:</DataSourceBox>
+            </div>
+          </div>
+        </div>
+        <div v-if="source.aggregations && source.aggregations.length > 0">
+          <div v-for="agg in source.aggregations" :key="agg.id">
+            <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
+            class="border rounded my-1 p-1 cursor-pointer">
+              <DataSourceBox :source="agg" :short="1">Part of:</DataSourceBox>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-if="record.original_entry"
            @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"

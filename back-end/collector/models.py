@@ -404,15 +404,27 @@ class Entry(models.Model):
         else:
             original = self
 
-        translations = []
+        record['translations'] = []
         # and then the translations
         for tr in original.translations.all():
             if tr.id != self.id:
                 tr_data = tr.display_dict(library_ids)
                 # ditto. No DS, it does not exist
                 if tr_data.get('data_sources'):
-                    translations.append(tr_data)
-        record['translations'] = translations
+                    record['translations'].append(tr_data)
+
+        record['aggregated'] = []
+        for agg in original.aggregated_entries.all():
+            agg_data = agg.aggregated.display_dict(library_ids)
+            if agg_data.get('data_sources'):
+                record['aggregated'].append(agg_data)
+
+        record['aggregations'] = []
+        for agg in original.aggregation_entries.all():
+            agg_data = agg.aggregation.display_dict(library_ids)
+            if agg_data.get('data_sources'):
+                record['aggregations'].append(agg_data)
+
         return record
 
     def indexing_data(self):
@@ -442,8 +454,8 @@ class Entry(models.Model):
         for topr in data_source_records:
             dsd = topr.indexing_data()
             # at DS level
-            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.all() ]
-            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.all() ]
+            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.order_by('sorting_pos').all() ]
+            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.order_by('sorting_pos').all() ]
             xapian_data_sources.append(dsd)
             if dsd['public']:
                 record_is_public = True
@@ -601,6 +613,7 @@ class DataSource(models.Model):
             "year_first_edition": self.year_first_edition,
             "material_description": self.material_description,
             "downloads": [] if self.is_aggregation else site.amusewiki_formats,
+            "entry_id": original_entry.id,
         }
         if library.active and library.public:
             ds['public'] = True

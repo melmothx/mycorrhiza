@@ -1,7 +1,7 @@
 <script>
  import axios from 'axios'
  export default {
-     props: [ 'source' ],
+     props: [ 'source', 'short' ],
      data() {
          return {
              html: "",
@@ -20,13 +20,23 @@
          },
          get_binary_file(id, ext) {
              return '/search/api/download/' + id + ext;
+         },
+         can_have_full_text() {
+             const src = this.source;
+             if (src.site_type == 'amusewiki') {
+                 if (src.aggregated && src.aggregated.length == 0) {
+                     return 1;
+                 }
+             }
+             return 0;
          }
      }
  }
 </script>
 <template>
   <div>
-    <h4 class="font-semibold">
+    <h3 class="font-semibold"><slot></slot></h3>
+    <h4 class="font-semibold" v-if="!short">
       <span class="text-red-800">{{ source.library_name }}</span>
       <span class="px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
     </h4>
@@ -40,7 +50,7 @@
         {{ source.title }}
       </h3>
       <div v-if="source.languages">
-        <div v-for="lang in source.languages" :key="l">
+        <div v-for="lang in source.languages" :key="lang">
           ({{ lang }})
         </div>
       </div>
@@ -48,7 +58,7 @@
     <h4 class="italic" v-if="source.subtitle">
       {{ source.subtitle }}
     </h4>
-    <div v-if="source.description">
+    <div v-if="source.description && !short">
       {{ source.description }}
     </div>
     <span v-if="source.uri && source.public">
@@ -64,7 +74,7 @@
         </span>
       </a>
     </span>
-    <div v-if="source.site_type == 'amusewiki'">
+    <div v-if="can_have_full_text()">
       <div v-if="html">
         <div class="border m-1 p-1 rounded" v-html="html"></div>
       </div>
