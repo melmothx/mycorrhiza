@@ -65,10 +65,13 @@ class MarcXMLRecord(Record):
             ('trade_price_value', '365', ('b')),
             ('trade_price_currency', '365', ('c')),
             ('subject', '653', ('a')),
+            ('aggregation', '773', ('t', 'g', 'z', 'q', 'd', 'o', '6')),
         ]
         structured = {
             'uri_info': ('uri', 'content_type', 'label'),
             'agent_details': ('name', 'dates', 'relationship', 'relator_term'),
+            # https://www.loc.gov/marc/bibliographic/bd773.html
+            'aggregation': ('name', 'issue', 'isbn', 'order', 'place_date_publisher', 'item_identifier', 'linkage'),
         }
         out = {}
         # expecting just one though
@@ -383,12 +386,42 @@ def extract_fields(record, hostname):
     if record.get('physical_description'):
         out['material_description'] = ' '.join(record.get('physical_description'))
 
+    out['aggregations'] = []
+    record['aggregation_names'] = []
+    for agg in record.get('aggregation', []):
+        aggregation_name = agg.get('name')
+        if aggregation_name:
+            asha = hashlib.sha256()
+            full_name = [ aggregation_name ]
+            item_identifier = agg.get('item_identifier')
+            identifier = item_identifier if item_identifier else aggregation_name
+            agg['identifier'] = 'aggregation:{}:{}'.format(hostname, identifier)
+
+            if agg.get('issue'):
+                full_name.append(agg.get('issue'))
+                # extend the identifier only if we need a surrogate
+                if not item_identifier:
+                    agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, identifier, agg['issue'])
+            if agg.get('place_date_publisher'):
+                full_name.append("({})".format(agg['place_date_publisher']))
+
+            full_name_str = ' '.join(full_name)
+            agg['full_aggregation_name'] = full_name_str
+            asha.update(full_name_str.encode())
+            agg['checksum'] = asha.hexdigest()
+            record['aggregation_names'].append(agg['identifier'])
+            out['aggregations'].append(agg)
+
     mapping = {
         "title": {
             "checksum": True,
         },
         "creator": {
             "list": "authors",
+            "checksum": True,
+        },
+        "aggregation_names": {
+            "list": "aggregation_names",
             "checksum": True,
         },
         "language": {
@@ -432,5 +465,7 @@ def extract_fields(record, hostname):
                 sha.update(out[outfield].encode())
 
     out['checksum'] = sha.hexdigest()
+    # this was used only for the checksum
+    out.pop('aggregation_names')
     return out
 

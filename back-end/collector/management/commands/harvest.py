@@ -5,6 +5,8 @@ import shutil
 import logging
 from django.db import connection
 import requests.exceptions
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
@@ -23,6 +25,9 @@ class Command(BaseCommand):
                             help="Remove all the aliases and variant relationships (only if --force without --site)")
         parser.add_argument("--entry",
                             help="Reindex a single entry")
+        parser.add_argument("--oai-set",
+                            help="Fetch only a set")
+
 
     def handle(self, *args, **options):
         logger.debug(options)
@@ -42,7 +47,9 @@ class Command(BaseCommand):
         if options['entry']:
             indexer = MycorrhizaIndexer()
             entry = Entry.objects.get(pk=options['entry'])
-            indexer.index_record(entry.indexing_data())
+            data = entry.indexing_data()
+            pp.pprint(data)
+            indexer.index_record(data)
             return
 
         if options['reindex']:
@@ -61,6 +68,6 @@ class Command(BaseCommand):
 
         for site in rs.all():
             try:
-                site.harvest(options['force'])
+                site.harvest(force=options['force'], oai_set=options['oai_set'])
             except requests.exceptions.ConnectionError:
                 print("Failure on connection to {}, skpping".format(site.url))

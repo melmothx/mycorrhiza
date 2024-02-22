@@ -97,7 +97,7 @@ class Site(models.Model):
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
 
-    def harvest(self, force):
+    def harvest(self, force=False, oai_set=None):
         self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
@@ -107,9 +107,14 @@ class Site(models.Model):
         }
         last_harvested = self.last_harvested_zulu()
         logger.debug([ force, last_harvested ])
+        set_last_harvested = True
         if last_harvested and not force:
             opts['from'] = last_harvested
-        if self.oai_set:
+        if oai_set:
+            opts['set'] = oai_set
+            set_last_harvested = False
+            opts.pop('from', None)
+        elif self.oai_set:
             opts['set'] = self.oai_set
 
         xapian_records = []
@@ -134,13 +139,15 @@ class Site(models.Model):
             record['identifier'] = rec.header.identifier
             record['full_data'] = full_data
 
-            entry = self.process_harvested_record(record, aliases, now)
-            if entry:
-                xapian_records.append(entry.id)
+            for entry in self.process_harvested_record(record, aliases, now):
+                if entry is None:
+                    logger.info("Skipping {} deleted? {}, returned None".format(rec.header.identifier, rec.deleted))
+                else:
+                    xapian_records.append(entry.id)
         # and index
-        self.index_harvested_records(xapian_records, force, now)
+        self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
 
-    def index_harvested_records(self, xapian_records, force, now):
+    def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
         indexer = MycorrhizaIndexer()
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
@@ -151,33 +158,86 @@ class Site(models.Model):
         logs = indexer.logs
         if logs:
             msg = "Total indexed: " + str(len(logs))
-            logger.info(msg)
+            # logger.info(msg)
             logs.append(msg)
-            self.last_harvested = now
-            self.save()
+            if set_last_harvested:
+                logger.info("Setting last harvested to {}".format(now))
+                self.last_harvested = now
+                self.save()
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
 
     def process_harvested_record(self, record, aliases, now):
+        aggregations = record.pop('aggregations', [])
+        entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
+        out = []
+        if entry and ds:
+            out.append(entry)
+            for agg in aggregations:
+                agg_record = {
+                    "title": agg['full_aggregation_name'],
+                    "full_data": agg,
+                    "identifier": agg['identifier'],
+                    "uri": agg.get('linkage'),
+                    "uri_label": ds.uri_label,
+                    "year_edition": ds.year_edition,
+                    "year_first_edition": ds.year_first_edition,
+                    "content_type": ds.content_type,
+                    "deleted": False,
+                    "checksum": agg['checksum'],
+                }
+                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
+                out.append(agg_entry)
+                entry_rel = {
+                    "aggregation": agg_entry,
+                    "aggregated": entry,
+                }
+                ds_rel_spec = {
+                    "aggregation": agg_ds,
+                    "aggregated": ds,
+                }
+                try:
+                    AggregationEntry.objects.get(**entry_rel)
+                except AggregationEntry.DoesNotExist:
+                    AggregationEntry.objects.create(**entry_rel)
+
+                try:
+                    relation = AggregationDataSource.objects.get(**ds_rel_spec)
+                except AggregationDataSource.DoesNotExist:
+                    relation = AggregationDataSource.objects.create(**ds_rel_spec)
+
+                if agg.get('order'):
+                    try:
+                        relation.sorting_pos = agg.get('order')
+                        relation.save()
+                    except ValueError:
+                        relation.sorting_pos = None
+                        relation.save()
+        return out
+
+    def _process_single_harvested_record(self, record, aliases, now, is_aggregation=False):
+
         authors = []
         languages = []
-        try:
-            for author in record.pop('authors', []):
-                obj, was_created = Agent.objects.get_or_create(name=aliases['author'].get(author, author))
-                authors.append(obj)
-        except KeyError:
-            pass
+        for author in record.pop('authors', []):
+            author_name = author
+            if aliases and aliases.get('author'):
+                author_name=aliases['author'].get(author, author)
+            obj, was_created = Agent.objects.get_or_create(name=author_name)
+            authors.append(obj)
 
-        try:
-            for language in record.pop('languages', []):
-                lang = language[0:3]
-                obj, was_created = Language.objects.get_or_create(code=aliases['language'].get(lang, lang))
-                languages.append(obj)
-        except KeyError:
-            pass
+        for language in record.pop('languages', []):
+            lang = language[0:3]
+            if aliases and aliases.get('language'):
+                lang = aliases['language'].get(lang, lang)
+            obj, was_created = Language.objects.get_or_create(code=lang)
+            languages.append(obj)
+
+
 
         # logger.debug(record)
         identifier = record.pop('identifier')
-        opr_attributes = [
+
+        ds_attributes = [
             'full_data',
             'uri',
             'uri_label',
@@ -188,33 +248,46 @@ class Site(models.Model):
             'year_first_edition',
             'description',
         ]
-        opr_attrs = { x: record.pop(x, None) for x in opr_attributes }
-        opr_attrs['datetime'] = now
-        opr, opr_created = self.datasource_set.update_or_create(
-            oai_pmh_identifier=identifier,
-            defaults=opr_attrs
-        )
+        ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
+        ds_attrs['datetime'] = now
+        ds_identifiers = {
+            "oai_pmh_identifier": identifier,
+            "is_aggregation": is_aggregation,
+        }
+        try:
+            ds = self.datasource_set.get(**ds_identifiers)
+            for attr, value in ds_attrs.items():
+                setattr(ds, attr, value)
+            ds.save()
+        except DataSource.DoesNotExist:
+            ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
+
         for f in [ 'title', 'subtitle' ]:
-            f_value = record.get(f)
+            f_value = record.get(f, '')
             if f_value and len(f_value) > 250:
                 f_value = f_value[0:250] + '...'
-            record[f] = aliases[f].get(f_value, f_value)
+            if aliases and aliases.get(f):
+                f_value = aliases[f].get(f_value, f_value)
+            record[f] = f_value
 
         # if the OAI-PMH record has already a entry attached from a
         # previous run, that's it, just update it.
-        entry = opr.entry
+        entry = ds.entry
         if record.pop('deleted'):
-            opr.delete()
-            return entry
+            ds.delete()
+            return (entry, None)
+
+        if not record.get('checksum'):
+            raise Exception("Expecting checksum in normal entry")
 
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
-                entry = Entry.objects.get(checksum=record['checksum'])
+                entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
             except Entry.DoesNotExist:
-                entry = Entry.objects.create(**record)
-            opr.entry = entry
-            opr.save()
+                entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
+            ds.entry = entry
+            ds.save()
 
         # update the entry and assign the many to many
         for attr, value in record.items():
@@ -223,7 +296,7 @@ class Site(models.Model):
         entry.authors.set(authors)
         entry.languages.set(languages)
         entry.save()
-        return entry
+        return (entry, ds)
 
 
 
@@ -279,7 +352,7 @@ class Entry(models.Model):
     authors = models.ManyToManyField(Agent, related_name="authored_entries")
     languages = models.ManyToManyField(Language)
     checksum = models.CharField(max_length=255)
-
+    is_aggregation = models.BooleanField(default=False)
     canonical_entry = models.ForeignKey(
         'self',
         null=True,
@@ -331,15 +404,27 @@ class Entry(models.Model):
         else:
             original = self
 
-        translations = []
+        record['translations'] = []
         # and then the translations
         for tr in original.translations.all():
             if tr.id != self.id:
                 tr_data = tr.display_dict(library_ids)
                 # ditto. No DS, it does not exist
                 if tr_data.get('data_sources'):
-                    translations.append(tr_data)
-        record['translations'] = translations
+                    record['translations'].append(tr_data)
+
+        record['aggregated'] = []
+        for agg in original.aggregated_entries.all():
+            agg_data = agg.aggregated.display_dict(library_ids)
+            if agg_data.get('data_sources'):
+                record['aggregated'].append(agg_data)
+
+        record['aggregations'] = []
+        for agg in original.aggregation_entries.all():
+            agg_data = agg.aggregation.display_dict(library_ids)
+            if agg_data.get('data_sources'):
+                record['aggregations'].append(agg_data)
+
         return record
 
     def indexing_data(self):
@@ -367,35 +452,13 @@ class Entry(models.Model):
         xapian_data_sources = []
         record_is_public = False
         for topr in data_source_records:
-            site = topr.site
-            library = site.library
-            original_entry = topr.entry
-            dsd = {
-                "data_source_id": topr.id,
-                "identifier": topr.oai_pmh_identifier,
-                "title": original_entry.title,
-                "subtitle": original_entry.subtitle,
-                "authors": [ author.name for author in original_entry.authors.all() ],
-                "languages": [ lang.code for lang in original_entry.languages.all() ],
-                "uri": topr.uri,
-                "uri_label": topr.uri_label,
-                "content_type": topr.content_type,
-                "shelf_location_code": topr.shelf_location_code,
-                "public": library.public,
-                "site_name": site.title,
-                "site_id": site.id,
-                "site_type": site.site_type,
-                "library_id" : library.id,
-                "library_name": library.name,
-                "description": topr.description,
-                "year_edition": topr.year_edition,
-                "year_first_edition": topr.year_first_edition,
-                "material_description": topr.material_description,
-                "downloads": site.amusewiki_formats,
-            }
-            if library.active and library.public:
-                record_is_public = True
+            dsd = topr.indexing_data()
+            # at DS level
+            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.order_by('sorting_pos').all() ]
+            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.order_by('sorting_pos').all() ]
             xapian_data_sources.append(dsd)
+            if dsd['public']:
+                record_is_public = True
 
         entry_libraries = {}
         descriptions = []
@@ -431,6 +494,9 @@ class Entry(models.Model):
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
+            "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
+            "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
+            "is_aggregation": self.is_aggregation,
         }
         # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:
@@ -453,7 +519,7 @@ class Entry(models.Model):
                 ve.canonical_entry = canonical
                 ve.save()
                 reindex.append(ve)
-        logger.debug(reindex)
+        # logger.debug(reindex)
         # update the translations
         Entry.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
         reindex.append(canonical)
@@ -485,6 +551,7 @@ class DataSource(models.Model):
     shelf_location_code = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    is_aggregation = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -519,6 +586,66 @@ class DataSource(models.Model):
                 return r.text
         else:
             return None
+
+    def indexing_data(self):
+        site = self.site
+        library = site.library
+        original_entry = self.entry
+        ds = {
+            "data_source_id": self.id,
+            "identifier": self.oai_pmh_identifier,
+            "title": original_entry.title,
+            "subtitle": original_entry.subtitle,
+            "authors": [ author.name for author in original_entry.authors.all() ],
+            "languages": [ lang.code for lang in original_entry.languages.all() ],
+            "uri": self.uri,
+            "uri_label": self.uri_label,
+            "content_type": self.content_type,
+            "shelf_location_code": self.shelf_location_code,
+            "public": False,
+            "site_name": site.title,
+            "site_id": site.id,
+            "site_type": site.site_type,
+            "library_id" : library.id,
+            "library_name": library.name,
+            "description": self.description,
+            "year_edition": self.year_edition,
+            "year_first_edition": self.year_first_edition,
+            "material_description": self.material_description,
+            "downloads": [] if self.is_aggregation else site.amusewiki_formats,
+            "entry_id": original_entry.id,
+        }
+        if library.active and library.public:
+            ds['public'] = True
+        return ds
+
+# linking table between entries for aggregations
+
+class AggregationEntry(models.Model):
+    aggregation = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregated_entries")
+    aggregated  = models.ForeignKey(Entry, on_delete=models.CASCADE, related_name="aggregation_entries")
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['aggregation', 'aggregated'],
+                name='unique_entry_aggregation_aggregated'
+            ),
+        ]
+        verbose_name_plural = "Aggregation Entries"
+
+# linking table between datasource for aggregations
+
+class AggregationDataSource(models.Model):
+    aggregation = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregated_data_sources")
+    aggregated  = models.ForeignKey(DataSource, on_delete=models.CASCADE, related_name="aggregation_data_sources")
+    sorting_pos = models.IntegerField(null=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['aggregation', 'aggregated'],
+                name='unique_data_source_aggregation_aggregated'
+            ),
+        ]
 
 class NameAlias(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
@@ -632,16 +759,15 @@ class SpreadsheetUpload(models.Model):
 
         logger.debug("Reindexing: {}".format(xapian_records))
         for full in records:
-            logger.debug(full)
+            # logger.debug(full)
             record = extract_fields(full, hostname)
             if full.get('identifier'):
                 record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])
             record['full_data'] = full
             record['deleted'] = False
-            entry = site.process_harvested_record(record, aliases, now)
-            if entry:
+            for entry in site.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
-        site.index_harvested_records(xapian_records, self.replace_all, now)
+        site.index_harvested_records(xapian_records, force=self.replace_all, now=now)
         self.processed = now
         self.save()
 
