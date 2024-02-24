@@ -274,7 +274,8 @@ def api_create(request, target):
                 "type": target,
             }
         else:
-            out['error']: "Invalid target (must be agent or aggregation)"
+            out['error'] = "Invalid target (must be agent or aggregation)"
+
     logger.debug(out)
     return JsonResponse(out)
 

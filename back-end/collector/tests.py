@@ -48,6 +48,10 @@ class ViewsTestCase(TestCase):
         agg = Agent.objects.get(pk=eid)
         self.assertEqual(agg.name, data['name'])
 
+        res = self.client.post(reverse('api_create', args=['pippo']),
+                               data=data,
+                               content_type="application/json")
+        self.assertTrue(res.json()['error'])
 
 class AliasesTestCase(TestCase):
     def setUp(self):
