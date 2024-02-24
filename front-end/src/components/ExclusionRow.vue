@@ -13,7 +13,7 @@
              console.log("Removing...");
              if (vm.record.id) {
                  console.log("Removing " + vm.record.id)
-                 axios.post('/search/api/exclusions',
+                 axios.post('/collector/api/exclusions',
                             {
                                 id: vm.record.id,
                                 op: 'delete',

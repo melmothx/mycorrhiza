@@ -27,7 +27,7 @@
                  "xsrfCookieName": "csrftoken",
                  "xsrfHeaderName": "X-CSRFToken",
              };
-             axios.post('/search/api/exclusions', params, opts)
+             axios.post('/collector/api/exclusions', params, opts)
                   .then(function(res) {
                       console.log(res.data)
                       vm.close_dialog();

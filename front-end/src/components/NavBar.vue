@@ -16,7 +16,7 @@
          check() {
              const vm = this;
              console.log("Checking user");
-             axios.get('/search/api/auth/user')
+             axios.get('/collector/api/auth/user')
                   .then(function(res) {
                       console.log(res);
                       vm.authenticated = res.data.logged_in;
@@ -26,7 +26,7 @@
          login() {
              const vm = this;
              vm.message = "";
-             axios.post('/search/api/auth/login', {
+             axios.post('/collector/api/auth/login', {
                  "username": this.username,
                  "password": this.password,
              }, {
@@ -45,7 +45,7 @@
          },
          logout() {
              const vm = this;
-             axios.get('/search/api/auth/logout')
+             axios.get('/collector/api/auth/logout')
                   .then(function(res) {
                       vm.$emit('refetchResults');
                       vm.check();

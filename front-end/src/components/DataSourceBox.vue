@@ -11,7 +11,7 @@
          get_full_text(id) {
              const vm = this;
              console.log("Getting the full text")
-             axios.get('/search/api/full-text/' + id)
+             axios.get('/collector/api/full-text/' + id)
                     .then(function(res) {
                         if (res.data && res.data.html) {
                             vm.html = res.data.html;
@@ -19,7 +19,7 @@
                     });
          },
          get_binary_file(id, ext) {
-             return '/search/api/download/' + id + ext;
+             return '/collector/api/download/' + id + ext;
          },
          can_have_full_text() {
              const src = this.source;

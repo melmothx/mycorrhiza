@@ -51,7 +51,7 @@
              for (let i = 0; i < filters.length; i++) {
                  params.append('filter_' +  filters[i].name, filters[i].term);
              }
-             axios.get('/search/api',
+             axios.get('/collector/api',
                        { params: params })
                   .then(function(res) {
                       vm.matches = res.data.matches;

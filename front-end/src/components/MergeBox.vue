@@ -97,7 +97,7 @@
              params.unshift(vm.canonical);
              vm.working = true;
              const api_call = vm.api_call || ('merge/' + vm.merge_type);
-             axios.post('/search/api/' + api_call, params, {
+             axios.post('/collector/api/' + api_call, params, {
                  "xsrfCookieName": "csrftoken",
                  "xsrfHeaderName": "X-CSRFToken",
              })

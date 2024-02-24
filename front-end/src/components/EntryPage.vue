@@ -15,7 +15,7 @@
              const vm = this;
              if (vm.entry_id) {
                  console.log("Fetch " + vm.entry_id);
-                 axios.get('/search/api/entry/' + vm.entry_id)
+                 axios.get('/collector/api/entry/' + vm.entry_id)
                       .then(function(res) {
                           vm.record = res.data;
                       });
