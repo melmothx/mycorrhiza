@@ -223,6 +223,11 @@
               Set translations here
             </MergeBox>
           </div>
+          <div id="aggregations-cards" class="mb-2">
+            <MergeBox merge_type="entry" api_call="set-aggregated" @refetch-results="getResults()">
+              Set aggregations here
+            </MergeBox>
+          </div>
         </div>
       </div>
     </div>

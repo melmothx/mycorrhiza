@@ -200,6 +200,10 @@ def api_set_aggregated(request):
             indexer = MycorrhizaIndexer()
             indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
             out['created'] = created
+            if created:
+                out['success'] = "Added " + str(len(created)) + " items to aggregation"
+            else:
+                out['error'] = "Nothing to do"
         else:
             out['error'] = "First item is not an aggregation"
     logger.debug(out)
