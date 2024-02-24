@@ -316,6 +316,9 @@ class Agent(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    def display_name(self):
+        return self.name
+
     @classmethod
     def merge_records(cls, canonical, aliases):
         canonical.canonical_agent = None
@@ -374,6 +377,9 @@ class Entry(models.Model):
         verbose_name_plural = "Entries"
 
     def __str__(self):
+        return self.title
+
+    def display_name(self):
         return self.title
 
     def display_dict(self, library_ids):

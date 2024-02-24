@@ -16,6 +16,7 @@ from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
 import re
+import hashlib
 # from django.db import connection
 
 logger = logging.getLogger(__name__)
@@ -236,6 +237,44 @@ def api_merge(request, target):
                 out['error'] = "Bad arguments! Expecting valid canonical and a list of aliases!"
         else:
             out['error'] = 'Invalid path'
+    logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
+def api_create(request, target):
+    logger.debug(target)
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        created = None
+        if target == 'agent' and data.get('name'):
+            created, is_creation  = Agent.objects.get_or_create(name=data['name'])
+            for attr, value in data.items():
+                setattr(created, attr, value)
+            created.save()
+        elif target == 'aggregation' and data.get('title'):
+            name = data.get('title')
+            sha = hashlib.sha256()
+            sha.update(name.encode())
+            created = Entry.objects.create(
+                title=data['title'],
+                is_aggregation=True,
+                checksum=sha.hexdigest(),
+            )
+        if created:
+            out['created'] = {
+                "id": created.id,
+                "value": created.display_name(),
+                "type": target,
+            }
+        else:
+            out['error']: "Invalid target (must be agent or aggregation)"
     logger.debug(out)
     return JsonResponse(out)
 

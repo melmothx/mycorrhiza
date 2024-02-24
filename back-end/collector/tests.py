@@ -1,10 +1,53 @@
 from django.test import TestCase
+from django.urls import reverse
 from .models import Entry, Agent, Site, DataSource, Library, Language
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 import copy
 import pprint
+from django.contrib.auth.models import User
 pp = pprint.PrettyPrinter(indent=4)
+
+class ViewsTestCase(TestCase):
+    def setUp(self):
+        password = 'password'
+        User.objects.create_superuser('admin', 'admin@test.com', password)
+
+    def test_api_create(self):
+        data = {
+            "title": "test",
+        }
+        res = self.client.post(reverse('api_create', args=['aggregation']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 302)
+        res = self.client.post(reverse('api_create', args=['agent']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 302)
+
+        # login
+        self.client.login(username="admin", password="password")
+
+        res = self.client.post(reverse('api_create', args=['aggregation']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['created']['type'], 'aggregation')
+        eid = res.json()['created']['id']
+        agg = Entry.objects.get(pk=eid)
+        self.assertTrue(agg.checksum)
+
+        data = { "name": "test agent for merging" }
+        res = self.client.post(reverse('api_create', args=['agent']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['created']['type'], 'agent')
+        eid = res.json()['created']['id']
+        agg = Agent.objects.get(pk=eid)
+        self.assertEqual(agg.name, data['name'])
+
 
 class AliasesTestCase(TestCase):
     def setUp(self):
