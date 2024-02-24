@@ -488,7 +488,10 @@ class Entry(models.Model):
 
         xapian_record = {
             # these are the mapped ones
-            "title": [ { "id": self.id, "value": self.title }, { "id": self.id, "value": self.subtitle } ],
+            "title": [
+                { "id": self.id, "value": self.title },
+                { "id": self.id, "value": self.subtitle if self.subtitle is not None else "" }
+            ],
             "creator": authors,
             "date":     [ { "id": d, "value": d } for d in sorted(list(set(dates))) ],
             "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],

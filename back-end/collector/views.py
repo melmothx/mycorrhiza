@@ -10,7 +10,7 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
@@ -165,6 +165,43 @@ def exclusions(request):
                 out['error'] = "Invalid operation {}".format(op)
         else:
             out['error'] = "Missing parameters"
+    logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
+def api_set_aggregated(request):
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        # reindex all
+        reindex = [ x['id'] for x in data ]
+        aggregation = Entry.objects.get(pk=data.pop(0)['id'])
+        created = []
+        if aggregation.is_aggregation:
+            sorting = 0
+            for agg_id in [ x['id'] for x in data ]:
+                aggregated = Entry.objects.get(pk=agg_id)
+                if not aggregated.is_aggregation:
+                    entry_rel = {
+                        "aggregation": aggregation,
+                        "aggregated": aggregated,
+                    }
+                    try:
+                        rel = AggregationEntry.objects.get(**entry_rel)
+                    except AggregationEntry.DoesNotExist:
+                        rel = AggregationEntry.objects.create(**entry_rel)
+                    created.append(rel.id)
+            indexer = MycorrhizaIndexer()
+            indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
+            out['created'] = created
+        else:
+            out['error'] = "First item is not an aggregation"
     logger.debug(out)
     return JsonResponse(out)
 

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .models import Entry, Agent, Site, DataSource, Library, Language
+from .models import Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 import copy
@@ -44,14 +44,24 @@ class ViewsTestCase(TestCase):
                                content_type="application/json")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()['created']['type'], 'agent')
-        eid = res.json()['created']['id']
-        agg = Agent.objects.get(pk=eid)
+        aid = res.json()['created']['id']
+        agg = Agent.objects.get(pk=aid)
         self.assertEqual(agg.name, data['name'])
 
         res = self.client.post(reverse('api_create', args=['pippo']),
                                data=data,
                                content_type="application/json")
         self.assertTrue(res.json()['error'])
+
+        entry = Entry.objects.create(title="Test dummy");
+
+        data = [ { "id": eid }, { "id": entry.id } ]
+        res = self.client.post(reverse('api_set_aggregated'),
+                               data=data,
+                               content_type="application/json")
+        pp.pprint(res.json())
+        found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
+        self.assertTrue(found_rel)
 
 class AliasesTestCase(TestCase):
     def setUp(self):
