@@ -10,6 +10,9 @@ from amwmeta.utils import DataPage
 from sickle.models import Record
 import re
 from unidecode import unidecode
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +25,7 @@ FIELD_MAPPING = {
         'date':     (4, 'XP', True),
         'language': (5, 'L',  True),
         'library':     (6, 'XH',  True),
-        'aggregation': (11, 'XG', True),
-        'aggregated':  (12, 'XP', True),
+        'aggregate': (11, 'XG', True),
 }
 # public prefix is 'P'
 
@@ -237,7 +239,8 @@ class MycorrhizaIndexer:
         termgenerator = xapian.TermGenerator()
         termgenerator.set_stemmer(xapian.Stem("none"))
 
-        if len(record['data_sources']) > 0:
+        # logger.debug(pp.pprint(record))
+        if len(record['data_sources']) > 0 or record['is_aggregation']:
             is_deleted = False
 
         identifier = record['entry_id']

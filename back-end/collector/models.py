@@ -286,6 +286,8 @@ class Site(models.Model):
                 entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
             except Entry.DoesNotExist:
                 entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
+            except Entry.MultipleObjectsReturned:
+                entry = Entry.objects.filter(checksum=record['checksum'], is_aggregation=is_aggregation).first()
             ds.entry = entry
             ds.save()
 
@@ -506,7 +508,15 @@ class Entry(models.Model):
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
             "is_aggregation": self.is_aggregation,
+            "aggregate": []
         }
+        if self.aggregated_entries.count():
+            # if it has aggregated entries, it's an aggregation
+            xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
+        if self.aggregation_entries.count():
+            # if it has aggregation entries, it's an aggregated
+            xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
+
         # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:
             xapian_record['unique_source'] = xapian_record['library'][0]['id']

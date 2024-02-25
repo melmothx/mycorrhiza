@@ -161,6 +161,13 @@
         <div class="sticky top-5">
           <div v-if="facets.language" class="mb-3">
             <FacetBox
+                :values="facets.aggregate.values"
+                :name="facets.aggregate.name"
+                @toggle-app-filter="toggleFilter"
+            >Aggregation</FacetBox>
+          </div>
+          <div v-if="facets.language" class="mb-3">
+            <FacetBox
                 :values="facets.language.values"
                 :name="facets.language.name"
                 @toggle-app-filter="toggleFilter"

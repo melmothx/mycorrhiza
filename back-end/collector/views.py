@@ -18,6 +18,9 @@ from http import HTTPStatus
 import re
 import hashlib
 # from django.db import connection
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
 
 logger = logging.getLogger(__name__)
 
@@ -85,8 +88,7 @@ def api(request):
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
     record = entry.display_data(library_ids=_active_libraries(request.user))
-    if not record['data_sources']:
-        raise Http404("No data sources!")
+    logger.debug(pp.pprint(record))
     return JsonResponse(record)
 
 # should this be login required?
@@ -295,6 +297,7 @@ def api_create(request, target):
         logger.debug(data)
         created = None
         if target == 'agent' and data.get('name'):
+            # name is unique
             created, is_creation  = Agent.objects.get_or_create(name=data['name'])
             for attr, value in data.items():
                 setattr(created, attr, value)
@@ -303,11 +306,20 @@ def api_create(request, target):
             name = data.get('title')
             sha = hashlib.sha256()
             sha.update(name.encode())
-            created = Entry.objects.create(
-                title=data['title'],
-                is_aggregation=True,
-                checksum=sha.hexdigest(),
-            )
+            record = {
+                "title": name,
+                "checksum": sha.hexdigest(),
+                "is_aggregation": True,
+            }
+            # here there's no uniqueness in the schema, but we enforce it
+            try:
+                created = Entry.objects.get(**record)
+            except Entry.DoesNotExist:
+                created = Entry.objects.create(**record)
+            except Entry.MultipleObjectsReturned:
+                logger.debug("Multiple rows found, using the first")
+                created = Entry.objects.filter(**record).first()
+
         if created:
             out['created'] = {
                 "id": created.id,
