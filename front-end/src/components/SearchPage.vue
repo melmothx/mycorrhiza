@@ -207,6 +207,7 @@
         <div class="sticky top-5">
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"
+                      create_item="agent"
                       remove_merged_filter="creator"
                       @remove-merged-filter="remove_merged_filter"
                       @refetch-results="getResults(1)">
@@ -224,7 +225,10 @@
             </MergeBox>
           </div>
           <div id="aggregations-cards" class="mb-2">
-            <MergeBox merge_type="entry" api_call="set-aggregated" @refetch-results="getResults()">
+            <MergeBox merge_type="entry"
+                      api_call="set-aggregated"
+                      create_item="aggregation"
+                      @refetch-results="getResults()">
               Set aggregations here
             </MergeBox>
           </div>
