@@ -59,7 +59,7 @@ class ViewsTestCase(TestCase):
         res = self.client.post(reverse('api_set_aggregated'),
                                data=data,
                                content_type="application/json")
-        pp.pprint(res.json())
+        # pp.pprint(res.json())
         found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
         self.assertTrue(found_rel)
 

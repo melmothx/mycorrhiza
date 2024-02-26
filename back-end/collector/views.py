@@ -88,7 +88,7 @@ def api(request):
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
     record = entry.display_data(library_ids=_active_libraries(request.user))
-    logger.debug(pp.pprint(record))
+    logger.debug(pp.pformat(record))
     return JsonResponse(record)
 
 # should this be login required?

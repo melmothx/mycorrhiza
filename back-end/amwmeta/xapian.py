@@ -239,7 +239,7 @@ class MycorrhizaIndexer:
         termgenerator = xapian.TermGenerator()
         termgenerator.set_stemmer(xapian.Stem("none"))
 
-        # logger.debug(pp.pprint(record))
+        # logger.debug(pp.pformat(record))
         if len(record['data_sources']) > 0 or record['is_aggregation']:
             is_deleted = False
 
