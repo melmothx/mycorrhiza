@@ -1,13 +1,23 @@
-from django.test import TestCase
+from pathlib import Path
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from .models import Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 import copy
 import pprint
+import shutil
 from django.contrib.auth.models import User
 pp = pprint.PrettyPrinter(indent=4)
 
+xapian_test_db = Path('xapian', 'tests')
+if xapian_test_db.is_dir():
+    print("Removing existing " + str(xapian_test_db))
+    shutil.rmtree(str(xapian_test_db))
+xapian_test_db.mkdir(parents=True)
+
+
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class ViewsTestCase(TestCase):
     def setUp(self):
         password = 'password'
@@ -63,6 +73,7 @@ class ViewsTestCase(TestCase):
         found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
         self.assertTrue(found_rel)
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class AliasesTestCase(TestCase):
     def setUp(self):
         pinco = Agent.objects.create(name="Pinco Pallino")
@@ -85,6 +96,7 @@ class AliasesTestCase(TestCase):
             # self.assertEqual(xapian['title'][0], 'Pizzab')
             self.assertEqual(xapian['creator'][0]['value'], 'Pincic Pallinic')
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class SitePrivateTestCase(TestCase):
     def setUp(self):
         sources = []
@@ -143,6 +155,7 @@ class SitePrivateTestCase(TestCase):
         self.assertEqual(entry.indexing_data()['unique_source'], 0)
 
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class UniqueSiteTestCase(TestCase):
     def setUp(self):
         library = Library.objects.create(
@@ -172,6 +185,7 @@ class UniqueSiteTestCase(TestCase):
         site = Site.objects.first()
         self.assertEqual(entry.indexing_data()['unique_source'], site.id)
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class AggregationProcessingTestCase(TestCase):
     def setUp(self):
         library = Library.objects.create(

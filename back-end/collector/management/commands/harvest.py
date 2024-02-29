@@ -5,6 +5,7 @@ import shutil
 import logging
 from django.db import connection
 from django.conf import settings
+from pathlib import Path
 import requests.exceptions
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -33,12 +34,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.debug(options)
         db_path = settings.XAPIAN_DB
+        db_path_object = Path(settings.XAPIAN_DB)
         if options['force'] and not options['site']:
-            try:
-                print("Removing " + db_path)
+            if db_path and db_path_object.is_dir() and db_path_object.name == 'db':
                 shutil.rmtree(db_path)
-            except FileNotFoundError:
-                pass
+
             if options['nuke_aliases']:
                 print("Cleaning aliases")
                 Agent.objects.filter(canonical_agent_id__isnull=False).update(canonical_agent=None)
