@@ -155,9 +155,12 @@ class Site(models.Model):
         indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
-        for id in all_ids:
-            ientry = Entry.objects.get(pk=id)
-            indexer.index_record(ientry.indexing_data())
+        for iid in all_ids:
+            try:
+                ientry = Entry.objects.get(pk=iid)
+                indexer.index_record(ientry.indexing_data())
+            except Entry.DoesNotExist:
+                logger.info("Entry id {} not found?!".format(iid))
 
         logs = indexer.logs
         if logs:
