@@ -76,6 +76,7 @@ def api(request):
         can_set_exclusions = True
 
     res = search(
+        settings.XAPIAN_DB,
         request.GET,
         active_libraries=active_libraries,
         exclusions=exclusions,
