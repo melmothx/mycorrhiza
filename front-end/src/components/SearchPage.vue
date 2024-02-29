@@ -159,7 +159,7 @@
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
         <div class="sticky top-5">
-          <div v-if="facets.language" class="mb-3">
+          <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
                 :values="facets.aggregate.values"
                 :name="facets.aggregate.name"
