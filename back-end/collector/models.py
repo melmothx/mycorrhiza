@@ -13,6 +13,7 @@ import random
 import requests
 import re
 import pprint
+import hashlib
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
@@ -548,7 +549,29 @@ class Entry(models.Model):
         return reindex
 
     @classmethod
-    def set_aggregated(cls, aggregation_id, *aggregated_ids):
+    def create_virtual_aggregation(cls, data):
+        name = data.get('title')
+        if name:
+            sha = hashlib.sha256()
+            sha.update(name.encode())
+            record = {
+                "title": name,
+                "checksum": sha.hexdigest(),
+                "is_aggregation": True,
+            }
+            # here there's no uniqueness in the schema, but we enforce it
+            try:
+                created = cls.objects.get(**record)
+            except cls.DoesNotExist:
+                created = cls.objects.create(**record)
+            except cls.MultipleObjectsReturned:
+                logger.debug("Multiple rows found, using the first")
+                created = cls.objects.filter(**record).first()
+            return created
+        return None
+
+    @classmethod
+    def aggregate_entries(cls, aggregation_id, *aggregated_ids):
         logger.debug(aggregation_id)
         logger.debug(aggregated_ids)
         # success or error
@@ -560,11 +583,13 @@ class Entry(models.Model):
 
         if aggregation and aggregation.is_aggregation:
             reindex = [ aggregation_id ]
+            aggregated_datasources = []
             for agg_id in aggregated_ids:
                 reindex.append(agg_id)
                 try:
                     aggregated = cls.objects.get(pk=agg_id)
                     if not aggregated.is_aggregation:
+                        aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
                         entry_rel = {
                             "aggregation": aggregation,
                             "aggregated": aggregated,
@@ -573,8 +598,41 @@ class Entry(models.Model):
                             rel = AggregationEntry.objects.get(**entry_rel)
                         except AggregationEntry.DoesNotExist:
                             rel = AggregationEntry.objects.create(**entry_rel)
+                        logger.info("Created AggregationEntry {}".format(rel.id))
+
                 except cls.DoesNotExist:
                     pass
+
+            # now we have all the aggregated datasources.
+            # check if we have a real or virtual DS in the aggregation
+            for ds in aggregated_datasources:
+                # search all the DS for this aggregation entry with a matching site
+                agg_datasources = [ x for x in aggregation.datasource_set.filter(site_id=ds.site_id).all() ]
+                if agg_datasources:
+                    logger.debug("{} already has an aggregation datasource".format(ds.oai_pmh_identifier))
+                else:
+                    logger.info("Creating virtual DS for {}".format(ds.oai_pmh_identifier))
+                    agg_ds = DataSource.objects.create(
+                        site_id=ds.site_id,
+                        oai_pmh_identifier="virtual:site-{}:ds-{}".format(ds.site_id, ds.id),
+                        datetime=aggregation.last_modified,
+                        entry_id=aggregation.id,
+                        is_aggregation=True,
+                        full_data={},
+                    )
+                    agg_datasources.append(agg_ds)
+
+                for agg_ds in agg_datasources:
+                    agg_rel = {
+                        "aggregation": agg_ds,
+                        "aggregated": ds,
+                    }
+                    try:
+                        rel = AggregationDataSource.objects.get(**agg_rel)
+                    except AggregationDataSource.DoesNotExist:
+                        rel = AggregationDataSource.objects.create(**agg_rel)
+                        logger.info("Created AggregationDataSource {}".format(rel.id))
+
             indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
             logger.debug("Reindexing " + pp.pformat(reindex))
             indexer.index_entries(Entry.objects.filter(id__in=reindex).all())

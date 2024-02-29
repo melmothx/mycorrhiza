@@ -71,19 +71,37 @@ class ViewsTestCase(TestCase):
         self.assertTrue(res.json()['error'])
 
         entry = Entry.objects.create(title="A test title", is_aggregation=False);
-        data = [ { "id": agg.id }, { "id": entry.id } ]
-        res = self.client.post(reverse('api_set_aggregated'),
-                               data=data,
-                               content_type="application/json")
-        # pp.pprint(res.json())
-        found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
-        self.assertTrue(found_rel)
-        res = self.client.get(reverse('api'), { "query": "Pizzosa" })
-        pp.pprint(res.json())
-        self.assertEqual(res.json()['total_entries'], 1)
+        library = Library.objects.create(
+            name="Test library",
+            public=True,
+            active=True,
+        )
+        site = Site.objects.create(
+            library=library,
+            title="Test site",
+            url="https://example.org",
+            active=True,
+        )
+        identifier = "oai:test:disregard"
+        datasource = DataSource.objects.create(
+            site=site,
+            oai_pmh_identifier=identifier,
+            datetime=datetime.now(timezone.utc),
+            entry=entry,
+            full_data={},
+        )
 
-
-
+        for x in (1, 2, 3):
+            data = [ { "id": agg.id }, { "id": entry.id } ]
+            res = self.client.post(reverse('api_set_aggregated'),
+                                   data=data,
+                                   content_type="application/json")
+            # pp.pprint(res.json())
+            found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
+            self.assertTrue(found_rel)
+            res = self.client.get(reverse('api'), { "query": "Pizzosa" })
+            # pp.pprint(res.json())
+            self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
 
 @override_settings(XAPIAN_DB=str(xapian_test_db))
 class AliasesTestCase(TestCase):

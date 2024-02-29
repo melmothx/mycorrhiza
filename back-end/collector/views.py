@@ -17,7 +17,6 @@ from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
 import re
-import hashlib
 # from django.db import connection
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
@@ -185,7 +184,7 @@ def api_set_aggregated(request):
         logger.debug(data)
         # reindex all
         reindex = [ x['id'] for x in data ]
-        out = Entry.set_aggregated(*reindex)
+        out = Entry.aggregate_entries(*reindex)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -280,23 +279,8 @@ def api_create(request, target):
             for attr, value in data.items():
                 setattr(created, attr, value)
             created.save()
-        elif target == 'aggregation' and data.get('title'):
-            name = data.get('title')
-            sha = hashlib.sha256()
-            sha.update(name.encode())
-            record = {
-                "title": name,
-                "checksum": sha.hexdigest(),
-                "is_aggregation": True,
-            }
-            # here there's no uniqueness in the schema, but we enforce it
-            try:
-                created = Entry.objects.get(**record)
-            except Entry.DoesNotExist:
-                created = Entry.objects.create(**record)
-            except Entry.MultipleObjectsReturned:
-                logger.debug("Multiple rows found, using the first")
-                created = Entry.objects.filter(**record).first()
+        elif target == 'aggregation':
+            created = Entry.create_virtual_aggregation(data)
 
         if created:
             out['created'] = {
