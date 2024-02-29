@@ -12,7 +12,9 @@ from amwmeta.sheets import parse_sheet, normalize_records
 import random
 import requests
 import re
+import pprint
 
+pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
 class Library(models.Model):
@@ -541,9 +543,45 @@ class Entry(models.Model):
                 reindex.append(ve)
         # logger.debug(reindex)
         # update the translations
-        Entry.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
+        cls.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
         reindex.append(canonical)
         return reindex
+
+    @classmethod
+    def set_aggregated(cls, aggregation_id, *aggregated_ids):
+        logger.debug(aggregation_id)
+        logger.debug(aggregated_ids)
+        # success or error
+        out = {}
+        try:
+            aggregation = cls.objects.get(pk=aggregation_id)
+        except cls.DoesNotExist:
+            aggregation = None
+
+        if aggregation and aggregation.is_aggregation:
+            reindex = [ aggregation_id ]
+            for agg_id in aggregated_ids:
+                reindex.append(agg_id)
+                try:
+                    aggregated = cls.objects.get(pk=agg_id)
+                    if not aggregated.is_aggregation:
+                        entry_rel = {
+                            "aggregation": aggregation,
+                            "aggregated": aggregated,
+                        }
+                        try:
+                            rel = AggregationEntry.objects.get(**entry_rel)
+                        except AggregationEntry.DoesNotExist:
+                            rel = AggregationEntry.objects.create(**entry_rel)
+                except cls.DoesNotExist:
+                    pass
+            indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+            logger.debug("Reindexing " + pp.pformat(reindex))
+            indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
+            out['success'] = "Reindexed {} items".format(len(reindex))
+        else:
+            out['error'] = "First item is not an aggregation"
+        return out
 
 
 # the OAI-PMH records will keep the URL of the record, so a entry can

@@ -185,34 +185,7 @@ def api_set_aggregated(request):
         logger.debug(data)
         # reindex all
         reindex = [ x['id'] for x in data ]
-        aggregation = Entry.objects.get(pk=data.pop(0)['id'])
-        created = []
-        if aggregation.is_aggregation:
-            sorting = 0
-            for agg_id in [ x['id'] for x in data ]:
-                aggregated = Entry.objects.get(pk=agg_id)
-                if not aggregated.is_aggregation:
-                    entry_rel = {
-                        "aggregation": aggregation,
-                        "aggregated": aggregated,
-                    }
-                    try:
-                        rel = AggregationEntry.objects.get(**entry_rel)
-                    except AggregationEntry.DoesNotExist:
-                        rel = AggregationEntry.objects.create(**entry_rel)
-                    created.append(rel.id)
-
-            indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-            logger.debug("Reindexing " + pp.pformat(reindex))
-            logger.debug("Created " + pp.pformat(created))
-
-            indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
-            if created:
-                out['success'] = "Added " + str(len(created)) + " items to aggregation"
-            else:
-                out['error'] = "Nothing to do"
-        else:
-            out['error'] = "First item is not an aggregation"
+        out = Entry.set_aggregated(*reindex)
     logger.debug(out)
     return JsonResponse(out)
 
