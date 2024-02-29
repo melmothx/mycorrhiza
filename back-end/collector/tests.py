@@ -26,7 +26,7 @@ class ViewsTestCase(TestCase):
 
     def test_api_create(self):
         data = {
-            "title": "test",
+            "value": "test",
         }
         # make sure unauthorized can't create
         res = self.client.post(reverse('api_create', args=['aggregation']),
@@ -42,7 +42,7 @@ class ViewsTestCase(TestCase):
         self.client.login(username="admin", password="password")
 
         res = self.client.post(reverse('api_create', args=['aggregation']),
-                               data={"title": "Pizzosa"},
+                               data={"value": "Pizzosa"},
                                content_type="application/json")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()['created']['type'], 'aggregation')
@@ -54,7 +54,7 @@ class ViewsTestCase(TestCase):
         self.assertTrue(agg.is_aggregation)
         self.assertEqual(agg.title, "Pizzosa")
 
-        data = { "name": "test agent for merging" }
+        data = { "value": "test agent for merging" }
         res = self.client.post(reverse('api_create', args=['agent']),
                                data=data,
                                content_type="application/json")
@@ -62,7 +62,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(res.json()['created']['type'], 'agent')
         aid = res.json()['created']['id']
         author = Agent.objects.get(pk=aid)
-        self.assertEqual(author.name, data['name'])
+        self.assertEqual(author.name, data['value'])
 
         # this is a wrong URL /create/pippo
         res = self.client.post(reverse('api_create', args=['pippo']),
