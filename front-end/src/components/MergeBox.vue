@@ -1,14 +1,17 @@
 <script>
+ import CreateEntityBox from './CreateEntityBox.vue'
  import axios from 'axios'
  export default {
+     components: { CreateEntityBox },
      props: [
          'merge_type',
          'remove_merged_filter',
          'api_call',
+         'create_item',
      ],
      emits: [
          'refetchResults',
-         'removeMergedFilter'
+         'removeMergedFilter',
      ],
      data() {
          return {
@@ -20,6 +23,14 @@
          }
      },
      methods: {
+         set_canonical_aggregation(id, label) {
+             console.log("Setting canonical to " + id + ' ' + label);
+             this.handle_item('set_canonical', id, label, 'entry');
+         },
+         set_canonical_agent(id, label) {
+             console.log("Setting canonical agent to " + id + ' ' + label);
+             this.handle_item('set_canonical', id, label, 'author');
+         },
          drag_element(e, id, label) {
              e.dataTransfer.dropEffect = 'copy';
              e.dataTransfer.effectAllowed = 'copy';
@@ -31,6 +42,9 @@
              const id = e.dataTransfer.getData('ID');
              const label = e.dataTransfer.getData('Label');
              const merge_type = e.dataTransfer.getData('Merge');
+             this.handle_item(op, id, label, merge_type);
+         },
+         handle_item(op, id, label, merge_type) {
              this.clear_flash_error();
              this.clear_flash_success();
              if (id && label && merge_type && merge_type == this.merge_type) {
@@ -183,6 +197,9 @@
           <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
                   type="button" @click="merge_records">Merge</button>
         </div>
+        <div v-else>
+          <div v-if="!flash_error && !flash_success && !working" class="h-10"></div>
+        </div>
         <div v-if="flash_error"
              @click="clear_flash_error"
              class="flex justify-center items-center m-2 cursor-pointer text-pink-700
@@ -199,6 +216,12 @@
           <span class="animate-ping rounded-full text-pink-800 p-2">Working</span>
         </div>
       </div>
+    </div>
+    <div v-if="create_item && create_item == 'aggregation'">
+      <CreateEntityBox @created-entity="set_canonical_aggregation" creation_type="aggregation" />
+    </div>
+    <div v-if="create_item && create_item == 'agent'">
+      <CreateEntityBox @created-entity="set_canonical_agent" creation_type="agent" />
     </div>
   </div>
 </template>

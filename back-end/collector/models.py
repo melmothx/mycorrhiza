@@ -6,12 +6,16 @@ from datetime import datetime, timezone
 from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
+from django.conf import settings
 import logging
 from amwmeta.sheets import parse_sheet, normalize_records
 import random
 import requests
 import re
+import pprint
+import hashlib
 
+pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
 class Library(models.Model):
@@ -148,7 +152,7 @@ class Site(models.Model):
         self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
 
     def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
-        indexer = MycorrhizaIndexer()
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:
@@ -286,6 +290,8 @@ class Site(models.Model):
                 entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
             except Entry.DoesNotExist:
                 entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
+            except Entry.MultipleObjectsReturned:
+                entry = Entry.objects.filter(checksum=record['checksum'], is_aggregation=is_aggregation).first()
             ds.entry = entry
             ds.save()
 
@@ -315,6 +321,9 @@ class Agent(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    def display_name(self):
+        return self.name
 
     @classmethod
     def merge_records(cls, canonical, aliases):
@@ -374,6 +383,9 @@ class Entry(models.Model):
         verbose_name_plural = "Entries"
 
     def __str__(self):
+        return self.title
+
+    def display_name(self):
         return self.title
 
     def display_dict(self, library_ids):
@@ -482,7 +494,10 @@ class Entry(models.Model):
 
         xapian_record = {
             # these are the mapped ones
-            "title": [ { "id": self.id, "value": self.title }, { "id": self.id, "value": self.subtitle } ],
+            "title": [
+                { "id": self.id, "value": self.title },
+                { "id": self.id, "value": self.subtitle if self.subtitle is not None else "" }
+            ],
             "creator": authors,
             "date":     [ { "id": d, "value": d } for d in sorted(list(set(dates))) ],
             "language": [ { "id": l.code, "value": l.code } for l in self.languages.all() ],
@@ -497,7 +512,15 @@ class Entry(models.Model):
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
             "is_aggregation": self.is_aggregation,
+            "aggregate": []
         }
+        if self.aggregated_entries.count():
+            # if it has aggregated entries, it's an aggregation
+            xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
+        if self.aggregation_entries.count():
+            # if it has aggregation entries, it's an aggregated
+            xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
+
         # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:
             xapian_record['unique_source'] = xapian_record['library'][0]['id']
@@ -521,9 +544,104 @@ class Entry(models.Model):
                 reindex.append(ve)
         # logger.debug(reindex)
         # update the translations
-        Entry.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
+        cls.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
         reindex.append(canonical)
         return reindex
+
+    @classmethod
+    def create_virtual_aggregation(cls, name):
+        if name:
+            sha = hashlib.sha256()
+            sha.update(name.encode())
+            record = {
+                "title": name,
+                "checksum": sha.hexdigest(),
+                "is_aggregation": True,
+            }
+            # here there's no uniqueness in the schema, but we enforce it
+            try:
+                created = cls.objects.get(**record)
+            except cls.DoesNotExist:
+                created = cls.objects.create(**record)
+            except cls.MultipleObjectsReturned:
+                logger.debug("Multiple rows found, using the first")
+                created = cls.objects.filter(**record).first()
+            return created
+        return None
+
+    @classmethod
+    def aggregate_entries(cls, aggregation_id, *aggregated_ids):
+        logger.debug(aggregation_id)
+        logger.debug(aggregated_ids)
+        # success or error
+        out = {}
+        try:
+            aggregation = cls.objects.get(pk=aggregation_id)
+        except cls.DoesNotExist:
+            aggregation = None
+
+        if aggregation and aggregation.is_aggregation:
+            reindex = [ aggregation_id ]
+            aggregated_datasources = []
+            for agg_id in aggregated_ids:
+                try:
+                    aggregated = cls.objects.get(pk=agg_id)
+                    if not aggregated.is_aggregation:
+                        reindex.append(agg_id)
+                        aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
+                        entry_rel = {
+                            "aggregation": aggregation,
+                            "aggregated": aggregated,
+                        }
+                        try:
+                            rel = AggregationEntry.objects.get(**entry_rel)
+                        except AggregationEntry.DoesNotExist:
+                            rel = AggregationEntry.objects.create(**entry_rel)
+                        logger.info("Created AggregationEntry {}".format(rel.id))
+
+                except cls.DoesNotExist:
+                    pass
+
+            # now we have all the aggregated datasources.
+            # check if we have a real or virtual DS in the aggregation
+            for ds in aggregated_datasources:
+                # search all the DS for this aggregation entry with a matching site
+                agg_datasources = [ x for x in aggregation.datasource_set.filter(site_id=ds.site_id).all() ]
+                if agg_datasources:
+                    logger.debug("{} already has an aggregation datasource".format(ds.oai_pmh_identifier))
+                else:
+                    logger.info("Creating virtual DS for {}".format(ds.oai_pmh_identifier))
+                    agg_ds = DataSource.objects.create(
+                        site_id=ds.site_id,
+                        oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
+                        datetime=aggregation.last_modified,
+                        entry_id=aggregation.id,
+                        is_aggregation=True,
+                        full_data={},
+                    )
+                    agg_datasources.append(agg_ds)
+
+                for agg_ds in agg_datasources:
+                    agg_rel = {
+                        "aggregation": agg_ds,
+                        "aggregated": ds,
+                    }
+                    try:
+                        rel = AggregationDataSource.objects.get(**agg_rel)
+                    except AggregationDataSource.DoesNotExist:
+                        rel = AggregationDataSource.objects.create(**agg_rel)
+                        logger.info("Created AggregationDataSource {}".format(rel.id))
+
+            indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+            logger.debug("Reindexing " + pp.pformat(reindex))
+            indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
+            if len(reindex) > 1:
+                out['success'] = "Reindexed {} items".format(len(reindex))
+            else:
+                out['error'] = "Nothing to do. Expecting an aggregation and normal entries"
+        else:
+            out['error'] = "First item is not an aggregation"
+        return out
 
 
 # the OAI-PMH records will keep the URL of the record, so a entry can

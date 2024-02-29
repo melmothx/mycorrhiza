@@ -6,17 +6,21 @@ import json
 from amwmeta.xapian import search
 import logging
 from django.urls import reverse
+from django.conf import settings
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
 import re
 # from django.db import connection
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +75,7 @@ def api(request):
         can_set_exclusions = True
 
     res = search(
+        settings.XAPIAN_DB,
         request.GET,
         active_libraries=active_libraries,
         exclusions=exclusions,
@@ -84,8 +89,7 @@ def api(request):
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
     record = entry.display_data(library_ids=_active_libraries(request.user))
-    if not record['data_sources']:
-        raise Http404("No data sources!")
+    logger.debug(pp.pformat(record))
     return JsonResponse(record)
 
 # should this be login required?
@@ -168,6 +172,23 @@ def exclusions(request):
     return JsonResponse(out)
 
 @login_required
+def api_set_aggregated(request):
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        # reindex all
+        reindex = [ x['id'] for x in data ]
+        out = Entry.aggregate_entries(*reindex)
+    logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
 def api_set_translations(request):
     out = {}
     data = None
@@ -185,7 +206,7 @@ def api_set_translations(request):
         original.save()
         translations = [ x['id'] for x in data ]
         Entry.objects.filter(id__in=[ x['id'] for x in data ]).update(original_entry=original)
-        indexer = MycorrhizaIndexer()
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
         out['success'] = "Translations set!"
 
@@ -226,7 +247,7 @@ def api_merge(request, target):
                 if canonical.id not in [ x.id for x in aliases ]:
                     logger.info("Merging " + str(aliases) + " into " + str(canonical))
                     reindex = current_class.merge_records(canonical, aliases)
-                    indexer = MycorrhizaIndexer()
+                    indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
                     indexer.index_entries(reindex)
                     logger.info(indexer.logs)
                     out['success'] = "Merged!"
@@ -236,6 +257,39 @@ def api_merge(request, target):
                 out['error'] = "Bad arguments! Expecting valid canonical and a list of aliases!"
         else:
             out['error'] = 'Invalid path'
+    logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
+def api_create(request, target):
+    logger.debug(target)
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    if data:
+        logger.debug(data)
+        created = None
+        value = data.get('value')
+        if value:
+            if target == 'agent':
+                # name is unique
+                created, is_creation  = Agent.objects.get_or_create(name=value)
+            elif target == 'aggregation':
+                created = Entry.create_virtual_aggregation(value)
+
+        if created:
+            out['created'] = {
+                "id": created.id,
+                "value": created.display_name(),
+                "type": target,
+            }
+        else:
+            out['error'] = "Invalid target (must be agent or aggregation)"
+
     logger.debug(out)
     return JsonResponse(out)
 

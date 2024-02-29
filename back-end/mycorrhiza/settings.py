@@ -144,6 +144,8 @@ LOGGING = {
     },
 }
 
+XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
+
 try:
     from local_settings import *
 except ImportError:

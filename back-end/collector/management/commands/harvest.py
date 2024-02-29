@@ -1,9 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
-from amwmeta.xapian import MycorrhizaIndexer, XAPIAN_DB
+from amwmeta.xapian import MycorrhizaIndexer
 from collector.models import Site, Entry, Agent
 import shutil
 import logging
 from django.db import connection
+from django.conf import settings
+from pathlib import Path
 import requests.exceptions
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -31,13 +33,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.debug(options)
-
+        db_path = settings.XAPIAN_DB
+        db_path_object = Path(settings.XAPIAN_DB)
         if options['force'] and not options['site']:
-            try:
-                print("Removing " + XAPIAN_DB)
-                shutil.rmtree(XAPIAN_DB)
-            except FileNotFoundError:
-                pass
+            if db_path and db_path_object.is_dir() and db_path_object.name == 'db':
+                shutil.rmtree(db_path)
+
             if options['nuke_aliases']:
                 print("Cleaning aliases")
                 Agent.objects.filter(canonical_agent_id__isnull=False).update(canonical_agent=None)
@@ -45,7 +46,7 @@ class Command(BaseCommand):
                 print(connection.queries)
 
         if options['entry']:
-            indexer = MycorrhizaIndexer()
+            indexer = MycorrhizaIndexer(db_path=db_path)
             entry = Entry.objects.get(pk=options['entry'])
             data = entry.indexing_data()
             pp.pprint(data)
@@ -53,7 +54,7 @@ class Command(BaseCommand):
             return
 
         if options['reindex']:
-            indexer = MycorrhizaIndexer()
+            indexer = MycorrhizaIndexer(db_path=db_path)
             counter = 0
             for entry in Entry.objects.all():
                 indexer.index_record(entry.indexing_data())

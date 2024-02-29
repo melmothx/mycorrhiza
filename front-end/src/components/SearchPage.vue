@@ -159,6 +159,13 @@
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
         <div class="sticky top-5">
+          <div v-if="facets.aggregate" class="mb-3">
+            <FacetBox
+                :values="facets.aggregate.values"
+                :name="facets.aggregate.name"
+                @toggle-app-filter="toggleFilter"
+            >Aggregation</FacetBox>
+          </div>
           <div v-if="facets.language" class="mb-3">
             <FacetBox
                 :values="facets.language.values"
@@ -207,6 +214,7 @@
         <div class="sticky top-5">
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"
+                      create_item="agent"
                       remove_merged_filter="creator"
                       @remove-merged-filter="remove_merged_filter"
                       @refetch-results="getResults(1)">
@@ -221,6 +229,14 @@
           <div id="translation-cards" class="mb-2">
             <MergeBox merge_type="entry" api_call="set-translations" @refetch-results="getResults()">
               Set translations here
+            </MergeBox>
+          </div>
+          <div id="aggregations-cards" class="mb-2">
+            <MergeBox merge_type="entry"
+                      api_call="set-aggregated"
+                      create_item="aggregation"
+                      @refetch-results="getResults()">
+              Set aggregations here
             </MergeBox>
           </div>
         </div>

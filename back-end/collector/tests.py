@@ -1,11 +1,109 @@
-from django.test import TestCase
-from .models import Entry, Agent, Site, DataSource, Library, Language
+from pathlib import Path
+from django.test import TestCase, override_settings
+from django.urls import reverse
+from .models import Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
+from amwmeta.xapian import search
 import copy
 import pprint
+import shutil
+from django.contrib.auth.models import User
 pp = pprint.PrettyPrinter(indent=4)
 
+xapian_test_db = Path('xapian', 'tests')
+if xapian_test_db.is_dir():
+    print("Removing existing " + str(xapian_test_db))
+    shutil.rmtree(str(xapian_test_db))
+xapian_test_db.mkdir(parents=True)
+
+
+@override_settings(XAPIAN_DB=str(xapian_test_db))
+class ViewsTestCase(TestCase):
+    def setUp(self):
+        password = 'password'
+        User.objects.create_superuser('admin', 'admin@test.com', password)
+
+    def test_api_create(self):
+        data = {
+            "value": "test",
+        }
+        # make sure unauthorized can't create
+        res = self.client.post(reverse('api_create', args=['aggregation']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 302)
+        res = self.client.post(reverse('api_create', args=['agent']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 302)
+
+        # login and create an aggregation
+        self.client.login(username="admin", password="password")
+
+        res = self.client.post(reverse('api_create', args=['aggregation']),
+                               data={"value": "Pizzosa"},
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['created']['type'], 'aggregation')
+        eid = res.json()['created']['id']
+
+        # which is an entry
+        agg = Entry.objects.get(pk=eid)
+        self.assertTrue(agg.checksum)
+        self.assertTrue(agg.is_aggregation)
+        self.assertEqual(agg.title, "Pizzosa")
+
+        data = { "value": "test agent for merging" }
+        res = self.client.post(reverse('api_create', args=['agent']),
+                               data=data,
+                               content_type="application/json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()['created']['type'], 'agent')
+        aid = res.json()['created']['id']
+        author = Agent.objects.get(pk=aid)
+        self.assertEqual(author.name, data['value'])
+
+        # this is a wrong URL /create/pippo
+        res = self.client.post(reverse('api_create', args=['pippo']),
+                               data=data,
+                               content_type="application/json")
+        self.assertTrue(res.json()['error'])
+
+        entry = Entry.objects.create(title="A test title", is_aggregation=False);
+        library = Library.objects.create(
+            name="Test library",
+            public=True,
+            active=True,
+        )
+        site = Site.objects.create(
+            library=library,
+            title="Test site",
+            url="https://example.org",
+            active=True,
+        )
+        identifier = "oai:test:disregard"
+        datasource = DataSource.objects.create(
+            site=site,
+            oai_pmh_identifier=identifier,
+            datetime=datetime.now(timezone.utc),
+            entry=entry,
+            full_data={},
+        )
+
+        for x in (1, 2, 3):
+            data = [ { "id": agg.id }, { "id": entry.id } ]
+            res = self.client.post(reverse('api_set_aggregated'),
+                                   data=data,
+                                   content_type="application/json")
+            # pp.pprint(res.json())
+            found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
+            self.assertTrue(found_rel)
+            res = self.client.get(reverse('api'), { "query": "Pizzosa" })
+            # pp.pprint(res.json())
+            self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
+
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class AliasesTestCase(TestCase):
     def setUp(self):
         pinco = Agent.objects.create(name="Pinco Pallino")
@@ -28,6 +126,7 @@ class AliasesTestCase(TestCase):
             # self.assertEqual(xapian['title'][0], 'Pizzab')
             self.assertEqual(xapian['creator'][0]['value'], 'Pincic Pallinic')
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class SitePrivateTestCase(TestCase):
     def setUp(self):
         sources = []
@@ -86,6 +185,7 @@ class SitePrivateTestCase(TestCase):
         self.assertEqual(entry.indexing_data()['unique_source'], 0)
 
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class UniqueSiteTestCase(TestCase):
     def setUp(self):
         library = Library.objects.create(
@@ -115,6 +215,7 @@ class UniqueSiteTestCase(TestCase):
         site = Site.objects.first()
         self.assertEqual(entry.indexing_data()['unique_source'], site.id)
 
+@override_settings(XAPIAN_DB=str(xapian_test_db))
 class AggregationProcessingTestCase(TestCase):
     def setUp(self):
         library = Library.objects.create(
