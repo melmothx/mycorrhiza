@@ -1,9 +1,8 @@
 <script>
- import CreateAgentBox from './CreateAgentBox.vue'
- import CreateAggregationBox from './CreateAggregationBox.vue'
+ import CreateEntityBox from './CreateEntityBox.vue'
  import axios from 'axios'
  export default {
-     components: { CreateAggregationBox, CreateAgentBox },
+     components: { CreateEntityBox },
      props: [
          'merge_type',
          'remove_merged_filter',
@@ -216,10 +215,10 @@
       </div>
     </div>
     <div v-if="create_item && create_item == 'aggregation'">
-      <CreateAggregationBox @created-aggregation="set_canonical_aggregation" />
+      <CreateEntityBox @created-entity="set_canonical_aggregation" creation_type="aggregation" />
     </div>
     <div v-if="create_item && create_item == 'agent'">
-      <CreateAgentBox @created-agent="set_canonical_agent" />
+      <CreateEntityBox @created-entity="set_canonical_agent" creation_type="agent" />
     </div>
   </div>
 </template>

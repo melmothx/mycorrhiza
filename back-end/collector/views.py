@@ -273,14 +273,13 @@ def api_create(request, target):
     if data:
         logger.debug(data)
         created = None
-        if target == 'agent' and data.get('name'):
-            # name is unique
-            created, is_creation  = Agent.objects.get_or_create(name=data['name'])
-            for attr, value in data.items():
-                setattr(created, attr, value)
-            created.save()
-        elif target == 'aggregation':
-            created = Entry.create_virtual_aggregation(data)
+        value = data.get('value')
+        if value:
+            if target == 'agent':
+                # name is unique
+                created, is_creation  = Agent.objects.get_or_create(name=value)
+            elif target == 'aggregation':
+                created = Entry.create_virtual_aggregation(value)
 
         if created:
             out['created'] = {

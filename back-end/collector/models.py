@@ -549,8 +549,7 @@ class Entry(models.Model):
         return reindex
 
     @classmethod
-    def create_virtual_aggregation(cls, data):
-        name = data.get('title')
+    def create_virtual_aggregation(cls, name):
         if name:
             sha = hashlib.sha256()
             sha.update(name.encode())
