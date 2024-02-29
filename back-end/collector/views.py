@@ -6,6 +6,7 @@ import json
 from amwmeta.xapian import search
 import logging
 from django.urls import reverse
+from django.conf import settings
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
@@ -199,9 +200,12 @@ def api_set_aggregated(request):
                     except AggregationEntry.DoesNotExist:
                         rel = AggregationEntry.objects.create(**entry_rel)
                     created.append(rel.id)
-            indexer = MycorrhizaIndexer()
+
+            indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+            logger.debug("Reindexing " + pp.pformat(reindex))
+            logger.debug("Created " + pp.pformat(created))
+
             indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
-            out['created'] = created
             if created:
                 out['success'] = "Added " + str(len(created)) + " items to aggregation"
             else:
@@ -229,7 +233,7 @@ def api_set_translations(request):
         original.save()
         translations = [ x['id'] for x in data ]
         Entry.objects.filter(id__in=[ x['id'] for x in data ]).update(original_entry=original)
-        indexer = MycorrhizaIndexer()
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
         out['success'] = "Translations set!"
 
@@ -270,7 +274,7 @@ def api_merge(request, target):
                 if canonical.id not in [ x.id for x in aliases ]:
                     logger.info("Merging " + str(aliases) + " into " + str(canonical))
                     reindex = current_class.merge_records(canonical, aliases)
-                    indexer = MycorrhizaIndexer()
+                    indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
                     indexer.index_entries(reindex)
                     logger.info(indexer.logs)
                     out['success'] = "Merged!"

@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib.auth.models import User
+from django.conf import settings
 import logging
 from amwmeta.sheets import parse_sheet, normalize_records
 import random
@@ -148,7 +149,7 @@ class Site(models.Model):
         self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
 
     def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
-        indexer = MycorrhizaIndexer()
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         all_ids = list(set(xapian_records))
         logger.debug("Indexing " + str(all_ids))
         for id in all_ids:

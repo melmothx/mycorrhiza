@@ -4,19 +4,17 @@ import xapian
 from sickle import Sickle
 from sickle.oaiexceptions import *
 from urllib.parse import urlparse
-from pathlib import Path
 import logging
 from amwmeta.utils import DataPage
 from sickle.models import Record
 import re
 from unidecode import unidecode
 import pprint
+
 pp = pprint.PrettyPrinter(indent=2)
 
 
 logger = logging.getLogger(__name__)
-
-XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
 
 # slot, prefix, boolean
 FIELD_MAPPING = {
@@ -47,8 +45,8 @@ EXCLUSION_FIELDS = {
     'entry': 'Q',
 }
 
-def search(query_params, active_libraries=[], exclusions=[]):
-    db = xapian.Database(XAPIAN_DB)
+def search(db_path, query_params, active_libraries=[], exclusions=[]):
+    db = xapian.Database(db_path)
     querystring = query_params.get("query")
 
     # todo setup validation in the views.py
@@ -225,8 +223,10 @@ def search(query_params, active_libraries=[], exclusions=[]):
     return context
 
 class MycorrhizaIndexer:
-    def __init__(self):
-        self.db = xapian.WritableDatabase(XAPIAN_DB, xapian.DB_CREATE_OR_OPEN)
+    # kw only argument
+    def __init__(self, *, db_path):
+        logger.debug("Initializing MycorrhizaIndexer with " + db_path)
+        self.db = xapian.WritableDatabase(db_path, xapian.DB_CREATE_OR_OPEN)
         self.logs = []
 
     def index_entries(self, entries):
