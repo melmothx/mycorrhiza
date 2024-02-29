@@ -585,10 +585,10 @@ class Entry(models.Model):
             reindex = [ aggregation_id ]
             aggregated_datasources = []
             for agg_id in aggregated_ids:
-                reindex.append(agg_id)
                 try:
                     aggregated = cls.objects.get(pk=agg_id)
                     if not aggregated.is_aggregation:
+                        reindex.append(agg_id)
                         aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
                         entry_rel = {
                             "aggregation": aggregation,
@@ -614,7 +614,7 @@ class Entry(models.Model):
                     logger.info("Creating virtual DS for {}".format(ds.oai_pmh_identifier))
                     agg_ds = DataSource.objects.create(
                         site_id=ds.site_id,
-                        oai_pmh_identifier="virtual:site-{}:ds-{}".format(ds.site_id, ds.id),
+                        oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
                         datetime=aggregation.last_modified,
                         entry_id=aggregation.id,
                         is_aggregation=True,
@@ -636,7 +636,10 @@ class Entry(models.Model):
             indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
             logger.debug("Reindexing " + pp.pformat(reindex))
             indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
-            out['success'] = "Reindexed {} items".format(len(reindex))
+            if len(reindex) > 1:
+                out['success'] = "Reindexed {} items".format(len(reindex))
+            else:
+                out['error'] = "Nothing to do. Expecting an aggregation and normal entries"
         else:
             out['error'] = "First item is not an aggregation"
         return out
