@@ -4,6 +4,7 @@ from django.urls import reverse
 from .models import Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
+from amwmeta.xapian import search
 import copy
 import pprint
 import shutil
@@ -27,6 +28,7 @@ class ViewsTestCase(TestCase):
         data = {
             "title": "test",
         }
+        # make sure unauthorized can't create
         res = self.client.post(reverse('api_create', args=['aggregation']),
                                data=data,
                                content_type="application/json")
@@ -36,17 +38,21 @@ class ViewsTestCase(TestCase):
                                content_type="application/json")
         self.assertEqual(res.status_code, 302)
 
-        # login
+        # login and create an aggregation
         self.client.login(username="admin", password="password")
 
         res = self.client.post(reverse('api_create', args=['aggregation']),
-                               data=data,
+                               data={"title": "Pizzosa"},
                                content_type="application/json")
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()['created']['type'], 'aggregation')
         eid = res.json()['created']['id']
+
+        # which is an entry
         agg = Entry.objects.get(pk=eid)
         self.assertTrue(agg.checksum)
+        self.assertTrue(agg.is_aggregation)
+        self.assertEqual(agg.title, "Pizzosa")
 
         data = { "name": "test agent for merging" }
         res = self.client.post(reverse('api_create', args=['agent']),
@@ -55,23 +61,29 @@ class ViewsTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.json()['created']['type'], 'agent')
         aid = res.json()['created']['id']
-        agg = Agent.objects.get(pk=aid)
-        self.assertEqual(agg.name, data['name'])
+        author = Agent.objects.get(pk=aid)
+        self.assertEqual(author.name, data['name'])
 
+        # this is a wrong URL /create/pippo
         res = self.client.post(reverse('api_create', args=['pippo']),
                                data=data,
                                content_type="application/json")
         self.assertTrue(res.json()['error'])
 
-        entry = Entry.objects.create(title="Test dummy");
-
-        data = [ { "id": eid }, { "id": entry.id } ]
+        entry = Entry.objects.create(title="A test title", is_aggregation=False);
+        data = [ { "id": agg.id }, { "id": entry.id } ]
         res = self.client.post(reverse('api_set_aggregated'),
                                data=data,
                                content_type="application/json")
         # pp.pprint(res.json())
         found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
         self.assertTrue(found_rel)
+        res = self.client.get(reverse('api'), { "query": "Pizzosa" })
+        pp.pprint(res.json())
+        self.assertEqual(res.json()['total_entries'], 1)
+
+
+
 
 @override_settings(XAPIAN_DB=str(xapian_test_db))
 class AliasesTestCase(TestCase):
