@@ -3,7 +3,7 @@
  import ExclusionButton from './ExclusionButton.vue'
   export default {
       components: { FacetButton, ExclusionButton },
-      props: [ 'name', 'values', 'can_set_exclusions' ],
+      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting' ],
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
@@ -44,7 +44,8 @@
       <h2 class="font-semibold capitalize py-0 text-center border-b">
         <slot>{{ name }}</slot>
       </h2>
-      <div class="text-sm px-2 py-0 text-center">
+      <div v-if="use_sorting"
+           class="text-sm px-2 py-0 text-center">
         Sort:
         <label class="px-2">
           <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
@@ -58,7 +59,7 @@
         </label>
       </div>
     </div>
-    <div class="h-48 overflow-y-auto p-2">
+    <div class="max-h-48 overflow-y-auto p-2">
       <template v-for="facet in facet_list" :key="facet.key">
         <div class="flex">
           <div class="flex-grow">

@@ -161,6 +161,7 @@
         <div class="sticky top-5">
           <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
+                :use_sorting="false"
                 :values="facets.aggregate.values"
                 :name="facets.aggregate.name"
                 @toggle-app-filter="toggleFilter"
@@ -168,6 +169,7 @@
           </div>
           <div v-if="facets.language" class="mb-3">
             <FacetBox
+                :use_sorting="true"
                 :values="facets.language.values"
                 :name="facets.language.name"
                 @toggle-app-filter="toggleFilter"
@@ -175,6 +177,7 @@
           </div>
           <div v-if="facets.library" class="mb-3">
             <FacetBox
+                :use_sorting="true"
                 :values="facets.library.values"
                 :name="facets.library.name"
                 :can_set_exclusions="can_set_exclusions"
@@ -184,6 +187,7 @@
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
+                :use_sorting="true"
                 :values="facets.creator.values"
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter"
@@ -191,6 +195,7 @@
           </div>
           <div v-if="facets.date" class="mb-3">
             <FacetBox
+                :use_sorting="true"
                 :values="facets.date.values"
                 :name="facets.date.name"
                 @toggle-app-filter="toggleFilter"
