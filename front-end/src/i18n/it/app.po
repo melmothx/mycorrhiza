@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: camp 11\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/components/SearchPage.vue:103
+msgid "All entries (%{count})"
+msgstr ""
+
+#: src/components/SearchPage.vue:100
+msgid "Search results for %{searched_query} (%{total_entries})"
+msgstr ""

@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: src/components/SearchPage.vue:103
+msgid "All entries (%{count})"
+msgstr ""
+
+#: src/components/SearchPage.vue:100
+msgid "Search results for %{searched_query} (%{total_entries})"
+msgstr ""
