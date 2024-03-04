@@ -2,12 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 10:13:35 10:13+0000\n"
-"PO-Revision-Date: 10:13:35 10:13+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@localhost>\n"
+"PO-Revision-Date: 2024-03-04 10:13+0000\n"
+"Last-Translator: Marco <melmothx@gmail.com>\n"
+"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. $gettext("All entries (%1)", total_entries)
 #: src/components/SearchPage.vue:103
@@ -18,4 +20,3 @@ msgstr ""
 #: src/components/SearchPage.vue:100
 msgid "Search results for %1 (%2)"
 msgstr ""
-
