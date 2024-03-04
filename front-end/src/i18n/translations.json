@@ -1,1 +1,20 @@
-{"en":{"All entries (%1)":"All entries (%1)","Search results for %1 (%2)":"Search results for %1 (%2)"},"it":{"All entries (%1)":"Tutti i risultati (%1)","Search results for %1 (%2)":"Risultati di ricerca per %1 (%2)"}}
+{
+   "de" : {},
+   "en" : {
+      "All entries (%1)" : {
+         "msgstr" : "All entries (%1)"
+      },
+      "Search results for %1 (%2)" : {
+         "msgstr" : "Search results for %1 (%2)"
+      }
+   },
+   "fr" : {},
+   "it" : {
+      "All entries (%1)" : {
+         "msgstr" : "Tutti i risultati (%1)"
+      },
+      "Search results for %1 (%2)" : {
+         "msgstr" : "Risultati di ricerca per %1 (%2)"
+      }
+   }
+}

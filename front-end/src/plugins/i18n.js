@@ -27,9 +27,9 @@ export default {
             // get the string from the translation and format
             let lang = options.language;
             if (options.translations[lang]) {
-                if (options.translations[lang][msgid]) {
+                if (options.translations[lang][msgid] && options.translations[lang][msgid].msgstr) {
                     console.log("Found translation");
-                    args[0] = options.translations[lang][msgid];
+                    args[0] = options.translations[lang][msgid].msgstr;
                 }
             }
             return format(...args)

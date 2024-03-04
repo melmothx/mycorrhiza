@@ -14,3 +14,5 @@ for i in en it de fr; do
     fi
     msgmerge --no-fuzzy-matching --update "$i18ndir/$i.po" "$i18ndir/messages.pot"
 done
+
+../utils/bin/compile_po_files.pl $i18ndir $i18ndir/translations.json
