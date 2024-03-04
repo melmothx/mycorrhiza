@@ -10,9 +10,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/components/SearchPage.vue:103
-msgid "All entries (%{count})"
-msgstr ""
+msgid "All entries (%1)"
+msgstr "Tutti i risultati (%1)"
 
 #: src/components/SearchPage.vue:100
-msgid "Search results for %{searched_query} (%{total_entries})"
-msgstr ""
+msgid "Search results for %1 (%2)"
+msgstr "Risultati di ricerca per %1 (%2)"

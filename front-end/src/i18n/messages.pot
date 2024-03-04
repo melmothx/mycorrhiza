@@ -3,9 +3,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 #: src/components/SearchPage.vue:103
-msgid "All entries (%{count})"
+msgid "All entries (%1)"
 msgstr ""
 
 #: src/components/SearchPage.vue:100
-msgid "Search results for %{searched_query} (%{total_entries})"
+msgid "Search results for %1 (%2)"
 msgstr ""
