@@ -97,10 +97,10 @@
   <form class="m-1 md:m-5" @submit.prevent="searchText">
     <h1 class="text-3xl text-center font-semibold m-8">
       <template v-if="searched_query">
-        {{ $gettext("Search results for %1 (%2)", searched_query, total_entries) }}
+        {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
       <template v-else>
-        {{ $gettext("All entries (%1)", total_entries) }}
+        {{ $gettext('All entries (%1)', total_entries) }}
       </template>
     </h1>
     <div v-if="flash_success" class="bg-green-100 border-green-600 text-green-800 border rounded p-2 flex justify-center cursor-pointer"

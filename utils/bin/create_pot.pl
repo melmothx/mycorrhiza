@@ -31,7 +31,7 @@ foreach my $f (@files) {
     pos($_) = 0;
     my $line = 1;
     # stolen from https://metacpan.org/dist/Locale-Maketext-Lexicon/source/lib/Locale/Maketext/Extract/Plugin/Generic.pm#L29
-    my $quoted = '(\')([^\\\']*(?:\\.[^\\\']*)*)(\')|(\")([^\\\"]*(?:\\.[^\\\"]*)*)(\")';
+    my $quoted = '(?:\')(?:[^\\\']*(?:\\.[^\\\']*)*)(?:\')|(?:\")(?:[^\\\"]*(?:\\.[^\\\"]*)*)(?:\")';
     while (m/
                 \G
                 (
@@ -48,6 +48,30 @@ foreach my $f (@files) {
         $line += ( () = ( $1 =~ /\n/g ) );
         print "$str ($context $f:$line)\n";
         add_entry(msgid => $str, reference => "$f:$line", automatic => $context);
+    }
+    $line = 1;
+    pos($_) = 0;
+    while (m/
+                \G
+                (
+                    .*?
+                    (
+                        \$ngettext\(
+                        \s*
+                        ($quoted)
+                        \s*,\s*
+                        ($quoted)
+                        (.*?)
+                        \)
+                    )
+                )
+            /smogx) {
+        my ($context, $singular, $plural) = ($2, $3, $4);
+        $line += ( () = ( $1 =~ /\n/g ) );
+        print "$singular - $plural ($context $f:$line)\n";
+        my @pieces;
+        add_entry(msgid => $singular, msgid_plural => $plural,
+                  reference => "$f:$line", automatic => $context);
     }
 }
 
@@ -68,7 +92,7 @@ my @pos = (
 foreach my $k (sort keys %po_objects) {
     my $data = $po_objects{$k};
     my %constructor = (
-                       -msgstr => '',
+                       $data->{msgid_plural} ? (-msgstr_n => { 0 => '' }) : (-msgstr => ''),
                       );
     foreach my $k (keys %$data) {
         $constructor{"-$k"} = ref($data->{$k}) ? join(' ', @{$data->{$k}}) : $data->{$k};
@@ -84,13 +108,16 @@ if ($pot_file) {
 
 sub add_entry {
     my %po = @_;
-    my $msgid = $po{msgid};
-    return unless $msgid;
-    $msgid = substr($msgid, 1, -1);
-    $msgid =~ s/\\(["'])/$1/g;
-    $po{msgid} = $msgid;
-    return unless $msgid;
-    if (my $exists = $po_objects{$msgid}) {
+    return unless $po{msgid};
+    foreach my $i (qw/msgid msgid_plural/) {
+        if (my $v = $po{$i}) {
+            $v = substr($v, 1, -1);
+            $v =~ s/\\(["'])/$1/g;
+            $po{$i} = $v;
+        }
+    }
+    return unless $po{msgid};
+    if (my $exists = $po_objects{$po{msgid}}) {
         if (my $plural = $po{msgid_plural}) {
             $exists->{msgid_plural} ||= $plural;
         }
@@ -102,6 +129,6 @@ sub add_entry {
         }
     }
     else {
-        $po_objects{$msgid} = \%po;
+        $po_objects{$po{msgid}} = \%po;
     }
 }
