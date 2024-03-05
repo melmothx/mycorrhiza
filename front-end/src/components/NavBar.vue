@@ -69,7 +69,7 @@
     <div class="flex-grow">
     </div>
     <div>
-      <div v-for="lang in ['it', 'en']">
+      <div v-for="lang in ['it', 'en', 'hr']">
         <span @click="set_language(lang)">
           <span v-if="lang == current_language">
             <strong>{{ lang }}</strong>

@@ -41,7 +41,7 @@
       "Search results for %1: found %2 entry" : {
          "plurals" : {
             "0" : "Risultati di ricerca per %1: trovato %2 risultato",
-            "1" : "Risultati di ricerca per %1: trovati %1 risultati"
+            "1" : "Risultati di ricerca per %1: trovati %2 risultati"
          }
       }
    }
