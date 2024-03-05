@@ -1,21 +1,22 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 10:13:35 10:13+0000\n"
-"PO-Revision-Date: 10:13:35 10:13+0000\n"
+"POT-Creation-Date: 07:06:20 07:06+0000\n"
+"PO-Revision-Date: 07:06:20 07:06+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@localhost>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#. $gettext("All entries (%1)", total_entries)
+#. $gettext('All entries (%1)', total_entries)
 #: src/components/SearchPage.vue:103
 msgid "All entries (%1)"
 msgstr ""
 
-#. $gettext("Search results for %1 (%2)", searched_query, total_entries)
+#. $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries)
 #: src/components/SearchPage.vue:100
-msgid "Search results for %1 (%2)"
-msgstr ""
+msgid "Search results for %1: found %2 entry"
+msgid_plural "Search results for %1: found %2 entries"
+msgstr[0] ""
 

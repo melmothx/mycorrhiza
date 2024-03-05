@@ -11,12 +11,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#. $gettext("All entries (%1)", total_entries)
+#. $gettext('All entries (%1)', total_entries)
 #: src/components/SearchPage.vue:103
 msgid "All entries (%1)"
 msgstr ""
 
-#. $gettext("Search results for %1 (%2)", searched_query, total_entries)
+#. $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries)
 #: src/components/SearchPage.vue:100
-msgid "Search results for %1 (%2)"
-msgstr ""
+msgid "Search results for %1: found %2 entry"
+msgid_plural "Search results for %1: found %2 entries"
+msgstr[0] ""
+msgstr[1] ""

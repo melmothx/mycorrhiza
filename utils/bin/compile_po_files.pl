@@ -25,11 +25,11 @@ foreach my $f (path($dir)->children(qr{\.po$})) {
                                            ? (msgid_plural => $po->dequote($po->msgid_plural))
                                            : ()
                                           };
-                if (my $plurals = $po->msgstr_n) {
-                    foreach my $k (keys %$plurals) {
-                        $translations{$msgid}{plurals} ||= {};
-                        $translations{$msgid}{plurals}{$k} = $po->dequote($plurals->{$k});
-                    }
+            }
+            if (my $plurals = $po->msgstr_n) {
+                foreach my $k (keys %$plurals) {
+                    $translations{$msgid}{plurals} ||= {};
+                    $translations{$msgid}{plurals}{$k} = $po->dequote($plurals->{$k});
                 }
             }
         }
