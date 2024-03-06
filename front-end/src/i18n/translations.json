@@ -1,0 +1,48 @@
+{
+   "de" : {
+      "Search results for %1: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      }
+   },
+   "en" : {
+      "All entries (%1)" : {
+         "msgstr" : "All entries (%1)"
+      },
+      "Search results for %1: found %2 entry" : {
+         "plurals" : {
+            "0" : ""
+         }
+      }
+   },
+   "fr" : {
+      "Search results for %1: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      }
+   },
+   "hr" : {
+      "Search results for %1: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : "",
+            "2" : ""
+         }
+      }
+   },
+   "it" : {
+      "All entries (%1)" : {
+         "msgstr" : "Tutti i risultati"
+      },
+      "Search results for %1: found %2 entry" : {
+         "plurals" : {
+            "0" : "Risultati di ricerca per %1: trovato %2 risultato",
+            "1" : "Risultati di ricerca per %1: trovati %2 risultati"
+         }
+      }
+   }
+}

@@ -10,6 +10,7 @@
              password: null,
              authenticated: null,
              message: null,
+             current_language: null,
          }
      },
      methods: {
@@ -51,15 +52,32 @@
                       vm.check();
                   });
          },
+         set_language(lang) {
+             this.current_language = this.$setlanguage(lang);
+             console.log(`Current language is ${this.current_language}`);
+             location.reload();
+         }
      },
      mounted() {
          this.check();
+         this.current_language = this.$getlanguage();
      },
  }
 </script>
 <template>
   <div class="flex items-center m-3">
-    <div class="flex-grow"></div>
+    <div class="flex-grow">
+    </div>
+    <div>
+      <div v-for="lang in ['it', 'en', 'hr']">
+        <span @click="set_language(lang)">
+          <span v-if="lang == current_language">
+            <strong>{{ lang }}</strong>
+          </span>
+          <span v-else>{{ lang }}</span>
+        </span>
+      </div>
+    </div>
     <div v-if="authenticated">
       <span class="px-3">Hello, {{ authenticated }}!</span>
       <button class="rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2"
