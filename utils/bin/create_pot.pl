@@ -47,7 +47,10 @@ foreach my $f (@files) {
         my ($context, $str) = ($2, $3);
         $line += ( () = ( $1 =~ /\n/g ) );
         print "$str ($context $f:$line)\n";
-        add_entry(msgid => $str, reference => "$f:$line", automatic => $context);
+        add_entry(msgid => $str,
+                  reference => [ "$f:$line" ],
+                  automatic => [ $context ],
+                 );
     }
     $line = 1;
     pos($_) = 0;
@@ -70,8 +73,11 @@ foreach my $f (@files) {
         $line += ( () = ( $1 =~ /\n/g ) );
         print "$singular - $plural ($context $f:$line)\n";
         my @pieces;
-        add_entry(msgid => $singular, msgid_plural => $plural,
-                  reference => "$f:$line", automatic => $context);
+        add_entry(msgid => $singular,
+                  msgid_plural => $plural,
+                  reference => [ "$f:$line" ],
+                  automatic => [ $context ],
+                 );
     }
 }
 
@@ -124,7 +130,7 @@ sub add_entry {
         foreach my $k (qw/automatic reference/) {
             if ($po{$k}) {
                 $exists->{$k} ||= [];
-                push @{$exists->{$k}}, $po{$k};
+                push @{$exists->{$k}}, @{$po{$k}};
             }
         }
     }

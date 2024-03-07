@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 10:13:35 10:13+0000\n"
+"POT-Creation-Date: 12:02:24 12:02+0000\n"
 "PO-Revision-Date: 2024-03-04 10:13+0000\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: English\n"
@@ -11,13 +11,239 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. $gettext('Aggregation')
+#: src/components/SearchPage.vue:177
+msgid "Aggregation"
+msgstr ""
+
 #. $gettext('All entries (%1)', total_entries)
 #: src/components/SearchPage.vue:103
 msgid "All entries (%1)"
 msgstr "All entries (%1)"
+
+#. $gettext('Ascending')
+#: src/components/SearchPage.vue:148
+msgid "Ascending"
+msgstr ""
+
+#. $gettext('Authors')
+#: src/components/SearchPage.vue:204
+msgid "Authors"
+msgstr ""
+
+#. $gettext('Cancel')
+#: src/components/ExclusionButton.vue:74
+msgid "Cancel"
+msgstr ""
+
+#. $gettext('Close')
+#: src/components/EntryPage.vue:49
+msgid "Close"
+msgstr ""
+
+#. $gettext('Contains:')
+#: src/components/EntryPage.vue:59
+msgid "Contains:"
+msgstr ""
+
+#. $gettext('Create')
+#: src/components/CreateEntityBox.vue:54
+msgid "Create"
+msgstr ""
+
+#. $gettext('Date') $gettext('Date')
+#: src/components/ExclusionTable.vue:35 src/components/SearchPage.vue:213
+msgid "Date"
+msgstr ""
+
+#. $gettext('Descending')
+#: src/components/SearchPage.vue:149
+msgid "Descending"
+msgstr ""
+
+#. $gettext('Download Types')
+#: src/components/SearchPage.vue:169
+msgid "Download Types"
+msgstr ""
+
+#. $gettext('Hello, %1!', authenticated)
+#: src/components/NavBar.vue:82
+msgid "Hello, %1!"
+msgstr ""
+
+#. $gettext('ID:')
+#: src/components/DataSourceBox.vue:99
+msgid "ID:"
+msgstr ""
+
+#. $gettext('Justification')
+#: src/components/ExclusionButton.vue:61
+msgid "Justification"
+msgstr ""
+
+#. $gettext('Language')
+#: src/components/SearchPage.vue:185
+msgid "Language"
+msgstr ""
+
+#. $gettext('Libraries')
+#: src/components/SearchPage.vue:195
+msgid "Libraries"
+msgstr ""
+
+#. $gettext('Login')
+#: src/components/NavBar.vue:93
+msgid "Login"
+msgstr ""
+
+#. $gettext('Logout')
+#: src/components/NavBar.vue:84
+msgid "Logout"
+msgstr ""
+
+#. $gettext('Merge') $gettext('Merge') $gettext('Merge')
+#: src/components/EntryBox.vue:41 src/components/EntryBox.vue:66
+#: src/components/MergeBox.vue:198
+msgid "Merge"
+msgstr ""
+
+#. $gettext('Merge authors here')
+#: src/components/SearchPage.vue:238
+msgid "Merge authors here"
+msgstr ""
+
+#. $gettext('Merge entries here')
+#: src/components/SearchPage.vue:243
+msgid "Merge entries here"
+msgstr ""
+
+#. $gettext('Nothing to show!')
+#: src/components/ExclusionTable.vue:46
+msgid "Nothing to show!"
+msgstr ""
+
+#. $gettext('Omit') $gettext('Omit')
+#: src/components/ExclusionButton.vue:52 src/components/ExclusionButton.vue:79
+msgid "Omit"
+msgstr ""
+
+#. $gettext('Omit Library')
+#: src/components/FacetBox.vue:81
+msgid "Omit Library"
+msgstr ""
+
+#. $gettext('Omit author')
+#: src/components/EntryBox.vue:48
+msgid "Omit author"
+msgstr ""
+
+#. $gettext('Omit single entry')
+#: src/components/EntryBox.vue:73
+msgid "Omit single entry"
+msgstr ""
+
+#. $gettext('Original title:')
+#: src/components/EntryPage.vue:75
+msgid "Original title:"
+msgstr ""
+
+#. $gettext('Part of:')
+#: src/components/EntryPage.vue:67
+msgid "Part of:"
+msgstr ""
+
+#. $gettext('Reason') $gettext('Reason')
+#: src/components/ExclusionButton.vue:65 src/components/ExclusionTable.vue:34
+msgid "Reason"
+msgstr ""
+
+#. $gettext('Restore')
+#: src/components/ExclusionRow.vue:37
+msgid "Restore"
+msgstr ""
+
+#. $gettext('Search')
+#: src/components/SearchPage.vue:154
+msgid "Search"
+msgstr ""
 
 #. $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries)
 #: src/components/SearchPage.vue:100
 msgid "Search results for %1: found %2 entry"
 msgid_plural "Search results for %1: found %2 entries"
 msgstr[0] ""
+
+#. $gettext('Set aggregations here')
+#: src/components/SearchPage.vue:256
+msgid "Set aggregations here"
+msgstr ""
+
+#. $gettext('Set translations here')
+#: src/components/SearchPage.vue:248
+msgid "Set translations here"
+msgstr ""
+
+#. $gettext('Shelf Location Code')
+#: src/components/DataSourceBox.vue:86
+msgid "Shelf Location Code"
+msgstr ""
+
+#. $gettext('Sort')
+#: src/components/FacetBox.vue:49
+msgid "Sort"
+msgstr ""
+
+#. $gettext('Sort by Acquisition Date')
+#: src/components/SearchPage.vue:137
+msgid "Sort by Acquisition Date"
+msgstr ""
+
+#. $gettext('Sort by Date')
+#: src/components/SearchPage.vue:136
+msgid "Sort by Date"
+msgstr ""
+
+#. $gettext('Sort by Relevance')
+#: src/components/SearchPage.vue:134
+msgid "Sort by Relevance"
+msgstr ""
+
+#. $gettext('Sort by Title')
+#: src/components/SearchPage.vue:135
+msgid "Sort by Title"
+msgstr ""
+
+#. $gettext('Target')
+#: src/components/ExclusionTable.vue:32
+msgid "Target"
+msgstr ""
+
+#. $gettext('Translation:')
+#: src/components/EntryPage.vue:81
+msgid "Translation:"
+msgstr ""
+
+#. $gettext('Type')
+#: src/components/ExclusionTable.vue:33
+msgid "Type"
+msgstr ""
+
+#. $gettext('View full text')
+#: src/components/DataSourceBox.vue:82
+msgid "View full text"
+msgstr ""
+
+#. $gettext('Working')
+#: src/components/MergeBox.vue:216
+msgid "Working"
+msgstr ""
+
+#. $gettext('by count')
+#: src/components/FacetBox.vue:53
+msgid "by count"
+msgstr ""
+
+#. $gettext('by term')
+#: src/components/FacetBox.vue:58
+msgid "by term"
+msgstr ""
