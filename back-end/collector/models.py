@@ -60,6 +60,9 @@ class Site(models.Model):
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     active = models.BooleanField(default=True, null=False)
+    has_raw = models.BooleanField(default=False)
+    has_text = models.BooleanField(default=False)
+    has_print = models.BooleanField(default=False)
     amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -100,6 +103,9 @@ class Site(models.Model):
                 self.save()
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
+        else:
+            self.amusewiki_formats = None
+            self.save()
 
     def harvest(self, force=False, oai_set=None):
         self.update_amusewiki_formats()
@@ -466,6 +472,7 @@ class Entry(models.Model):
 
         xapian_data_sources = []
         record_is_public = False
+        entry_file_formats = []
         for topr in data_source_records:
             dsd = topr.indexing_data()
             # at DS level
@@ -474,6 +481,9 @@ class Entry(models.Model):
             xapian_data_sources.append(dsd)
             if dsd['public']:
                 record_is_public = True
+            for ff in dsd['file_formats']:
+                if ff not in entry_file_formats:
+                    entry_file_formats.append(ff)
 
         entry_libraries = {}
         descriptions = []
@@ -495,6 +505,15 @@ class Entry(models.Model):
             if topr.year_edition:
                 dates[topr.year_edition] = True
 
+        ff_map = {
+            "none": "No download",
+            "raw": "Raw scan",
+            "text": "Human readable text",
+            "print": "Printable format",
+        }
+        if not entry_file_formats:
+            entry_file_formats.append('none')
+
         xapian_record = {
             # these are the mapped ones
             "title": [
@@ -515,7 +534,8 @@ class Entry(models.Model):
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
             "is_aggregation": self.is_aggregation,
-            "aggregate": []
+            "aggregate": [],
+            "download": [ { "id": eff, "value": ff_map[eff] } for eff in entry_file_formats ],
         }
         if self.aggregated_entries.count():
             # if it has aggregated entries, it's an aggregation
@@ -735,7 +755,19 @@ class DataSource(models.Model):
             "material_description": self.material_description,
             "downloads": [] if self.is_aggregation else site.amusewiki_formats,
             "entry_id": original_entry.id,
+            "file_formats": [],
         }
+
+        if site.amusewiki_formats:
+            ds['file_formats'] = [ 'text', 'print' ]
+        else:
+            if site.has_raw:
+                ds['file_formats'].append('raw')
+            if site.has_text:
+                ds['file_formats'].append('text')
+            if site.has_print:
+                ds['file_formats'].append('print')
+
         if library.active and library.public:
             ds['public'] = True
         return ds
