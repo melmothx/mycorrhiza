@@ -168,6 +168,15 @@
                 :translate_values="true"
             >{{ $gettext('Download Types') }}</FacetBox>
           </div>
+          <div v-if="facets.translate" class="mb-3">
+            <FacetBox
+                :use_sorting="false"
+                :values="facets.translate.values"
+                :name="facets.translate.name"
+                @toggle-app-filter="toggleFilter"
+                :translate_values="true"
+            >{{ $gettext('Translations') }}</FacetBox>
+          </div>
           <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
                 :use_sorting="false"
@@ -244,7 +253,8 @@
             </MergeBox>
           </div>
           <div id="translation-cards" class="mb-2">
-            <MergeBox merge_type="entry" api_call="set-translations" @refetch-results="getResults()">
+            <MergeBox merge_type="entry"
+                      api_call="set-translations" @refetch-results="getResults(1)">
               {{ $gettext('Set translations here') }}
             </MergeBox>
           </div>

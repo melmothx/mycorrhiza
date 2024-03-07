@@ -535,6 +535,7 @@ class Entry(models.Model):
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
             "is_aggregation": self.is_aggregation,
             "aggregate": [],
+            "translate": [],
             "download": [ { "id": eff, "value": ff_map[eff] } for eff in entry_file_formats ],
         }
         if self.aggregated_entries.count():
@@ -543,6 +544,13 @@ class Entry(models.Model):
         if self.aggregation_entries.count():
             # if it has aggregation entries, it's an aggregated
             xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
+
+        if self.original_entry_id:
+            xapian_record['translate'].append({ "id": "translation", "value": "Translations" })
+        if self.translations.count():
+            xapian_record['translate'].append({ "id": "translated", "value": "Translated Entries" })
+        if not xapian_record['translate']:
+            xapian_record['translate'].append({ "id": "unknown", "value": "Unknown" })
 
         # logger.debug(xapian_record)
         if len(xapian_record['library']) == 1:

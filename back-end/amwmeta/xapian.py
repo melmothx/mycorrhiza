@@ -25,6 +25,7 @@ FIELD_MAPPING = {
         'library':     (6, 'XH',  True),
         'aggregate': (11, 'XG', True),
         'download': (12, 'XD', True),
+        'translate': (13, 'XT', True),
 }
 # public prefix is 'P'
 
