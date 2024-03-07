@@ -3,7 +3,7 @@
  import ExclusionButton from './ExclusionButton.vue'
   export default {
       components: { FacetButton, ExclusionButton },
-      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting' ],
+      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting', 'translate_values' ],
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
@@ -46,16 +46,16 @@
       </h2>
       <div v-if="use_sorting"
            class="text-sm px-2 py-0 text-center">
-        Sort:
+        {{ $gettext('Sort') }}
         <label class="px-2">
           <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
                  type="radio" value="count" v-model="sort_method">
-          by count
+          {{ $gettext('by count') }}
         </label>
         <label class="px-2">
           <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
                  type="radio" value="term" v-model="sort_method">
-          by term
+          {{ $gettext('by term') }}
         </label>
       </div>
     </div>
@@ -70,13 +70,16 @@
                 :active="facet.active"
                 :name="name"
                 :merge_type="name == 'creator' ? 'author' : ''"
+                :translate_value="translate_values"
                 @toggle-filter="toggleFilter"
             />
           </div>
           <div class="ml-1" v-if="can_set_exclusions && name == 'library'">
             <ExclusionButton :object_id="facet.id"
                              :object_type="name"
-                             @refetch-results="refetchResults" />
+                             @refetch-results="refetchResults">
+              {{ $gettext('Omit Library') }}
+            </ExclusionButton>
           </div>
         </div>
       </template>

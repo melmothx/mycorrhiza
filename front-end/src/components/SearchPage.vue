@@ -131,10 +131,10 @@
                          border-gray-300
                          focus:border-pink-500
                          focus:ring-0">
-          <option value="">Sort by Relevance</option>
-          <option value="title">Sort by Title</option>
-          <option value="date">Sort by Date</option>
-          <option value="created">Sort by Acquisition Date</option>
+          <option value="">{{ $gettext('Sort by Relevance') }}</option>
+          <option value="title">{{ $gettext('Sort by Title') }}</option>
+          <option value="date">{{ $gettext('Sort by Date') }}</option>
+          <option value="created">{{ $gettext('Sort by Acquisition Date') }}</option>
         </select>
         <select v-if="sort_by"
                 v-model="sort_direction"
@@ -145,13 +145,13 @@
                       border-gray-300
                       focus:border-pink-500
                       focus:ring-0">
-          <option value="asc">Asc</option>
-          <option value="desc">Des</option>
+          <option value="asc">{{ $gettext('Ascending') }}</option>
+          <option value="desc">{{ $gettext('Descending') }}</option>
         </select>
         <button class="rounded-r bg-pink-500
                        hover:bg-pink-700 text-white
                        font-semibold mr-1 py-2 px-6 h-11"
-                type="submit">Search</button>
+                type="submit">{{ $gettext('Search') }}</button>
       </div>
     </div>
   </form>
@@ -159,13 +159,22 @@
     <div class="grid gap-2 grid-cols-[300px_auto_300px]">
       <div>
         <div class="sticky top-5">
+          <div v-if="facets.download" class="mb-3">
+            <FacetBox
+                :use_sorting="false"
+                :values="facets.download.values"
+                :name="facets.download.name"
+                @toggle-app-filter="toggleFilter"
+                :translate_values="true"
+            >{{ $gettext('Download Types') }}</FacetBox>
+          </div>
           <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
                 :use_sorting="false"
                 :values="facets.aggregate.values"
                 :name="facets.aggregate.name"
                 @toggle-app-filter="toggleFilter"
-            >Aggregation</FacetBox>
+            >{{ $gettext('Aggregation') }}</FacetBox>
           </div>
           <div v-if="facets.language" class="mb-3">
             <FacetBox
@@ -173,7 +182,7 @@
                 :values="facets.language.values"
                 :name="facets.language.name"
                 @toggle-app-filter="toggleFilter"
-            >Language</FacetBox>
+            >{{ $gettext('Language') }}</FacetBox>
           </div>
           <div v-if="facets.library" class="mb-3">
             <FacetBox
@@ -183,23 +192,26 @@
                 :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
                 @refetch-results="getResults(1)">
-            Libraries</FacetBox>
+              {{ $gettext('Libraries') }}
+            </FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
                 :use_sorting="true"
                 :values="facets.creator.values"
                 :name="facets.creator.name"
-                @toggle-app-filter="toggleFilter"
-            >Authors</FacetBox>
+                @toggle-app-filter="toggleFilter">
+              {{ $gettext('Authors') }}
+            </FacetBox>
           </div>
           <div v-if="facets.date" class="mb-3">
             <FacetBox
                 :use_sorting="true"
                 :values="facets.date.values"
                 :name="facets.date.name"
-                @toggle-app-filter="toggleFilter"
-            >Date</FacetBox>
+                @toggle-app-filter="toggleFilter">
+              {{ $gettext('Date') }}
+            </FacetBox>
           </div>
         </div>
       </div>
@@ -223,17 +235,17 @@
                       remove_merged_filter="creator"
                       @remove-merged-filter="remove_merged_filter"
                       @refetch-results="getResults(1)">
-              Merge authors here
+              {{ $gettext('Merge authors here') }}
             </MergeBox>
           </div>
           <div id="title-cards" class="mb-2">
             <MergeBox merge_type="entry" @refetch-results="getResults()">
-              Merge entries here
+              {{ $gettext('Merge entries here') }}
             </MergeBox>
           </div>
           <div id="translation-cards" class="mb-2">
             <MergeBox merge_type="entry" api_call="set-translations" @refetch-results="getResults()">
-              Set translations here
+              {{ $gettext('Set translations here') }}
             </MergeBox>
           </div>
           <div id="aggregations-cards" class="mb-2">
@@ -241,7 +253,7 @@
                       api_call="set-aggregated"
                       create_item="aggregation"
                       @refetch-results="getResults()">
-              Set aggregations here
+              {{ $gettext('Set aggregations here') }}
             </MergeBox>
           </div>
         </div>

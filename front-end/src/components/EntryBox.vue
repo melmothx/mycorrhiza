@@ -38,13 +38,15 @@
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
                          border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
                   draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
-              Merge
+              {{ $gettext('Merge') }}
             </span>
           </div>
           <div v-if="can_set_exclusions">
             <ExclusionButton :object_id="author.id"
                              object_type="author"
-                             @refetch-results="$emit('refetchResults')" />
+                             @refetch-results="$emit('refetchResults')">
+              {{ $gettext('Omit author') }}
+            </ExclusionButton>
           </div>
         </div>
       </div>
@@ -61,13 +63,15 @@
           <div v-if="can_merge">
             <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
               draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
-              Merge
+              {{ $gettext('Merge') }}
             </span>
           </div>
           <div v-if="can_set_exclusions">
             <ExclusionButton :object_id="record.entry_id"
                              object_type="entry"
-                             @refetch-results="$emit('refetchResults')" />
+                             @refetch-results="$emit('refetchResults')">
+              {{ $gettext('Omit single entry') }}
+            </ExclusionButton>
           </div>
         </div>
         <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>

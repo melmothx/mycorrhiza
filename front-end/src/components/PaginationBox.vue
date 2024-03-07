@@ -13,7 +13,8 @@
            class="flex items-center justify-center mx-0 px-4 h-10 border border-gray-300 
                  bg-pink-500 text-white font-bold
                  first:rounded-l last:rounded-r">
-          {{ page.label }}</a>
+          {{ $gettext(page.label) }}
+        </a>
       </template>
       <template v-else>
         <a class="flex items-center justify-center mx-0 ms-0 px-4 h-10 border border-gray-300 first:rounded-l last:rounded-r"

@@ -29,10 +29,10 @@
     <table class="m-1 border">
       <thead class="border">
         <th class="border p-1"></th>
-        <th class="border p-1">Target</th>
-        <th class="border p-1">Type</th>
-        <th class="border p-1">Reason</th>
-        <th class="border p-1">Date</th>
+        <th class="border p-1">{{ $gettext('Target') }}</th>
+        <th class="border p-1">{{ $gettext('Type') }}</th>
+        <th class="border p-1">{{ $gettext('Reason') }}</th>
+        <th class="border p-1">{{ $gettext('Date') }}</th>
       </thead>
       <tbody>
         <tr v-for="rec in records" :key="rec.id"
@@ -43,6 +43,6 @@
     </table>
   </div>
   <div v-else class="text-center text-lg font-semibold">
-    Nothing to show!
+    {{ $gettext('Nothing to show!') }}
   </div>
 </template>

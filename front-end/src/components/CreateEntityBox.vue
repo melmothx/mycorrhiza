@@ -51,7 +51,7 @@
     <input class="outline outline-0 border border-gray-300 focus:ring-0 focus:border-pink-500 rounded-l rounded-1 flex-grow px-1"
            v-model="value" />
     <button class="rounded-r rounded-1 px-1 bg-pink-500 text-white font-semibold"
-            @click="create_aggregation">Create</button>
+            @click="create_aggregation">{{ $gettext('Create') }}</button>
   </div>
   <div v-if="flash_error"
        @click="clear_flash_error"

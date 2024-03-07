@@ -1,6 +1,6 @@
 <script>
   export default {
-      props: ['id', 'term', 'count', 'active', 'name', 'merge_type'],
+      props: ['id', 'term', 'count', 'active', 'name', 'merge_type', 'translate_value'],
       emits: ['toggleFilter'],
       methods: {
           drag_element(e, id, label) {
@@ -24,11 +24,21 @@
           <span class="cursor-grab active:cursor-grabbing"
                 draggable="true"
                 @dragstart="drag_element($event, id, term)">
-            {{ term }}
+            <template v-if="translate_value">
+              {{ $gettext(term) }}
+            </template>
+            <template v-else>
+              {{ term }}
+            </template>
           </span>
         </template>
         <template v-else>
-          <span>{{ term }}</span>
+          <span v-if="translate_value">
+            {{ $gettext(term) }}
+          </span>
+          <span v-else>
+            {{ term }}
+          </span>
         </template>
       </span>
       ({{ count }})

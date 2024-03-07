@@ -79,11 +79,11 @@
         <div class="border m-1 p-1 rounded" v-html="html"></div>
       </div>
       <div v-else>
-        <button @click="get_full_text(source.data_source_id)">View full text</button>
+        <button @click="get_full_text(source.data_source_id)">{{ $gettext('View full text') }}</button>
       </div>
     </div>
     <div v-if="source.shelf_location_code">
-      <span>Shelf Location Code:</span> <code>{{ source.shelf_location_code }}</code>
+      <span>{{ $gettext('Shelf Location Code') }}</span> <code>{{ source.shelf_location_code }}</code>
     </div>
     <div v-if="source.downloads">
       <div v-for="dl in source.downloads" :key="dl.code">
@@ -96,7 +96,7 @@
       {{ source.material_description }}
     </div>
     <div>
-      <code>ID: {{ source.identifier }}</code>
+      <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
     </div>
   </div>    
 </template>

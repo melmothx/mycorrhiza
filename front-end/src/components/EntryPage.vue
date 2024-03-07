@@ -46,7 +46,7 @@
         </div>
         <div>
           <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
-                  type="button" @click="$router.push({ name: 'home' })">Close</button>
+                  type="button" @click="$router.push({ name: 'home' })">{{ $gettext('Close') }}</button>
         </div>
       </div>
       <hr class="my-3" />
@@ -56,7 +56,7 @@
           <div v-for="agg in source.aggregated" :key="agg.id">
             <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
             class="border rounded my-1 p-1 cursor-pointer">
-              <DataSourceBox :source="agg" :short="1">Contains:</DataSourceBox>
+              <DataSourceBox :source="agg" :short="1">{{ $gettext('Contains:') }}</DataSourceBox>
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@
           <div v-for="agg in source.aggregations" :key="agg.id">
             <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
             class="border rounded my-1 p-1 cursor-pointer">
-              <DataSourceBox :source="agg" :short="1">Part of:</DataSourceBox>
+              <DataSourceBox :source="agg" :short="1">{{ $gettext('Part of:') }}</DataSourceBox>
             </div>
           </div>
         </div>
@@ -72,13 +72,13 @@
       <div v-if="record.original_entry"
            @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"
            class="border rounded my-1 p-1 cursor-pointer">
-        <EntryDetails :record="record.original_entry">Original title:</EntryDetails>
+        <EntryDetails :record="record.original_entry">{{ $gettext('Original title:') }}</EntryDetails>
       </div>
       <div v-if="record.translations && record.translations.length > 0">
         <div v-for="translation in record.translations" :key="translation.id">
           <div @click="$router.push({ name: 'entry', params: { id: translation.id } })"
             class="border rounded my-1 p-1 cursor-pointer">
-            <EntryDetails :record="translation">Translation:</EntryDetails>
+            <EntryDetails :record="translation">{{ $gettext('Translation:') }}</EntryDetails>
           </div>
         </div>
       </div>

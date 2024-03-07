@@ -158,14 +158,19 @@ export default {
         };
         function format(fmt) {
             const args = arguments;
-            console.log(args);
-            console.log(fmt);
-            return fmt
-                .replace(/%%/g, '%% ')
-                .replace(/%(\d+)/g, function (str, p1) {
-                    return args[p1];
-                })
-                .replace(/%% /g, '%')
+            // console.log(args);
+            // console.log(fmt);
+            if (typeof fmt === 'string' || fmt instanceof String) {
+                return fmt
+                    .replace(/%%/g, '%% ')
+                    .replace(/%(\d+)/g, function (str, p1) {
+                        return args[p1];
+                    })
+                    .replace(/%% /g, '%')
+            }
+            else {
+                return fmt
+            }
         }
         function gettext(msgid) {
             const args = arguments;
@@ -174,7 +179,7 @@ export default {
             let lang = options.language;
             if (options.translations[lang]) {
                 if (options.translations[lang][msgid] && options.translations[lang][msgid].msgstr) {
-                    console.log("Found translation");
+                    // console.log("Found translation");
                     args[0] = options.translations[lang][msgid].msgstr;
                 }
             }

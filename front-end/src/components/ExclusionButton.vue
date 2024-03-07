@@ -49,7 +49,7 @@
 </script>
 <template>
   <span class="text-sm cursor-pointer border-2 rounded-full px-2 bg-red-800 text-white font-semibold"
-        @click="open_dialog">Omit</span>
+        @click="open_dialog">{{ $gettext('Omit') }}</span>
 
   <div v-if="open">
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto font-normal font-serif">
@@ -57,9 +57,12 @@
         <div class="border rounded-lg bg-white text-left shadow">
           <div class="bg-white px-4 pb-4 pt-5">
             <div class="mt-3 text-center">
-              <h3 class="text-base font-semibold leading-6 text-gray-900">Omit {{ object_type }}</h3>
+              <h3 class="text-base font-semibold leading-6 text-gray-900">
+                <slot>{{ $gettext('Justification') }}</slot>
+              </h3>
               <div class="mt-2">
-                <textarea v-model="comment" placeholder="Reason"
+                <textarea v-model="comment"
+                          :placeholder="$gettext('Reason')"
                           class="rounded border-gray-300 focus:ring-0 active:ring-0 active:border-pink-300 focus:border-pink-300">
                 </textarea>
               </div>
@@ -68,12 +71,12 @@
           <div class="bg-gray-50 px-4 py-3 flex">
             <button type="button" class="inline-flex w-full justify-center rounded-md border m-1"
                     @click="close_dialog">
-              Cancel
+              {{ $gettext('Cancel') }}
             </button>
             <button v-if="comment"
                     type="button" class="inline-flex w-full justify-center rounded-md border m-1"
                     @click="set_exclusion">
-              Omit
+              {{ $gettext('Omit') }}
             </button>
           </div>
         </div>

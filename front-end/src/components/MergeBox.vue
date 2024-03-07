@@ -195,7 +195,7 @@
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
           <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
-                  type="button" @click="merge_records">Merge</button>
+                  type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
         </div>
         <div v-else>
           <div v-if="!flash_error && !flash_success && !working" class="h-10"></div>
@@ -204,16 +204,16 @@
              @click="clear_flash_error"
              class="flex justify-center items-center m-2 cursor-pointer text-pink-700
                    mt-2 font-semibold">
-          {{ flash_error }}
+          {{ $gettext(flash_error) }}
         </div>
         <div v-if="flash_success"
              @click="clear_flash_success"
              class="flex justify-center items-center m-2 cursor-pointer text-green-800
                    mt-2 font-bold">
-          {{ flash_success }}
+          {{ $gettext(flash_success) }}
         </div>
         <div v-if="working" class="m-2 text-center">
-          <span class="animate-ping rounded-full text-pink-800 p-2">Working</span>
+          <span class="animate-ping rounded-full text-pink-800 p-2">{{ $gettext('Working') }}</span>
         </div>
       </div>
     </div>

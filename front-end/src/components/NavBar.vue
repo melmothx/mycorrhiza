@@ -79,9 +79,9 @@
       </div>
     </div>
     <div v-if="authenticated">
-      <span class="px-3">Hello, {{ authenticated }}!</span>
+      <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
       <button class="rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2"
-          type="button" @click="logout">Logout</button>
+          type="button" @click="logout">{{ $gettext('Logout') }}</button>
     </div>
     <div v-else>
       <form @submit.prevent="login">
@@ -90,11 +90,11 @@
         <input class="outline outline-0 border border-gray-300 focus:border-pink-500 focus:ring-0 px-2 h-6"
                type="password" v-model="password" required>
         <button class="rounded-r bg-pink-500 hover:bg-pink-700 text-white font-semibold h-6 px-2"
-                type="submit">Login</button>
+                type="submit">{{ $gettext('Login') }}</button>
       </form>
     </div>
     <div class="px-2 text-red-700 font-bold" v-if="message">
-      {{ message }}
+      {{ $gettext(message) }}
     </div>
   </div>
 </template>

@@ -34,7 +34,7 @@
 <template>
   <td>
     <button class="rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2 m-3"
-            @click="remove">Restore</button>
+            @click="remove">{{ $gettext('Restore') }}</button>
   </td>
   <td class="p-1 border">
     {{ record.target }}
