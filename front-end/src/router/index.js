@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import EntryView from '../views/EntryView.vue'
 import ExclusionView from '../views/ExclusionView.vue'
+import DashboardView from '../views/DashboardView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -19,7 +20,12 @@ const router = createRouter({
             path: '/exclusions',
             name: 'exclusions',
             component: ExclusionView,
-        }
+        },
+        {
+            path: '/dashboard/:type',
+            name: 'dashboard',
+            component: DashboardView,
+        },
     ]
 })
 

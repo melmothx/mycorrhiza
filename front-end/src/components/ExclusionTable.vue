@@ -11,7 +11,8 @@
      methods: {
          fetch() {
              const vm = this;
-             axios.get('/collector/api/listing/exclusions').then(function(res) {
+             // these are the exclusion I set
+             axios.get('/collector/api/exclusions').then(function(res) {
                  console.log(res.data);
                  vm.records = res.data.exclusions;
              });
