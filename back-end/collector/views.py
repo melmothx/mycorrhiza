@@ -294,6 +294,26 @@ def api_create(request, target):
     return JsonResponse(out)
 
 @login_required
+def api_listing(request, target):
+    out = {
+        "target": target
+    }
+    if target == 'merged-agents':
+        merged = []
+        for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
+            merged.append(agent.as_api_dict(get_canonical=True))
+        out[target] = merged
+    elif target == 'merged-entries':
+        merged = []
+        for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
+            merged.append(entry.as_api_dict(get_canonical=True))
+        out[target] = merged
+    elif target == 'exclusions':
+        out[target] = [ ex.as_api_dict() for ex in Exclusion.objects.all() ]
+
+    return JsonResponse(out)
+
+@login_required
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:

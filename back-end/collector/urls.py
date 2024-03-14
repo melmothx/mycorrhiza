@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/full-text/<ds_id>", views.get_datasource_full_text, name="api_full_text"),
     path("api/download/<target>", views.download_datasource, name="api_download_datasource"),
     path("api/merge/<target>", views.api_merge, name="api_merge"),
+    path("api/listing/<target>", views.api_listing, name="api_listing"),
     path("api/set-translations", views.api_set_translations, name="api_set_translations"),
     path("api/set-aggregated", views.api_set_aggregated, name="api_set_aggregated"),
     path("api/exclusions", views.exclusions, name="exclusions"),

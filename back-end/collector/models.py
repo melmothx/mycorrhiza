@@ -29,8 +29,17 @@ class Library(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    def as_api_dict(self):
+        out = {}
+        for f in ["id", "name", "url", "public", "active"]:
+            out[f] = getattr(self, f)
+        out['created'] = self.created.isoformat(timespec="seconds")
+        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        return out
+
     class Meta:
         verbose_name_plural = "Libraries"
+
 
 class Site(models.Model):
     OAI_DC = "oai_dc"
@@ -334,6 +343,23 @@ class Agent(models.Model):
     def display_name(self):
         return self.name
 
+    def as_api_dict(self, get_canonical=False):
+        out = {}
+        for f in ["id", "name", "first_name", "last_name", "description", "canonical_agent_id"]:
+            out[f] = getattr(self, f)
+
+        out['created'] = self.created.isoformat(timespec="seconds")
+        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        canonical = self.canonical_agent
+        if canonical:
+            if get_canonical:
+                out['canonical'] = canonical.as_api_dict(get_canonical=False)
+            else:
+                out['canonical'] = canonical.name
+        else:
+            out['canonical'] = None
+        return out
+
     @classmethod
     def merge_records(cls, canonical, aliases):
         canonical.canonical_agent = None
@@ -393,6 +419,24 @@ class Entry(models.Model):
 
     def __str__(self):
         return self.title
+
+    def as_api_dict(self, get_canonical=False):
+        out = {}
+        for f in ["id", "title", "subtitle", "is_aggregation"]:
+            out[f] = getattr(self, f)
+        out['authors'] = [ agent.name for agent in self.authors.all() ]
+        out['languages'] = [ lang.code for lang in self.languages.all() ]
+        out['created'] = self.created.isoformat(timespec="seconds")
+        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        canonical = self.canonical_entry
+        if canonical:
+            if get_canonical:
+                out['canonical'] = canonical.as_api_dict(get_canonical=False)
+            else:
+                out['canonical'] = canonical.name
+        else:
+            out['canonical'] = None
+        return out
 
     def display_name(self):
         return self.title
@@ -852,6 +896,23 @@ class Exclusion(models.Model):
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    def as_api_dict(self):
+        user = self.user
+        out = {
+            "excluded_by": {
+                "username": user.username,
+                "email": user.email,
+            },
+            "library": self.exclude_library.as_api_dict() if self.exclude_library_id else None,
+            "author": self.exclude_author.as_api_dict() if self.exclude_author_id else None,
+            "entry": self.exclude_entry.as_api_dict() if self.exclude_entry_id else None,
+            "comment": self.comment,
+            "created": self.created.isoformat(timespec="seconds"),
+            "last_modified": self.last_modified.isoformat(timespec="seconds"),
+        }
+        return out
+
     def as_xapian_queries(self):
         queries = []
         if self.exclude_library:
