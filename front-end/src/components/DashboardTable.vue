@@ -27,7 +27,7 @@
              const vm = this;
              if (id) {
                  console.log("Removing " + id)
-                 axios.post('/collector/api/restore/' + vm.listing_type,
+                 axios.post('/collector/api/revert/' + vm.listing_type,
                             {
                                 id: id,
                             },

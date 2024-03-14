@@ -365,7 +365,7 @@ def api_listing(request, target):
     return JsonResponse(out)
 
 @login_required
-def api_restore(request, target):
+def api_revert(request, target):
     logger.debug(target)
     out = {}
     data = None

@@ -5,7 +5,7 @@
 <template>
   <main>
     <NavBar />
-    <DashboardTable :listing_type="$route.params.type">
+    <DashboardTable :listing_type="$route.params.type" :key="$route.params.type">
       {{ $gettext('dashboard for ' + $route.params.type) }}
     </DashboardTable>
   </main>
