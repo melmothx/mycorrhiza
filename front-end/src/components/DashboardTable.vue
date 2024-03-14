@@ -53,7 +53,11 @@
  */
 </script>
 <template>
-  <h1><slot></slot></h1>
+  <h1>
+    <slot></slot>
+    <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
+            type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
+  </h1>
   <table>
     <thead>
       <tr>
