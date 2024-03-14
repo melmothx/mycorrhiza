@@ -1,10 +1,15 @@
 <script>
  import axios from 'axios'
+ // import DashboardMergedEntry from './DashboardMergedEntry.vue'
  export default {
-     props: ['listing_type'],
+     // components: { DashboardMergedEntry },
+     props: [
+         'listing_type',
+     ],
      data() {
          return {
              records: [],
+             fields: [],
          }
      },
      methods: {
@@ -14,7 +19,10 @@
              // these are the exclusion I set
              axios.get('/collector/api/listing/' + listing_type).then(function(res) {
                  console.log(res.data);
-                 vm.records = res.data[listing_type];
+                 console.log(res.data.fields);
+                 vm.fields = res.data.fields;
+                 vm.records = res.data.records;
+
              });
          }
      },
@@ -22,10 +30,28 @@
          this.fetch();
      }
  }
+ /*
+    $gettext('ID')
+    $gettext('Title')
+    $gettext('Subtitle')
+ */
 </script>
 <template>
   <h1><slot></slot></h1>
-  <div v-for="record in records" :id="record.id">
-    {{ record.id }}
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th v-for="f in fields" :key="f.name">
+          {{ f.label }}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="record in records" :id="record.id">
+        <td v-for="f in fields" :key="f.name">
+          {{ record[f.name] }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>

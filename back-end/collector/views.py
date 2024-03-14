@@ -133,7 +133,7 @@ def exclusions(request):
             out['error'] = "Invalid JSON!";
 
     if request.method == 'GET':
-        out['exclusions'] = [ i.as_json_data() for i in request.user.exclusions.all() ]
+        out['exclusions'] = [ i.as_api_dict() for i in request.user.exclusions.all() ]
 
     if data:
         logger.debug(data)
@@ -301,16 +301,60 @@ def api_listing(request, target):
     if target == 'merged-agents':
         merged = []
         for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
-            merged.append(agent.as_api_dict(get_canonical=True))
-        out[target] = merged
+            apidata = agent.as_api_dict(get_canonical=True)
+            if apidata.get('canonical'):
+                for f in ['id', 'name']:
+                    apidata['canonical_' + f] = apidata['canonical'][f]
+                merged.append(apidata)
+        out['records'] = merged
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'name', 'label': 'Name' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_name', 'label': 'Canonical Name' },
+        ]
+
     elif target == 'merged-entries':
         merged = []
         for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
-            merged.append(entry.as_api_dict(get_canonical=True))
-        out[target] = merged
-    elif target == 'exclusions':
-        out[target] = [ ex.as_api_dict() for ex in Exclusion.objects.all() ]
+            apidata = entry.as_api_dict(get_canonical=True)
+            if apidata.get('canonical'):
+                # flatten for the table
+                apidata['authors'] = '; '.join(apidata['authors'])
+                apidata['languages'] = ' '.join(apidata['languages'])
+                merged.append(apidata)
+                apidata['canonical_authors'] = '; '.join(apidata['canonical']['authors'])
+                apidata['canonical_languages'] = ' '.join(apidata['canonical']['languages'])
+                for f in ['id', 'title', 'created', 'last_modified', 'canonical']:
+                    apidata['canonical_' + f] = apidata['canonical'][f]
 
+            else:
+                logger.debug("Got an entry without a canonical? " + pp.pformat(apidata))
+
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'authors', 'label': 'Authors' },
+            { 'name': 'title', 'label': 'Title' },
+
+            # { 'name': 'subtitle', 'label': 'Subtitle' },
+            # { 'name': 'languages', 'label': 'Languages' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
+            { 'name': 'canonical_title', 'label': 'Canonical Title' },
+
+            # { 'name': 'canonical_subtitle', 'label': 'Canonical Subtitle' },
+            # { 'name': 'canonical_languages', 'label': 'Canonical Languages' },
+        ]
+        out['records'] = merged
+
+    elif target == 'exclusions':
+        out['records'] = [ ex.as_api_dict() for ex in Exclusion.objects.all() ]
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'comment', 'label': 'Reason' },
+            { 'name': 'type', 'label': 'Type' },
+            { 'name': 'target', 'label': 'Name' },
+        ]
     return JsonResponse(out)
 
 @login_required

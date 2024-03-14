@@ -33,8 +33,8 @@ class Library(models.Model):
         out = {}
         for f in ["id", "name", "url", "public", "active"]:
             out[f] = getattr(self, f)
-        out['created'] = self.created.isoformat(timespec="seconds")
-        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
         return out
 
     class Meta:
@@ -348,8 +348,8 @@ class Agent(models.Model):
         for f in ["id", "name", "first_name", "last_name", "description", "canonical_agent_id"]:
             out[f] = getattr(self, f)
 
-        out['created'] = self.created.isoformat(timespec="seconds")
-        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
         canonical = self.canonical_agent
         if canonical:
             if get_canonical:
@@ -426,8 +426,8 @@ class Entry(models.Model):
             out[f] = getattr(self, f)
         out['authors'] = [ agent.name for agent in self.authors.all() ]
         out['languages'] = [ lang.code for lang in self.languages.all() ]
-        out['created'] = self.created.isoformat(timespec="seconds")
-        out['last_modified'] = self.last_modified.isoformat(timespec="seconds")
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
         canonical = self.canonical_entry
         if canonical:
             if get_canonical:
@@ -517,6 +517,7 @@ class Entry(models.Model):
         xapian_data_sources = []
         record_is_public = False
         entry_file_formats = []
+
         for topr in data_source_records:
             dsd = topr.indexing_data()
             # at DS level
@@ -909,9 +910,23 @@ class Exclusion(models.Model):
             "author": self.exclude_author.as_api_dict() if self.exclude_author_id else None,
             "entry": self.exclude_entry.as_api_dict() if self.exclude_entry_id else None,
             "comment": self.comment,
-            "created": self.created.isoformat(timespec="seconds"),
-            "last_modified": self.last_modified.isoformat(timespec="seconds"),
+            "created": self.created.strftime('%Y-%m-%dT%H:%M'),
+            "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M'),
         }
+        if self.exclude_library:
+            out['type'] = 'library'
+            out['target'] = self.exclude_library.name
+        elif self.exclude_author:
+            out['type'] = 'author'
+            out['target'] = self.exclude_author.name
+        elif self.exclude_entry:
+            out['type'] = 'entry'
+            title = self.exclude_entry.title
+            authors = '; '.join([ author.name for author in  self.exclude_entry.authors.all() ])
+            if authors:
+                out['target'] = "{} ({})".format(title, authors)
+            else:
+                out['target'] = title
         return out
 
     def as_xapian_queries(self):
@@ -923,22 +938,6 @@ class Exclusion(models.Model):
         if self.exclude_entry:
             queries.append(('entry', self.exclude_entry_id))
         return queries
-    def as_json_data(self):
-        out = {
-            "id": self.id,
-            "comment": self.comment,
-            "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
-        }
-        if self.exclude_library:
-            out['type'] = 'library'
-            out['target'] = self.exclude_library.name
-        elif self.exclude_author:
-            out['type'] = 'author'
-            out['target'] = self.exclude_author.name
-        elif self.exclude_entry:
-            out['type'] = 'entry'
-            out['target'] = self.exclude_entry.title
-        return out
 
 def spreadsheet_upload_directory(instance, filename):
     choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
