@@ -67,6 +67,7 @@
 <template>
   <div class="flex items-center m-3">
     <div class="flex-grow">
+      <span @click="$router.push({ name: 'home' })">Home</span>
     </div>
     <div>
       <div v-for="lang in ['it', 'en', 'hr']">
@@ -76,6 +77,11 @@
           </span>
           <span v-else>{{ lang }}</span>
         </span>
+      </div>
+    </div>
+    <div v-if="authenticated">
+      <div class="m-2" @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
+        {{ $gettext('Exclusions') }}
       </div>
     </div>
     <div v-if="authenticated">

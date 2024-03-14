@@ -29,8 +29,17 @@ class Library(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    def as_api_dict(self):
+        out = {}
+        for f in ["id", "name", "url", "public", "active"]:
+            out[f] = getattr(self, f)
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
+        return out
+
     class Meta:
         verbose_name_plural = "Libraries"
+
 
 class Site(models.Model):
     OAI_DC = "oai_dc"
@@ -334,6 +343,23 @@ class Agent(models.Model):
     def display_name(self):
         return self.name
 
+    def as_api_dict(self, get_canonical=False):
+        out = {}
+        for f in ["id", "name", "first_name", "last_name", "description", "canonical_agent_id"]:
+            out[f] = getattr(self, f)
+
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
+        canonical = self.canonical_agent
+        if canonical:
+            if get_canonical:
+                out['canonical'] = canonical.as_api_dict(get_canonical=False)
+            else:
+                out['canonical'] = canonical.name
+        else:
+            out['canonical'] = None
+        return out
+
     @classmethod
     def merge_records(cls, canonical, aliases):
         canonical.canonical_agent = None
@@ -350,6 +376,16 @@ class Agent(models.Model):
         entries = []
         for agent in reindex_agents:
             for entry in agent.authored_entries.all():
+                entries.append(entry)
+        return entries
+
+    def unmerge(self):
+        entries = [ entry for entry in self.authored_entries.all() ]
+        if self.canonical_agent:
+            canonical = self.canonical_agent
+            self.canonical_agent = None
+            self.save()
+            for entry in canonical.authored_entries.all():
                 entries.append(entry)
         return entries
 
@@ -393,6 +429,34 @@ class Entry(models.Model):
 
     def __str__(self):
         return self.title
+
+    def as_api_dict(self, get_canonical=False, get_original=False):
+        out = {}
+        for f in ["id", "title", "subtitle", "is_aggregation"]:
+            out[f] = getattr(self, f)
+        out['authors'] = [ agent.name for agent in self.authors.all() ]
+        out['languages'] = [ lang.code for lang in self.languages.all() ]
+        out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
+        out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
+        canonical = self.canonical_entry
+        if canonical:
+            if get_canonical:
+                out['canonical'] = canonical.as_api_dict(get_canonical=False)
+            else:
+                out['canonical'] = canonical.id
+        else:
+            out['canonical'] = None
+
+        original = self.original_entry
+        if original:
+            if get_original:
+                out['original'] = original.as_api_dict(get_original=False)
+            else:
+                out['original'] = original.id
+        else:
+            out['original'] = None
+
+        return out
 
     def display_name(self):
         return self.title
@@ -473,6 +537,7 @@ class Entry(models.Model):
         xapian_data_sources = []
         record_is_public = False
         entry_file_formats = []
+
         for topr in data_source_records:
             dsd = topr.indexing_data()
             # at DS level
@@ -559,6 +624,23 @@ class Entry(models.Model):
         self.indexed_data = xapian_record
         self.save()
         return xapian_record
+
+    def unmerge(self):
+        reindex = []
+        if self.canonical_entry:
+            reindex = [ self.canonical_entry, self ]
+            self.canonical_entry = None
+            self.save()
+        return reindex
+
+    def untranslate(self):
+        reindex = []
+        if self.original_entry:
+            reindex = [ self.original_entry, self ]
+            self.original_entry = None
+            self.save()
+        return reindex
+
 
     @classmethod
     def merge_records(cls, canonical, aliases):
@@ -852,20 +934,21 @@ class Exclusion(models.Model):
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    def as_xapian_queries(self):
-        queries = []
-        if self.exclude_library:
-            queries.append(('library', self.exclude_library_id))
-        if self.exclude_author:
-            queries.append(('creator', self.exclude_author_id))
-        if self.exclude_entry:
-            queries.append(('entry', self.exclude_entry_id))
-        return queries
-    def as_json_data(self):
+
+    def as_api_dict(self):
+        user = self.user
         out = {
             "id": self.id,
+            "excluded_by": {
+                "username": user.username,
+                "email": user.email,
+            },
+            "library": self.exclude_library.as_api_dict() if self.exclude_library_id else None,
+            "author": self.exclude_author.as_api_dict() if self.exclude_author_id else None,
+            "entry": self.exclude_entry.as_api_dict() if self.exclude_entry_id else None,
             "comment": self.comment,
-            "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "created": self.created.strftime('%Y-%m-%dT%H:%M'),
+            "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M'),
         }
         if self.exclude_library:
             out['type'] = 'library'
@@ -875,8 +958,23 @@ class Exclusion(models.Model):
             out['target'] = self.exclude_author.name
         elif self.exclude_entry:
             out['type'] = 'entry'
-            out['target'] = self.exclude_entry.title
+            title = self.exclude_entry.title
+            authors = '; '.join([ author.name for author in  self.exclude_entry.authors.all() ])
+            if authors:
+                out['target'] = "{} ({})".format(title, authors)
+            else:
+                out['target'] = title
         return out
+
+    def as_xapian_queries(self):
+        queries = []
+        if self.exclude_library:
+            queries.append(('library', self.exclude_library_id))
+        if self.exclude_author:
+            queries.append(('creator', self.exclude_author_id))
+        if self.exclude_entry:
+            queries.append(('entry', self.exclude_entry_id))
+        return queries
 
 def spreadsheet_upload_directory(instance, filename):
     choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"

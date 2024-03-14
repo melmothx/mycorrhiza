@@ -241,6 +241,7 @@
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"
                       create_item="agent"
+                      dashboard="merged-agents"
                       remove_merged_filter="creator"
                       @remove-merged-filter="remove_merged_filter"
                       @refetch-results="getResults(1)">
@@ -248,12 +249,15 @@
             </MergeBox>
           </div>
           <div id="title-cards" class="mb-2">
-            <MergeBox merge_type="entry" @refetch-results="getResults()">
+            <MergeBox merge_type="entry"
+                      dashboard="merged-entries"
+                      @refetch-results="getResults()">
               {{ $gettext('Merge entries here') }}
             </MergeBox>
           </div>
           <div id="translation-cards" class="mb-2">
             <MergeBox merge_type="entry"
+                      dashboard="translations"
                       api_call="set-translations" @refetch-results="getResults(1)">
               {{ $gettext('Set translations here') }}
             </MergeBox>

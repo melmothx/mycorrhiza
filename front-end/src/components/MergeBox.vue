@@ -8,6 +8,7 @@
          'remove_merged_filter',
          'api_call',
          'create_item',
+         'dashboard',
      ],
      emits: [
          'refetchResults',
@@ -151,6 +152,10 @@
       <h2 class="flex justify-center">
         <span>
           <slot>Drop {{ merge_type }} here for merging</slot>
+          <small v-if="dashboard"
+                 @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
+            admin
+          </small>
         </span>
       </h2>
     </div>

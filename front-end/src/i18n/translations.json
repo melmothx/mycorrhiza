@@ -35,14 +35,152 @@
       }
    },
    "it" : {
+      "Aggregation" : {
+         "msgstr" : "Aggregazione"
+      },
       "All entries (%1)" : {
-         "msgstr" : "Tutti i risultati"
+         "msgstr" : "Tutti i risultati (%1)"
+      },
+      "Ascending" : {
+         "msgstr" : "Ascendente"
+      },
+      "Authors" : {
+         "msgstr" : "Autori"
+      },
+      "Cancel" : {
+         "msgstr" : "Cancella"
+      },
+      "Close" : {
+         "msgstr" : "Chiudi"
+      },
+      "Contains:" : {
+         "msgstr" : "Contiene:"
+      },
+      "Create" : {
+         "msgstr" : "Crea"
+      },
+      "Date" : {
+         "msgstr" : "Data"
+      },
+      "Descending" : {
+         "msgstr" : "Discendente"
+      },
+      "Download Types" : {
+         "msgstr" : "Tipi di download"
+      },
+      "Hello, %1!" : {
+         "msgstr" : "Ciao, %1!"
+      },
+      "ID:" : {
+         "msgstr" : "ID:"
+      },
+      "Justification" : {
+         "msgstr" : "Giustificazione"
+      },
+      "Language" : {
+         "msgstr" : "Lingua"
+      },
+      "Libraries" : {
+         "msgstr" : "Biblioteche"
+      },
+      "Login" : {
+         "msgstr" : "Accedi"
+      },
+      "Logout" : {
+         "msgstr" : "Esci"
+      },
+      "Merge" : {
+         "msgstr" : "Unisci"
+      },
+      "Merge authors here" : {
+         "msgstr" : "Unisci gli autori qui"
+      },
+      "Merge entries here" : {
+         "msgstr" : "Unisci le voci qui"
+      },
+      "Nothing to show!" : {
+         "msgstr" : "Niente da mostrare!"
+      },
+      "Omit" : {
+         "msgstr" : "Ometti"
+      },
+      "Omit Library" : {
+         "msgstr" : "Ometti biblioteca"
+      },
+      "Omit author" : {
+         "msgstr" : "Ometti autore"
+      },
+      "Omit single entry" : {
+         "msgstr" : "Ometti singola voce"
+      },
+      "Original title:" : {
+         "msgstr" : "Titolo originale:"
+      },
+      "Part of:" : {
+         "msgstr" : "Parte di:"
+      },
+      "Reason" : {
+         "msgstr" : "Ragione"
+      },
+      "Restore" : {
+         "msgstr" : "Rigenera"
+      },
+      "Search" : {
+         "msgstr" : "Cerca"
       },
       "Search results for %1: found %2 entry" : {
          "plurals" : {
             "0" : "Risultati di ricerca per %1: trovato %2 risultato",
             "1" : "Risultati di ricerca per %1: trovati %2 risultati"
          }
+      },
+      "Set aggregations here" : {
+         "msgstr" : "Imposta le aggregazioni qui"
+      },
+      "Set translations here" : {
+         "msgstr" : "Imposta le traduzioni qui"
+      },
+      "Shelf Location Code" : {
+         "msgstr" : "Codice di Localizzazione a Scaffale"
+      },
+      "Sort" : {
+         "msgstr" : "Disponi"
+      },
+      "Sort by Acquisition Date" : {
+         "msgstr" : "Disponi per data di acquisizione"
+      },
+      "Sort by Date" : {
+         "msgstr" : "Disponi per data"
+      },
+      "Sort by Relevance" : {
+         "msgstr" : "Disponi per rilevanza"
+      },
+      "Sort by Title" : {
+         "msgstr" : "Disponi per titolo"
+      },
+      "Target" : {
+         "msgstr" : "Bersaglio"
+      },
+      "Translation:" : {
+         "msgstr" : "Traduzione:"
+      },
+      "Translations" : {
+         "msgstr" : "Traduzioni"
+      },
+      "Type" : {
+         "msgstr" : "Tipo"
+      },
+      "View full text" : {
+         "msgstr" : "Guarda il testo integrale"
+      },
+      "Working" : {
+         "msgstr" : "Elaborazione"
+      },
+      "by count" : {
+         "msgstr" : "per numero"
+      },
+      "by term" : {
+         "msgstr" : "ordine alfabetico"
       }
    }
 }

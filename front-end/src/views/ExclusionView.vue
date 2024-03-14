@@ -5,6 +5,6 @@
 <template>
   <main>
     <NavBar />
-    <ExclusionTable>My Exclusions</ExclusionTable>
+    <ExclusionTable>{{ $gettext('My Exclusions') }}</ExclusionTable>
   </main>
 </template>

@@ -133,7 +133,7 @@ def exclusions(request):
             out['error'] = "Invalid JSON!";
 
     if request.method == 'GET':
-        out['exclusions'] = [ i.as_json_data() for i in request.user.exclusions.all() ]
+        out['exclusions'] = [ i.as_api_dict() for i in request.user.exclusions.all() ]
 
     if data:
         logger.debug(data)
@@ -291,6 +291,161 @@ def api_create(request, target):
             out['error'] = "Invalid target (must be agent or aggregation)"
 
     logger.debug(out)
+    return JsonResponse(out)
+
+@login_required
+def api_listing(request, target):
+    out = {
+        "target": target
+    }
+    if target == 'merged-agents':
+        merged = []
+        for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
+            apidata = agent.as_api_dict(get_canonical=True)
+            if apidata.get('canonical'):
+                for f in ['id', 'name']:
+                    apidata['canonical_' + f] = apidata['canonical'][f]
+                merged.append(apidata)
+        out['records'] = merged
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'name', 'label': 'Name' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_name', 'label': 'Canonical Name' },
+        ]
+
+    elif target == 'translations':
+        translations = []
+        for entry in Entry.objects.filter(original_entry_id__isnull=False).all():
+            apidata = entry.as_api_dict(get_original=True)
+            if apidata.get('original'):
+                # flatten for the table
+                apidata['authors'] = '; '.join(apidata['authors'])
+                apidata['languages'] = ' '.join(apidata['languages'])
+                apidata['original_authors'] = '; '.join(apidata['original']['authors'])
+                apidata['original_languages'] = ' '.join(apidata['original']['languages'])
+                for f in ['id', 'title', 'created', 'last_modified', 'original']:
+                    apidata['original_' + f] = apidata['original'][f]
+                translations.append(apidata)
+
+            else:
+                logger.debug("Got an entry without a original? " + pp.pformat(apidata))
+
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
+            { 'name': 'authors', 'label': 'Authors' },
+            { 'name': 'title', 'label': 'Title' },
+            { 'name': 'original_id', 'label': 'Original ID', 'link': 'entry' },
+            { 'name': 'original_authors', 'label': 'Original Authors' },
+            { 'name': 'original_title', 'label': 'Original Title' },
+        ]
+        out['records'] = translations
+
+
+    elif target == 'merged-entries':
+        merged = []
+        for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
+            apidata = entry.as_api_dict(get_canonical=True)
+            if apidata.get('canonical'):
+                # flatten for the table
+                apidata['authors'] = '; '.join(apidata['authors'])
+                apidata['languages'] = ' '.join(apidata['languages'])
+                apidata['canonical_authors'] = '; '.join(apidata['canonical']['authors'])
+                apidata['canonical_languages'] = ' '.join(apidata['canonical']['languages'])
+                for f in ['id', 'title', 'created', 'last_modified', 'canonical']:
+                    apidata['canonical_' + f] = apidata['canonical'][f]
+                merged.append(apidata)
+
+            else:
+                logger.debug("Got an entry without a canonical? " + pp.pformat(apidata))
+
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
+            { 'name': 'authors', 'label': 'Authors' },
+            { 'name': 'title', 'label': 'Title' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'entry' },
+            { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
+            { 'name': 'canonical_title', 'label': 'Canonical Title' },
+        ]
+        out['records'] = merged
+
+    elif target == 'exclusions':
+        records = []
+        for ex in Exclusion.objects.all():
+            rec = ex.as_api_dict()
+            rec['username'] = rec['excluded_by']['username']
+            records.append(rec)
+
+        out['records'] = records
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'username', 'label': 'Username'},
+            { 'name': 'type', 'label': 'Type' },
+            { 'name': 'target', 'label': 'Name' },
+            { 'name': 'comment', 'label': 'Reason' },
+        ]
+    return JsonResponse(out)
+
+@login_required
+def api_revert(request, target):
+    logger.debug(target)
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    logger.debug(data)
+    reindex = []
+    if data:
+        object_id = data.get('id')
+        if object_id:
+            if target == 'merged-agents':
+                try:
+                    agent = Agent.objects.get(pk=object_id)
+                    reindex = agent.unmerge()
+                    out['ok'] = "OK"
+                except Agent.DoesNotExist:
+                    logger.info("Agent ID {} does not exist".format(object_id))
+                    out['error'] = "Agent ID does not exist"
+
+            elif target == 'translations':
+                try:
+                    entry = Entry.objects.get(pk=object_id)
+                    logger.debug(entry.id)
+                    reindex = entry.untranslate()
+                    out['ok'] = "OK"
+                except Entry.DoesNotExist:
+                    logger.info("Entry ID {} does not exist".format(object_id))
+                    out['error'] = "Entry ID does not exist"
+
+            elif target == 'merged-entries':
+                try:
+                    entry = Entry.objects.get(pk=object_id)
+                    logger.debug(entry.id)
+                    reindex = entry.unmerge()
+                    out['ok'] = "OK"
+                except Entry.DoesNotExist:
+                    logger.info("Entry ID {} does not exist".format(object_id))
+                    out['error'] = "Entry ID does not exist"
+
+            elif target == 'exclusions':
+                try:
+                    exclusion = Exclusion.objects.get(pk=object_id)
+                    exclusion.delete()
+                except Exclusion.DoesNotExist:
+                    logger.info("Exclusion ID {} does not exist".format(object_id))
+                    out['error'] = "Exclusion ID does not exist"
+
+            else:
+                logger.debug("Bad target: " + target)
+
+    if reindex:
+        out['msg'] = "Reindexed entries: " + str(len(reindex))
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+        indexer.index_entries(reindex)
+        logger.info(indexer.logs)
     return JsonResponse(out)
 
 @login_required
