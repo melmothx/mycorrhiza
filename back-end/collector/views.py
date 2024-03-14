@@ -348,12 +348,19 @@ def api_listing(request, target):
         out['records'] = merged
 
     elif target == 'exclusions':
-        out['records'] = [ ex.as_api_dict() for ex in Exclusion.objects.all() ]
+        records = []
+        for ex in Exclusion.objects.all():
+            rec = ex.as_api_dict()
+            rec['username'] = rec['excluded_by']['username']
+            records.append(rec)
+
+        out['records'] = records
         out['fields'] = [
             { 'name': 'id', 'label': 'ID' },
-            { 'name': 'comment', 'label': 'Reason' },
+            { 'name': 'username', 'label': 'Username'},
             { 'name': 'type', 'label': 'Type' },
             { 'name': 'target', 'label': 'Name' },
+            { 'name': 'comment', 'label': 'Reason' },
         ]
     return JsonResponse(out)
 
