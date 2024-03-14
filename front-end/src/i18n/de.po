@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 12:02:24 12:02+0000\n"
+"POT-Creation-Date: 09:56:18 09:56+0000\n"
 "PO-Revision-Date: 2024-03-04 10:13+0000\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. $gettext('Aggregation')
-#: src/components/SearchPage.vue:177
+#: src/components/SearchPage.vue:186
 msgid "Aggregation"
 msgstr ""
 
@@ -27,7 +27,7 @@ msgid "Ascending"
 msgstr ""
 
 #. $gettext('Authors')
-#: src/components/SearchPage.vue:204
+#: src/components/SearchPage.vue:213
 msgid "Authors"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgid "Create"
 msgstr ""
 
 #. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:35 src/components/SearchPage.vue:213
+#: src/components/ExclusionTable.vue:35 src/components/SearchPage.vue:222
 msgid "Date"
 msgstr ""
 
@@ -82,12 +82,12 @@ msgid "Justification"
 msgstr ""
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:185
+#: src/components/SearchPage.vue:194
 msgid "Language"
 msgstr ""
 
 #. $gettext('Libraries')
-#: src/components/SearchPage.vue:195
+#: src/components/SearchPage.vue:204
 msgid "Libraries"
 msgstr ""
 
@@ -108,12 +108,12 @@ msgid "Merge"
 msgstr ""
 
 #. $gettext('Merge authors here')
-#: src/components/SearchPage.vue:238
+#: src/components/SearchPage.vue:247
 msgid "Merge authors here"
 msgstr ""
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:243
+#: src/components/SearchPage.vue:252
 msgid "Merge entries here"
 msgstr ""
 
@@ -175,12 +175,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:256
+#: src/components/SearchPage.vue:266
 msgid "Set aggregations here"
 msgstr ""
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:248
+#: src/components/SearchPage.vue:258
 msgid "Set translations here"
 msgstr ""
 
@@ -222,6 +222,11 @@ msgstr ""
 #. $gettext('Translation:')
 #: src/components/EntryPage.vue:81
 msgid "Translation:"
+msgstr ""
+
+#. $gettext('Translations')
+#: src/components/SearchPage.vue:178
+msgid "Translations"
 msgstr ""
 
 #. $gettext('Type')

@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 12:02:24 12:02+0000\n"
-"PO-Revision-Date: 2024-03-14 10:52+0100\n"
+"POT-Creation-Date: 09:56:18 09:56+0000\n"
+"PO-Revision-Date: 2024-03-14 10:58+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 #. $gettext('Aggregation')
-#: src/components/SearchPage.vue:177
+#: src/components/SearchPage.vue:186
 msgid "Aggregation"
 msgstr "Aggregazione"
 
@@ -28,7 +28,7 @@ msgid "Ascending"
 msgstr "Ascendente"
 
 #. $gettext('Authors')
-#: src/components/SearchPage.vue:204
+#: src/components/SearchPage.vue:213
 msgid "Authors"
 msgstr "Autori"
 
@@ -53,7 +53,7 @@ msgid "Create"
 msgstr "Crea"
 
 #. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:35 src/components/SearchPage.vue:213
+#: src/components/ExclusionTable.vue:35 src/components/SearchPage.vue:222
 msgid "Date"
 msgstr "Data"
 
@@ -65,7 +65,7 @@ msgstr "Discendente"
 #. $gettext('Download Types')
 #: src/components/SearchPage.vue:169
 msgid "Download Types"
-msgstr "Scarica caratteri"
+msgstr "Tipi di download"
 
 #. $gettext('Hello, %1!', authenticated)
 #: src/components/NavBar.vue:82
@@ -83,12 +83,12 @@ msgid "Justification"
 msgstr "Giustificazione"
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:185
+#: src/components/SearchPage.vue:194
 msgid "Language"
 msgstr "Lingua"
 
 #. $gettext('Libraries')
-#: src/components/SearchPage.vue:195
+#: src/components/SearchPage.vue:204
 msgid "Libraries"
 msgstr "Biblioteche"
 
@@ -109,12 +109,12 @@ msgid "Merge"
 msgstr "Unisci"
 
 #. $gettext('Merge authors here')
-#: src/components/SearchPage.vue:238
+#: src/components/SearchPage.vue:247
 msgid "Merge authors here"
 msgstr "Unisci gli autori qui"
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:243
+#: src/components/SearchPage.vue:252
 msgid "Merge entries here"
 msgstr "Unisci le voci qui"
 
@@ -176,12 +176,12 @@ msgstr[0] "Risultati di ricerca per %1: trovato %2 risultato"
 msgstr[1] "Risultati di ricerca per %1: trovati %2 risultati"
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:256
+#: src/components/SearchPage.vue:266
 msgid "Set aggregations here"
 msgstr "Imposta le aggregazioni qui"
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:248
+#: src/components/SearchPage.vue:258
 msgid "Set translations here"
 msgstr "Imposta le traduzioni qui"
 
@@ -225,10 +225,15 @@ msgstr "Bersaglio"
 msgid "Translation:"
 msgstr "Traduzione:"
 
+#. $gettext('Translations')
+#: src/components/SearchPage.vue:178
+msgid "Translations"
+msgstr "Traduzioni"
+
 #. $gettext('Type')
 #: src/components/ExclusionTable.vue:33
 msgid "Type"
-msgstr "Caratteri"
+msgstr "Tipo"
 
 #. $gettext('View full text')
 #: src/components/DataSourceBox.vue:82
