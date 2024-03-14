@@ -68,7 +68,14 @@
     <tbody>
       <tr v-for="record in records" :id="record.id">
         <td v-for="f in fields" :key="f.name">
-          {{ record[f.name] }}
+          <template v-if="f.link == 'entry'">
+            <button @click="$router.push({ name: 'entry', params: { id: record[f.name] } })">
+              {{ record[f.name] }}
+            </button>
+          </template>
+          <template v-else>
+            {{ record[f.name] }}
+          </template>
         </td>
         <td>
           <button @click="remove(record.id)">Remove</button>

@@ -46,7 +46,7 @@
         </div>
         <div>
           <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
-                  type="button" @click="$router.push({ name: 'home' })">{{ $gettext('Close') }}</button>
+                  type="button" @click="$router.go(-1)">{{ $gettext('Close') }}</button>
         </div>
       </div>
       <hr class="my-3" />

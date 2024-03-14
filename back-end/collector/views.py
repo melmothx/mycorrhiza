@@ -332,10 +332,10 @@ def api_listing(request, target):
                 logger.debug("Got an entry without a original? " + pp.pformat(apidata))
 
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
             { 'name': 'authors', 'label': 'Authors' },
             { 'name': 'title', 'label': 'Title' },
-            { 'name': 'original_id', 'label': 'Original ID' },
+            { 'name': 'original_id', 'label': 'Original ID', 'link': 'entry' },
             { 'name': 'original_authors', 'label': 'Original Authors' },
             { 'name': 'original_title', 'label': 'Original Title' },
         ]
@@ -360,10 +360,10 @@ def api_listing(request, target):
                 logger.debug("Got an entry without a canonical? " + pp.pformat(apidata))
 
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
             { 'name': 'authors', 'label': 'Authors' },
             { 'name': 'title', 'label': 'Title' },
-            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'entry' },
             { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
             { 'name': 'canonical_title', 'label': 'Canonical Title' },
         ]
