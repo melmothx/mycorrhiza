@@ -379,6 +379,16 @@ class Agent(models.Model):
                 entries.append(entry)
         return entries
 
+    def unmerge(self):
+        entries = [ entry for entry in self.authored_entries.all() ]
+        if self.canonical_agent:
+            canonical = self.canonical_agent
+            self.canonical_agent = None
+            self.save()
+            for entry in canonical.authored_entries.all():
+                entries.append(entry)
+        return entries
+
     def __str__(self):
         return self.name
 
@@ -604,6 +614,14 @@ class Entry(models.Model):
         self.indexed_data = xapian_record
         self.save()
         return xapian_record
+
+    def unmerge(self):
+        reindex = []
+        if self.canonical_entry:
+            reindex = [ self.canonical_entry, self ]
+            self.canonical_entry = None
+            self.save()
+        return reindex
 
     @classmethod
     def merge_records(cls, canonical, aliases):

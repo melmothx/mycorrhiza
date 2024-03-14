@@ -365,6 +365,52 @@ def api_listing(request, target):
     return JsonResponse(out)
 
 @login_required
+def api_restore(request, target):
+    logger.debug(target)
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    logger.debug(data)
+    reindex = []
+    if data:
+        object_id = data.get('id')
+        if object_id:
+            if target == 'merged-agents':
+                try:
+                    agent = Agent.objects.get(pk=object_id)
+                    reindex = agent.unmerge()
+                except Agent.DoesNotExist:
+                    logger.info("Agent ID {} does not exist".format(object_id))
+
+            elif target == 'merged-entries':
+                try:
+                    entry = Entry.objects.get(pk=object_id)
+                    logger.debug(entry.id)
+                    reindex = entry.unmerge()
+                except Entry.DoesNotExist:
+                    logger.info("Entry ID {} does not exist".format(object_id))
+
+            elif target == 'exclusions':
+                try:
+                    exclusion = Exclusion.objects.get(pk=object_id)
+                    exclusion.delete()
+                except Exclusion.DoesNotExist:
+                    logger.info("Exclusion ID {} does not exist".format(object_id))
+
+            else:
+                logger.debug("Bad target: " + target)
+
+    if reindex:
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+        indexer.index_entries(reindex)
+        logger.info(indexer.logs)
+    return JsonResponse({ "ok": "ok" })
+
+@login_required
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
