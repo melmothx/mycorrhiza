@@ -900,6 +900,7 @@ class Exclusion(models.Model):
     def as_api_dict(self):
         user = self.user
         out = {
+            "id": self.id,
             "excluded_by": {
                 "username": user.username,
                 "email": user.email,
