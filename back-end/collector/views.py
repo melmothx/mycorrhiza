@@ -314,6 +314,34 @@ def api_listing(request, target):
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
         ]
 
+    elif target == 'translations':
+        translations = []
+        for entry in Entry.objects.filter(original_entry_id__isnull=False).all():
+            apidata = entry.as_api_dict(get_original=True)
+            if apidata.get('original'):
+                # flatten for the table
+                apidata['authors'] = '; '.join(apidata['authors'])
+                apidata['languages'] = ' '.join(apidata['languages'])
+                apidata['original_authors'] = '; '.join(apidata['original']['authors'])
+                apidata['original_languages'] = ' '.join(apidata['original']['languages'])
+                for f in ['id', 'title', 'created', 'last_modified', 'original']:
+                    apidata['original_' + f] = apidata['original'][f]
+                translations.append(apidata)
+
+            else:
+                logger.debug("Got an entry without a original? " + pp.pformat(apidata))
+
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'authors', 'label': 'Authors' },
+            { 'name': 'title', 'label': 'Title' },
+            { 'name': 'original_id', 'label': 'Original ID' },
+            { 'name': 'original_authors', 'label': 'Original Authors' },
+            { 'name': 'original_title', 'label': 'Original Title' },
+        ]
+        out['records'] = translations
+
+
     elif target == 'merged-entries':
         merged = []
         for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
@@ -322,11 +350,11 @@ def api_listing(request, target):
                 # flatten for the table
                 apidata['authors'] = '; '.join(apidata['authors'])
                 apidata['languages'] = ' '.join(apidata['languages'])
-                merged.append(apidata)
                 apidata['canonical_authors'] = '; '.join(apidata['canonical']['authors'])
                 apidata['canonical_languages'] = ' '.join(apidata['canonical']['languages'])
                 for f in ['id', 'title', 'created', 'last_modified', 'canonical']:
                     apidata['canonical_' + f] = apidata['canonical'][f]
+                merged.append(apidata)
 
             else:
                 logger.debug("Got an entry without a canonical? " + pp.pformat(apidata))
@@ -335,15 +363,9 @@ def api_listing(request, target):
             { 'name': 'id', 'label': 'ID' },
             { 'name': 'authors', 'label': 'Authors' },
             { 'name': 'title', 'label': 'Title' },
-
-            # { 'name': 'subtitle', 'label': 'Subtitle' },
-            # { 'name': 'languages', 'label': 'Languages' },
             { 'name': 'canonical_id', 'label': 'Canonical ID' },
             { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
             { 'name': 'canonical_title', 'label': 'Canonical Title' },
-
-            # { 'name': 'canonical_subtitle', 'label': 'Canonical Subtitle' },
-            # { 'name': 'canonical_languages', 'label': 'Canonical Languages' },
         ]
         out['records'] = merged
 
@@ -383,16 +405,30 @@ def api_revert(request, target):
                 try:
                     agent = Agent.objects.get(pk=object_id)
                     reindex = agent.unmerge()
+                    out['ok'] = "OK"
                 except Agent.DoesNotExist:
                     logger.info("Agent ID {} does not exist".format(object_id))
+                    out['error'] = "Agent ID does not exist"
+
+            elif target == 'translations':
+                try:
+                    entry = Entry.objects.get(pk=object_id)
+                    logger.debug(entry.id)
+                    reindex = entry.untranslate()
+                    out['ok'] = "OK"
+                except Entry.DoesNotExist:
+                    logger.info("Entry ID {} does not exist".format(object_id))
+                    out['error'] = "Entry ID does not exist"
 
             elif target == 'merged-entries':
                 try:
                     entry = Entry.objects.get(pk=object_id)
                     logger.debug(entry.id)
                     reindex = entry.unmerge()
+                    out['ok'] = "OK"
                 except Entry.DoesNotExist:
                     logger.info("Entry ID {} does not exist".format(object_id))
+                    out['error'] = "Entry ID does not exist"
 
             elif target == 'exclusions':
                 try:
@@ -400,15 +436,17 @@ def api_revert(request, target):
                     exclusion.delete()
                 except Exclusion.DoesNotExist:
                     logger.info("Exclusion ID {} does not exist".format(object_id))
+                    out['error'] = "Exclusion ID does not exist"
 
             else:
                 logger.debug("Bad target: " + target)
 
     if reindex:
+        out['msg'] = "Reindexed entries: " + str(len(reindex))
         indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
         indexer.index_entries(reindex)
         logger.info(indexer.logs)
-    return JsonResponse({ "ok": "ok" })
+    return JsonResponse(out)
 
 @login_required
 def upload_spreadsheet(request):

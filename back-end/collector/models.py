@@ -430,7 +430,7 @@ class Entry(models.Model):
     def __str__(self):
         return self.title
 
-    def as_api_dict(self, get_canonical=False):
+    def as_api_dict(self, get_canonical=False, get_original=False):
         out = {}
         for f in ["id", "title", "subtitle", "is_aggregation"]:
             out[f] = getattr(self, f)
@@ -443,9 +443,19 @@ class Entry(models.Model):
             if get_canonical:
                 out['canonical'] = canonical.as_api_dict(get_canonical=False)
             else:
-                out['canonical'] = canonical.name
+                out['canonical'] = canonical.id
         else:
             out['canonical'] = None
+
+        original = self.original_entry
+        if original:
+            if get_original:
+                out['original'] = original.as_api_dict(get_original=False)
+            else:
+                out['original'] = original.id
+        else:
+            out['original'] = None
+
         return out
 
     def display_name(self):
@@ -622,6 +632,15 @@ class Entry(models.Model):
             self.canonical_entry = None
             self.save()
         return reindex
+
+    def untranslate(self):
+        reindex = []
+        if self.original_entry:
+            reindex = [ self.original_entry, self ]
+            self.original_entry = None
+            self.save()
+        return reindex
+
 
     @classmethod
     def merge_records(cls, canonical, aliases):

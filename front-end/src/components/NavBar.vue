@@ -78,6 +78,9 @@
         <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
           {{ $gettext('Exclusions') }}
         </div>
+        <div @click="$router.push({ name: 'dashboard', params: { type: 'translations' } })">
+          {{ $gettext('Translations') }}
+        </div>
       </div>
     </div>
     <div>
