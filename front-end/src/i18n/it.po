@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 12:02:24 12:02+0000\n"
-"PO-Revision-Date: 2024-03-13 23:14+0100\n"
+"PO-Revision-Date: 2024-03-14 10:52+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -20,7 +20,7 @@ msgstr "Aggregazione"
 #. $gettext('All entries (%1)', total_entries)
 #: src/components/SearchPage.vue:103
 msgid "All entries (%1)"
-msgstr "Tutti i risultati"
+msgstr "Tutti i risultati (%1)"
 
 #. $gettext('Ascending')
 #: src/components/SearchPage.vue:148
