@@ -8,8 +8,10 @@
      ],
      data() {
          return {
+             all_records: [],
              records: [],
              fields: [],
+             search_string: "",
          }
      },
      methods: {
@@ -18,9 +20,9 @@
              const listing_type = this.listing_type
              // these are the exclusion I set
              axios.get('/collector/api/listing/' + listing_type).then(function(res) {
-                 console.log(res.data);
                  vm.fields = res.data.fields;
-                 vm.records = res.data.records;
+                 vm.all_records = res.data.records;
+                 vm.records = vm.all_records.filter(() => true);
              });
          },
          remove(id) {
@@ -41,6 +43,49 @@
                         });
              }
          },
+         sort_records_asc(field) {
+             this.records.sort(function(a, b) {
+                 if (a[field] == b[field]) {
+                     return 0;
+                 }
+                 else if (a[field] < b[field]) {
+                     return -1
+                 }
+                 else {
+                     return 1
+                 }
+             });
+         },
+         sort_records_desc(field) {
+             this.records.sort(function(a, b) {
+                 if (a[field] == b[field]) {
+                     return 0;
+                 }
+                 else if (a[field] < b[field]) {
+                     return 1
+                 }
+                 else {
+                     return -1
+                 }
+             });
+         },
+         filter_by_search() {
+             let sf = this.fields.map((f) => f.name);
+             if (this.search_string) {
+                 let search = this.search_string.toLowerCase();
+                 this.records = this.all_records.filter((el) => {
+                     for (const f of sf) {
+                         if (el[f] && el[f].toString().toLowerCase().includes(search)) {
+                             console.log(el[f])
+                             return true;
+                         }
+                     }
+                 });
+             }
+             else {
+                 this.records = this.all_records.filter(() => true);
+             }
+         },
      },
      mounted() {
          this.fetch();
@@ -58,11 +103,14 @@
     <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
             type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
   </h1>
+  <input v-model="search_string" @input="filter_by_search" placeholder="Search table here">
   <table>
     <thead>
       <tr>
         <th v-for="f in fields" :key="f.name">
           {{ f.label }}
+          <span class="cursor-pointer" @click="sort_records_asc(f.name)">↓</span>
+          <span class="cursor-pointer" @click="sort_records_desc(f.name)">↑</span>
         </th>
         <th>
           Remove
