@@ -18,6 +18,28 @@ import hashlib
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
+def log_user_operation(user, op, canonical, alias):
+    if user and op and canonical and alias:
+        canonical_title = "canonical"
+        alias_title = "alias"
+        if op == "add-translation" or op == "remove-translation":
+            canonical_title = "original"
+            alias_title = "translation"
+        comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
+                                                    alias_title, alias.display_name(), alias.id)
+        alias.changelogs.create(
+            user=user,
+            username=user.username,
+            operation=op,
+            comment=comment,
+        )
+        canonical.changelogs.create(
+            user=user,
+            username=user.username,
+            operation=op,
+            comment=comment,
+        )
+
 class Library(models.Model):
     name = models.CharField(max_length=255)
     url = models.URLField(max_length=255,
@@ -361,7 +383,7 @@ class Agent(models.Model):
         return out
 
     @classmethod
-    def merge_records(cls, canonical, aliases):
+    def merge_records(cls, canonical, aliases, user=None):
         canonical.canonical_agent = None
         canonical.save()
         reindex_agents = aliases[:]
@@ -369,9 +391,11 @@ class Agent(models.Model):
         for aliased in aliases:
             aliased.canonical_agent = canonical
             aliased.save()
+            log_user_operation(user, 'add-merge-agent', canonical, aliased)
             for va in aliased.variant_agents.all():
                 va.canonical_agent = canonical
                 va.save()
+                log_user_operation(user, 'add-merge-agent', canonical, va)
                 reindex_agents.append(va)
         entries = []
         for agent in reindex_agents:
@@ -379,12 +403,13 @@ class Agent(models.Model):
                 entries.append(entry)
         return entries
 
-    def unmerge(self):
+    def unmerge(self, user=None):
         entries = [ entry for entry in self.authored_entries.all() ]
         if self.canonical_agent:
             canonical = self.canonical_agent
             self.canonical_agent = None
             self.save()
+            log_user_operation(user, 'remove-merge-agent', canonical, self)
             for entry in canonical.authored_entries.all():
                 entries.append(entry)
         return entries
@@ -625,40 +650,35 @@ class Entry(models.Model):
         self.save()
         return xapian_record
 
-    def unmerge(self):
-        reindex = []
-        if self.canonical_entry:
-            reindex = [ self.canonical_entry, self ]
-            self.canonical_entry = None
-            self.save()
-        return reindex
-
-    def untranslate(self):
-        reindex = []
-        if self.original_entry:
-            reindex = [ self.original_entry, self ]
-            self.original_entry = None
-            self.save()
-        return reindex
-
-
     @classmethod
-    def merge_records(cls, canonical, aliases):
+    def merge_records(cls, canonical, aliases, user=None):
         canonical.canonical_entry = None
         canonical.save()
         reindex = aliases[:]
         for aliased in aliases:
             aliased.canonical_entry = canonical
             aliased.save()
+            log_user_operation(user, 'add-merge-entry', canonical, aliased)
             # update the current variant entries
             for ve in aliased.variant_entries.all():
                 ve.canonical_entry = canonical
                 ve.save()
+                log_user_operation(user, 'add-merge-entry', canonical, ve)
                 reindex.append(ve)
         # logger.debug(reindex)
         # update the translations
         cls.objects.filter(original_entry__in=reindex).update(original_entry=canonical)
         reindex.append(canonical)
+        return reindex
+
+    def unmerge(self, user=None):
+        reindex = []
+        canonical_entry = self.canonical_entry
+        if canonical_entry:
+            reindex = [ canonical_entry, self ]
+            self.canonical_entry = None
+            self.save()
+            log_user_operation(user, 'remove-merge-entry', canonical_entry, self)
         return reindex
 
     @classmethod
@@ -1035,3 +1055,20 @@ class Profile(models.Model):
     libraries = models.ManyToManyField(Library)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+class ChangeLog(models.Model):
+    user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="changelogs",
+    )
+    # not a FK, so in case the user is removed, we still have a clue
+    username = models.CharField(max_length=255)
+    # optionals
+    entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL, related_name="changelogs")
+    agent = models.ForeignKey(Agent, null=True, on_delete=models.SET_NULL, related_name="changelogs")
+    operation = models.CharField(max_length=64)
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    # last_modified = models.DateTimeField(auto_now=True)

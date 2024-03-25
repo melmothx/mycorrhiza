@@ -223,7 +223,9 @@ def api_merge(request, target):
     except json.JSONDecodeError:
         out['error'] = "Invalid JSON!";
 
-    if data:
+    user = request.user
+
+    if data and user:
         logger.debug(data)
         canonical = None
         aliases = []
@@ -246,7 +248,7 @@ def api_merge(request, target):
             if canonical and aliases:
                 if canonical.id not in [ x.id for x in aliases ]:
                     logger.info("Merging " + str(aliases) + " into " + str(canonical))
-                    reindex = current_class.merge_records(canonical, aliases)
+                    reindex = current_class.merge_records(canonical, aliases, user=user)
                     indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
                     indexer.index_entries(reindex)
                     logger.info(indexer.logs)
@@ -398,14 +400,14 @@ def api_revert(request, target):
 
     logger.debug(data)
     reindex = []
-    if data:
+    user = request.user
+    if data and user:
         object_id = data.get('id')
         if object_id:
             if target == 'merged-agents':
                 try:
                     agent = Agent.objects.get(pk=object_id)
-                    reindex = agent.unmerge()
-                    out['ok'] = "OK"
+                    reindex = agent.unmerge(user=user)
                 except Agent.DoesNotExist:
                     logger.info("Agent ID {} does not exist".format(object_id))
                     out['error'] = "Agent ID does not exist"
@@ -414,8 +416,7 @@ def api_revert(request, target):
                 try:
                     entry = Entry.objects.get(pk=object_id)
                     logger.debug(entry.id)
-                    reindex = entry.untranslate()
-                    out['ok'] = "OK"
+                    reindex = entry.untranslate(user=user)
                 except Entry.DoesNotExist:
                     logger.info("Entry ID {} does not exist".format(object_id))
                     out['error'] = "Entry ID does not exist"
@@ -424,8 +425,7 @@ def api_revert(request, target):
                 try:
                     entry = Entry.objects.get(pk=object_id)
                     logger.debug(entry.id)
-                    reindex = entry.unmerge()
-                    out['ok'] = "OK"
+                    reindex = entry.unmerge(user=user)
                 except Entry.DoesNotExist:
                     logger.info("Entry ID {} does not exist".format(object_id))
                     out['error'] = "Entry ID does not exist"
