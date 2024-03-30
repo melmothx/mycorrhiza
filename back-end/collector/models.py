@@ -19,20 +19,32 @@ pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
 def log_user_operation(user, op, canonical, alias):
-    if user and op and canonical and alias:
+    if user and op and canonical:
         canonical_title = "canonical"
         alias_title = "alias"
-        if op == "add-translation" or op == "remove-translation":
+        if "translation" in op:
             canonical_title = "original"
             alias_title = "translation"
-        comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
-                                                    alias_title, alias.display_name(), alias.id)
-        alias.changelogs.create(
-            user=user,
-            username=user.username,
-            operation=op,
-            comment=comment,
-        )
+        elif "aggregation" in op:
+            canonical_title = "aggregation"
+            alias_title = "aggregated"
+        elif "exclusion" in op:
+            canonical_title = "excluded"
+            alias_title = "excluded"
+
+
+        if alias:
+            comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
+                                                        alias_title, alias.display_name(), alias.id)
+            alias.changelogs.create(
+                user=user,
+                username=user.username,
+                operation=op,
+                comment=comment,
+            )
+        else:
+            comment = "{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id)
+
         canonical.changelogs.create(
             user=user,
             username=user.username,
@@ -703,37 +715,25 @@ class Entry(models.Model):
         return None
 
     @classmethod
-    def aggregate_entries(cls, aggregation_id, *aggregated_ids):
-        logger.debug(aggregation_id)
-        logger.debug(aggregated_ids)
-        # success or error
-        out = {}
-        try:
-            aggregation = cls.objects.get(pk=aggregation_id)
-        except cls.DoesNotExist:
-            aggregation = None
+    def aggregate_entries(cls, aggregation, aggregated_objects, user=None):
+        if not aggregation.is_aggregation:
+            return []
+        reindex = [ aggregation ]
+        aggregated_datasources = []
+        for aggregated in aggregated_objects:
+            reindex.append(aggregated)
+            aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
+            entry_rel = {
+                "aggregation": aggregation,
+                "aggregated": aggregated,
+            }
+            try:
+                rel = AggregationEntry.objects.get(**entry_rel)
+            except AggregationEntry.DoesNotExist:
+                rel = AggregationEntry.objects.create(**entry_rel)
+                logger.info("Created AggregationEntry {}".format(rel.id))
 
-        if aggregation and aggregation.is_aggregation:
-            reindex = [ aggregation_id ]
-            aggregated_datasources = []
-            for agg_id in aggregated_ids:
-                try:
-                    aggregated = cls.objects.get(pk=agg_id)
-                    if not aggregated.is_aggregation:
-                        reindex.append(agg_id)
-                        aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
-                        entry_rel = {
-                            "aggregation": aggregation,
-                            "aggregated": aggregated,
-                        }
-                        try:
-                            rel = AggregationEntry.objects.get(**entry_rel)
-                        except AggregationEntry.DoesNotExist:
-                            rel = AggregationEntry.objects.create(**entry_rel)
-                        logger.info("Created AggregationEntry {}".format(rel.id))
-
-                except cls.DoesNotExist:
-                    pass
+            log_user_operation(user, 'add-aggregation', aggregation, aggregated)
 
             # now we have all the aggregated datasources.
             # check if we have a real or virtual DS in the aggregation
@@ -764,17 +764,29 @@ class Entry(models.Model):
                     except AggregationDataSource.DoesNotExist:
                         rel = AggregationDataSource.objects.create(**agg_rel)
                         logger.info("Created AggregationDataSource {}".format(rel.id))
+        return reindex
 
-            indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-            logger.debug("Reindexing " + pp.pformat(reindex))
-            indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
-            if len(reindex) > 1:
-                out['success'] = "Reindexed {} items".format(len(reindex))
-            else:
-                out['error'] = "Nothing to do. Expecting an aggregation and normal entries"
-        else:
-            out['error'] = "First item is not an aggregation"
-        return out
+    @classmethod
+    def translate_records(cls, original, translations, user=None):
+        reindex = [ original ]
+        for translation in translations:
+            translation.original_entry = original;
+            translation.save()
+            log_user_operation(user, 'add-translation', original, translation)
+            reindex.append(translation)
+        return reindex
+
+    def untranslate(self, user=None):
+        reindex = []
+        original_entry = self.original_entry
+        if original_entry:
+            reindex = [ original_entry, self ]
+            self.original_entry = None
+            self.save()
+            log_user_operation(user, 'remove-translation', original_entry, self)
+        return reindex
+
+
 
 
 # the OAI-PMH records will keep the URL of the record, so a entry can
@@ -955,6 +967,34 @@ class Exclusion(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    def display_name(self):
+        return "{} {}".format(self.exclusion_type(), self.exclusion_target())
+
+    def exclusion_type(self):
+        if self.exclude_library:
+            return 'library'
+        elif self.exclude_author:
+            return 'author'
+        elif self.exclude_entry:
+            return 'entry'
+        else:
+            return None
+
+    def exclusion_target(self):
+        if self.exclude_library:
+            return self.exclude_library.name
+        elif self.exclude_author:
+            return self.exclude_author.name
+        elif self.exclude_entry:
+            title = self.exclude_entry.title
+            authors = '; '.join([ author.name for author in self.exclude_entry.authors.all() ])
+            if authors:
+                return "{} ({})".format(title, authors)
+            else:
+                return title
+        else:
+            return None
+
     def as_api_dict(self):
         user = self.user
         out = {
@@ -969,21 +1009,9 @@ class Exclusion(models.Model):
             "comment": self.comment,
             "created": self.created.strftime('%Y-%m-%dT%H:%M'),
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M'),
+            "type": self.exclusion_type(),
+            "target": self.exclusion_target(),
         }
-        if self.exclude_library:
-            out['type'] = 'library'
-            out['target'] = self.exclude_library.name
-        elif self.exclude_author:
-            out['type'] = 'author'
-            out['target'] = self.exclude_author.name
-        elif self.exclude_entry:
-            out['type'] = 'entry'
-            title = self.exclude_entry.title
-            authors = '; '.join([ author.name for author in  self.exclude_entry.authors.all() ])
-            if authors:
-                out['target'] = "{} ({})".format(title, authors)
-            else:
-                out['target'] = title
         return out
 
     def as_xapian_queries(self):
@@ -1066,9 +1094,136 @@ class ChangeLog(models.Model):
     # not a FK, so in case the user is removed, we still have a clue
     username = models.CharField(max_length=255)
     # optionals
-    entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL, related_name="changelogs")
-    agent = models.ForeignKey(Agent, null=True, on_delete=models.SET_NULL, related_name="changelogs")
+    entry     = models.ForeignKey(Entry,     null=True, on_delete=models.SET_NULL, related_name="changelogs")
+    agent     = models.ForeignKey(Agent,     null=True, on_delete=models.SET_NULL, related_name="changelogs")
+    exclusion = models.ForeignKey(Exclusion, null=True, on_delete=models.SET_NULL, related_name="changelogs")
     operation = models.CharField(max_length=64)
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     # last_modified = models.DateTimeField(auto_now=True)
+
+# main router for user operations which need logging.
+def manipulate(op, user, main_id, *ids, create=None):
+    out = {
+        "op": op,
+        "main_id": main_id,
+        "other_ids": ids,
+        "error": None,
+        "msg": None,
+    }
+    if user:
+        out['username'] = user.username
+
+    logger.info("Calling manipulate " + pp.pformat(out))
+    reindex = []
+    classes = {
+        'merge-agents': Agent,
+        'revert-merged-agents': Agent,
+
+        'add-translations': Entry,
+        'revert-translations': Entry,
+
+        'merge-entries': Entry,
+        'revert-merged-entries': Entry,
+
+        'add-exclusion': Exclusion,
+        'revert-exclusion': Exclusion,
+
+        'add-aggregations': Entry,
+        # no revert at the moment
+
+    }
+    if not user:
+        out['error']: "Missing User"
+        return out
+
+    if not main_id and not create:
+        out['error']: "Missing ID"
+        return out
+    if not op:
+        out['error']: "Missing operation"
+        return out
+
+    cls = classes.get(op)
+    if not cls:
+        out['error']: "Invalid operation"
+        return out
+
+    if main_id and main_id in ids:
+        out['error']: "Recursive merging"
+        return out
+
+    if main_id:
+        try:
+            main_object = cls.objects.get(pk=main_id)
+        except cls.DoesNotExist:
+            out['error'] = "{} does not exist".format(main_id)
+            return out
+    elif create:
+        # TODO: need to catch the exceptions
+        main_object = cls.objects.create(**create)
+        log_user_operation(user, op, main_object, None)
+        out['success'] = "{} created".format(main_object.display_name())
+        return out
+
+    other_objects = []
+    for oid in ids:
+        try:
+            obj = cls.objects.get(pk=oid)
+            other_objects.append(obj)
+        except cls.DoesNotExist:
+            out['error'] = "{} does not exist".format(oid)
+            return out
+
+    reindex = []
+    if op == 'merge-agents' or op == 'merge-entries':
+        reindex = cls.merge_records(main_object, other_objects, user=user)
+        out['success'] = "Merged"
+
+    elif op == 'add-aggregations':
+        if main_object.is_aggregation:
+            reindex = cls.aggregate_entries(main_object, other_objects, user=user)
+            if reindex:
+                out['success'] = "Added"
+        else:
+            out['error'] = "First item must be an aggregation"
+
+    elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
+        reindex = main_object.unmerge(user=user)
+        if reindex:
+            out['success'] = "Removed merge"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'add-translations':
+        reindex = cls.translate_records(main_object, other_objects, user=user)
+        if reindex:
+            out['success'] = "Translations set!"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'revert-translations':
+        reindex = main_object.untranslate(user=user)
+        if reindex:
+            out['success'] = "Removed translations"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'add-exclusion':
+        raise Exception('Not reached')
+
+    elif op == 'revert-exclusion':
+        log_user_operation(user, op, main_object, None)
+        main_object.delete()
+        out['success'] = "Removed"
+
+    else:
+        raise Exception("Bug! Missing handler for " + op)
+
+    if reindex:
+        logger.info("Reindexing")
+        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+        indexer.index_entries(reindex)
+        logger.info(indexer.logs)
+
+    return out
