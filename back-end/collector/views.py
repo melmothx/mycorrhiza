@@ -11,7 +11,7 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry
+from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
@@ -150,20 +150,9 @@ def exclusions(request):
                         "exclude_{}_id".format(what): object_id,
                         "user": user,
                     }
-                    logger.debug(creation)
-                    exclusion = user.exclusions.create(**creation)
-                    out['success'] = exclusion.id
+                    out = manipulate('add-exclusion', user, None, create=creation)
             elif op == 'delete':
-                try:
-                    target = user.exclusions.get(pk=object_id)
-                    # logger.debug(connection.queries[-1])
-                    target.delete()
-                    # logger.debug(connection.queries[-1])
-                except Exclusion.DoesNotExist:
-                    out['error'] = "Invalid Key"
-                    # logger.debug(connection.queries[-1])
-
-
+                out = manipulate('revert-exclusion', user, object_id)
             else:
                 out['error'] = "Invalid operation {}".format(op)
         else:
@@ -179,12 +168,11 @@ def api_set_aggregated(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         out['error'] = "Invalid JSON!";
+    user = request.user
 
-    if data:
-        logger.debug(data)
-        # reindex all
-        reindex = [ x['id'] for x in data ]
-        out = Entry.aggregate_entries(*reindex)
+    if data and user:
+        ids = [ x['id'] for x in data ]
+        out = manipulate('add-aggregations', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -196,20 +184,12 @@ def api_set_translations(request):
         data = json.loads(request.body)
     except json.JSONDecodeError:
         out['error'] = "Invalid JSON!";
+    user = request.user
 
-    if data:
+    if data and user:
         logger.debug(data)
-        # reindex all
-        reindex = [  x['id'] for x in data ]
-        original = Entry.objects.get(pk=data.pop(0)['id'])
-        original.original_entry = None
-        original.save()
-        translations = [ x['id'] for x in data ]
-        Entry.objects.filter(id__in=[ x['id'] for x in data ]).update(original_entry=original)
-        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-        indexer.index_entries(Entry.objects.filter(id__in=reindex).all())
-        out['success'] = "Translations set!"
-
+        ids = [ x['id'] for x in data ]
+        out = manipulate('add-translations', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -223,40 +203,16 @@ def api_merge(request, target):
     except json.JSONDecodeError:
         out['error'] = "Invalid JSON!";
 
-    if data:
-        logger.debug(data)
-        canonical = None
-        aliases = []
-        classes = {
-            "entry" : Entry,
-            "author" : Agent,
-        }
-        if target in classes:
-            current_class = classes[target]
-            for pk in [ x['id'] for x in data ]:
-                try:
-                    obj = current_class.objects.get(pk=pk)
-                    if canonical:
-                        aliases.append(obj)
-                    else:
-                        canonical = obj
-                except current_class.DoesNotExist:
-                    logger.debug("Invalid entry " + pk)
+    user = request.user
 
-            if canonical and aliases:
-                if canonical.id not in [ x.id for x in aliases ]:
-                    logger.info("Merging " + str(aliases) + " into " + str(canonical))
-                    reindex = current_class.merge_records(canonical, aliases)
-                    indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-                    indexer.index_entries(reindex)
-                    logger.info(indexer.logs)
-                    out['success'] = "Merged!"
-                else:
-                    out['error'] = "You can't merge an item with itself!"
-            else:
-                out['error'] = "Bad arguments! Expecting valid canonical and a list of aliases!"
-        else:
-            out['error'] = 'Invalid path'
+    if data and user:
+        logger.debug(data)
+        method = {
+            "entry" : "merge-entries",
+            "author" : "merge-agents",
+        }
+        ids = [ x['id'] for x in data ]
+        out = manipulate(method.get(target, 'invalid-method'), user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -270,7 +226,8 @@ def api_create(request, target):
     except json.JSONDecodeError:
         out['error'] = "Invalid JSON!";
 
-    if data:
+    user = request.user
+    if data and user:
         logger.debug(data)
         created = None
         value = data.get('value')
@@ -282,6 +239,7 @@ def api_create(request, target):
                 created = Entry.create_virtual_aggregation(value)
 
         if created:
+            log_user_operation(user, 'create-' + target, created, None)
             out['created'] = {
                 "id": created.id,
                 "value": created.display_name(),
@@ -398,54 +356,15 @@ def api_revert(request, target):
 
     logger.debug(data)
     reindex = []
-    if data:
+    user = request.user
+    if data and user:
         object_id = data.get('id')
         if object_id:
-            if target == 'merged-agents':
-                try:
-                    agent = Agent.objects.get(pk=object_id)
-                    reindex = agent.unmerge()
-                    out['ok'] = "OK"
-                except Agent.DoesNotExist:
-                    logger.info("Agent ID {} does not exist".format(object_id))
-                    out['error'] = "Agent ID does not exist"
-
-            elif target == 'translations':
-                try:
-                    entry = Entry.objects.get(pk=object_id)
-                    logger.debug(entry.id)
-                    reindex = entry.untranslate()
-                    out['ok'] = "OK"
-                except Entry.DoesNotExist:
-                    logger.info("Entry ID {} does not exist".format(object_id))
-                    out['error'] = "Entry ID does not exist"
-
-            elif target == 'merged-entries':
-                try:
-                    entry = Entry.objects.get(pk=object_id)
-                    logger.debug(entry.id)
-                    reindex = entry.unmerge()
-                    out['ok'] = "OK"
-                except Entry.DoesNotExist:
-                    logger.info("Entry ID {} does not exist".format(object_id))
-                    out['error'] = "Entry ID does not exist"
-
-            elif target == 'exclusions':
-                try:
-                    exclusion = Exclusion.objects.get(pk=object_id)
-                    exclusion.delete()
-                except Exclusion.DoesNotExist:
-                    logger.info("Exclusion ID {} does not exist".format(object_id))
-                    out['error'] = "Exclusion ID does not exist"
-
-            else:
-                logger.debug("Bad target: " + target)
-
-    if reindex:
-        out['msg'] = "Reindexed entries: " + str(len(reindex))
-        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-        indexer.index_entries(reindex)
-        logger.info(indexer.logs)
+            out = manipulate("revert-" + target, user, object_id)
+        else:
+            out['error'] = "Missing target ID"
+    else:
+        out['error'] = "Invalid data"
     return JsonResponse(out)
 
 @login_required
