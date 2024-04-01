@@ -105,7 +105,6 @@ class Site(models.Model):
     active = models.BooleanField(default=True, null=False)
     has_raw = models.BooleanField(default=False)
     has_text = models.BooleanField(default=False)
-    has_print = models.BooleanField(default=False)
     amusewiki_formats = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -608,10 +607,9 @@ class Entry(models.Model):
                 dates[topr.year_edition] = True
 
         ff_map = {
-            "none": "No download",
+            "none": "Bibliographical entry only",
             "raw": "Raw scan",
-            "text": "Human readable text",
-            "print": "Printable format",
+            "text": "Editable and printable text",
         }
         if not entry_file_formats:
             entry_file_formats.append('none')
@@ -879,16 +877,10 @@ class DataSource(models.Model):
             "entry_id": original_entry.id,
             "file_formats": [],
         }
-
-        if site.amusewiki_formats:
-            ds['file_formats'] = [ 'text', 'print' ]
-        else:
-            if site.has_raw:
-                ds['file_formats'].append('raw')
-            if site.has_text:
-                ds['file_formats'].append('text')
-            if site.has_print:
-                ds['file_formats'].append('print')
+        if site.has_text or site.amusewiki_formats:
+            ds['file_formats'].append('text')
+        elif site.has_raw:
+            ds['file_formats'].append('raw')
 
         if library.active and library.public:
             ds['public'] = True
