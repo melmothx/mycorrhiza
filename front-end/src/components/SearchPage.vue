@@ -168,15 +168,6 @@
                 :translate_values="true"
             >{{ $gettext('Download Types') }}</FacetBox>
           </div>
-          <div v-if="facets.translate" class="mb-3">
-            <FacetBox
-                :use_sorting="false"
-                :values="facets.translate.values"
-                :name="facets.translate.name"
-                @toggle-app-filter="toggleFilter"
-                :translate_values="true"
-            >{{ $gettext('Translations') }}</FacetBox>
-          </div>
           <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
                 :use_sorting="false"
