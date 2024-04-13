@@ -147,10 +147,9 @@
 <template>
   <div>
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
-        class="bg-gray-200 font-semibold
-               rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h2 class="flex justify-center">
-        <span>
+        class="bg-gradient-to-tr from-old-copper-700 to-old-copper-600 font-semibold rounded-tr-3xl p-2">
+      <h2 class="text-white pl-2">
+        <span class="text-white text-left">
           <slot>Drop {{ merge_type }} here for merging</slot>
           <small v-if="dashboard"
                  @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
@@ -199,7 +198,7 @@
       </ul>
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
-          <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
+          <button class="btn-primary px-2 py-1 text-sm"
                   type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
         </div>
         <div v-else>
@@ -207,18 +206,18 @@
         </div>
         <div v-if="flash_error"
              @click="clear_flash_error"
-             class="flex justify-center items-center m-2 cursor-pointer text-pink-700
+             class="flex justify-center items-center m-2 cursor-pointer text-claret-900
                    mt-2 font-semibold">
           {{ $gettext(flash_error) }}
         </div>
         <div v-if="flash_success"
              @click="clear_flash_success"
-             class="flex justify-center items-center m-2 cursor-pointer text-green-800
+             class="flex justify-center items-center m-2 cursor-pointer text-spectra-800
                    mt-2 font-bold">
           {{ $gettext(flash_success) }}
         </div>
         <div v-if="working" class="m-2 text-center">
-          <span class="animate-ping rounded-full text-pink-800 p-2">{{ $gettext('Working') }}</span>
+          <span class="animate-ping rounded-full text-claret-900 p-2">{{ $gettext('Working') }}</span>
         </div>
       </div>
     </div>

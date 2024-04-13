@@ -5,21 +5,21 @@
  }
 </script>
 <template>
-  <nav class="inline-flex text-sm -space-x-px">
+  <nav class="inline-flex text-sm">
     <template v-for="page in pager" :key="page.key">
-      <template v-if="page.current">
-        <a href="#" @click="$emit('getPage', page.page_id)"
-           aria-current="page"
-           class="flex items-center justify-center mx-0 px-4 h-10 border border-gray-300 
-                 bg-pink-500 text-white font-bold
-                 first:rounded-l last:rounded-r">
-          {{ $gettext(page.label) }}
-        </a>
-      </template>
-      <template v-else>
-        <a class="flex items-center justify-center mx-0 ms-0 px-4 h-10 border border-gray-300 first:rounded-l last:rounded-r"
-           href="#" @click="$emit('getPage', page.page_id)">{{ page.label }}</a>
-      </template>
+      <a class="flex font-sans items-center justify-center mr-1 px-4 h-8
+                last:rounded-br-3xl
+                last:pr-10
+                hover:bg-cedar-800
+                bg-cedar-950"
+         href="#" @click="$emit('getPage', page.page_id)">
+        <span v-if="page.current" class="text-white font-bold">
+          {{ page.label }}
+        </span>
+        <span v-else class="text-white">
+          {{ page.label }}
+        </span>
+      </a>
     </template>
   </nav>
 </template>

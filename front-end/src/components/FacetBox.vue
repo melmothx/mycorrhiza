@@ -39,27 +39,27 @@
   }
 </script>
 <template>
-  <div class="rounded-lg p-0 border border-gray-300">
-    <div class="border-b pt-0 bg-gray-100 rounded-t-lg">
-      <h2 class="font-semibold capitalize py-0 text-center border-b">
+  <div>
+    <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
+      <h2 class="font-semibold capitalize py-0 text-right text-white p-2">
         <slot>{{ name }}</slot>
       </h2>
-      <div v-if="use_sorting"
-           class="text-sm px-2 py-0 text-center">
-        {{ $gettext('Sort') }}
-        <label class="px-2">
-          <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
-                 type="radio" value="count" v-model="sort_method">
-          {{ $gettext('by count') }}
-        </label>
-        <label class="px-2">
-          <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
-                 type="radio" value="term" v-model="sort_method">
-          {{ $gettext('by term') }}
-        </label>
-      </div>
     </div>
-    <div class="max-h-48 overflow-y-auto p-2">
+    <div v-if="use_sorting"
+         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2 text-center">
+      {{ $gettext('Sort') }}
+      <label class="px-2">
+        <input class="mcrz-radio"
+               type="radio" value="count" v-model="sort_method">
+        {{ $gettext('by count') }}
+      </label>
+      <label class="px-2">
+        <input class="mcrz-radio"
+               type="radio" value="term" v-model="sort_method">
+        {{ $gettext('by term') }}
+      </label>
+    </div>
+    <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
       <template v-for="facet in facet_list" :key="facet.key">
         <div class="flex">
           <div class="flex-grow">
