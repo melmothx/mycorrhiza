@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    h1, h2, h3, h4, h5, h6, span, p, strong, em {
+        @apply text-asphalt-950;
+    }
+    select, input {
+        @apply bg-perl-bush-50;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply rounded bg-spectra-800 hover:bg-spectra-600 font-semibold text-white;
+    }
+    .btn-secondary {
+        @apply rounded bg-spectra-500 hover:bg-spectra-600 font-semibold text-white;
+    }
+}

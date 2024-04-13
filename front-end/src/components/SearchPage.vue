@@ -95,7 +95,7 @@
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="searchText">
-    <h1 class="text-3xl text-center font-semibold m-8">
+    <h1 class="text-xl text-center font-semibold m-8">
       <template v-if="searched_query">
         {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
@@ -113,24 +113,17 @@
     </div>
 
     <div>
-      <div class="flex my-5">
+      <div class="flex h-8">
         <input class="outline
                       outline-0
-                      border
-                      border-gray-300
-                      focus:border-pink-500
-                      focus:ring-0
                       px-2
-                      rounded-l flex-grow"
+                      text-old-copper-700
+                      placeholder:italic
+                      flex-grow"
                type="text" placeholder="Search" v-model="query"/>
         <select v-model="sort_by"
                 @change="getResults()"
-                class="outline
-                         outline-0
-                         border
-                         border-gray-300
-                         focus:border-pink-500
-                         focus:ring-0">
+                class="outline outline-0 px-3 mx-1">
           <option value="">{{ $gettext('Sort by Relevance') }}</option>
           <option value="title">{{ $gettext('Sort by Title') }}</option>
           <option value="date">{{ $gettext('Sort by Date') }}</option>
@@ -139,18 +132,11 @@
         <select v-if="sort_by"
                 v-model="sort_direction"
                 @change="getResults()"
-                class="outline
-                      outline-0
-                      border
-                      border-gray-300
-                      focus:border-pink-500
-                      focus:ring-0">
+                class="outline outline-0 px-3 outline-0">
           <option value="asc">{{ $gettext('Ascending') }}</option>
           <option value="desc">{{ $gettext('Descending') }}</option>
         </select>
-        <button class="rounded-r bg-pink-500
-                       hover:bg-pink-700 text-white
-                       font-semibold mr-1 py-2 px-6 h-11"
+        <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10"
                 type="submit">{{ $gettext('Search') }}</button>
       </div>
     </div>
