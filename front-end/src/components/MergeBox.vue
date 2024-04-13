@@ -160,7 +160,7 @@
     </div>
     <div v-if="canonical"
          @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
-         class="border-r border-l border-t border-gray-300">
+         class="border-r border-l border-t border-gray-300 bg-perl-bush-50">
       <h3 class="font-serif p-2 font-semibold text-sm flex justify-between">
         <span>
           {{ canonical.label }}
@@ -175,7 +175,7 @@
         </span>
       </h3>
     </div>
-    <div class="rounded-b border border-gray-300"
+    <div class="border border-gray-300 bg-perl-bush-50"
          @drop="drop_element($event)" @dragover.prevent @dragenter.prevent>
       <ul role="list" >
         <li v-for="entry in merge_list" :key="entry.id" class="border-b p-2 font-serif text-sm">
@@ -198,7 +198,7 @@
       </ul>
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
-          <button class="btn-primary px-2 py-1 text-sm"
+          <button class="btn-primary pl-1 py-1 pr-3 pl-1 h-8 rounded-br-3xl"
                   type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
         </div>
         <div v-else>

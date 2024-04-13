@@ -19,5 +19,12 @@
         @apply bg-spectra-500 hover:bg-spectra-600 font-semibold text-white;
     }
     .mcrz-radio {
+        @apply text-old-copper-800 focus:ring-old-copper-800 focus:ring-0 active:ring-0;
+    }
+    .mcrz-checkbox {
+        @apply rounded-tl-lg focus:border-old-copper-800 text-old-copper-800 focus:ring-0;
+    }
+    .mcrz-select {
+        @apply outline outline-0 border border-0 focus:ring-0 active:ring-0 py-0;
     }
 }

@@ -16,7 +16,7 @@
 <template>
   <div class="font-serif">
     <label>
-      <input type="checkbox" class="rounded focus:border-pink-500 text-pink-500 focus:ring-0"
+      <input type="checkbox" class="mcrz-checkbox"
              :checked="active"
              @change="$emit('toggleFilter', id , $event.target.checked)" />
       <span class="ml-1">

@@ -116,14 +116,17 @@
       <div class="flex h-8">
         <input class="outline
                       outline-0
+                      border
+                      border-0
+                      focus:ring-0 active:ring-0
                       px-2
                       text-old-copper-700
                       placeholder:italic
                       flex-grow"
                type="text" placeholder="Search" v-model="query"/>
         <select v-model="sort_by"
-                @change="getResults()"
-                class="outline outline-0 px-3 mx-1">
+                class="mcrz-select mx-1"
+                @change="getResults()">
           <option value="">{{ $gettext('Sort by Relevance') }}</option>
           <option value="title">{{ $gettext('Sort by Title') }}</option>
           <option value="date">{{ $gettext('Sort by Date') }}</option>
@@ -132,7 +135,7 @@
         <select v-if="sort_by"
                 v-model="sort_direction"
                 @change="getResults()"
-                class="outline outline-0 px-3 outline-0">
+                class="mcrz-select">
           <option value="asc">{{ $gettext('Ascending') }}</option>
           <option value="desc">{{ $gettext('Descending') }}</option>
         </select>

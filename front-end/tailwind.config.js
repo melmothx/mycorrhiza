@@ -90,7 +90,7 @@ module.exports = {
         },
     },
     plugins: [
-        // require('@tailwindcss/forms')({ strategy: "base" }),
+        require('@tailwindcss/forms')({ strategy: "base" }),
     ],
 }
 
