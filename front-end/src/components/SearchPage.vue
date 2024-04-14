@@ -186,6 +186,7 @@
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
+                :can_merge="is_authenticated"
                 :use_sorting="true"
                 :values="facets.creator.values"
                 :name="facets.creator.name"

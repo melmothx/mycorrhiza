@@ -1,8 +1,9 @@
 <script>
  import CreateEntityBox from './CreateEntityBox.vue'
+ import { TrashIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
  import axios from 'axios'
  export default {
-     components: { CreateEntityBox },
+     components: { CreateEntityBox, TrashIcon, Cog8ToothIcon },
      props: [
          'merge_type',
          'remove_merged_filter',
@@ -149,12 +150,16 @@
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
         class="bg-gradient-to-tr from-old-copper-700 to-old-copper-600 font-semibold rounded-tr-3xl p-2">
       <h2 class="text-white pl-2">
-        <span class="text-white text-left">
-          <slot>Drop {{ merge_type }} here for merging</slot>
-          <small v-if="dashboard"
-                 @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
-            admin
-          </small>
+        <span class="flex">
+          <span class="grow text-white">
+            <slot>Drop {{ merge_type }} here for merging</slot>
+          </span>
+          <span v-if="dashboard"
+                class="text-white mr-2 cursor-pointer hover:text-spectra-200"
+                :title="$gettext('Admin')"
+                @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
+            <Cog8ToothIcon class="m-1 h-4 w-4" />
+          </span>
         </span>
       </h2>
     </div>
@@ -166,12 +171,10 @@
           {{ canonical.label }}
         </span>
         <span v-if="!working"
-              class="cursor-pointer font-bold"
-              title="Clear list"
+              class="cursor-pointer text-claret-800 hover:text-claret-600"
+              title="$gettext('Clear list')"
               @click="clear_list">
-          <span class="border-2 rounded-lg text-red-800 hover:text-black border-red-800 border px-1 mt-1">
-            &#x2715;
-          </span>
+          <TrashIcon class="h-4 w-4" />
         </span>
       </h3>
     </div>
@@ -186,12 +189,10 @@
               {{ entry.label }}
             </span>
             <span v-if="!working"
-                  class="cursor-pointer font-bold"
+                  class="cursor-pointer text-claret-800 hover:text-claret-600"
                   title="Remove"
                   @click="remove_from_list(entry.id)">
-              <span class="border-2 rounded-lg hover:bg-red-300 text-red-800 border-red-800 px-1 mt-1">
-                &#x2715;
-              </span>
+              <TrashIcon class="h-4 w-4"/>
             </span>
           </div>
         </li>

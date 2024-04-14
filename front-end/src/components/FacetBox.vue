@@ -1,9 +1,10 @@
 <script>
  import FacetButton from './FacetButton.vue'
  import ExclusionButton from './ExclusionButton.vue'
-  export default {
-      components: { FacetButton, ExclusionButton },
-      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting', 'translate_values' ],
+ import { HandRaisedIcon } from '@heroicons/vue/24/solid'
+ export default {
+      components: { FacetButton, ExclusionButton, HandRaisedIcon },
+      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting', 'translate_values', 'can_merge' ],
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
@@ -19,7 +20,14 @@
           refetchResults() {
               console.log("Relaying refetch results")
               this.$emit('refetchResults');
-          }
+          },
+          drag_element(e, id, label, merge_type) {
+              e.dataTransfer.dropEffect = 'copy';
+              e.dataTransfer.effectAllowed = 'copy';
+              e.dataTransfer.setData('ID', id);
+              e.dataTransfer.setData('Label', label);
+              e.dataTransfer.setData('Merge', merge_type);
+          },
       },
       computed: {
           facet_list() {
@@ -51,12 +59,12 @@
       <label class="px-2">
         <input class="mcrz-radio"
                type="radio" value="count" v-model="sort_method">
-        {{ $gettext('by count') }}
+        {{ $gettext('0-9') }}
       </label>
       <label class="px-2">
         <input class="mcrz-radio"
                type="radio" value="term" v-model="sort_method">
-        {{ $gettext('by term') }}
+        {{ $gettext('A-Z') }}
       </label>
     </div>
     <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
@@ -69,10 +77,18 @@
                 :count="facet.count"
                 :active="facet.active"
                 :name="name"
-                :merge_type="name == 'creator' ? 'author' : ''"
                 :translate_value="translate_values"
                 @toggle-filter="toggleFilter"
             />
+          </div>
+          <div v-if="can_merge && name == 'creator'">
+            <span class="cursor-grab active:cursor-grabbing
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  draggable="true"
+                  @dragstart="drag_element($event, facet.id, facet.term, 'author')">
+              <HandRaisedIcon class="h-4 w-4 m-1" />
+            </span>
           </div>
           <div class="ml-1" v-if="can_set_exclusions && name == 'library'">
             <ExclusionButton :object_id="facet.id"

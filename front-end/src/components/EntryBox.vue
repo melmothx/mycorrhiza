@@ -1,7 +1,8 @@
 <script>
  import ExclusionButton from './ExclusionButton.vue'
+ import { HandRaisedIcon } from '@heroicons/vue/24/solid'
  export default {
-     components: { ExclusionButton },
+     components: { ExclusionButton, HandRaisedIcon },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
      emits: [ 'refetchResults' ],
      computed: {
@@ -36,9 +37,11 @@
           </div>
           <div v-if="can_merge">
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
-                         border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  :title="$gettext('Merge')"
                   draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
-              {{ $gettext('Merge') }}
+              <HandRaisedIcon class="h-4 w-4 m-1" />
             </span>
           </div>
           <div v-if="can_set_exclusions">
@@ -61,9 +64,12 @@
             </div>
           </div>
           <div v-if="can_merge">
-            <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
-              draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
-              {{ $gettext('Merge') }}
+            <span class="drag-el drag-title cursor-grab active:cursor-grabbing
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  :title="$gettext('Merge')"
+                  draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
+              <HandRaisedIcon class="h-4 w-4 m-1" />
             </span>
           </div>
           <div v-if="can_set_exclusions">
