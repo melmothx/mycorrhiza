@@ -93,9 +93,9 @@
       <form @submit.prevent="login">
         <button class="h-8 btn-secondary rounded-none rounded-bl-3xl pr-4 pl-10 ml-4 italic font-normal"
                 type="submit">{{ $gettext('Login') }}</button>
-        <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 rounded-none h-8"
+        <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 rounded-none h-8 w-32"
                type="text" v-model="username" required>
-        <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 h-8"
+        <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 h-8 w-32"
                type="password" v-model="password" required>
       </form>
       <div class="px-2 text-claret-900 font-bold text-center" v-if="message">
