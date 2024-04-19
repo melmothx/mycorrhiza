@@ -121,6 +121,7 @@
                       focus:ring-0 active:ring-0
                       px-2
                       text-old-copper-700
+                      bg-perl-bush-50
                       placeholder:italic
                       flex-grow"
                type="text" placeholder="Search" v-model="query"/>
