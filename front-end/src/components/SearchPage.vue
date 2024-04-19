@@ -4,9 +4,43 @@
  import EntryBox  from './EntryBox.vue'
  import MergeBox from './MergeBox.vue'
  import axios from 'axios'
+ import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from '@headlessui/vue'
+ import { ChevronUpDownIcon,  } from '@heroicons/vue/24/solid'
  export default {
-     components: { FacetBox, EntryBox, PaginationBox, MergeBox },
+     components: {
+         Listbox, ListboxButton, ListboxOptions, ListboxOption,
+         FacetBox, EntryBox, PaginationBox, MergeBox,
+         ChevronUpDownIcon,
+     },
      data() {
+         const sort_directions = [
+             {
+                 id: "asc",
+                 name: "Ascending",
+             },
+             {
+                 id: "desc",
+                 name: "Descending",
+             },
+         ];
+         const sort_by_values = [
+             {
+                 id: "relevance",
+                 name: 'Sort by Relevance',
+             },
+             {
+                 id: "title",
+                 name: 'Sort by Title',
+             },
+             {
+                 id: "date",
+                 name: 'Sort by Date',
+             },
+             {
+                 id: "created",
+                 name: 'Sort by Acquisition Date',
+             },
+         ];
          return {
              flash_success: "",
              flash_error: "",
@@ -22,8 +56,10 @@
              merge_author_records: [],
              is_authenticated: false,
              can_set_exclusions: false,
-             sort_by: "created",
-             sort_direction: "desc",
+             sort_by_values: sort_by_values,
+             sort_by: sort_by_values[0],
+             sort_directions: sort_directions,
+             sort_direction: sort_directions[0],
          }
      },
      methods: {
@@ -45,8 +81,8 @@
              let params = new URLSearchParams;
              params.append('query', vm.query);
              params.append('page_number', vm.current_page);
-             params.append('sort_by', vm.sort_by);
-             params.append('sort_direction', vm.sort_direction);
+             params.append('sort_by', vm.sort_by.id);
+             params.append('sort_direction', vm.sort_direction.id);
              let filters = this.filters;
              for (let i = 0; i < filters.length; i++) {
                  params.append('filter_' +  filters[i].name, filters[i].term);
@@ -89,8 +125,14 @@
      mounted() {
          this.searchText();
      },
-     computed: {
-     },
+     watch: {
+         sort_by(new_s, old_s) {
+             this.getResults();
+         },
+         sort_direction(new_s, old_s) {
+             this.getResults();
+         },
+     }
  }
 </script>
 <template>
@@ -125,21 +167,64 @@
                       placeholder:italic
                       flex-grow"
                type="text" placeholder="Search" v-model="query"/>
-        <select v-model="sort_by"
-                class="mcrz-select mx-1"
-                @change="getResults()">
-          <option value="">{{ $gettext('Sort by Relevance') }}</option>
-          <option value="title">{{ $gettext('Sort by Title') }}</option>
-          <option value="date">{{ $gettext('Sort by Date') }}</option>
-          <option value="created">{{ $gettext('Sort by Acquisition Date') }}</option>
-        </select>
-        <select v-if="sort_by"
-                v-model="sort_direction"
-                @change="getResults()"
-                class="mcrz-select">
-          <option value="asc">{{ $gettext('Ascending') }}</option>
-          <option value="desc">{{ $gettext('Descending') }}</option>
-        </select>
+        <Listbox v-model="sort_by">
+          <div class="relative m-0">
+            <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm
+                                  bg-perl-bush-50"
+                           v-slot="{ open }">
+              <span class="block truncate">{{ $gettext(sort_by.name) }}</span>
+              <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronUpDownIcon
+                    class="h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                />
+              </span>
+            </ListboxButton>
+            <transition
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0">
+              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg z-40">
+                <ListboxOption v-for="sv in sort_by_values"
+                               :value="sv" :key="sv.id"
+                               class="cursor-pointer hover:text-spectra-800"
+                >{{ $gettext(sv.name) }}</ListboxOption>
+              </ListboxOptions>
+            </transition>
+          </div>
+        </Listbox>
+        <Listbox v-if="sort_by.id != 'relevance'" v-model="sort_direction">
+          <div class="relative m-0">
+            <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm
+                                  bg-perl-bush-50"
+                           v-slot="{ open }">
+              <span class="block truncate">{{ $gettext(sort_direction.name) }}</span>
+              <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronUpDownIcon
+                    class="h-5 w-5 text-gray-400"
+                    aria-hidden="true"
+                />
+              </span>
+            </ListboxButton>
+            <transition
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0">
+              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 shadow-lg z-40">
+                <ListboxOption v-for="sd in sort_directions"
+                               :value="sd" :key="sd.id"
+                               class="cursor-pointer hover:text-spectra-800"
+                >{{ $gettext(sd.name) }}</ListboxOption>
+              </ListboxOptions>
+            </transition>
+          </div>
+        </Listbox>
         <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10"
                 type="submit">{{ $gettext('Search') }}</button>
       </div>

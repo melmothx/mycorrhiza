@@ -199,7 +199,7 @@
       </ul>
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
-          <button class="btn-primary pl-1 py-1 pr-3 pl-1 h-8 rounded-br-3xl"
+          <button class="btn-primary pl-3 py-1 pr-4 pl-1 h-8 rounded-br-3xl"
                   type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
         </div>
         <div v-else>
