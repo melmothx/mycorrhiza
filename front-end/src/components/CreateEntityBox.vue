@@ -48,11 +48,12 @@
 </script>
 <template>
   <div class="flex my-0">
-    <input class="outline outline-0 border-1 border-gray-300 border-t-0 shrink
+    <input class="outline outline-0 border-1 border-gray-300 border-t-0
                   focus:border-gray-300 active:border-gray-300
+                  w-full shrink
                   h-8 focus:ring-0 active:ring-0"
            v-model="value" />
-    <button class="btn-primary rounded-none rounded-br-3xl h-8 pl-1 pr-3 grow"
+    <button class="btn-primary rounded-none rounded-br-3xl h-8 pl-1 pr-4 grow"
             @click="create_aggregation">{{ $gettext('Create') }}</button>
   </div>
   <div v-if="flash_error"
