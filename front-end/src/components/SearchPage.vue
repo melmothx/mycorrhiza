@@ -74,24 +74,63 @@
              this.current_page = 1;
              this.filters = [];
              this.facets = [];
-             this.getResults(1);
+             this.getResults({ update_facets: 1 });
          },
-         getResults(update_facets) {
+         parse_query_params() {
+             console.log(this.$route.query);
+             let q = this.$route.query;
+             this.query = q.query || "";
+             this.current_page = q.page_number || 1;
+             this.sort_by = this.sort_by_values.find((i) => i.id == q.sort_by)
+                         || this.sort_by_values[0];
+             this.sort_direction = this.sort_directions.find((i) => i.id == q.sort_direction)
+                                || this.sort_directions[0];
+             for (const filter in q) {
+                 console.log(`filter is ${filter}`);
+                 if (filter.match(/^filter_/)) {
+                     console.log(`matched filter is ${filter}`);
+                     let fname = filter.replace(/^filter_/, '');
+                     let values = q[filter];
+                     console.log(fname);
+                     console.log(values);
+                     if (values instanceof Array) {
+                         for (const value of values) {
+                             this.filters.push({ name: fname, term: value });
+                         }
+                     }
+                     else {
+                         this.filters.push({ name: fname, term: values });
+                     }
+                 }
+             }
+             console.log(this.filters);
+         },
+         getResults(args) {
              let vm = this;
              let params = new URLSearchParams;
              params.append('query', vm.query);
              params.append('page_number', vm.current_page);
              params.append('sort_by', vm.sort_by.id);
              params.append('sort_direction', vm.sort_direction.id);
+             let query = {
+                 query: vm.query,
+                 page_number: vm.current_page,
+                 sort_by: vm.sort_by.id,
+                 sort_direction: vm.sort_direction.id,
+             };
              let filters = this.filters;
              for (let i = 0; i < filters.length; i++) {
-                 params.append('filter_' +  filters[i].name, filters[i].term);
+                 let fname = 'filter_' + filters[i].name;
+                 params.append(fname, filters[i].term);
+                 query[fname] ||= [];
+                 query[fname].push(filters[i].term)
              }
+             this.$router.push({ name: 'home', query: query });
              axios.get('/collector/api',
                        { params: params })
                   .then(function(res) {
                       vm.matches = res.data.matches;
-                      if (update_facets) {
+                      if (args && args.update_facets) {
                           vm.facets = res.data.facets;
                       }
                       vm.pager = res.data.pager;
@@ -123,7 +162,8 @@
          }
      },
      mounted() {
-         this.searchText();
+         this.parse_query_params();
+         this.getResults({ update_facets: 1 });
      },
      watch: {
          sort_by(new_s, old_s) {
@@ -266,7 +306,7 @@
                 :name="facets.library.name"
                 :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
-                @refetch-results="getResults(1)">
+                @refetch-results="getResults({ update_facets: 1 })">
               {{ $gettext('Libraries') }}
             </FacetBox>
           </div>
@@ -298,7 +338,7 @@
             <EntryBox :record="match"
                       :can_set_exclusions="can_set_exclusions"
                       :can_merge="is_authenticated"
-                      @refetch-results="getResults(1)" />
+                      @refetch-results="getResults({ update_facets: 1 })" />
           </template>
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
@@ -311,7 +351,7 @@
                       dashboard="merged-agents"
                       remove_merged_filter="creator"
                       @remove-merged-filter="remove_merged_filter"
-                      @refetch-results="getResults(1)">
+                      @refetch-results="getResults({ update_facets: 1 })">
               {{ $gettext('Merge authors here') }}
             </MergeBox>
           </div>
@@ -325,7 +365,7 @@
           <div id="translation-cards" class="mb-2">
             <MergeBox merge_type="entry"
                       dashboard="translations"
-                      api_call="set-translations" @refetch-results="getResults(1)">
+                      api_call="set-translations" @refetch-results="getResults({ update_facets: 1 })">
               {{ $gettext('Set translations here') }}
             </MergeBox>
           </div>
