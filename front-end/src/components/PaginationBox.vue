@@ -5,7 +5,7 @@
  }
 </script>
 <template>
-  <nav class="inline-flex text-sm mb-4">
+  <nav v-if="pager.length" class="inline-flex text-sm mb-8">
     <template v-for="page in pager" :key="page.key">
       <a class="flex items-center justify-center mr-1 px-4 h-8
                 last:rounded-br-3xl

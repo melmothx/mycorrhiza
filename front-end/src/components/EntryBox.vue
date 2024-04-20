@@ -28,7 +28,7 @@
  }
 </script>
 <template>
-  <div class="mt-6 font-serif bg-perl-bush-50">
+  <div class="mb-6 font-serif bg-perl-bush-50">
     <div>
       <div v-if="record.creator"
            class="py-1 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
