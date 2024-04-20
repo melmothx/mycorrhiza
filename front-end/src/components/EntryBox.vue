@@ -28,11 +28,12 @@
  }
 </script>
 <template>
-  <div class="border p-2 border-gray-200 rounded mt-2 font-serif">
-    <div class="p-1">
-      <div v-if="record.creator">
+  <div class="mt-6 font-serif bg-perl-bush-50">
+    <div>
+      <div v-if="record.creator"
+           class="py-1 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
         <div v-for="author in record.creator" :key="author.id" class="flex">
-          <div class="flex-grow bg-gray-100 px-3 py-1 rounded">
+          <div class="flex-grow px-3">
             {{ author.value }}
           </div>
           <div v-if="can_merge">
@@ -54,8 +55,9 @@
         </div>
       </div>
       <div>
-        <div class="font-semibold flex">
-          <h2 class="flex-grow cursor-pointer" @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
+        <div class="font-semibold flex py-2">
+          <h2 class="flex-grow cursor-pointer px-3"
+              @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
           </h2>
           <div v-if="record.language">
@@ -80,7 +82,7 @@
             </ExclusionButton>
           </div>
         </div>
-        <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
+        <h3 class="italic px-3 pb-2" v-if="subtitle">{{ subtitle }}</h3>
       </div>
     </div>
   </div>
