@@ -125,7 +125,7 @@
                  query[fname] ||= [];
                  query[fname].push(filters[i].term)
              }
-             this.$router.push({ name: 'home', query: query });
+             this.$router.replace({ name: 'home', query: query });
              axios.get('/collector/api',
                        { params: params })
                   .then(function(res) {
