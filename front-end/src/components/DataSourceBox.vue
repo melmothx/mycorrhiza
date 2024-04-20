@@ -5,13 +5,20 @@
      data() {
          return {
              html: "",
+             show_html: false,
          }
      },
      methods: {
-         get_full_text(id) {
+         toggle_full_text() {
+             this.show_html = !this.show_html;
+             if (this.show_html && !this.html) {
+                 this.get_full_text();
+             }
+         },
+         get_full_text() {
              const vm = this;
              console.log("Getting the full text")
-             axios.get('/collector/api/full-text/' + id)
+             axios.get('/collector/api/full-text/' + vm.source.data_source_id)
                     .then(function(res) {
                         if (res.data && res.data.html) {
                             vm.html = res.data.html;
@@ -36,13 +43,13 @@
 <template>
   <div>
     <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
-      <h3 class="font-semibold"><slot></slot></h3>
-      <h4 class="font-semibold" v-if="!short">
+      <h3 class="font-semibold text-white"><slot></slot></h3>
+      <h4 class="font-semibold text-white" v-if="!short">
         <span class="text-white">{{ source.library_name }}</span>
         <span class="text-white px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
       </h4>
     </div>
-    <div v-if="source.authors" class="p-2 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
+    <div v-if="source.authors && source.authors.length" class="p-2 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
       <div v-for="author in source.authors" :key="author">
         {{ author }}
       </div>
@@ -64,42 +71,42 @@
       <div class="my-2" v-if="source.description && !short">
         {{ source.description }}
       </div>
-      <span v-if="source.uri && source.public">
-        <a :href="source.uri" target="_blank">
-          <span v-if="source.uri_label">
-            {{ source.uri_label }}
-          </span>
-          <span v-else>
-            {{ source.uri }}
-          </span>
-          <span v-if="source.content_type">
-            ({{ source.content_type }})
-          </span>
-        </a>
-      </span>
-      <div v-if="can_have_full_text()">
-        <div v-if="html">
-          <div class="border m-1 p-1 rounded" v-html="html"></div>
-        </div>
-        <div v-else>
-          <button @click="get_full_text(source.data_source_id)">{{ $gettext('View full text') }}</button>
-        </div>
-      </div>
       <div v-if="source.shelf_location_code">
         <span>{{ $gettext('Shelf Location Code') }}</span> <code>{{ source.shelf_location_code }}</code>
-      </div>
-      <div v-if="source.downloads">
-        <div v-for="dl in source.downloads" :key="dl.code">
-          <a :href="get_binary_file(source.data_source_id, dl.ext)">
-            {{ dl.desc }}
-          </a>
-        </div>
       </div>
       <div v-if="source.material_description">
         {{ source.material_description }}
       </div>
       <div>
         <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
+      </div>
+      <div class="flex flex-wrap" v-if="source.downloads">
+        <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
+          <a :href="get_binary_file(source.data_source_id, dl.ext)">
+            {{ dl.desc }}
+          </a>
+        </div>
+        <div class="btn-primary m-1 p-1 rounded">
+          <span v-if="source.uri && source.public">
+            <a :href="source.uri" target="_blank">
+              <span class="text-white" v-if="source.uri_label">
+                {{ source.uri_label }}
+              </span>
+              <span class="text-white" v-else>
+                {{ source.uri }}
+              </span>
+              <span class="text-white" v-if="source.content_type">
+                ({{ source.content_type }})
+              </span>
+            </a>
+          </span>
+        </div>
+        <div v-if="can_have_full_text()">
+          <button class="btn-primary m-1 p-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+        </div>
+      </div>
+      <div v-if="show_html">
+        <div class="border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200" v-html="html"></div>
       </div>
     </div>
   </div>

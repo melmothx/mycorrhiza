@@ -39,7 +39,7 @@
 </script>
 <template>
   <div class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-tr from-perl-bush-100 to-perl-bush-200 h-full overflow-y-auto">
-    <div class="m-5 p-2 font-serif">
+    <div class="m-5 p-2">
       <div class="flex">
         <div class="flex-grow">
           <EntryDetails :record="record"></EntryDetails>
@@ -50,7 +50,7 @@
         </div>
       </div>
       <hr class="my-3" />
-      <div class="mb-2 text-sm" v-for="source in record.data_sources" :key="source.identifier">
+      <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
         <div v-if="source.aggregated && source.aggregated.length > 0">
           <div v-for="agg in source.aggregated" :key="agg.id">
@@ -71,13 +71,13 @@
       </div>
       <div v-if="record.original_entry"
            @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"
-           class="border rounded my-1 p-1 cursor-pointer">
+           class="border rounded my-1 p-1 cursor-pointer text-sm bg-perl-bush-50 shadow-md">
         <EntryDetails :record="record.original_entry">{{ $gettext('Original title:') }}</EntryDetails>
       </div>
-      <div v-if="record.translations && record.translations.length > 0">
-        <div v-for="translation in record.translations" :key="translation.id">
-          <div @click="$router.push({ name: 'entry', params: { id: translation.id } })"
-            class="border rounded my-1 p-1 cursor-pointer">
+      <div class="flex flex-wrap" v-if="record.translations && record.translations.length > 0">
+        <div class="border rounded my-1 p-2 cursor-pointer bg-perl-bush-100 shadow-md text-sm mr-2"
+             v-for="translation in record.translations" :key="translation.id">
+          <div @click="$router.push({ name: 'entry', params: { id: translation.id } })">
             <EntryDetails :record="translation">{{ $gettext('Translation:') }}</EntryDetails>
           </div>
         </div>
