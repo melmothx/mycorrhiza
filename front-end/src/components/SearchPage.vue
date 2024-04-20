@@ -262,7 +262,7 @@
     </div>
   </form>
   <div class="m-1 md:m-5">
-    <div class="grid gap-2 grid-cols-[300px_auto_300px]">
+    <div class="grid gap-8 grid-cols-[250px_auto_250px]">
       <div>
         <div class="sticky top-5">
           <div v-if="facets.download" class="mb-3">
