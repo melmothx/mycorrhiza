@@ -38,14 +38,14 @@
  }
 </script>
 <template>
-  <div class="fixed top-0 left-0 right-0 z-50 bg-white h-full overflow-y-auto">
+  <div class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-tr from-perl-bush-100 to-perl-bush-200 h-full overflow-y-auto">
     <div class="m-5 p-2 font-serif">
       <div class="flex">
         <div class="flex-grow">
           <EntryDetails :record="record"></EntryDetails>
         </div>
         <div>
-          <button class="font-sans border rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold p-1"
+          <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
                   type="button" @click="$router.go(-1)">{{ $gettext('Close') }}</button>
         </div>
       </div>

@@ -35,68 +35,72 @@
 </script>
 <template>
   <div>
-    <h3 class="font-semibold"><slot></slot></h3>
-    <h4 class="font-semibold" v-if="!short">
-      <span class="text-red-800">{{ source.library_name }}</span>
-      <span class="px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
-    </h4>
-    <div v-if="source.authors">
+    <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
+      <h3 class="font-semibold"><slot></slot></h3>
+      <h4 class="font-semibold" v-if="!short">
+        <span class="text-white">{{ source.library_name }}</span>
+        <span class="text-white px-1" v-if="source.year_edition">({{ source.year_edition }})</span>
+      </h4>
+    </div>
+    <div v-if="source.authors" class="p-2 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
       <div v-for="author in source.authors" :key="author">
         {{ author }}
       </div>
     </div>
-    <div class="flex">
-      <h3 class="font-semibold mr-1" v-if="source.title">
-        {{ source.title }}
-      </h3>
-      <div v-if="source.languages">
-        <div v-for="lang in source.languages" :key="lang">
-          ({{ lang }})
+    <div class="bg-perl-bush-50 p-2">
+      <div class="flex">
+        <h3 class="font-semibold mr-1 flex-grow" v-if="source.title">
+          {{ source.title }}
+        </h3>
+        <div v-if="source.languages">
+          <div v-for="lang in source.languages" :key="lang">
+            [{{ lang }}]
+          </div>
         </div>
       </div>
-    </div>
-    <h4 class="italic" v-if="source.subtitle">
-      {{ source.subtitle }}
-    </h4>
-    <div v-if="source.description && !short">
-      {{ source.description }}
-    </div>
-    <span v-if="source.uri && source.public">
-      <a :href="source.uri" target="_blank">
-        <span v-if="source.uri_label">
-          {{ source.uri_label }}
-        </span>
-        <span v-else>
-          {{ source.uri }}
-        </span>
-        <span v-if="source.content_type">
-          ({{ source.content_type }})
-        </span>
-      </a>
-    </span>
-    <div v-if="can_have_full_text()">
-      <div v-if="html">
-        <div class="border m-1 p-1 rounded" v-html="html"></div>
+      <h4 class="italic" v-if="source.subtitle">
+        {{ source.subtitle }}
+      </h4>
+      <div class="my-2" v-if="source.description && !short">
+        {{ source.description }}
       </div>
-      <div v-else>
-        <button @click="get_full_text(source.data_source_id)">{{ $gettext('View full text') }}</button>
-      </div>
-    </div>
-    <div v-if="source.shelf_location_code">
-      <span>{{ $gettext('Shelf Location Code') }}</span> <code>{{ source.shelf_location_code }}</code>
-    </div>
-    <div v-if="source.downloads">
-      <div v-for="dl in source.downloads" :key="dl.code">
-        <a :href="get_binary_file(source.data_source_id, dl.ext)">
-          {{ dl.desc }}
+      <span v-if="source.uri && source.public">
+        <a :href="source.uri" target="_blank">
+          <span v-if="source.uri_label">
+            {{ source.uri_label }}
+          </span>
+          <span v-else>
+            {{ source.uri }}
+          </span>
+          <span v-if="source.content_type">
+            ({{ source.content_type }})
+          </span>
         </a>
+      </span>
+      <div v-if="can_have_full_text()">
+        <div v-if="html">
+          <div class="border m-1 p-1 rounded" v-html="html"></div>
+        </div>
+        <div v-else>
+          <button @click="get_full_text(source.data_source_id)">{{ $gettext('View full text') }}</button>
+        </div>
+      </div>
+      <div v-if="source.shelf_location_code">
+        <span>{{ $gettext('Shelf Location Code') }}</span> <code>{{ source.shelf_location_code }}</code>
+      </div>
+      <div v-if="source.downloads">
+        <div v-for="dl in source.downloads" :key="dl.code">
+          <a :href="get_binary_file(source.data_source_id, dl.ext)">
+            {{ dl.desc }}
+          </a>
+        </div>
+      </div>
+      <div v-if="source.material_description">
+        {{ source.material_description }}
+      </div>
+      <div>
+        <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
       </div>
     </div>
-    <div v-if="source.material_description">
-      {{ source.material_description }}
-    </div>
-    <div>
-      <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
-    </div>
-  </div>    
+  </div>
 </template>

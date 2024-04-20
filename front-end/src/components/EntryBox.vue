@@ -62,7 +62,7 @@
           </h2>
           <div v-if="record.language">
             <div class="px-2" v-for="l in record.language" :key="l.id">
-              ({{ l.value }})
+              [{{ l.value }}]
             </div>
           </div>
           <div v-if="can_merge">
