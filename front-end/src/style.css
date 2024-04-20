@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-    h1, h2, h3, h4, h5, h6, span, p, strong, em, div {
+    html, body {
         @apply text-asphalt-950 selection:bg-spectra-700 selection:text-perl-bush-50;
     }
     select, input {
