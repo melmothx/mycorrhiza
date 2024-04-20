@@ -42,7 +42,12 @@
 </script>
 <template>
   <div>
-    <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
+    <div v-if="short"
+         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+      <h3 class="font-semibold"><slot></slot></h3>
+    </div>
+    <div v-else
+         class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
       <h3 class="font-semibold text-white"><slot></slot></h3>
       <h4 class="font-semibold text-white" v-if="!short">
         <span class="text-white">{{ source.library_name }}</span>
@@ -80,7 +85,7 @@
       <div>
         <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
       </div>
-      <div class="flex flex-wrap" v-if="source.downloads">
+      <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
         <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
           <a :href="get_binary_file(source.data_source_id, dl.ext)">
             {{ dl.desc }}

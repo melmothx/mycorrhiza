@@ -5,8 +5,10 @@
 <template>
   <main>
     <NavBar />
-    <DashboardTable :listing_type="$route.params.type" :key="$route.params.type">
-      {{ $gettext('dashboard for ' + $route.params.type) }}
-    </DashboardTable>
+    <div class="m-4">
+      <DashboardTable :listing_type="$route.params.type" :key="$route.params.type">
+        {{ $gettext('dashboard for ' + $route.params.type) }}
+      </DashboardTable>
+    </div>
   </main>
 </template>

@@ -85,7 +85,7 @@
 <template>
   <div class="flex m-3">
     <div class="flex-grow">
-      <span @click="$router.push({ name: 'home' })">Home</span>
+      <span class="cursor-pointer" @click="$router.push({ name: 'home' })">Home</span>
     </div>
     <div>
       <Listbox v-model="current_language">

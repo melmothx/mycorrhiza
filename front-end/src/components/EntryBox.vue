@@ -55,15 +55,15 @@
         </div>
       </div>
       <div>
-        <div class="font-semibold flex py-2">
-          <h2 class="flex-grow cursor-pointer px-3"
+        <div class="flex py-2">
+          <h2 class="font-semibold flex-grow cursor-pointer px-3"
               @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
           </h2>
           <div v-if="record.language">
-            <div class="px-2" v-for="l in record.language" :key="l.id">
+            <small class="px-2" v-for="l in record.language" :key="l.id">
               [{{ l.value }}]
-            </div>
+            </small>
           </div>
           <div v-if="can_merge">
             <span class="drag-el drag-title cursor-grab active:cursor-grabbing

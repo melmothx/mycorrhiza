@@ -196,16 +196,7 @@
 
     <div>
       <div class="flex h-8">
-        <input class="outline
-                      outline-0
-                      border
-                      border-0
-                      focus:ring-0 active:ring-0
-                      px-2
-                      text-old-copper-700
-                      bg-perl-bush-50
-                      placeholder:italic
-                      flex-grow"
+        <input class="mcrz-input"
                type="text" placeholder="Search" v-model="query"/>
         <Listbox v-model="sort_by">
           <div class="relative m-0">
