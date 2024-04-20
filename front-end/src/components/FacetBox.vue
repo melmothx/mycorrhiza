@@ -1,9 +1,10 @@
 <script>
  import FacetButton from './FacetButton.vue'
  import ExclusionButton from './ExclusionButton.vue'
-  export default {
-      components: { FacetButton, ExclusionButton },
-      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting', 'translate_values' ],
+ import { HandRaisedIcon } from '@heroicons/vue/24/solid'
+ export default {
+      components: { FacetButton, ExclusionButton, HandRaisedIcon },
+      props: [ 'name', 'values', 'can_set_exclusions', 'use_sorting', 'translate_values', 'can_merge' ],
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
@@ -19,7 +20,14 @@
           refetchResults() {
               console.log("Relaying refetch results")
               this.$emit('refetchResults');
-          }
+          },
+          drag_element(e, id, label, merge_type) {
+              e.dataTransfer.dropEffect = 'copy';
+              e.dataTransfer.effectAllowed = 'copy';
+              e.dataTransfer.setData('ID', id);
+              e.dataTransfer.setData('Label', label);
+              e.dataTransfer.setData('Merge', merge_type);
+          },
       },
       computed: {
           facet_list() {
@@ -35,31 +43,31 @@
                              }
                          });
           },
-      }
+      },
   }
 </script>
 <template>
-  <div class="rounded-lg p-0 border border-gray-300">
-    <div class="border-b pt-0 bg-gray-100 rounded-t-lg">
-      <h2 class="font-semibold capitalize py-0 text-center border-b">
+  <div>
+    <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
+      <h2 class="font-semibold capitalize py-0 text-right text-white p-2 text-sm">
         <slot>{{ name }}</slot>
       </h2>
-      <div v-if="use_sorting"
-           class="text-sm px-2 py-0 text-center">
-        {{ $gettext('Sort') }}
-        <label class="px-2">
-          <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
-                 type="radio" value="count" v-model="sort_method">
-          {{ $gettext('by count') }}
-        </label>
-        <label class="px-2">
-          <input class="text-pink-500 focus:ring-pink-500 focus:ring-0 active:ring-0"
-                 type="radio" value="term" v-model="sort_method">
-          {{ $gettext('by term') }}
-        </label>
-      </div>
     </div>
-    <div class="max-h-48 overflow-y-auto p-2">
+    <div v-if="use_sorting"
+         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2 text-center">
+      {{ $gettext('Sort') }}
+      <label class="px-2">
+        <input class="mcrz-radio"
+               type="radio" value="count" v-model="sort_method">
+        {{ $gettext('0-9') }}
+      </label>
+      <label class="px-2">
+        <input class="mcrz-radio"
+               type="radio" value="term" v-model="sort_method">
+        {{ $gettext('A-Z') }}
+      </label>
+    </div>
+    <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
       <template v-for="facet in facet_list" :key="facet.key">
         <div class="flex">
           <div class="flex-grow">
@@ -69,10 +77,18 @@
                 :count="facet.count"
                 :active="facet.active"
                 :name="name"
-                :merge_type="name == 'creator' ? 'author' : ''"
                 :translate_value="translate_values"
                 @toggle-filter="toggleFilter"
             />
+          </div>
+          <div v-if="can_merge && name == 'creator'">
+            <span class="cursor-grab active:cursor-grabbing
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  draggable="true"
+                  @dragstart="drag_element($event, facet.id, facet.term, 'author')">
+              <HandRaisedIcon class="h-4 w-4 m-1" />
+            </span>
           </div>
           <div class="ml-1" v-if="can_set_exclusions && name == 'library'">
             <ExclusionButton :object_id="facet.id"

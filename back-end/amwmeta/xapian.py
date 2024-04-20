@@ -122,7 +122,7 @@ def search(db_path, query_params, active_libraries=[], exclusions=[]):
     logger.debug(query)
     enquire.set_query(query)
 
-    if query_params.get('sort_by'):
+    if SORTABLE_FIELDS.get(query_params.get('sort_by')):
         sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
         sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
         logger.info("Sorting by " + str(sort_by) + " " + str(sort_dir))

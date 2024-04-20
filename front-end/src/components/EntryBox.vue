@@ -1,7 +1,8 @@
 <script>
  import ExclusionButton from './ExclusionButton.vue'
+ import { HandRaisedIcon } from '@heroicons/vue/24/solid'
  export default {
-     components: { ExclusionButton },
+     components: { ExclusionButton, HandRaisedIcon },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
      emits: [ 'refetchResults' ],
      computed: {
@@ -27,18 +28,21 @@
  }
 </script>
 <template>
-  <div class="border p-2 border-gray-200 rounded mt-2 font-serif">
-    <div class="p-1">
-      <div v-if="record.creator">
+  <div class="mb-6 font-serif bg-perl-bush-50 shadow-md">
+    <div>
+      <div v-if="record.creator"
+           class="py-1 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
         <div v-for="author in record.creator" :key="author.id" class="flex">
-          <div class="flex-grow bg-gray-100 px-3 py-1 rounded">
+          <div class="flex-grow px-3">
             {{ author.value }}
           </div>
           <div v-if="can_merge">
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
-                         border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  :title="$gettext('Merge')"
                   draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
-              {{ $gettext('Merge') }}
+              <HandRaisedIcon class="h-4 w-4 m-1" />
             </span>
           </div>
           <div v-if="can_set_exclusions">
@@ -51,19 +55,23 @@
         </div>
       </div>
       <div>
-        <div class="font-semibold flex">
-          <h2 class="flex-grow cursor-pointer" @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
+        <div class="flex py-2">
+          <h2 class="font-semibold flex-grow cursor-pointer px-3"
+              @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
           </h2>
           <div v-if="record.language">
-            <div class="px-2" v-for="l in record.language" :key="l.id">
-              ({{ l.value }})
-            </div>
+            <small class="px-2" v-for="l in record.language" :key="l.id">
+              [{{ l.value }}]
+            </small>
           </div>
           <div v-if="can_merge">
-            <span class="drag-el drag-title cursor-grab active:cursor-grabbing border-2 rounded-full text-sm px-2 bg-pink-800 text-white font-semibold"
-              draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
-              {{ $gettext('Merge') }}
+            <span class="drag-el drag-title cursor-grab active:cursor-grabbing
+                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         focus:text-spectra-800"
+                  :title="$gettext('Merge')"
+                  draggable="true" @dragstart="drag_element($event, 'entry', record.entry_id, title)">
+              <HandRaisedIcon class="h-4 w-4 m-1" />
             </span>
           </div>
           <div v-if="can_set_exclusions">
@@ -74,7 +82,7 @@
             </ExclusionButton>
           </div>
         </div>
-        <h3 class="italic" v-if="subtitle">{{ subtitle }}</h3>
+        <h3 class="italic px-3 pb-2" v-if="subtitle">{{ subtitle }}</h3>
       </div>
     </div>
   </div>

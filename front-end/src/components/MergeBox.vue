@@ -1,8 +1,9 @@
 <script>
  import CreateEntityBox from './CreateEntityBox.vue'
+ import { TrashIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
  import axios from 'axios'
  export default {
-     components: { CreateEntityBox },
+     components: { CreateEntityBox, TrashIcon, Cog8ToothIcon },
      props: [
          'merge_type',
          'remove_merged_filter',
@@ -147,36 +148,37 @@
 <template>
   <div>
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
-        class="bg-gray-200 font-semibold
-               rounded-t border-t border-s border-e border-gray-300 p-2 -space-y-px">
-      <h2 class="flex justify-center">
-        <span>
-          <slot>Drop {{ merge_type }} here for merging</slot>
-          <small v-if="dashboard"
-                 @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
-            admin
-          </small>
+        class="bg-gradient-to-tr from-old-copper-700 to-old-copper-600 font-semibold rounded-tr-3xl p-2">
+      <h2 class="text-white pl-2 text-sm">
+        <span class="flex">
+          <span class="grow text-white">
+            <slot>Drop {{ merge_type }} here for merging</slot>
+          </span>
+          <span v-if="dashboard"
+                class="text-white mr-2 cursor-pointer hover:text-spectra-200"
+                :title="$gettext('Admin')"
+                @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
+            <Cog8ToothIcon class="m-1 h-4 w-4" />
+          </span>
         </span>
       </h2>
     </div>
     <div v-if="canonical"
          @drop="drop_element($event, 'set_canonical')" @dragover.prevent @dragenter.prevent
-         class="border-r border-l border-t border-gray-300">
+         class="border-r border-l border-t border-gray-300 bg-perl-bush-50">
       <h3 class="font-serif p-2 font-semibold text-sm flex justify-between">
         <span>
           {{ canonical.label }}
         </span>
         <span v-if="!working"
-              class="cursor-pointer font-bold"
-              title="Clear list"
+              class="cursor-pointer text-claret-800 hover:text-claret-600"
+              title="$gettext('Clear list')"
               @click="clear_list">
-          <span class="border-2 rounded-lg text-red-800 hover:text-black border-red-800 border px-1 mt-1">
-            &#x2715;
-          </span>
+          <TrashIcon class="h-4 w-4" />
         </span>
       </h3>
     </div>
-    <div class="rounded-b border border-gray-300"
+    <div class="border border-gray-300 bg-perl-bush-50"
          @drop="drop_element($event)" @dragover.prevent @dragenter.prevent>
       <ul role="list" >
         <li v-for="entry in merge_list" :key="entry.id" class="border-b p-2 font-serif text-sm">
@@ -187,19 +189,17 @@
               {{ entry.label }}
             </span>
             <span v-if="!working"
-                  class="cursor-pointer font-bold"
+                  class="cursor-pointer text-claret-800 hover:text-claret-600"
                   title="Remove"
                   @click="remove_from_list(entry.id)">
-              <span class="border-2 rounded-lg hover:bg-red-300 text-red-800 border-red-800 px-1 mt-1">
-                &#x2715;
-              </span>
+              <TrashIcon class="h-4 w-4"/>
             </span>
           </div>
         </li>
       </ul>
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
-          <button class="bg-pink-500 hover:bg-pink-700 text-white font-semibold rounded px-2 py-1 text-sm"
+          <button class="btn-primary pl-3 py-1 pr-4 pl-1 h-8 rounded-br-3xl"
                   type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
         </div>
         <div v-else>
@@ -207,18 +207,18 @@
         </div>
         <div v-if="flash_error"
              @click="clear_flash_error"
-             class="flex justify-center items-center m-2 cursor-pointer text-pink-700
+             class="flex justify-center items-center m-2 cursor-pointer text-claret-900
                    mt-2 font-semibold">
           {{ $gettext(flash_error) }}
         </div>
         <div v-if="flash_success"
              @click="clear_flash_success"
-             class="flex justify-center items-center m-2 cursor-pointer text-green-800
+             class="flex justify-center items-center m-2 cursor-pointer text-spectra-800
                    mt-2 font-bold">
           {{ $gettext(flash_success) }}
         </div>
         <div v-if="working" class="m-2 text-center">
-          <span class="animate-ping rounded-full text-pink-800 p-2">{{ $gettext('Working') }}</span>
+          <span class="animate-ping rounded-full text-claret-900 p-2">{{ $gettext('Working') }}</span>
         </div>
       </div>
     </div>

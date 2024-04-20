@@ -1,6 +1,8 @@
 <script>
  import axios from 'axios'
+ import { EyeSlashIcon } from '@heroicons/vue/24/solid'
  export default {
+     components: { EyeSlashIcon },
      props: [
          'object_id',
          'object_type',
@@ -48,8 +50,11 @@
  }
 </script>
 <template>
-  <span class="text-sm cursor-pointer border-2 rounded-full px-2 bg-red-800 text-white font-semibold"
-        @click="open_dialog">{{ $gettext('Omit') }}</span>
+  <span class="cursor-pointer text-claret-900 hover:text-claret-700 text-lg"
+        :title="$gettext('Omit')"
+        @click="open_dialog">
+    <EyeSlashIcon class="w-4 h-4 m-1" />
+  </span>
 
   <div v-if="open">
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto font-normal font-serif">
@@ -63,18 +68,20 @@
               <div class="mt-2">
                 <textarea v-model="comment"
                           :placeholder="$gettext('Reason')"
-                          class="rounded border-gray-300 focus:ring-0 active:ring-0 active:border-pink-300 focus:border-pink-300">
+                          class="rounded border-gray-300 focus:ring-0 active:ring-0 active:border-gray-300  focus:border-gray-300">
                 </textarea>
               </div>
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 flex">
-            <button type="button" class="inline-flex w-full justify-center rounded-md border m-1"
+            <button type="button" class="inline-flex w-full justify-center rounded-md border m-1
+                          hover:border-claret-700"
                     @click="close_dialog">
               {{ $gettext('Cancel') }}
             </button>
             <button v-if="comment"
-                    type="button" class="inline-flex w-full justify-center rounded-md border m-1"
+                    type="button" class="inline-flex w-full justify-center rounded-md border m-1
+                          hover:border-claret-700"
                     @click="set_exclusion">
               {{ $gettext('Omit') }}
             </button>

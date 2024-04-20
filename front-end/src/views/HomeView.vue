@@ -13,7 +13,7 @@
      },
      methods: {
          refetch_results() {
-             this.search_page.getResults(1);
+             this.search_page.getResults({ update_facets: 1 });
          },
      },
  }
