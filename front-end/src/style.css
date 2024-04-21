@@ -1,5 +1,20 @@
 @tailwind base;
 @tailwind components;
+
+/* static, always compiled, for full text */
+.table-of-contents { @apply p-2 font-bold mb-2 bg-perl-bush-50 rounded shadow-md }
+#thework h6 { @apply text-base mt-2 mb-1 }
+#thework h5 { @apply text-base mt-2 mb-1 font-bold }
+#thework h4 { @apply text-lg   mt-3 mb-2 font-bold }
+#thework h3 { @apply text-xl   mt-4 mb-3 font-bold }
+#thework h2 { @apply text-2xl  mt-5 mb-4 font-bold }
+#thework p { @apply indent-4 }
+#thework blockquote { @apply p-2 }
+#thework ul { @apply list-disc px-8 py-4 }
+#thework ul li p,
+#thework ol li p { @apply indent-0 }
+#thework ol { @apply list-decimal p-4 }
+
 @tailwind utilities;
 
 @layer base {
