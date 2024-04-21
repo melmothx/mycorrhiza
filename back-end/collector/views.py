@@ -17,6 +17,7 @@ from .forms import SpreadsheetForm
 from django.contrib import messages
 from http import HTTPStatus
 import re
+import requests
 # from django.db import connection
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
@@ -96,10 +97,37 @@ def get_entry(request, entry_id):
 def get_datasource_full_text(request, ds_id):
     ds = get_object_or_404(DataSource, pk=ds_id)
     out = {}
+    html = ""
     if ds.site.library_id in _active_libraries(request.user):
-        out['html'] = ds.full_text()
-    logger.debug(out)
+        html = ds.full_text()
+
+    def replace_images(m):
+        src = reverse('api_get_datasource_file', args=[ds.id, m.group(1)])
+        return 'src="' + src + '"'
+
+    if html:
+        out['html'] = re.sub(r'src="([0-9a-z-]+\.(jpe?g|png))"', replace_images, html)
     return JsonResponse(out)
+
+def get_datasource_file(request, ds_id, filename):
+    ds = get_object_or_404(DataSource, pk=ds_id)
+    if ds.site.library_id in _active_libraries(request.user):
+        text_uri = ds.amusewiki_base_url()
+        if text_uri:
+            if re.match(r'^[a-z0-9-\.]+$', filename):
+                file_uri = re.sub(r'/[a-z0-9-\.]+$', '/' + filename, text_uri)
+                logger.debug("Proxying {}".format(file_uri))
+                r = requests.get(file_uri)
+                if r.status_code == 200:
+                    return HttpResponse(r.content, content_type=r.headers['content-type'])
+                else:
+                    raise Http404("File not found!")
+            else:
+                raise Http404("Invalid argument!")
+        else:
+            raise Http404("Invalid file!")
+    else:
+        raise Http404("Not found")
 
 def download_datasource(request, target):
     check = re.compile(r'(\d+)((\.[a-z0-9]+)+)$')

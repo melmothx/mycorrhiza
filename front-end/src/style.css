@@ -9,11 +9,24 @@
 #thework h3 { @apply text-xl   mt-4 mb-3 font-bold }
 #thework h2 { @apply text-2xl  mt-5 mb-4 font-bold }
 #thework p { @apply indent-4 }
-#thework blockquote { @apply p-2 }
+#thework blockquote { @apply p-4 }
+#thework blockquote p { @apply indent-0 }
 #thework ul { @apply list-disc px-8 py-4 }
 #thework ul li p,
 #thework ol li p { @apply indent-0 }
 #thework ol { @apply list-decimal p-4 }
+#thework .center { @apply text-center p-2 }
+#thework .right { @apply text-right p-2 }
+#thework pre.example { @apply my-4 }
+#thework dt { @apply font-bold }
+#thework table, #thework tr, #thework td, #thework th { @apply border border-2 border-gray-500 m-1 }
+#thework td, #thework th { @apply p-1 }
+#thework .image { @apply m-2 }
+#thework .float_image_r { @apply m-2 float-right }
+#thework .float_image_l { @apply m-2 float-left }
+#thework .float_image_f { @apply m-4  }
+/* #thework div.caption { @apply text-center } */
+
 
 @tailwind utilities;
 
