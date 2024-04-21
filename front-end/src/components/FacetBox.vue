@@ -47,7 +47,7 @@
   }
 </script>
 <template>
-  <div>
+  <div class="shadow-lg">
     <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
       <h2 class="font-semibold capitalize py-0 text-right text-white p-2 text-sm">
         <slot>{{ name }}</slot>
