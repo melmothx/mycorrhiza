@@ -109,7 +109,7 @@
         </div>
       </div>
       <div v-if="show_html">
-        <div class="border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200" v-html="html"></div>
+        <div class="text-base border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200" v-html="html"></div>
       </div>
     </div>
   </div>

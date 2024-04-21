@@ -25,6 +25,32 @@
 #thework .float_image_r { @apply m-2 float-right }
 #thework .float_image_l { @apply m-2 float-left }
 #thework .float_image_f { @apply m-4  }
+
+/* apparently not needed
+#thework sup { @apply align-super }
+#thework sub { @apply align-sub }
+*/
+
+#thework a.footnote,
+#thework a.footnotebody {
+    @apply text-xs align-super;
+}
+
+#thework * + p.fnline,
+#thework * + p.secondary-fnline {
+    @apply border-t border-black pt-2 mt-2;
+}
+
+#thework p.fnline + p.fnline,
+#thework p.secondary-fnline + p.secondary-fnline {
+    @apply border-0 pt-0 mt-1;
+}
+
+#thework p.fnline,
+#thework p.secondary-fnline {
+    @apply text-xs indent-0;
+}
+
 /* #thework div.caption { @apply text-center } */
 
 
