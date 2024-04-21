@@ -70,5 +70,7 @@ class Command(BaseCommand):
         for site in rs.all():
             try:
                 site.harvest(force=options['force'], oai_set=options['oai_set'])
+            except requests.exceptions.HTTPError:
+                print("Server error for {}, skipping".format(site.url))
             except requests.exceptions.ConnectionError:
-                print("Failure on connection to {}, skpping".format(site.url))
+                print("Failure on connection to {}, skipping".format(site.url))
