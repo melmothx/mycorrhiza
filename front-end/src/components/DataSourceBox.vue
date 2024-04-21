@@ -91,20 +91,18 @@
             {{ dl.desc }}
           </a>
         </div>
-        <div class="btn-primary m-1 p-1 rounded">
-          <span v-if="source.uri && source.public">
-            <a :href="source.uri" target="_blank">
-              <span class="text-white" v-if="source.uri_label">
-                {{ source.uri_label }}
-              </span>
-              <span class="text-white" v-else>
-                {{ source.uri }}
-              </span>
-              <span class="text-white" v-if="source.content_type">
-                ({{ source.content_type }})
-              </span>
-            </a>
-          </span>
+        <div class="btn-primary m-1 p-1 rounded" v-if="source.uri && source.public">
+          <a :href="source.uri" target="_blank">
+            <span class="text-white" v-if="source.uri_label">
+              {{ source.uri_label }}
+            </span>
+            <span class="text-white" v-else>
+              {{ source.uri }}
+            </span>
+            <span class="text-white" v-if="source.content_type">
+              ({{ source.content_type }})
+            </span>
+          </a>
         </div>
         <div v-if="can_have_full_text()">
           <button class="btn-primary m-1 p-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
