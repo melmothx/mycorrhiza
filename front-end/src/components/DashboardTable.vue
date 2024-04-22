@@ -12,6 +12,8 @@
              records: [],
              fields: [],
              search_string: "",
+             sort_field: "",
+             sort_direction: "desc",
          }
      },
      methods: {
@@ -69,6 +71,24 @@
                  }
              });
          },
+         sort_rows(field) {
+             console.log(`Sorting by ${field}`);
+             if (this.sort_field && this.sort_field == field) {
+                 if (this.sort_direction == 'desc') {
+                     this.sort_direction = 'asc';
+                     this.sort_records_asc(field);
+                 }
+                 else {
+                     this.sort_direction = 'desc';
+                     this.sort_records_desc(field);
+                 }
+             }
+             else {
+                 this.sort_direction = 'asc';
+                 this.sort_records_asc(field);
+             }
+             this.sort_field = field;
+         },
          filter_by_search() {
              let sf = this.fields.map((f) => f.name);
              if (this.search_string) {
@@ -114,11 +134,13 @@
   <table>
     <thead>
       <tr class="text-spectra-900 text-left bg-perl-bush-50">
-        <th v-for="f in fields" :key="f.name" class="pl-1 pr-4">
-          {{ f.label }}
-          <BarsArrowUpIcon class="cursor-pointer w-4 inline" @click="sort_records_asc(f.name)" />
-          <BarsArrowDownIcon class="cursor-pointer w-4 inline" @click="sort_records_desc(f.name)" />
-        </th>
+        <template v-for="f in fields" :key="f.name">
+          <th class="pl-1 pr-4 cursor-pointer"
+              :title="$gettext('Click to sort')"
+              @click="sort_rows(f.name)">
+            {{ f.label }}
+          </th>
+        </template>
         <th class="pl-1 pr-4">
           Remove
         </th>
