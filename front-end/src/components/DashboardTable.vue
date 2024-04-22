@@ -1,8 +1,8 @@
 <script>
  import axios from 'axios'
- import { TrashIcon, BarsArrowDownIcon, BarsArrowUpIcon } from '@heroicons/vue/24/solid'
+ import { TrashIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
  export default {
-     components: { TrashIcon, BarsArrowDownIcon, BarsArrowUpIcon },
+     components: { TrashIcon, ChevronUpDownIcon },
      props: [
          'listing_type',
      ],
@@ -138,7 +138,14 @@
           <th class="pl-1 pr-4 cursor-pointer"
               :title="$gettext('Click to sort')"
               @click="sort_rows(f.name)">
-            {{ f.label }}
+            <div class="flex whitespace-nowrap">
+              <span class="flex-grow">
+                {{ f.label }}
+              </span>
+              <span>
+                <ChevronUpDownIcon class="w-6 h-6" />
+              </span>
+            </div>
           </th>
         </template>
         <th class="pl-1 pr-4">
