@@ -6,12 +6,14 @@
          return {
              html: "",
              show_html: false,
+             working: false,
          }
      },
      methods: {
          toggle_full_text() {
              this.show_html = !this.show_html;
              if (this.show_html && !this.html) {
+                 this.working = true;
                  this.get_full_text();
              }
          },
@@ -20,6 +22,7 @@
              console.log("Getting the full text")
              axios.get('/collector/api/full-text/' + vm.source.data_source_id)
                     .then(function(res) {
+                        vm.working = false;
                         if (res.data && res.data.html) {
                             vm.html = res.data.html;
                         }
@@ -96,20 +99,26 @@
             <span class="text-white" v-if="source.uri_label">
               {{ source.uri_label }}
             </span>
-            <span class="text-white" v-else>
-              {{ source.uri }}
+            <span class="text-white" v-else-if="source.content_type && source.content_type === 'text/html'">
+              {{ $gettext('Landing page') }}
             </span>
-            <span class="text-white" v-if="source.content_type">
+            <span class="text-white" v-else>
               ({{ source.content_type }})
             </span>
           </a>
         </div>
         <div v-if="can_have_full_text()">
-          <button class="btn-primary m-1 p-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+          <button class="btn-accent m-1 p-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
         </div>
       </div>
       <div v-if="show_html">
-        <div class="text-base border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200" v-html="html"></div>
+        <div class="text-base border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200">
+          <div v-if="working" class="m-2 text-center">
+            <span class="animate-ping text-claret-900">{{ $gettext('Working') }}</span>
+          </div>
+          <div v-html="html"></div>
+        </div>
+
       </div>
     </div>
   </div>

@@ -76,6 +76,11 @@
         hover:bg-gradient-to-tr hover:from-spectra-700 hover:to-spectra-600
               font-semibold text-white;
     }
+    .btn-accent {
+        @apply bg-gradient-to-tr from-cab-sav-800 to-cab-sav-950
+        hover:bg-gradient-to-tr hover:from-cab-sav-800 hover:to-cab-sav-700
+              font-semibold text-white;
+    }
     .mcrz-radio {
         @apply text-old-copper-800 focus:ring-old-copper-800 focus:ring-0 active:ring-0;
     }

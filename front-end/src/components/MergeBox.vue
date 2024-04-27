@@ -1,9 +1,10 @@
 <script>
  import CreateEntityBox from './CreateEntityBox.vue'
+ import HelpPopUp from './HelpPopUp.vue'
  import { TrashIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
  import axios from 'axios'
  export default {
-     components: { CreateEntityBox, TrashIcon, Cog8ToothIcon },
+     components: { CreateEntityBox, TrashIcon, Cog8ToothIcon, HelpPopUp },
      props: [
          'merge_type',
          'remove_merged_filter',
@@ -160,6 +161,9 @@
                 @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
             <Cog8ToothIcon class="m-1 h-4 w-4" />
           </span>
+          <HelpPopUp>
+            {{ $gettext('HELP_' + merge_type) }}
+          </HelpPopUp>
         </span>
       </h2>
     </div>

@@ -38,18 +38,26 @@
  }
 </script>
 <template>
-  <div class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-tr from-perl-bush-100 to-perl-bush-200 h-full overflow-y-auto">
+  <div class="bg-gradient-to-tr from-perl-bush-100 to-perl-bush-200">
     <div class="m-5 p-2">
-      <div class="flex">
-        <div class="flex-grow">
-          <EntryDetails :record="record"></EntryDetails>
-        </div>
+      <div class="mb-4 pb-4 grid grid-cols-2 items-stretch">
         <div>
-          <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-                  type="button" @click="$router.go(-1)">{{ $gettext('Close') }}</button>
+          <EntryDetails :record="record" show_translations="true" />
+        </div>
+        <div class="justify-self-end">
+          <div class="mt-2 flex flex-wrap justify-start" v-if="record.translations && record.translations.length > 0">
+            <h5 class="mr-2">{{ $gettext('Other languages:') }}</h5>
+            <span class="btn-primary cursor-pointer mr-1 px-1 rounded shadow-md"
+                  v-for="translation in record.translations" :key="translation.id">
+              <span @click="$router.push({ name: 'entry', params: { id: translation.id } })">
+                <span v-for="l in translation.languages" :key="l.id">
+                  {{ l.value }}
+                </span>
+              </span>
+            </span>
+          </div>
         </div>
       </div>
-      <hr class="my-3" />
       <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
         <div v-if="source.aggregated && source.aggregated.length > 0">
@@ -73,14 +81,6 @@
            @click="$router.push({ name: 'entry', params: { id: record.original_entry.id } })"
            class="border rounded my-1 p-1 cursor-pointer text-sm bg-perl-bush-50 shadow-md">
         <EntryDetails :record="record.original_entry">{{ $gettext('Original title:') }}</EntryDetails>
-      </div>
-      <div class="flex flex-wrap" v-if="record.translations && record.translations.length > 0">
-        <div class="border rounded my-1 p-2 cursor-pointer bg-perl-bush-100 shadow-md text-sm mr-2"
-             v-for="translation in record.translations" :key="translation.id">
-          <div @click="$router.push({ name: 'entry', params: { id: translation.id } })">
-            <EntryDetails :record="translation">{{ $gettext('Translation:') }}</EntryDetails>
-          </div>
-        </div>
       </div>
     </div>
   </div>

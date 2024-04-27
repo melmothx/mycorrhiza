@@ -124,7 +124,7 @@
     </div>
     <div>
       <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-              type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
+              type="button" @click="$router.push({ name: 'home' })">{{ $gettext('Back') }}</button>
     </div>
   </div>
   <div class="flex mb-2">
