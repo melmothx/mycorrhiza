@@ -11,6 +11,7 @@
          'api_call',
          'create_item',
          'dashboard',
+         'help_text',
      ],
      emits: [
          'refetchResults',
@@ -161,8 +162,8 @@
                 @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
             <Cog8ToothIcon class="m-1 h-4 w-4" />
           </span>
-          <HelpPopUp>
-            {{ $gettext('HELP_' + merge_type) }}
+          <HelpPopUp v-if="help_text">
+            {{ $gettext(help_text) }}
           </HelpPopUp>
         </span>
       </h2>
