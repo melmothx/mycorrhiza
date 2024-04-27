@@ -163,7 +163,7 @@
             <Cog8ToothIcon class="m-1 h-4 w-4" />
           </span>
           <HelpPopUp v-if="help_text">
-            {{ $gettext(help_text) }}
+            {{ $gettext(help_text) || $gettext('Missing help, sorry...') }}
           </HelpPopUp>
         </span>
       </h2>

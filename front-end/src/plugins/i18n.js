@@ -177,10 +177,26 @@ export default {
             // console.log(options)
             // get the string from the translation and format
             let lang = options.language;
+            let found = false;
             if (options.translations[lang]) {
                 if (options.translations[lang][msgid] && options.translations[lang][msgid].msgstr) {
                     // console.log("Found translation");
                     args[0] = options.translations[lang][msgid].msgstr;
+                    found = true;
+                }
+            }
+            // special case. We don't want uppercase placeholder to
+            // show verbatim. Look in the 'en' language, otherwise return 0.
+            if (!found && args[0] && args[0].match(/^[A-Z_]+$/)) {
+                lang = 'en';
+                if (options.translations[lang] &&
+                    options.translations[lang][msgid] &&
+                    options.translations[lang][msgid].msgstr) {
+                    args[0] = options.translations[lang][msgid].msgstr;
+                }
+                else {
+                    console.log("Missing translation for " + args[0]);
+                    return '';
                 }
             }
             return format(...args)
