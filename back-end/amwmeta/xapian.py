@@ -32,7 +32,7 @@ FIELD_MAPPING = {
 SORTABLE_FIELDS = {
     "date": (7, 'number'),
     "title": (8, 'string'),
-    "created": (9, 'timestamp'),
+    "datestamp": (9, 'timestamp'),
     "last_modified": (10, 'timestamp'),
 }
 SORT_DIRECTIONS = {

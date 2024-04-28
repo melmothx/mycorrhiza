@@ -37,7 +37,7 @@
                  name: 'Sort by Date',
              },
              {
-                 id: "created",
+                 id: "datestamp",
                  name: 'Sort by Acquisition Date',
              },
          ];

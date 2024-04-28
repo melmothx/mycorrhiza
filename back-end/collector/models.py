@@ -190,6 +190,10 @@ class Site(models.Model):
             record['deleted'] = rec.deleted
             record['identifier'] = rec.header.identifier
             record['full_data'] = full_data
+            try:
+                record['datestamp'] = datetime.fromisoformat(rec.header.datestamp)
+            except ValueError:
+                record['datestamp'] = now
 
             for entry in self.process_harvested_record(record, aliases, now):
                 if entry is None:
@@ -239,6 +243,7 @@ class Site(models.Model):
                     "content_type": ds.content_type,
                     "deleted": False,
                     "checksum": agg['checksum'],
+                    "datestamp": ds.datestamp,
                 }
                 agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
                 out.append(agg_entry)
@@ -304,7 +309,7 @@ class Site(models.Model):
             'description',
         ]
         ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
-        ds_attrs['datetime'] = now
+
         ds_identifiers = {
             "oai_pmh_identifier": identifier,
             "is_aggregation": is_aggregation,
@@ -316,6 +321,14 @@ class Site(models.Model):
             ds.save()
         except DataSource.DoesNotExist:
             ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
+
+        # if not provided, use the current time if the datestamp is null
+        if record.get('datestamp'):
+            ds.datestamp = record.pop('datestamp')
+            ds.save()
+        elif not ds.datestamp:
+            ds.datestamp = now
+            ds.save()
 
         for f in [ 'title', 'subtitle' ]:
             f_value = record.get(f, '')
@@ -352,6 +365,11 @@ class Site(models.Model):
 
         entry.authors.set(authors)
         entry.languages.set(languages)
+
+        # datestamp: use the most recent
+        if not entry.datestamp or ds.datestamp > entry.datestamp:
+            entry.datestamp = ds.datestamp
+
         entry.save()
         return (entry, ds)
 
@@ -459,6 +477,7 @@ class Entry(models.Model):
         on_delete=models.SET_NULL,
         related_name="translations",
     )
+    datestamp = models.DateTimeField(null=True)
 
     class Meta:
         verbose_name_plural = "Entries"
@@ -630,6 +649,7 @@ class Entry(models.Model):
             "public": record_is_public,
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "datestamp": self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
@@ -745,7 +765,7 @@ class Entry(models.Model):
                     agg_ds = DataSource.objects.create(
                         site_id=ds.site_id,
                         oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
-                        datetime=aggregation.last_modified,
+                        datestamp=aggregation.datestamp,
                         entry_id=aggregation.id,
                         is_aggregation=True,
                         full_data={},
@@ -794,7 +814,7 @@ class Entry(models.Model):
 class DataSource(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     oai_pmh_identifier = models.CharField(max_length=2048)
-    datetime = models.DateTimeField()
+    datestamp = models.DateTimeField(null=True)
     full_data = models.JSONField()
 
     entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
@@ -876,7 +896,10 @@ class DataSource(models.Model):
             "downloads": [] if self.is_aggregation else site.amusewiki_formats,
             "entry_id": original_entry.id,
             "file_formats": [],
+            # let it crash if by chance we're missing it, it's a bug
+            "datestamp": self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
         }
+
         if site.has_text or site.amusewiki_formats:
             ds['file_formats'].append('text')
         elif site.has_raw:
