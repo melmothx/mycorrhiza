@@ -896,9 +896,13 @@ class DataSource(models.Model):
             "downloads": [] if self.is_aggregation else site.amusewiki_formats,
             "entry_id": original_entry.id,
             "file_formats": [],
-            # let it crash if by chance we're missing it, it's a bug
-            "datestamp": self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
         }
+        if self.datestamp:
+            ds["datestamp"] = self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            # probably old records
+            ds["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
+
 
         if site.has_text or site.amusewiki_formats:
             ds['file_formats'].append('text')
