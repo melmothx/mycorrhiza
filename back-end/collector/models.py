@@ -649,7 +649,6 @@ class Entry(models.Model):
             "public": record_is_public,
             "last_modified": self.last_modified.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "created": self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            "datestamp": self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ'),
             "unique_source": 0,
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
@@ -658,6 +657,11 @@ class Entry(models.Model):
             "translate": [],
             "download": [ { "id": eff, "value": ff_map[eff] } for eff in entry_file_formats ],
         }
+        if self.datestamp:
+            xapian_record["datestamp"] = self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+        else:
+            xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+
         if self.aggregated_entries.count():
             # if it has aggregated entries, it's an aggregation
             xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
