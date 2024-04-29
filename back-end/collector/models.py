@@ -593,6 +593,8 @@ class Entry(models.Model):
         record_is_public = False
         entry_file_formats = []
 
+        full_texts = []
+
         for topr in data_source_records:
             dsd = topr.indexing_data()
             # at DS level
@@ -604,6 +606,9 @@ class Entry(models.Model):
             for ff in dsd['file_formats']:
                 if ff not in entry_file_formats:
                     entry_file_formats.append(ff)
+
+            # this will call the remote
+            full_texts.append(topr.full_text())
 
         entry_libraries = {}
         descriptions = []
@@ -682,6 +687,9 @@ class Entry(models.Model):
 
         self.indexed_data = xapian_record
         self.save()
+
+        xapian_record['full_texts'] = full_texts
+
         return xapian_record
 
     @classmethod
