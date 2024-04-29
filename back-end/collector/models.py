@@ -873,12 +873,18 @@ class DataSource(models.Model):
     def full_text(self):
         amusewiki_url = self.amusewiki_base_url()
         if amusewiki_url:
-            r = requests.get(amusewiki_url + '.bare.html')
-            if r.status_code == 200:
-                r.encoding = 'UTF-8'
-                return r.text
-        else:
-            return None
+            try:
+                r = requests.get(amusewiki_url + '.bare.html')
+                if r.status_code == 200:
+                    r.encoding = 'UTF-8'
+                    return r.text
+            except ConnectionError:
+                logger.info("GET {0} had a connection error".format(endpoint))
+            except Timeout:
+                logger.info("GET {0} timed out".format(endpoint))
+            except TooManyRedirects:
+                logger.info("GET {0} had too many redirections".format(endpoint))
+        return None
 
     def indexing_data(self):
         site = self.site
