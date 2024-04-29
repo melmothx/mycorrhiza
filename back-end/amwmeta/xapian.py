@@ -281,7 +281,7 @@ class MycorrhizaIndexer:
                 if sort_type == 'number':
                     doc.add_value(slot, xapian.sortable_serialise(sort_value[0]['value']))
                 elif sort_type == 'timestamp':
-                    # logger.info("Adding " + str(slot) + " " + sort_value)
+                    logger.info("Adding {} {} for {}".format(slot, sort_value, identifier))
                     doc.add_value(slot, sort_value)
                 elif sort_type == 'string':
                     stripped = unidecode(' '.join([ v['value'] for v in sort_value ])).lower()
