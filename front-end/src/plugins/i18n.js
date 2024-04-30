@@ -190,7 +190,7 @@ export default {
             }
             // special case. We don't want uppercase placeholder to
             // show verbatim. Look in the 'en' language, otherwise return 0.
-            console.log(args[0]);
+            // console.log(args[0]);
             if (!found && args[0] && args[0].match(/^[A-Z_]+$/)) {
                 lang = 'en';
                 if (options.translations[lang] &&
