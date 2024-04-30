@@ -174,6 +174,12 @@
          },
      }
  }
+ /*
+    $gettext('Editable and printable text')
+    $gettext('Bibliographical entry only')
+    $gettext('Aggregated')
+    $gettext('Aggregation')
+  */
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="searchText">

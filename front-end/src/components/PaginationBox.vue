@@ -3,6 +3,12 @@
      props: ['pager'],
      emits: ['getPage'],
  }
+ /*
+    $gettext('Next')
+    $gettext('Last')
+    $gettext('First')
+    $gettext('Previous')
+ */
 </script>
 <template>
   <nav v-if="pager.length" class="inline-flex text-sm mb-8">
@@ -18,7 +24,7 @@
           {{ page.label }}
         </span>
         <span v-else class="px-3 py-2 text-white">
-          {{ page.label }}
+          {{ $gettext(page.label) }}
         </span>
       </span>
     </template>

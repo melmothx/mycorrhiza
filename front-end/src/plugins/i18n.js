@@ -174,6 +174,9 @@ export default {
         }
         function gettext(msgid) {
             const args = arguments;
+            if (!(typeof args[0] === 'string' || args[0] instanceof String)) {
+                return args[0];
+            }
             // console.log(options)
             // get the string from the translation and format
             let lang = options.language;
@@ -187,6 +190,7 @@ export default {
             }
             // special case. We don't want uppercase placeholder to
             // show verbatim. Look in the 'en' language, otherwise return 0.
+            console.log(args[0]);
             if (!found && args[0] && args[0].match(/^[A-Z_]+$/)) {
                 lang = 'en';
                 if (options.translations[lang] &&

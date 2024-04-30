@@ -108,7 +108,7 @@
               leave-from-class="transform scale-100 opacity-100"
               leave-to-class="transform scale-95 opacity-0">
             <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg">
-              <ListboxOption v-for="lang in ['it', 'en', 'hr']"
+              <ListboxOption v-for="lang in ['en', 'it']"
                              :value="lang" :key="lang"
                              @click="set_language"
                              class="cursor-pointer hover:text-spectra-800 hover:font-bold"
@@ -150,6 +150,11 @@
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
           <MenuItems class="absolute right-0 mt-1 max-h-60 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
+            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+              <a href="/admin">
+                {{ $gettext('Admin') }}
+              </a>
+            </MenuItem>
             <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
                 {{ $gettext('Exclusions') }}
