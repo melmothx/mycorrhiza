@@ -123,6 +123,29 @@ def iso_lang_code(code):
     if match:
         actual_code = match.group().lower()
         mapping = {
+            # bibliographic names
+            # https://www.loc.gov/standards/iso639-2/php/code_list.php bibliographic
+            "alb": "sq",
+            "arm": "hy",
+            "baq": "eu",
+            "bur": "my",
+            "chi": "zh",
+            "cze": "cs",
+            "dut": "nl",
+            "fre": "fr",
+            "geo": "ka",
+            "ger": "de",
+            "gre": "el",
+            "ice": "is",
+            "mac": "mk",
+            "mao": "mi",
+            "may": "ms",
+            "per": "fa",
+            "rum": "ro",
+            "slo": "sk",
+            "tib": "bo",
+            "wel": "cy",
+
             'abk': 'ab',
             'aar': 'aa',
             'afr': 'af',
