@@ -24,7 +24,14 @@
                     .then(function(res) {
                         vm.working = false;
                         if (res.data && res.data.html) {
-                            vm.html = res.data.html;
+                            let html_body = res.data.html;
+                            if (html_body.includes('class="table-of-contents"')) {
+                                vm.html = html_body;
+                            }
+                            else {
+                                /* fill the grid with a dummy element */
+                                vm.html = '<div></div>' + html_body;
+                            }
                         }
                     });
          },
@@ -116,9 +123,9 @@
           <div v-if="working" class="m-2 text-center">
             <span class="animate-ping text-claret-900">{{ $gettext('Working') }}</span>
           </div>
-          <div v-html="html"></div>
+          <div class="full-text-container grid gap-4 grid-cols-[15em_1fr]"
+               v-html="html"></div>
         </div>
-
       </div>
     </div>
   </div>
