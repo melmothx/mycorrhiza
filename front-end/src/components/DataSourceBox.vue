@@ -99,7 +99,7 @@
         <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
       </div>
       <div v-if="can_have_full_text()" class="text-center">
-        <button class="btn-accent m-1 px-4 py-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+        <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
       </div>
       <div v-if="show_html">
         <!-- mettere sotto full text -->

@@ -53,7 +53,7 @@
                   w-full shrink
                   h-8 focus:ring-0 active:ring-0"
            v-model="value" />
-    <button class="btn-primary rounded-none rounded-br-3xl h-8 pl-3 pr-4 grow"
+    <button class="btn-primary rounded-none h-8 pl-3 pr-4 grow"
             @click="create_aggregation">{{ $gettext('Create') }}</button>
   </div>
   <div v-if="flash_error"
