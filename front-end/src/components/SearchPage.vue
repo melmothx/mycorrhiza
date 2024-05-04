@@ -15,12 +15,12 @@
      data() {
          const sort_directions = [
              {
-                 id: "asc",
-                 name: "Ascending",
-             },
-             {
                  id: "desc",
                  name: "Descending",
+             },
+             {
+                 id: "asc",
+                 name: "Ascending",
              },
          ];
          const sort_by_values = [
@@ -29,16 +29,16 @@
                  name: 'Sort by Relevance',
              },
              {
+                 id: "datestamp",
+                 name: 'Sort by Acquisition Date',
+             },
+             {
                  id: "title",
                  name: 'Sort by Title',
              },
              {
                  id: "date",
                  name: 'Sort by Date',
-             },
-             {
-                 id: "datestamp",
-                 name: 'Sort by Acquisition Date',
              },
          ];
          return {
@@ -63,6 +63,16 @@
          }
      },
      methods: {
+         clear_all() {
+             this.query = "";
+             this.searched_query = "";
+             this.current_page = 1;
+             this.filters = [];
+             this.facets = [];
+             this.sort_by = this.sort_by_values[0];
+             this.sort_direction = this.sort_directions[0];
+             this.getResults({ update_facets: 1 });
+         },
          clear_flash_success() {
              this.flash_success = "";
          },
@@ -202,7 +212,12 @@
 
     <div>
       <div class="flex h-8">
-        <input class="mcrz-input"
+        <button class="btn-primary rounded-none h-8 px-4"
+                @click="clear_all"
+                type="button">
+          {{ $gettext('Clear') }}
+        </button>
+        <input class="mcrz-input shadow"
                type="text" placeholder="Search" v-model="query"/>
         <Listbox v-model="sort_by">
           <div class="relative m-0">
