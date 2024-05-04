@@ -98,30 +98,31 @@
       <div>
         <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
       </div>
-      <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
-        <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
-          <a :href="get_binary_file(source.data_source_id, dl.ext)">
-            {{ dl.desc }}
-          </a>
-        </div>
-        <div class="btn-primary m-1 p-1 rounded" v-if="source.uri && source.public">
-          <a :href="source.uri" target="_blank">
-            <span class="text-white" v-if="source.uri_label">
-              {{ source.uri_label }}
-            </span>
-            <span class="text-white" v-else-if="source.content_type && source.content_type === 'text/html'">
-              {{ $gettext('Landing page') }}
-            </span>
-            <span class="text-white" v-else>
-              ({{ source.content_type }})
-            </span>
-          </a>
-        </div>
-        <div v-if="can_have_full_text()">
-          <button class="btn-accent m-1 p-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
-        </div>
+      <div v-if="can_have_full_text()" class="text-center">
+        <button class="btn-accent m-1 px-4 py-1 rounded" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
       </div>
       <div v-if="show_html">
+        <!-- mettere sotto full text -->
+        <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
+          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
+            <a :href="get_binary_file(source.data_source_id, dl.ext)">
+              {{ dl.desc }}
+            </a>
+          </div>
+          <div class="btn-primary m-1 p-1 rounded" v-if="source.uri && source.public">
+            <a :href="source.uri" target="_blank">
+              <span class="text-white" v-if="source.uri_label">
+                {{ source.uri_label }}
+              </span>
+              <span class="text-white" v-else-if="source.content_type && source.content_type === 'text/html'">
+                {{ $gettext('Landing page') }}
+              </span>
+              <span class="text-white" v-else>
+                ({{ source.content_type }})
+              </span>
+            </a>
+          </div>
+        </div>
         <div class="text-base border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200">
           <div v-if="working" class="m-2 text-center">
             <span class="animate-ping text-claret-900">{{ $gettext('Working') }}</span>
