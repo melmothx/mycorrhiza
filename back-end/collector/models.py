@@ -528,7 +528,7 @@ class Entry(models.Model):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
                 data_sources.append(ds)
-        out['data_sources'] = data_sources
+        out['data_sources'] = sorted(data_sources, key=lambda i: i.get('year_edition'), reverse=True)
         return out
 
     def display_data(self, library_ids=[]):
