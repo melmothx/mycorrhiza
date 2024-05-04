@@ -665,7 +665,7 @@ class Entry(models.Model):
         if self.datestamp:
             xapian_record["datestamp"] = self.datestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
         else:
-            xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         if self.aggregated_entries.count():
             # if it has aggregated entries, it's an aggregation
