@@ -54,20 +54,24 @@
       </h2>
     </div>
     <div v-if="use_sorting"
-         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2 text-center flex">
-      <span>
+         class="grid gap-2 grid-cols-1 lg:grid-cols-3 bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2">
+      <div>
         {{ $gettext('Sort') }}
-      </span>
-      <label class="px-2">
-        <input class="mcrz-radio"
-               type="radio" value="term" v-model="sort_method">
-        {{ $gettext('by term') }}
-      </label>
-      <label class="px-2">
-        <input class="mcrz-radio"
-               type="radio" value="count" v-model="sort_method">
-        {{ $gettext('by count') }}
-      </label>
+      </div>
+      <div>
+        <label>
+          <input class="mcrz-radio"
+                 type="radio" value="term" v-model="sort_method">
+          {{ $gettext('by term') }}
+        </label>
+      </div>
+      <div>
+        <label>
+          <input class="mcrz-radio"
+                 type="radio" value="count" v-model="sort_method">
+          {{ $gettext('by count') }}
+        </label>
+      </div>
     </div>
     <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
       <template v-for="facet in facet_list" :key="facet.key">
