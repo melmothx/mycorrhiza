@@ -54,17 +54,19 @@
       </h2>
     </div>
     <div v-if="use_sorting"
-         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2 text-center">
-      {{ $gettext('Sort') }}
-      <label class="px-2">
-        <input class="mcrz-radio"
-               type="radio" value="count" v-model="sort_method">
-        {{ $gettext('0-9') }}
-      </label>
+         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2 text-center flex">
+      <span>
+        {{ $gettext('Sort') }}
+      </span>
       <label class="px-2">
         <input class="mcrz-radio"
                type="radio" value="term" v-model="sort_method">
-        {{ $gettext('A-Z') }}
+        {{ $gettext('by term') }}
+      </label>
+      <label class="px-2">
+        <input class="mcrz-radio"
+               type="radio" value="count" v-model="sort_method">
+        {{ $gettext('by count') }}
       </label>
     </div>
     <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
