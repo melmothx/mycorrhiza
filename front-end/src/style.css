@@ -1,7 +1,8 @@
 @tailwind base;
 @tailwind components;
 
-/* static, always compiled, for full text */
+/* static, always compiled, for full text and django app */
+
 .table-of-contents {
     @apply p-2 sticky top-5 overflow-auto h-[90vh] text-sm mb-2 bg-perl-bush-50 rounded shadow-md;
 }
@@ -60,7 +61,7 @@
 
 @layer base {
     html, body {
-        @apply text-asphalt-950 selection:bg-spectra-700 selection:text-perl-bush-50;
+        @apply text-asphalt-950 selection:bg-spectra-700 selection:text-perl-bush-50 bg-perl-bush-100 m-0 p-0 font-serif;
     }
     select, input {
         @apply bg-perl-bush-50;

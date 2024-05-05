@@ -14,6 +14,7 @@
              search_string: "",
              sort_field: "",
              sort_direction: "desc",
+             working: false,
          }
      },
      methods: {
@@ -31,6 +32,7 @@
              const vm = this;
              if (id) {
                  console.log("Removing " + id)
+                 vm.working = true;
                  axios.post('/collector/api/revert/' + vm.listing_type,
                             {
                                 id: id,
@@ -42,7 +44,12 @@
                         .then(function(res) {
                             console.log(res.data);
                             vm.fetch();
-                        });
+                            vm.working = false;
+                        })
+                      .catch(function(error) {
+                          vm.working = false;
+                          console.log(error);
+                      });
              }
          },
          sort_records_asc(field) {
@@ -127,6 +134,9 @@
         <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
                 type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
       </div>
+    </div>
+    <div v-if="working" class="m-2 text-center">
+      <span class="animate-ping rounded-full text-claret-900 p-2">{{ $gettext('Working') }}</span>
     </div>
     <div class="flex mb-2">
       <input class="mcrz-input"
