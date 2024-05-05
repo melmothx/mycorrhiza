@@ -189,6 +189,11 @@
     $gettext('Bibliographical entry only')
     $gettext('Aggregated')
     $gettext('Aggregation')
+    $gettext('Aggregation')
+    $gettext('MERGE_AUTHOR')
+    $gettext('MERGE_ENTRY')
+    $gettext('SET_TRANSLATION')
+    $gettext('SET_AGGREGATION')
   */
 </script>
 <template>
