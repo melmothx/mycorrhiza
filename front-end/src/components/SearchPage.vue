@@ -239,10 +239,10 @@
                 leave-active-class="transition duration-75 ease-in"
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0">
-              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg z-40">
+              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-sm shadow-lg z-40">
                 <ListboxOption v-for="sv in sort_by_values"
                                :value="sv" :key="sv.id"
-                               class="cursor-pointer hover:text-spectra-800"
+                               class="cursor-pointer hover:text-spectra-800 py-1"
                 >{{ $gettext(sv.name) }}</ListboxOption>
               </ListboxOptions>
             </transition>
@@ -268,10 +268,10 @@
                 leave-active-class="transition duration-75 ease-in"
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0">
-              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 shadow-lg z-40">
+              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 shadow-lg text-sm z-40">
                 <ListboxOption v-for="sd in sort_directions"
                                :value="sd" :key="sd.id"
-                               class="cursor-pointer hover:text-spectra-800"
+                               class="cursor-pointer hover:text-spectra-800 py-1"
                 >{{ $gettext(sd.name) }}</ListboxOption>
               </ListboxOptions>
             </transition>

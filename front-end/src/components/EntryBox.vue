@@ -60,7 +60,7 @@
               @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
             {{ title }}
           </h2>
-          <div v-if="record.language">
+          <div v-if="record.language" class="px-2">
             <small class="px-2" v-for="l in record.language" :key="l.id">
               [{{ l.value }}]
             </small>
