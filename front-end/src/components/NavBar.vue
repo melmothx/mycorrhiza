@@ -85,7 +85,9 @@
 <template>
   <div class="flex m-3">
     <div class="flex-grow">
-      <span class="cursor-pointer" @click="$router.push({ name: 'home' })">Home</span>
+      <a href="/">
+        <img class="h-16" src="/logobanner.png" :alt="$gettext(Home)" />
+      </a>
     </div>
     <div v-if="authenticated">
       <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
