@@ -15,6 +15,7 @@ from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, 
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
+from django.contrib.syndication.views import Feed
 from http import HTTPStatus
 import re
 import requests
@@ -86,6 +87,48 @@ def api(request):
     res['is_authenticated'] = user.is_authenticated
     res['can_set_exclusions'] = can_set_exclusions
     return JsonResponse(res)
+
+class LatestEntriesFeed(Feed):
+    title = 'Latest entries'
+    link = "{}/feed".format(settings.CANONICAL_ADDRESS)
+    feed_url = "{}/feed".format(settings.CANONICAL_ADDRESS)
+    description = 'Latest entries sorted by acquisition date'
+    def items(self):
+        query = {
+            "page_size": 50,
+            "page_number": 1,
+            "query": "",
+            "sort_by": "datestamp",
+            "sort_direction": "desc",
+        }
+        res = search(settings.XAPIAN_DB,
+                     query,
+                     active_libraries=[ lib.id for lib in Library.objects.filter(active=True, public=True).all() ],
+                     matches_only=True)
+        return res
+
+    def item_title(self, item):
+        title = ""
+        try:
+            title = item['title'][0]['value']
+        except KeyError:
+            pass
+        except IndexError:
+            pass
+        return title
+
+    def item_description(self, item):
+        desc = ""
+        try:
+            desc = item['description'][0]['value']
+        except KeyError:
+            pass
+        except IndexError:
+            pass
+        return desc
+
+    def item_link(self, item):
+        return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, item['entry_id'])
 
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)

@@ -47,7 +47,10 @@ EXCLUSION_FIELDS = {
     'entry': 'Q',
 }
 
-def search(db_path, query_params, active_libraries=[], exclusions=[]):
+def search(db_path, query_params,
+           active_libraries=[],
+           exclusions=[],
+           matches_only=False):
     db = xapian.Database(db_path)
     querystring = query_params.get("query")
 
@@ -86,19 +89,20 @@ def search(db_path, query_params, active_libraries=[], exclusions=[]):
 
     filter_queries = []
     active_facets = {}
-    for field in FIELD_MAPPING:
-        # booleans only
-        if FIELD_MAPPING[field][2]:
-            filters_ors = []
-            active_facets[field] = []
-            for value in query_params.getlist('filter_' + field):
-                if value:
-                    filter_value = FIELD_MAPPING[field][1] + value.lower();
-                    logger.info("Filter value is " + filter_value)
-                    filters_ors.append(xapian.Query(filter_value))
-                    active_facets[field].append(value)
-            if len(filters_ors):
-                filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
+    if not matches_only:
+        for field in FIELD_MAPPING:
+            # booleans only
+            if FIELD_MAPPING[field][2]:
+                filters_ors = []
+                active_facets[field] = []
+                for value in query_params.getlist('filter_' + field):
+                    if value:
+                        filter_value = FIELD_MAPPING[field][1] + value.lower();
+                        logger.info("Filter value is " + filter_value)
+                        filters_ors.append(xapian.Query(filter_value))
+                        active_facets[field].append(value)
+                if len(filters_ors):
+                    filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
     # logger.info(filter_queries)
     if active_libraries:
@@ -179,6 +183,9 @@ def search(db_path, query_params, active_libraries=[], exclusions=[]):
         if exclusions:
             rec['data_sources'] = [ ds for ds in rec['data_sources'] if not excluded_libraries.get(ds['library_id']) ]
         matches.append(rec)
+
+    if matches_only:
+        return matches
 
     for spy_name in spies:
         spy = spies[spy_name]

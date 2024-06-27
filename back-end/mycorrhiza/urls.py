@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from collector.views import LatestEntriesFeed
 
 urlpatterns = [
     path("collector/", include("collector.urls")),
     path("admin/", admin.site.urls),
+    path("feed", LatestEntriesFeed()),
 ]
