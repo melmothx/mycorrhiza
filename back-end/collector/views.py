@@ -8,7 +8,7 @@ import logging
 from django.urls import reverse
 from django.conf import settings
 from amwmeta.utils import paginator, page_list
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
@@ -46,6 +46,7 @@ def api_logout(request):
     logout(request)
     return JsonResponse({ "ok": "Logged out" })
 
+@ensure_csrf_cookie
 def api_user(request):
     # guaranteed to return the empty string
     return JsonResponse({ "logged_in": request.user.get_username() })
