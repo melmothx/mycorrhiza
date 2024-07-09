@@ -17,6 +17,7 @@ from .forms import SpreadsheetForm
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from http import HTTPStatus
+from urllib.parse import urlparse
 import re
 import requests
 # from django.db import connection
@@ -181,9 +182,13 @@ def download_datasource(request, target):
         ext = m.group(2)
         if ds.site.library_id in _active_libraries(request.user):
             r = ds.get_remote_file(ext)
-            if r.status_code == 200:
+            if r and r.status_code == 200:
                 response = HttpResponse(r.content, content_type=r.headers['content-type'])
-                response.headers['Content-Disposition'] = 'attachment; filename="{}"'.format(re.split(r'/', r.url)[-1])
+                target = urlparse(r.url)
+                response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(
+                    target.hostname,
+                    re.split(r'/', target.path)[-1]
+                )
                 return response
             else:
                 raise Http404("File not found!")
