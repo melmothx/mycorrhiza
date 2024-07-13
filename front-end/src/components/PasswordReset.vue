@@ -17,6 +17,7 @@
      methods: {
          reset_password() {
              const vm = this;
+             vm.error = null;
              axios.post('/collector/api/auth/reset-password', {
                  "operation": "reset",
                  "username": vm.username,
@@ -60,6 +61,7 @@
   </h1>
   <div class="text-center p-2">
     <input class="mcrz-input shadow w-64"
+           @input="error = ''"
            type="password" :placeholder="$gettext('Password')" v-model="password"/>
   </div>
   <div class="text-center p-2">

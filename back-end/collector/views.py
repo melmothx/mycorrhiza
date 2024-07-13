@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
 from django.template import loader
@@ -11,6 +12,7 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
@@ -94,21 +96,30 @@ def api_reset_password(request):
                 out['message'] = "We already sent an email few minutes ago. Please check again your inbox."
 
         elif operation == 'reset' and new_password and token:
-            if profile.has_valid_password_reset() and token == profile.password_reset_token:
-                logger.info("Successful password reset for {}".format(user.username))
-                user.set_password(new_password)
-                user.save()
-                new_user = authenticate(request, username=user.username, password=new_password)
-                if new_user is not None:
-                    login(request, new_user)
-                    profile.password_reset_token = None
-                    profile.password_reset_expiration = None
-                    profile.save()
-                    out['logged_in'] = user.username
+            password_validation_errors = None
+            try:
+                validate_password(new_password, user=user)
+            except ValidationError as error:
+                password_validation_errors = " ".join(error)
+
+            if not password_validation_errors:
+                if profile.has_valid_password_reset() and token == profile.password_reset_token:
+                    logger.info("Successful password reset for {}".format(user.username))
+                    user.set_password(new_password)
+                    user.save()
+                    new_user = authenticate(request, username=user.username, password=new_password)
+                    if new_user is not None:
+                        login(request, new_user)
+                        profile.password_reset_token = None
+                        profile.password_reset_expiration = None
+                        profile.save()
+                        out['logged_in'] = user.username
+                    else:
+                        out['error'] = "We could not log you in, this is a bug"
                 else:
-                    out['error'] = "We could not log you in, this is a bug"
+                    out['error'] = "Invalid reset token"
             else:
-                out['error'] = "Invalid reset token"
+                out['error'] = password_validation_errors
         else:
             out['error'] = "Invalid operation"
     else:
