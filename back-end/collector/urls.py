@@ -6,6 +6,7 @@ urlpatterns = [
     path("api", views.api, name="api"),
     path("api/auth/login", views.api_login, name="api_login"),
     path("api/auth/logout", views.api_logout, name="api_logout"),
+    path("api/auth/reset-password", views.api_reset_password, name="api_reset_password"),
     path("api/auth/user", views.api_user, name="api_user"),
     path("api/entry/<entry_id>", views.get_entry, name="api_get_entry"),
     path("api/full-text/<ds_id>", views.get_datasource_full_text, name="api_full_text"),

@@ -12,10 +12,12 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
+from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
+from django.core.mail import send_mail
 from http import HTTPStatus
 from urllib.parse import urlparse
 import re
@@ -45,6 +47,18 @@ def api_login(request):
 def api_logout(request):
     logout(request)
     return JsonResponse({ "ok": "Logged out" })
+
+def api_reset_password(request):
+    out = {}
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    user = User.objects.get(username=data.get('username'))
+    if user:
+        send_mail("Subject", "Message", settings.MYCORRHIZA_EMAIL_FROM, [user.email])
+    return JsonResponse({ "message": "We tried to send an email to this account. Please check your inbox." })
 
 @ensure_csrf_cookie
 def api_user(request):

@@ -145,6 +145,7 @@ LOGGING = {
 }
 
 XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
+MYCORRHIZA_EMAIL_FROM = "root@localhost"
 
 try:
     from local_settings import *
