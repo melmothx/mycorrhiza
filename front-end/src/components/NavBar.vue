@@ -67,6 +67,7 @@
              const vm = this;
              vm.message = "";
              axios.post('/collector/api/auth/reset-password', {
+                 "operation": "send-link",
                  "username":  this.username,
              }).then(function(res) {
                  console.log(res.data.message);
