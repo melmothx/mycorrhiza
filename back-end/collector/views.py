@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
 from django.template import loader
@@ -11,13 +12,18 @@ from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .models import Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
+from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
+from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
+from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
 from .forms import SpreadsheetForm
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
+from django.core.mail import send_mail
+from secrets import token_urlsafe
 from http import HTTPStatus
 from urllib.parse import urlparse
+from datetime import datetime, timedelta, timezone
 import re
 import requests
 # from django.db import connection
@@ -45,6 +51,80 @@ def api_login(request):
 def api_logout(request):
     logout(request)
     return JsonResponse({ "ok": "Logged out" })
+
+def api_reset_password(request):
+    out = {}
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    user = None
+    try:
+        user = User.objects.get(username=data.get('username'))
+    except User.DoesNotExist:
+        pass
+
+    operation = data.get('operation')
+    new_password = data.get('password')
+    token = data.get('token')
+
+    # logger.debug(pp.pformat(data))
+
+    if user:
+        # make sure to create the profile, if missing
+        profile = None
+        if hasattr(user, 'profile'):
+            profile = user.profile
+        else:
+            profile = Profile.objects.create(user=user)
+
+        if operation == 'send-link':
+            if not profile.has_valid_password_reset():
+                profile.password_reset_token = token_urlsafe(16)
+                profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
+                profile.save()
+                url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
+                                                       user.username,
+                                                       profile.password_reset_token)
+                send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS, user.username),
+                          "Please visit {} to reset your password. The link is valid for 10 minutes.".format(url),
+                          settings.MYCORRHIZA_EMAIL_FROM,
+                          [user.email])
+                out['message'] = "We tried to send an email to this account. Please check your inbox."
+            else:
+                out['message'] = "We already sent an email few minutes ago. Please check again your inbox."
+
+        elif operation == 'reset' and new_password and token:
+            password_validation_errors = None
+            try:
+                validate_password(new_password, user=user)
+            except ValidationError as error:
+                password_validation_errors = " ".join(error)
+
+            if not password_validation_errors:
+                if profile.has_valid_password_reset() and token == profile.password_reset_token:
+                    logger.info("Successful password reset for {}".format(user.username))
+                    user.set_password(new_password)
+                    user.save()
+                    new_user = authenticate(request, username=user.username, password=new_password)
+                    if new_user is not None:
+                        login(request, new_user)
+                        profile.password_reset_token = None
+                        profile.password_reset_expiration = None
+                        profile.save()
+                        out['logged_in'] = user.username
+                    else:
+                        out['error'] = "We could not log you in, this is a bug"
+                else:
+                    out['error'] = "Invalid reset token"
+            else:
+                out['error'] = password_validation_errors
+        else:
+            out['error'] = "Invalid operation"
+    else:
+        out['error'] = "Invalid user"
+    return JsonResponse(out)
 
 @ensure_csrf_cookie
 def api_user(request):

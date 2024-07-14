@@ -145,6 +145,26 @@ LOGGING = {
 }
 
 XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
+MYCORRHIZA_EMAIL_FROM = "root@localhost"
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 9,
+        },
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
 
 try:
     from local_settings import *

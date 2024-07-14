@@ -1,5 +1,7 @@
 <script>
  import axios from 'axios'
+ axios.defaults.xsrfCookieName = "csrftoken";
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import {
      Listbox,
      ListboxButton,
@@ -27,6 +29,7 @@
              password: null,
              authenticated: null,
              message: null,
+             reset_message: null,
              current_language: null,
          }
      },
@@ -39,17 +42,16 @@
                       console.log(res);
                       vm.authenticated = res.data.logged_in;
                       vm.message = null;
+                      vm.reset_message = null;
                   });
          },
          login() {
              const vm = this;
              vm.message = "";
+             vm.reset_message = null;
              axios.post('/collector/api/auth/login', {
                  "username": this.username,
                  "password": this.password,
-             }, {
-                 "xsrfCookieName": "csrftoken",
-                 "xsrfHeaderName": "X-CSRFToken",
              }).then(function(res) {
                  if (res.data.logged_in) {
                      vm.authenticated = res.data.logged_in;
@@ -59,6 +61,18 @@
                  else {
                      vm.message = res.data.error || "Failed login";
                  }
+             });
+         },
+         password_reset() {
+             const vm = this;
+             vm.message = "";
+             axios.post('/collector/api/auth/reset-password', {
+                 "operation": "send-link",
+                 "username":  this.username,
+             }).then(function(res) {
+                 console.log(res.data.message);
+                 vm.message = "";
+                 vm.reset_message = res.data.message;
              });
          },
          logout() {
@@ -86,7 +100,7 @@
   <div class="flex m-3">
     <div class="flex-grow">
       <a href="/">
-        <img class="h-16" src="/logobanner.png" :alt="$gettext(Home)" />
+        <img class="h-16" src="/logobanner.png" :alt="$gettext('Home')" />
       </a>
     </div>
     <div v-if="authenticated">
@@ -95,14 +109,26 @@
     <div v-else>
       <form @submit.prevent="login" class="ml-4">
         <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 rounded-none h-8 w-32"
+               :placeholder="$gettext('Username')"
                type="text" v-model="username" required>
         <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 h-8 w-32"
+               :placeholder="$gettext('Password')"
                type="password" v-model="password" required>
         <button class="h-8 btn-secondary rounded-none rounded-br-3xl pr-10 pl-4 italic font-normal h-8 mr-2"
                 type="submit">{{ $gettext('Login') }}</button>
       </form>
-      <div class="px-2 text-claret-900 font-bold text-center" v-if="message">
-        {{ $gettext(message) }}
+      <div v-if="message" class="pt-2">
+        <form @submit.prevent="password_reset" class="ml-4">
+          <div class="py-2 text-claret-900 font-bold">
+            {{ $gettext(message) }}
+          </div>
+          <button id="reset-password"
+                  class="h-8 btn-secondary rounded-none rounded-br-3xl pr-10 pl-4 italic font-normal h-8 mr-2"
+                  type="submit">{{ $gettext('Reset Password for %1?', username) }}</button>
+        </form>
+      </div>
+      <div v-if="reset_message" class="p-2 ml-4 text-claret-900 font-bold" @click="reset_message = null">
+        {{ $gettext(reset_message) }}
       </div>
     </div>
 

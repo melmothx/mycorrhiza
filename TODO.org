@@ -1,0 +1,43 @@
+* Tabella Library
+
+** TODO aggiugere email, orari, latitudine, longitude (per eventuale mappa)
+
+** TODO aggiungere 3 campi per il controllo dell'esistenza (abilita, token, data)
+
+** TODO  aggiungere il tipo (web, library, archive)
+
+che si combina con il booleano public già presente (sito pubblico e
+privato, biblioteca pubblica e privata, archivio pubblico e privato).
+
+* Tabella Profile
+
+** TODO aggiungere un campo opzionale per la biblioteca Library
+
+di cui è amministratore. Questo non esclude il fatto che un utente
+possa essere avere una o più Library a cui ha accesso. Dice solo che
+l'utente ha privilegi amministrativi in una data biblioteca e che
+quindi può creare utenti per la sua biblioteca. Escluderei la
+possibilità che tali utenti gestiscano più biblioteche (se è la stessa
+persona fisica, possono avere diverse utenze).
+
+** TODO aggiungere due campi per il reset della password
+
+* Pagine
+
+** TODO pagina riservata agli amministratori di biblioteche
+
+per la creazione di utenti affiliati (gli ammistratori veri e propri
+hanno accesso all'admin di Django per la creazione di utenti). Gli
+utenti creati avranno lo spazio assegnato (o aggiunto se l'utente
+già esiste).
+
+** TODO procedura di reset password
+
+** TODO lista dei posti con orari, posizione, contatto.
+
+** TODO abilita merge e omissione solo per amministratori di ogni livello
+
+* Azioni
+
+** TODO controllo se il posto è vivo (solo per quelli abilitati)
+

@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime
 from amwmeta.harvest import harvest_oai_pmh, extract_fields
 from urllib.parse import urlparse
 from datetime import datetime, timezone
@@ -1116,10 +1115,27 @@ class SpreadsheetUpload(models.Model):
         self.save()
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    user = models.OneToOneField(User,
+                                primary_key=True,
+                                on_delete=models.CASCADE,
+                                related_name="profile")
     libraries = models.ManyToManyField(Library)
+    admin_library = models.ForeignKey(
+        Library,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="admin_profiles"
+    )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    password_reset_token = models.CharField(max_length=255, null=True, blank=True)
+    password_reset_expiration = models.DateTimeField(null=True, blank=True)
+
+    def has_valid_password_reset(self):
+        if self.password_reset_token and self.password_reset_expiration > datetime.now(timezone.utc):
+            return True
+        else:
+            return False
 
 class ChangeLog(models.Model):
     user = models.ForeignKey(
