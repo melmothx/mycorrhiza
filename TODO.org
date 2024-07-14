@@ -11,7 +11,8 @@ privato, biblioteca pubblica e privata, archivio pubblico e privato).
 
 * Tabella Profile
 
-** TODO aggiungere un campo opzionale per la biblioteca Library
+** DONE aggiungere un campo opzionale per la biblioteca Library
+CLOSED: [2024-07-14 Sun 08:21]
 
 di cui è amministratore. Questo non esclude il fatto che un utente
 possa essere avere una o più Library a cui ha accesso. Dice solo che
@@ -20,7 +21,8 @@ quindi può creare utenti per la sua biblioteca. Escluderei la
 possibilità che tali utenti gestiscano più biblioteche (se è la stessa
 persona fisica, possono avere diverse utenze).
 
-** TODO aggiungere due campi per il reset della password
+** DONE aggiungere due campi per il reset della password
+CLOSED: [2024-07-14 Sun 08:21]
 
 * Pagine
 
@@ -31,7 +33,8 @@ hanno accesso all'admin di Django per la creazione di utenti). Gli
 utenti creati avranno lo spazio assegnato (o aggiunto se l'utente
 già esiste).
 
-** TODO procedura di reset password
+** DONE procedura di reset password
+CLOSED: [2024-07-14 Sun 08:21]
 
 ** TODO lista dei posti con orari, posizione, contatto.
 
