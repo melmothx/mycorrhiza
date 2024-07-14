@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 14:39:44 14:39+0000\n"
+"POT-Creation-Date: 07:38:44 07:38+0000\n"
 "PO-Revision-Date: 2024-05-15 13:18+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.4\n"
 
 #. $gettext('Admin') $gettext('Admin')
-#: src/components/NavBar.vue:111 src/components/MergeBox.vue:161
+#: src/components/NavBar.vue:153 src/components/MergeBox.vue:161
 msgid "Admin"
 msgstr "Amministratore"
 
@@ -24,17 +24,17 @@ msgstr "Aggregati"
 
 #. $gettext('Aggregation') $gettext('Aggregation') $gettext('Aggregation')
 #: src/components/SearchPage.vue:191 src/components/SearchPage.vue:192
-#: src/components/SearchPage.vue:312
+#: src/components/SearchPage.vue:311
 msgid "Aggregation"
 msgstr "Aggregazione"
 
 #. $gettext('All entries (%1)', total_entries)
-#: src/components/SearchPage.vue:207
+#: src/components/SearchPage.vue:206
 msgid "All entries (%1)"
 msgstr "Tutti i risultati (%1)"
 
 #. $gettext('Authors')
-#: src/components/SearchPage.vue:340
+#: src/components/SearchPage.vue:339
 msgid "Authors"
 msgstr "Autori"
 
@@ -54,7 +54,7 @@ msgid "Cancel"
 msgstr "Cancella"
 
 #. $gettext('Clear')
-#: src/components/SearchPage.vue:224
+#: src/components/SearchPage.vue:223
 msgid "Clear"
 msgstr "Pulisci"
 
@@ -84,12 +84,12 @@ msgid "Create"
 msgstr "Crea"
 
 #. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:36 src/components/SearchPage.vue:349
+#: src/components/ExclusionTable.vue:36 src/components/SearchPage.vue:348
 msgid "Date"
 msgstr "Data"
 
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:304
+#: src/components/SearchPage.vue:303
 msgid "Download Types"
 msgstr "Tipi di download"
 
@@ -99,7 +99,7 @@ msgid "Editable and printable text"
 msgstr "Testo editabile e stampabile"
 
 #. $gettext('Exclusions')
-#: src/components/NavBar.vue:116
+#: src/components/NavBar.vue:158
 msgid "Exclusions"
 msgstr "Esclusioni"
 
@@ -114,7 +114,7 @@ msgid "Full text"
 msgstr "Testo integrale"
 
 #. $gettext('Hello, %1!', authenticated)
-#: src/components/NavBar.vue:91
+#: src/components/NavBar.vue:107
 msgid "Hello, %1!"
 msgstr "Ciao, %1!"
 
@@ -122,6 +122,11 @@ msgstr "Ciao, %1!"
 #: src/components/HelpPopUp.vue:25
 msgid "Help"
 msgstr "Aiuto"
+
+#. $gettext('Home')
+#: src/components/NavBar.vue:103
+msgid "Home"
+msgstr ""
 
 #. $gettext('ID')
 #: src/components/DashboardTable.vue:122
@@ -144,7 +149,7 @@ msgid "Landing page"
 msgstr "Pagina sorgente"
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:320
+#: src/components/SearchPage.vue:319
 msgid "Language"
 msgstr "Lingua"
 
@@ -154,12 +159,17 @@ msgid "Last"
 msgstr "Ultima"
 
 #. $gettext('Libraries')
-#: src/components/SearchPage.vue:330
+#: src/components/SearchPage.vue:329
 msgid "Libraries"
 msgstr "Biblioteche"
 
+#. $gettext('Login')
+#: src/components/NavBar.vue:118
+msgid "Login"
+msgstr "Accedi"
+
 #. $gettext('Logout')
-#: src/components/NavBar.vue:121
+#: src/components/NavBar.vue:163
 msgid "Logout"
 msgstr "Esci"
 
@@ -167,13 +177,15 @@ msgstr "Esci"
 #: src/components/SearchPage.vue:193
 msgid "MERGE_AUTHOR"
 msgstr ""
-"Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\n"
+"Con questa funzione puoi unificare le forme alternative del nome di chi ha "
+"scritto il testo\n"
 "Bakunin e Bakunin -> Bakunin"
 
 #. $gettext('MERGE_ENTRY')
 #: src/components/SearchPage.vue:194
 msgid "MERGE_ENTRY"
-msgstr "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
+msgstr ""
+"Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge')
 #: src/components/EntryBox.vue:43 src/components/EntryBox.vue:72
@@ -182,12 +194,12 @@ msgid "Merge"
 msgstr "Unisci"
 
 #. $gettext('Merge authors here')
-#: src/components/SearchPage.vue:376
+#: src/components/SearchPage.vue:375
 msgid "Merge authors here"
 msgstr "Unisci gli autori qui"
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:384
+#: src/components/SearchPage.vue:383
 msgid "Merge entries here"
 msgstr "Unisci le voci qui"
 
@@ -246,6 +258,16 @@ msgstr "Altre lingue:"
 msgid "Part of:"
 msgstr "Parte di:"
 
+#. $gettext('Password') $gettext('Password')
+#: src/components/NavBar.vue:115 src/components/PasswordReset.vue:65
+msgid "Password"
+msgstr ""
+
+#. $gettext('Please type your new password in both fields')
+#: src/components/PasswordReset.vue:85
+msgid "Please type your new password in both fields"
+msgstr ""
+
 #. $gettext('Previous')
 #: src/components/PaginationBox.vue:10
 msgid "Previous"
@@ -256,6 +278,21 @@ msgstr "Precedente"
 msgid "Reason"
 msgstr "Ragione"
 
+#. $gettext('Repeat Password')
+#: src/components/PasswordReset.vue:69
+msgid "Repeat Password"
+msgstr ""
+
+#. $gettext('Reset Password for %1?', username)
+#: src/components/NavBar.vue:127
+msgid "Reset Password for %1?"
+msgstr ""
+
+#. $gettext('Reset password for %1', username) $gettext('Reset password for %1', username)
+#: src/components/PasswordReset.vue:60 src/components/PasswordReset.vue:78
+msgid "Reset password for %1"
+msgstr ""
+
 #. $gettext('Restore')
 #: src/components/ExclusionRow.vue:37
 msgid "Restore"
@@ -264,32 +301,37 @@ msgstr "Rigenera"
 #. $gettext('SET_AGGREGATION')
 #: src/components/SearchPage.vue:196
 msgid "SET_AGGREGATION"
-msgstr "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
+msgstr ""
+"Con questa funzione puoi unire più riferimenti all'interno di una stessa "
+"aggregazione, ovvero i diversi articoli che compongono una rivista oppure i "
+"diversi testi che compongono un'antologia"
 
 #. $gettext('SET_TRANSLATION')
 #: src/components/SearchPage.vue:195
 msgid "SET_TRANSLATION"
-msgstr "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
+msgstr ""
+"Con questa funzione puoi collegare due traduzioni in lingue diverse dello "
+"stesso testo"
 
 #. $gettext('Search')
-#: src/components/SearchPage.vue:287
+#: src/components/SearchPage.vue:286
 msgid "Search"
 msgstr "Cerca"
 
 #. $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries)
-#: src/components/SearchPage.vue:204
+#: src/components/SearchPage.vue:203
 msgid "Search results for %1: found %2 entry"
 msgid_plural "Search results for %1: found %2 entries"
 msgstr[0] "Risultati di ricerca per %1: trovato %2 risultato"
 msgstr[1] "Risultati di ricerca per %1: trovati %2 risultati"
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:401
+#: src/components/SearchPage.vue:400
 msgid "Set aggregations here"
 msgstr "Imposta le aggregazioni qui"
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:392
+#: src/components/SearchPage.vue:391
 msgid "Set translations here"
 msgstr "Imposta le traduzioni qui"
 
@@ -313,6 +355,11 @@ msgstr "Sottotitolo"
 msgid "Target"
 msgstr "Bersaglio"
 
+#. $gettext('The passwords do not match')
+#: src/components/PasswordReset.vue:71
+msgid "The passwords do not match"
+msgstr ""
+
 #. $gettext('Title')
 #: src/components/DashboardTable.vue:123
 msgid "Title"
@@ -329,9 +376,14 @@ msgid "Type"
 msgstr "Tipo"
 
 #. $gettext('UI language')
-#: src/components/NavBar.vue:128
+#: src/components/NavBar.vue:170
 msgid "UI language"
 msgstr "Lingua dell'interfaccia utente"
+
+#. $gettext('Username')
+#: src/components/NavBar.vue:112
+msgid "Username"
+msgstr ""
 
 #. $gettext('Working') $gettext('Working') $gettext('Working')
 #: src/components/DashboardTable.vue:139 src/components/MergeBox.vue:226
@@ -353,9 +405,6 @@ msgstr "ordine alfabetico"
 #: src/views/DashboardView.vue:9
 msgid "dashboard for "
 msgstr "pannello di gestione per "
-
-#~ msgid "Login"
-#~ msgstr "Accedi"
 
 #~ msgid "Original title:"
 #~ msgstr "Titolo originale:"

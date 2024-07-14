@@ -35,6 +35,12 @@
       }
    },
    "it" : {
+      "Admin" : {
+         "msgstr" : "Amministratore"
+      },
+      "Aggregated" : {
+         "msgstr" : "Aggregati"
+      },
       "Aggregation" : {
          "msgstr" : "Aggregazione"
       },
@@ -47,8 +53,23 @@
       "Authors" : {
          "msgstr" : "Autori"
       },
+      "Back" : {
+         "msgstr" : "Indietro"
+      },
+      "Bibliographical entry only" : {
+         "msgstr" : "Solo riferimento bibliografico"
+      },
       "Cancel" : {
          "msgstr" : "Cancella"
+      },
+      "Clear" : {
+         "msgstr" : "Pulisci"
+      },
+      "Clear list" : {
+         "msgstr" : "Pulisci elenco"
+      },
+      "Click to sort" : {
+         "msgstr" : "Ordina"
       },
       "Close" : {
          "msgstr" : "Chiudi"
@@ -68,8 +89,26 @@
       "Download Types" : {
          "msgstr" : "Tipi di download"
       },
+      "Editable and printable text" : {
+         "msgstr" : "Testo editabile e stampabile"
+      },
+      "Exclusions" : {
+         "msgstr" : "Esclusioni"
+      },
+      "First" : {
+         "msgstr" : "Prima"
+      },
+      "Full text" : {
+         "msgstr" : "Testo integrale"
+      },
       "Hello, %1!" : {
          "msgstr" : "Ciao, %1!"
+      },
+      "Help" : {
+         "msgstr" : "Aiuto"
+      },
+      "ID" : {
+         "msgstr" : "ID"
       },
       "ID:" : {
          "msgstr" : "ID:"
@@ -77,8 +116,14 @@
       "Justification" : {
          "msgstr" : "Giustificazione"
       },
+      "Landing page" : {
+         "msgstr" : "Pagina sorgente"
+      },
       "Language" : {
          "msgstr" : "Lingua"
+      },
+      "Last" : {
+         "msgstr" : "Ultima"
       },
       "Libraries" : {
          "msgstr" : "Biblioteche"
@@ -89,6 +134,12 @@
       "Logout" : {
          "msgstr" : "Esci"
       },
+      "MERGE_AUTHOR" : {
+         "msgstr" : "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\nBakunin e Bakunin -> Bakunin"
+      },
+      "MERGE_ENTRY" : {
+         "msgstr" : "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
+      },
       "Merge" : {
          "msgstr" : "Unisci"
       },
@@ -97,6 +148,15 @@
       },
       "Merge entries here" : {
          "msgstr" : "Unisci le voci qui"
+      },
+      "Missing help, sorry..." : {
+         "msgstr" : "Aiuto mancante, ci scusiamo..."
+      },
+      "My Exclusions" : {
+         "msgstr" : "Le mie esclusioni"
+      },
+      "Next" : {
+         "msgstr" : "Prossima"
       },
       "Nothing to show!" : {
          "msgstr" : "Niente da mostrare!"
@@ -113,17 +173,32 @@
       "Omit single entry" : {
          "msgstr" : "Ometti singola voce"
       },
+      "Original" : {
+         "msgstr" : "Originale"
+      },
       "Original title:" : {
          "msgstr" : "Titolo originale:"
       },
+      "Other languages:" : {
+         "msgstr" : "Altre lingue:"
+      },
       "Part of:" : {
          "msgstr" : "Parte di:"
+      },
+      "Previous" : {
+         "msgstr" : "Precedente"
       },
       "Reason" : {
          "msgstr" : "Ragione"
       },
       "Restore" : {
          "msgstr" : "Rigenera"
+      },
+      "SET_AGGREGATION" : {
+         "msgstr" : "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
+      },
+      "SET_TRANSLATION" : {
+         "msgstr" : "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
       },
       "Search" : {
          "msgstr" : "Cerca"
@@ -158,8 +233,17 @@
       "Sort by Title" : {
          "msgstr" : "Disponi per titolo"
       },
+      "Subtitle" : {
+         "msgstr" : "Sottotitolo"
+      },
       "Target" : {
          "msgstr" : "Bersaglio"
+      },
+      "Title" : {
+         "msgstr" : "Titolo"
+      },
+      "Translation" : {
+         "msgstr" : "Traduzione"
       },
       "Translation:" : {
          "msgstr" : "Traduzione:"
@@ -169,6 +253,9 @@
       },
       "Type" : {
          "msgstr" : "Tipo"
+      },
+      "UI language" : {
+         "msgstr" : "Lingua dell'interfaccia utente"
       },
       "View full text" : {
          "msgstr" : "Guarda il testo integrale"
@@ -181,6 +268,9 @@
       },
       "by term" : {
          "msgstr" : "ordine alfabetico"
+      },
+      "dashboard for " : {
+         "msgstr" : "pannello di gestione per "
       }
    }
 }
