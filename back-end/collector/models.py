@@ -57,11 +57,20 @@ class Library(models.Model):
                           blank=True,
                           null=True)
     public = models.BooleanField(default=False, null=False)
+    shared = models.BooleanField(default=False, null=False)
     active = models.BooleanField(default=True, null=False)
+    email_public = models.EmailField(blank=True)
+    email_internal = models.EmailField(blank=True)
+    opening_hours = models.TextField(blank=True)
+    latitude  = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
+    enable_check = models.BooleanField(default=False)
+    check_token = models.CharField(max_length=255, blank=True)
+    last_check = models.DateTimeField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
-        return self.name
+        return "{} [{}]".format(self.name, self.id)
     def as_api_dict(self):
         out = {}
         for f in ["id", "name", "url", "public", "active"]:
@@ -1120,12 +1129,7 @@ class Profile(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="profile")
     libraries = models.ManyToManyField(Library)
-    admin_library = models.ForeignKey(
-        Library,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="admin_profiles"
-    )
+    library_admin = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     password_reset_token = models.CharField(max_length=255, null=True, blank=True)

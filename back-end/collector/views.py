@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
+from django.db.models import Q
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
@@ -132,13 +133,21 @@ def api_user(request):
     return JsonResponse({ "logged_in": request.user.get_username() })
 
 def _active_libraries(user):
-    active_libraries = [ lib.id for lib in Library.objects.filter(active=True, public=True).all() ]
+    query = Q(active=True) & Q(public=True)
     if user.is_authenticated and user.is_superuser:
         # exclude only the inactive
-        active_libraries = [ lib.id for lib in Library.objects.filter(active=True).all() ]
-    elif user.is_authenticated and user.profile:
-        # add the private one from the profile
-        active_libraries.extend([ lib.id for lib in user.profile.libraries.filter(active=True, public=False).all() ])
+        query = Q(active=True)
+    elif user.is_authenticated:
+        additional = Q(active=True) & Q(public=False) & Q(shared=True)
+        query = query | additional
+        if hasattr(user, "profile"):
+            private = []
+            for lib in user.profile.libraries.filter(active=True, public=False, shared=False).only('id').all():
+                private.append(lib.id)
+            if private:
+                query = query | Q(id__in=private)
+    logger.debug("Query is {}".format(query))
+    active_libraries = [ lib.id for lib in Library.objects.filter(query).only('id').all() ]
     logger.debug("Active libs are {}".format(active_libraries))
     return active_libraries
 
