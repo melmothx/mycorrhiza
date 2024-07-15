@@ -86,7 +86,7 @@ class ViewsTestCase(TestCase):
         datasource = DataSource.objects.create(
             site=site,
             oai_pmh_identifier=identifier,
-            datetime=datetime.now(timezone.utc),
+            datestamp=datetime.now(timezone.utc),
             entry=entry,
             full_data={},
         )
@@ -162,7 +162,7 @@ class SitePrivateTestCase(TestCase):
                 datasource = DataSource.objects.create(
                     site=site,
                     oai_pmh_identifier=identifier,
-                    datetime=datetime.now(timezone.utc),
+                    datestamp=datetime.now(timezone.utc),
                     entry=entry,
                     full_data={},
                 )
@@ -206,7 +206,7 @@ class UniqueSiteTestCase(TestCase):
         datasource = DataSource.objects.create(
             site=site,
             oai_pmh_identifier="XX",
-            datetime=datetime.now(timezone.utc),
+            datestamp=datetime.now(timezone.utc),
             entry=entry,
             full_data={},
         )
