@@ -1184,7 +1184,7 @@ def manipulate(op, user, main_id, *ids, create=None):
         'revert-merged-entries': Entry,
 
         'add-exclusion': Exclusion,
-        'revert-exclusion': Exclusion,
+        'revert-exclusions': Exclusion,
 
         'add-aggregations': Entry,
         # no revert at the moment
@@ -1269,7 +1269,7 @@ def manipulate(op, user, main_id, *ids, create=None):
     elif op == 'add-exclusion':
         raise Exception('Not reached')
 
-    elif op == 'revert-exclusion':
+    elif op == 'revert-exclusions':
         log_user_operation(user, op, main_object, None)
         main_object.delete()
         out['success'] = "Removed"
