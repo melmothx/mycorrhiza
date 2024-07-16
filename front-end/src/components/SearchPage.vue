@@ -56,6 +56,7 @@
              merge_author_records: [],
              is_authenticated: false,
              can_set_exclusions: false,
+             can_merge: false,
              sort_by_values: sort_by_values,
              sort_by: sort_by_values[0],
              sort_directions: sort_directions,
@@ -145,7 +146,7 @@
                       }
                       vm.pager = res.data.pager;
                       vm.total_entries = res.data.total_entries;
-                      vm.is_authenticated = res.data.is_authenticated;
+                      vm.can_merge = res.data.can_merge;
                       vm.can_set_exclusions = res.data.can_set_exclusions;
                       vm.searched_query = vm.query;
                   });
@@ -331,7 +332,7 @@
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
-                :can_merge="is_authenticated"
+                :can_merge="can_merge"
                 :use_sorting="true"
                 :values="facets.creator.values"
                 :name="facets.creator.name"
@@ -356,13 +357,13 @@
           <template v-for="match in matches" :key="match.entry_id">
             <EntryBox :record="match"
                       :can_set_exclusions="can_set_exclusions"
-                      :can_merge="is_authenticated"
+                      :can_merge="can_merge"
                       @refetch-results="getResults({ update_facets: 1 })" />
           </template>
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
-      <div v-if="is_authenticated">
+      <div v-if="can_merge">
         <div class="sticky top-5">
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"

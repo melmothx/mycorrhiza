@@ -11,7 +11,7 @@ from django.conf import settings
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
@@ -34,6 +34,17 @@ pp = pprint.PrettyPrinter(indent=2)
 
 logger = logging.getLogger(__name__)
 
+def user_is_library_admin(user):
+    if not user.username:
+        return False
+    if user.is_superuser:
+        return True
+    elif hasattr(user, "profile") and user.profile.library_admin:
+        return True
+    else:
+        return False
+
+
 def api_login(request):
     out = { "logged_in": None, "error": None }
     try:
@@ -43,7 +54,7 @@ def api_login(request):
     user = authenticate(request, username=data.get('username'), password=data.get('password'))
     if user is not None:
         login(request, user)
-        out['logged_in'] = user.get_username()
+        out = _user_data(user)
     else:
         out['error'] = 'Invalid login'
     logger.debug(out)
@@ -129,8 +140,21 @@ def api_reset_password(request):
 
 @ensure_csrf_cookie
 def api_user(request):
-    # guaranteed to return the empty string
-    return JsonResponse({ "logged_in": request.user.get_username() })
+    return JsonResponse(_user_data(request.user))
+
+def _user_data(user):
+    out = {
+        "logged_in": user.username,
+        "is_superuser": user.is_superuser,
+        "is_library_admin": False,
+        "libraries": [],
+    }
+    if user.username and hasattr(user, "profile"):
+        profile = user.profile
+        out["is_library_admin"] = profile.library_admin
+        out["libraries"] = [ { "id": l.id, "name": l.name } for l in profile.libraries.filter(active=True).all() ]
+
+    return out
 
 def _active_libraries(user):
     query = Q(active=True) & Q(public=True)
@@ -176,7 +200,10 @@ def api(request):
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
     res['is_authenticated'] = user.is_authenticated
-    res['can_set_exclusions'] = can_set_exclusions
+    res['can_set_exclusions'] = user.is_superuser
+    res['can_merge'] = user.is_superuser
+    if user.is_authenticated and not user.is_superuser and hasattr(user, "profile"):
+        res['can_merge'] = res['can_set_exclusions'] = user.profile.library_admin
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
@@ -287,7 +314,46 @@ def download_datasource(request, target):
     else:
         raise Http404("Not found")
 
-@login_required
+@user_passes_test(user_is_library_admin)
+def api_library_edit(request, library_id):
+    out = {
+        "error": None,
+        "library": None,
+    }
+    library = None
+    user = request.user
+    try:
+        if user.is_superuser:
+            library = Library.objects.get(pk=library_id)
+        elif hasattr(user, 'profile'):
+            library = user.profile.libraries.get(pk=library_id)
+    except Library.DoesNotExist:
+        out['error'] = "You cannot access this library"
+
+    if library and request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # expecting all these keys:
+            for f in ['name',
+                      'url',
+                      'email_public',
+                      'email_internal',
+                      'opening_hours',
+                      'latitude',
+                      'longitude',
+                      ]:
+                setattr(library, f, data[f])
+            library.save()
+        except json.JSONDecodeError:
+            out['error'] = "Invalid JSON!";
+
+    # refetch the values
+    if library:
+        out['library'] = Library.objects.values().get(pk=library.id)
+
+    return JsonResponse(out)
+
+@user_passes_test(user_is_library_admin)
 def exclusions(request):
     logger.debug(request.body)
     out = {}
@@ -326,7 +392,7 @@ def exclusions(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_set_aggregated(request):
     out = {}
     data = None
@@ -342,7 +408,7 @@ def api_set_aggregated(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_set_translations(request):
     out = {}
     data = None
@@ -359,7 +425,7 @@ def api_set_translations(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_merge(request, target):
     logger.debug(target)
     out = {}
@@ -417,7 +483,7 @@ def api_create(request, target):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_listing(request, target):
     out = {
         "target": target
@@ -510,7 +576,7 @@ def api_listing(request, target):
         ]
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_revert(request, target):
     logger.debug(target)
     out = {}
@@ -531,9 +597,10 @@ def api_revert(request, target):
             out['error'] = "Missing target ID"
     else:
         out['error'] = "Invalid data"
+    logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
@@ -559,7 +626,7 @@ def upload_spreadsheet(request):
 
     return render(request, "collector/spreadsheet.html", { "form": form })
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def process_spreadsheet(request, target):
     sheet = get_object_or_404(SpreadsheetUpload, pk=target)
     if sheet and sheet.user and sheet.user.id == request.user.id:
