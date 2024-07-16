@@ -1130,6 +1130,10 @@ class Profile(models.Model):
                                 related_name="profile")
     libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
     library_admin = models.BooleanField(default=False)
+    affiliated_to = models.ForeignKey('self',
+                                      null=True,
+                                      on_delete=models.CASCADE,
+                                      related_name="affiliated_profiles")
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     password_reset_token = models.CharField(max_length=255, null=True, blank=True)
