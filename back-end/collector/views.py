@@ -319,6 +319,7 @@ def api_library_edit(request, library_id):
     out = {
         "error": None,
         "library": None,
+        "users": [],
     }
     library = None
     user = request.user
@@ -342,7 +343,11 @@ def api_library_edit(request, library_id):
                       'latitude',
                       'longitude',
                       ]:
-                setattr(library, f, data[f])
+                value = data[f]
+                if not value:
+                    if f in [ 'latitude', 'longitude']:
+                        value = None
+                setattr(library, f, value)
             library.save()
         except json.JSONDecodeError:
             out['error'] = "Invalid JSON!";
@@ -350,6 +355,17 @@ def api_library_edit(request, library_id):
     # refetch the values
     if library:
         out['library'] = Library.objects.values().get(pk=library.id)
+        users = []
+        for profile in library.affiliated_profiles.filter(library_admin=False).all():
+            user = profile.user
+            users.append({
+                "id": user.id,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "last_login": user.last_login,
+            })
+        out['users'] = users
 
     return JsonResponse(out)
 

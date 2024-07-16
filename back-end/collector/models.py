@@ -1128,7 +1128,7 @@ class Profile(models.Model):
                                 primary_key=True,
                                 on_delete=models.CASCADE,
                                 related_name="profile")
-    libraries = models.ManyToManyField(Library)
+    libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
     library_admin = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
