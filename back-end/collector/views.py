@@ -514,7 +514,7 @@ def api_listing(request, target):
                 merged.append(apidata)
         out['records'] = merged
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'id', 'label': 'Id' },
             { 'name': 'name', 'label': 'Name' },
             { 'name': 'canonical_id', 'label': 'Canonical ID' },
             { 'name': 'canonical_name', 'label': 'Canonical Name' },

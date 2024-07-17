@@ -1,10 +1,13 @@
 <script>
  import axios from 'axios'
+ axios.defaults.xsrfCookieName = "csrftoken";
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import { TrashIcon, ChevronUpDownIcon } from '@heroicons/vue/24/solid'
  export default {
      components: { TrashIcon, ChevronUpDownIcon },
      props: [
-         'listing_type',
+         'listing_url',
+         'removal_url',
      ],
      data() {
          return {
@@ -20,9 +23,8 @@
      methods: {
          fetch() {
              const vm = this;
-             const listing_type = this.listing_type
              // these are the exclusion I set
-             axios.get('/collector/api/listing/' + listing_type).then(function(res) {
+             axios.get(this.listing_url).then(function(res) {
                  vm.fields = res.data.fields;
                  vm.all_records = res.data.records;
                  vm.records = vm.all_records.filter(() => true);
@@ -33,19 +35,12 @@
              if (id) {
                  console.log("Removing " + id)
                  vm.working = true;
-                 axios.post('/collector/api/revert/' + vm.listing_type,
-                            {
-                                id: id,
-                            },
-                            {
-                                "xsrfCookieName": "csrftoken",
-                                "xsrfHeaderName": "X-CSRFToken",
-                            })
-                        .then(function(res) {
+                 axios.post(this.removal_url, { id: id })
+                      .then(function(res) {
                             console.log(res.data);
                             vm.fetch();
-                            vm.working = false;
-                        })
+                          vm.working = false;
+                      })
                       .catch(function(error) {
                           vm.working = false;
                           console.log(error);
@@ -125,16 +120,6 @@
  */
 </script>
 <template>
-  <div class="m-5 p-2">
-    <div class="flex">
-      <div class="flex-grow">
-        <h1 class="capitalize bold text-lg text-center font-bold mb-8"><slot></slot></h1>
-      </div>
-      <div>
-        <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-                type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
-      </div>
-    </div>
     <div v-if="working" class="m-2 text-center">
       <span class="animate-ping rounded-full text-claret-900 p-2">{{ $gettext('Working') }}</span>
     </div>
@@ -151,7 +136,7 @@
                 @click="sort_rows(f.name)">
               <div class="flex whitespace-nowrap">
                 <span class="flex-grow">
-                  {{ f.label }}
+                  {{ $gettext(f.label) }}
                 </span>
                 <span>
                   <ChevronUpDownIcon class="w-6 h-6" />
@@ -184,5 +169,4 @@
         </tr>
       </tbody>
     </table>
-  </div>
 </template>
