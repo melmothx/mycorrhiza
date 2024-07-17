@@ -315,12 +315,20 @@ def download_datasource(request, target):
         raise Http404("Not found")
 
 @user_passes_test(user_is_library_admin)
-def api_library_edit(request, library_id):
+def api_library_action(request, action, library_id):
     out = {
         "error": None,
         "library": None,
-        "users": [],
     }
+    columns = [
+        'name',
+        'url',
+        'email_public',
+        'email_internal',
+        'opening_hours',
+        'latitude',
+        'longitude',
+    ]
     library = None
     user = request.user
     try:
@@ -335,38 +343,57 @@ def api_library_edit(request, library_id):
         try:
             data = json.loads(request.body)
             # expecting all these keys:
-            for f in ['name',
-                      'url',
-                      'email_public',
-                      'email_internal',
-                      'opening_hours',
-                      'latitude',
-                      'longitude',
-                      ]:
-                value = data[f]
-                if not value:
-                    if f in [ 'latitude', 'longitude']:
+            if action == "details":
+                for f in columns:
+                    value = data[f]
+                    if not value and f in [ 'latitude', 'longitude']:
                         value = None
-                setattr(library, f, value)
-            library.save()
+                    setattr(library, f, value)
+                library.save()
+                out['success'] = 'OK'
+            elif action == "remove-user":
+                userid = data.get('id')
+                if userid:
+                    logger.debug("Removing {}".format(userid))
+                    try:
+                        profile = library.affiliated_profiles.get(pk=userid)
+                        profile.libraries.remove(library)
+                        # TODO: should we keep the user or set the user inactive?
+                        if not profile.libraries.count():
+                            logger.info("No other library associated, removing")
+                            profile.user.delete();
+                    except Profile.DoesNotExist:
+                        out['error'] = "No such affiliated user"
+
         except json.JSONDecodeError:
             out['error'] = "Invalid JSON!";
 
     # refetch the values
     if library:
-        out['library'] = Library.objects.values().get(pk=library.id)
-        users = []
-        for profile in library.affiliated_profiles.filter(library_admin=False).all():
-            user = profile.user
-            users.append({
-                "id": user.id,
-                "username": user.username,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "last_login": user.last_login,
-            })
-        out['users'] = users
 
+        if action == 'details':
+            out['library'] = Library.objects.values().get(pk=library.id)
+        elif action == 'list-users':
+            users = []
+            for profile in library.affiliated_profiles.filter(library_admin=False).all():
+                user = profile.user
+                user_data = {
+                    "id": user.id,
+                    "username": user.username,
+                    "name": "{} {}".format(user.first_name, user.last_name),
+                    "last_login": None,
+                }
+                if user.last_login:
+                    user_data['last_login'] = user.last_login.strftime('%Y-%m-%d')
+                users.append(user_data)
+
+            out['records'] = users
+            out['fields'] = [
+                { 'name': 'id', 'label': 'Id' },
+                { 'name': 'username', 'label': 'Username' },
+                { 'name': 'name', 'label': 'Name' },
+                { 'name': 'last_login', 'label': 'Last Login' },
+            ]
     return JsonResponse(out)
 
 @user_passes_test(user_is_library_admin)

@@ -19,7 +19,7 @@ urlpatterns = [
     path("api/set-aggregated", views.api_set_aggregated, name="api_set_aggregated"),
     path("api/exclusions", views.exclusions, name="exclusions"),
     path("api/create/<target>", views.api_create, name="api_create"),
-    path("api/library-edit/<int:library_id>", views.api_library_edit, name="api_library_edit"),
+    path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
     path("spreadsheet", views.upload_spreadsheet, name="spreadsheet"),
     path("spreadsheet/<target>", views.process_spreadsheet, name="process_spreadsheet"),
 ]

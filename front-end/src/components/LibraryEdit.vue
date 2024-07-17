@@ -2,8 +2,12 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import DashboardTable from '../components/DashboardTable.vue'
  export default {
      props: [ 'library_id' ],
+     components: {
+         DashboardTable,
+     },
      data() {
          return {
              library: {},
@@ -18,7 +22,7 @@
              this.success = null;
          },
          fetch() {
-             axios.get('/collector/api/library-edit/' + this.library_id)
+             axios.get('/collector/api/library/details/' + this.library_id)
                   .then(res => {
                       console.log(res.data);
                       this.error = res.data.error;
@@ -33,7 +37,7 @@
          },
          update() {
              this.reset_messages();
-             axios.post('/collector/api/library-edit/' + this.library_id,
+             axios.post('/collector/api/library/details/' + this.library_id,
                         this.library)
                   .then(res => {
                       this.error = res.data.error;
@@ -55,15 +59,15 @@
 </script>
 <template>
   <div class="m-8">
-    <h1 class="font-bold text-xl">{{ library.name }}</h1>
     <div v-if="error" class="py-2 text-claret-900 font-bold">
       {{ $gettext(error) }}
     </div>
     <div v-if="success" class="py-2 text-spectra-800 font-bold">
       {{ $gettext(success) }}
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-[250px_auto] gap-4">
       <div>
+        <h1 class="font-bold text-xl">{{ library.name }}</h1>
         <form @submit.prevent="update">
           <div>
             <label for="library-name">{{ $gettext('Name') }}</label>
@@ -114,41 +118,10 @@
         </form>
       </div>
       <div>
-        <h2 class="font-bold text-lg">{{ $gettext('Users') }}</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>{{ $gettext('Id') }}</th>
-              <th>{{ $gettext('Username') }}</th>
-              <th>{{ $gettext('Email') }}</th>
-              <th>{{ $gettext('First Name') }}</th>
-              <th>{{ $gettext('Last Name') }}</th>
-              <th>{{ $gettext('Last Login') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in users" class="p-1">
-              <td>
-                {{ user.id }}
-              </td>
-              <td>
-                {{ user.username }}
-              </td>
-              <td>
-                {{ user.first_name }}
-              </td>
-              <td>
-                {{ user.last_name }}
-              </td>
-              <td>
-                {{ user.email }}
-              </td>
-              <td>
-                {{ user.last_login }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <h1 class="font-bold text-xl mb-6">{{ $gettext('Users') }}</h1>
+        <DashboardTable :listing_url="'/collector/api/library/list-users/' + $route.params.id"
+                        :removal_url="'/collector/api/library/remove-user/' + $route.params.id"
+                        :key="lib + '-' + $route.params.id" />
       </div>
     </div>
     <div v-if="success" class="py-2 text-spectra-800 font-bold">
