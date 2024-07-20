@@ -144,7 +144,7 @@
               </div>
             </th>
           </template>
-          <th class="pl-1 pr-4">
+          <th v-if="records.length" class="pl-1 pr-4">
             Remove
           </th>
         </tr>

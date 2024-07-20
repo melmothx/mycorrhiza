@@ -8,6 +8,7 @@ urlpatterns = [
     path("api/auth/logout", views.api_logout, name="api_logout"),
     path("api/auth/reset-password", views.api_reset_password, name="api_reset_password"),
     path("api/auth/user", views.api_user, name="api_user"),
+    path("api/auth/user-check/<username>", views.api_user_check, name="api_user_check"),
     path("api/entry/<int:entry_id>", views.get_entry, name="api_get_entry"),
     path("api/full-text/<int:ds_id>", views.get_datasource_full_text, name="api_full_text"),
     path("api/file/<int:ds_id>/<filename>", views.get_datasource_file, name="api_get_datasource_file"),

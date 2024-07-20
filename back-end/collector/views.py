@@ -142,6 +142,11 @@ def api_reset_password(request):
 def api_user(request):
     return JsonResponse(_user_data(request.user))
 
+@user_passes_test(user_is_library_admin)
+def api_user_check(request, username):
+    has_username = User.objects.filter(username=username.strip().lower()).count()
+    return JsonResponse({ "username": username, "username_exists": has_username })
+
 def _user_data(user):
     out = {
         "logged_in": user.username,
@@ -358,12 +363,39 @@ def api_library_action(request, action, library_id):
                     try:
                         profile = library.affiliated_profiles.get(pk=userid)
                         profile.libraries.remove(library)
-                        # TODO: should we keep the user or set the user inactive?
+                        # should we keep the user or set the user inactive?
                         if not profile.libraries.count():
                             logger.info("No other library associated, removing")
                             profile.user.delete();
                     except Profile.DoesNotExist:
                         out['error'] = "No such affiliated user"
+            elif action == "create-user":
+                logger.debug(pp.pformat(data))
+                username = data.get('username', '').strip().lower()
+                logger.debug("Creating {}".format(username))
+                if username:
+                    try:
+                        user = User.objects.get(username=username)
+                    except User.DoesNotExist:
+                        user = User.objects.create_user(
+                            username,
+                            data.get('email') or library.email_internal,
+                            first_name=data.get('first_name', '').strip(),
+                            last_name=data.get('last_name', '').strip(),
+                        )
+
+                    if hasattr(user, 'profile'):
+                        profile = user.profile
+                    else:
+                        profile = Profile.objects.create(user=user)
+
+                    if profile.libraries.filter(pk=library.id).count():
+                        logger.info("User already has the library")
+                        out['error'] = "User already present"
+                    else:
+                        logger.info("Adding {} to {}".format(user.username, library.name))
+                        profile.libraries.add(library)
+                        out['success'] = "User added"
 
         except json.JSONDecodeError:
             out['error'] = "Invalid JSON!";
@@ -380,6 +412,7 @@ def api_library_action(request, action, library_id):
                 user_data = {
                     "id": user.id,
                     "username": user.username,
+                    "email": user.email,
                     "name": "{} {}".format(user.first_name, user.last_name),
                     "last_login": None,
                 }
@@ -391,6 +424,7 @@ def api_library_action(request, action, library_id):
             out['fields'] = [
                 { 'name': 'id', 'label': 'Id' },
                 { 'name': 'username', 'label': 'Username' },
+                { 'name': 'email', 'label': 'Email' },
                 { 'name': 'name', 'label': 'Name' },
                 { 'name': 'last_login', 'label': 'Last Login' },
             ]

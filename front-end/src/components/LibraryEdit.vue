@@ -2,11 +2,13 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
- import DashboardTable from '../components/DashboardTable.vue'
+ import DashboardTable from './DashboardTable.vue'
+ import UserCreation from './UserCreation.vue'
  export default {
      props: [ 'library_id' ],
      components: {
          DashboardTable,
+         UserCreation,
      },
      data() {
          return {
@@ -14,9 +16,14 @@
              error: null,
              success: null,
              users: [],
+             user_list_key: 0,
          }
      },
      methods: {
+         refresh_users() {
+             console.log("Refreshing");
+             this.user_list_key = this.user_list_key + '-x';
+         },
          reset_messages() {
              this.error = null;
              this.success = null;
@@ -54,6 +61,7 @@
      mounted() {
          this.reset_messages();
          this.fetch();
+         this.user_list_key = 'lib' + this.$route.params.id;
      }
  }
 </script>
@@ -121,7 +129,9 @@
         <h1 class="font-bold text-xl mb-6">{{ $gettext('Users') }}</h1>
         <DashboardTable :listing_url="'/collector/api/library/list-users/' + $route.params.id"
                         :removal_url="'/collector/api/library/remove-user/' + $route.params.id"
-                        :key="lib + '-' + $route.params.id" />
+                        :key="user_list_key" />
+        <h1 class="font-bold text-xl my-6">{{ $gettext('Add User') }}</h1>
+        <UserCreation :library_id="$route.params.id" @user-created="refresh_users"/>
       </div>
     </div>
     <div v-if="success" class="py-2 text-spectra-800 font-bold">
