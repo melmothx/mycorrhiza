@@ -4,6 +4,7 @@ import EntryView from '../views/EntryView.vue'
 import ExclusionView from '../views/ExclusionView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import PasswordResetView from '../views/PasswordResetView.vue'
+import LibraryEditView from '../views/LibraryEditView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -31,6 +32,11 @@ const router = createRouter({
             path: '/reset-password/:username/:token',
             name: 'reset_password',
             component: PasswordResetView,
+        },
+        {
+            path: '/edit-library/:id',
+            name: 'library_edit',
+            component: LibraryEditView,
         },
     ]
 })

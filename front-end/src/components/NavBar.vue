@@ -28,6 +28,7 @@
              username: null,
              password: null,
              authenticated: null,
+             user_data: {},
              message: null,
              reset_message: null,
              current_language: null,
@@ -39,8 +40,9 @@
              console.log("Checking user");
              axios.get('/collector/api/auth/user')
                   .then(function(res) {
-                      console.log(res);
+                      console.log(res.data);
                       vm.authenticated = res.data.logged_in;
+                      vm.user_data = res.data
                       vm.message = null;
                       vm.reset_message = null;
                   });
@@ -55,6 +57,7 @@
              }).then(function(res) {
                  if (res.data.logged_in) {
                      vm.authenticated = res.data.logged_in;
+                     vm.user_data = res.data
                      vm.message = null;
                      vm.$emit('refetchResults');
                  }
@@ -133,7 +136,7 @@
     </div>
 
     <div v-if="authenticated">
-      <Menu as="div" class="relative">
+      <Menu as="div" class="relative z-10">
         <div>
           <MenuButton class="inline-flex w-full justify-center text-spectra-800 h-8 p-1">
             <UserIcon class="h-5 w-5" title="User Menu" />
@@ -148,16 +151,25 @@
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
           <MenuItems class="absolute right-0 mt-1 max-h-60 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
-            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <MenuItem v-if="user_data.is_superuser" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <a href="/admin">
                 {{ $gettext('Admin') }}
               </a>
             </MenuItem>
-            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <MenuItem v-if="user_data.is_superuser || user_data.is_library_admin" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
                 {{ $gettext('Exclusions') }}
               </div>
             </MenuItem>
+            <template v-if="user_data.is_library_admin">
+              <template v-for="lib in user_data.libraries">
+                <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+                  <div @click="$router.push({ name: 'library_edit', params: { id: lib.id }})">
+                    {{ lib.name }}
+                  </div>
+                </MenuItem>
+              </template>
+            </template>
             <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <div @click="logout">
                 {{ $gettext('Logout') }}

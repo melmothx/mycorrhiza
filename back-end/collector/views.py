@@ -11,8 +11,9 @@ from django.conf import settings
 from amwmeta.utils import paginator, page_list
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
+from django.db.models import Q
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
@@ -33,6 +34,17 @@ pp = pprint.PrettyPrinter(indent=2)
 
 logger = logging.getLogger(__name__)
 
+def user_is_library_admin(user):
+    if not user.username:
+        return False
+    if user.is_superuser:
+        return True
+    elif hasattr(user, "profile") and user.profile.library_admin:
+        return True
+    else:
+        return False
+
+
 def api_login(request):
     out = { "logged_in": None, "error": None }
     try:
@@ -42,7 +54,7 @@ def api_login(request):
     user = authenticate(request, username=data.get('username'), password=data.get('password'))
     if user is not None:
         login(request, user)
-        out['logged_in'] = user.get_username()
+        out = _user_data(user)
     else:
         out['error'] = 'Invalid login'
     logger.debug(out)
@@ -128,17 +140,43 @@ def api_reset_password(request):
 
 @ensure_csrf_cookie
 def api_user(request):
-    # guaranteed to return the empty string
-    return JsonResponse({ "logged_in": request.user.get_username() })
+    return JsonResponse(_user_data(request.user))
+
+@user_passes_test(user_is_library_admin)
+def api_user_check(request, username):
+    has_username = User.objects.filter(username=username.strip().lower()).count()
+    return JsonResponse({ "username": username, "username_exists": has_username })
+
+def _user_data(user):
+    out = {
+        "logged_in": user.username,
+        "is_superuser": user.is_superuser,
+        "is_library_admin": False,
+        "libraries": [],
+    }
+    if user.username and hasattr(user, "profile"):
+        profile = user.profile
+        out["is_library_admin"] = profile.library_admin
+        out["libraries"] = [ { "id": l.id, "name": l.name } for l in profile.libraries.filter(active=True).all() ]
+
+    return out
 
 def _active_libraries(user):
-    active_libraries = [ lib.id for lib in Library.objects.filter(active=True, public=True).all() ]
+    query = Q(active=True) & Q(public=True)
     if user.is_authenticated and user.is_superuser:
         # exclude only the inactive
-        active_libraries = [ lib.id for lib in Library.objects.filter(active=True).all() ]
-    elif user.is_authenticated and user.profile:
-        # add the private one from the profile
-        active_libraries.extend([ lib.id for lib in user.profile.libraries.filter(active=True, public=False).all() ])
+        query = Q(active=True)
+    elif user.is_authenticated:
+        additional = Q(active=True) & Q(public=False) & Q(shared=True)
+        query = query | additional
+        if hasattr(user, "profile"):
+            private = []
+            for lib in user.profile.libraries.filter(active=True, public=False, shared=False).only('id').all():
+                private.append(lib.id)
+            if private:
+                query = query | Q(id__in=private)
+    logger.debug("Query is {}".format(query))
+    active_libraries = [ lib.id for lib in Library.objects.filter(query).only('id').all() ]
     logger.debug("Active libs are {}".format(active_libraries))
     return active_libraries
 
@@ -167,7 +205,10 @@ def api(request):
     res['total_entries'] = res['pager'].total_entries
     res['pager'] = page_list(res['pager'])
     res['is_authenticated'] = user.is_authenticated
-    res['can_set_exclusions'] = can_set_exclusions
+    res['can_set_exclusions'] = user.is_superuser
+    res['can_merge'] = user.is_superuser
+    if user.is_authenticated and not user.is_superuser and hasattr(user, "profile"):
+        res['can_merge'] = res['can_set_exclusions'] = user.profile.library_admin
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
@@ -278,7 +319,118 @@ def download_datasource(request, target):
     else:
         raise Http404("Not found")
 
-@login_required
+@user_passes_test(user_is_library_admin)
+def api_library_action(request, action, library_id):
+    out = {
+        "error": None,
+        "library": None,
+    }
+    columns = [
+        'name',
+        'url',
+        'email_public',
+        'email_internal',
+        'opening_hours',
+        'latitude',
+        'longitude',
+    ]
+    library = None
+    user = request.user
+    try:
+        if user.is_superuser:
+            library = Library.objects.get(pk=library_id)
+        elif hasattr(user, 'profile'):
+            library = user.profile.libraries.get(pk=library_id)
+    except Library.DoesNotExist:
+        out['error'] = "You cannot access this library"
+
+    if library and request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # expecting all these keys:
+            if action == "details":
+                for f in columns:
+                    value = data[f]
+                    if not value and f in [ 'latitude', 'longitude']:
+                        value = None
+                    setattr(library, f, value)
+                library.save()
+                out['success'] = 'OK'
+            elif action == "remove-user":
+                userid = data.get('id')
+                if userid:
+                    logger.debug("Removing {}".format(userid))
+                    try:
+                        profile = library.affiliated_profiles.get(pk=userid)
+                        profile.libraries.remove(library)
+                        # should we keep the user or set the user inactive?
+                        if not profile.libraries.count():
+                            logger.info("No other library associated, removing")
+                            profile.user.delete();
+                    except Profile.DoesNotExist:
+                        out['error'] = "No such affiliated user"
+            elif action == "create-user":
+                logger.debug(pp.pformat(data))
+                username = data.get('username', '').strip().lower()
+                logger.debug("Creating {}".format(username))
+                if username:
+                    try:
+                        user = User.objects.get(username=username)
+                    except User.DoesNotExist:
+                        user = User.objects.create_user(
+                            username,
+                            data.get('email') or library.email_internal,
+                            first_name=data.get('first_name', '').strip(),
+                            last_name=data.get('last_name', '').strip(),
+                        )
+
+                    if hasattr(user, 'profile'):
+                        profile = user.profile
+                    else:
+                        profile = Profile.objects.create(user=user)
+
+                    if profile.libraries.filter(pk=library.id).count():
+                        logger.info("User already has the library")
+                        out['error'] = "User already present"
+                    else:
+                        logger.info("Adding {} to {}".format(user.username, library.name))
+                        profile.libraries.add(library)
+                        out['success'] = "User added"
+
+        except json.JSONDecodeError:
+            out['error'] = "Invalid JSON!";
+
+    # refetch the values
+    if library:
+
+        if action == 'details':
+            out['library'] = Library.objects.values().get(pk=library.id)
+        elif action == 'list-users':
+            users = []
+            for profile in library.affiliated_profiles.filter(library_admin=False).all():
+                user = profile.user
+                user_data = {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "name": "{} {}".format(user.first_name, user.last_name),
+                    "last_login": None,
+                }
+                if user.last_login:
+                    user_data['last_login'] = user.last_login.strftime('%Y-%m-%d')
+                users.append(user_data)
+
+            out['records'] = users
+            out['fields'] = [
+                { 'name': 'id', 'label': 'Id' },
+                { 'name': 'username', 'label': 'Username' },
+                { 'name': 'email', 'label': 'Email' },
+                { 'name': 'name', 'label': 'Name' },
+                { 'name': 'last_login', 'label': 'Last Login' },
+            ]
+    return JsonResponse(out)
+
+@user_passes_test(user_is_library_admin)
 def exclusions(request):
     logger.debug(request.body)
     out = {}
@@ -317,7 +469,7 @@ def exclusions(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_set_aggregated(request):
     out = {}
     data = None
@@ -333,7 +485,7 @@ def api_set_aggregated(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_set_translations(request):
     out = {}
     data = None
@@ -350,7 +502,7 @@ def api_set_translations(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_merge(request, target):
     logger.debug(target)
     out = {}
@@ -408,7 +560,7 @@ def api_create(request, target):
     logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_listing(request, target):
     out = {
         "target": target
@@ -423,7 +575,7 @@ def api_listing(request, target):
                 merged.append(apidata)
         out['records'] = merged
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'id', 'label': 'Id' },
             { 'name': 'name', 'label': 'Name' },
             { 'name': 'canonical_id', 'label': 'Canonical ID' },
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
@@ -501,7 +653,7 @@ def api_listing(request, target):
         ]
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def api_revert(request, target):
     logger.debug(target)
     out = {}
@@ -522,9 +674,10 @@ def api_revert(request, target):
             out['error'] = "Missing target ID"
     else:
         out['error'] = "Invalid data"
+    logger.debug(out)
     return JsonResponse(out)
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:
@@ -550,7 +703,7 @@ def upload_spreadsheet(request):
 
     return render(request, "collector/spreadsheet.html", { "form": form })
 
-@login_required
+@user_passes_test(user_is_library_admin)
 def process_spreadsheet(request, target):
     sheet = get_object_or_404(SpreadsheetUpload, pk=target)
     if sheet and sheet.user and sheet.user.id == request.user.id:

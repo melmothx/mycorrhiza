@@ -57,11 +57,20 @@ class Library(models.Model):
                           blank=True,
                           null=True)
     public = models.BooleanField(default=False, null=False)
+    shared = models.BooleanField(default=False, null=False)
     active = models.BooleanField(default=True, null=False)
+    email_public = models.EmailField(blank=True)
+    email_internal = models.EmailField(blank=True)
+    opening_hours = models.TextField(blank=True)
+    latitude  = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
+    enable_check = models.BooleanField(default=False)
+    check_token = models.CharField(max_length=255, blank=True)
+    last_check = models.DateTimeField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     def __str__(self):
-        return self.name
+        return "{} [{}]".format(self.name, self.id)
     def as_api_dict(self):
         out = {}
         for f in ["id", "name", "url", "public", "active"]:
@@ -1119,13 +1128,12 @@ class Profile(models.Model):
                                 primary_key=True,
                                 on_delete=models.CASCADE,
                                 related_name="profile")
-    libraries = models.ManyToManyField(Library)
-    admin_library = models.ForeignKey(
-        Library,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="admin_profiles"
-    )
+    libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
+    library_admin = models.BooleanField(default=False)
+    affiliated_to = models.ForeignKey('self',
+                                      null=True,
+                                      on_delete=models.CASCADE,
+                                      related_name="affiliated_profiles")
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     password_reset_token = models.CharField(max_length=255, null=True, blank=True)
@@ -1180,7 +1188,7 @@ def manipulate(op, user, main_id, *ids, create=None):
         'revert-merged-entries': Entry,
 
         'add-exclusion': Exclusion,
-        'revert-exclusion': Exclusion,
+        'revert-exclusions': Exclusion,
 
         'add-aggregations': Entry,
         # no revert at the moment
@@ -1265,7 +1273,7 @@ def manipulate(op, user, main_id, *ids, create=None):
     elif op == 'add-exclusion':
         raise Exception('Not reached')
 
-    elif op == 'revert-exclusion':
+    elif op == 'revert-exclusions':
         log_user_operation(user, op, main_object, None)
         main_object.delete()
         out['success'] = "Removed"
