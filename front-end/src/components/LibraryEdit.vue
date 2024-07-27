@@ -4,11 +4,13 @@
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import DashboardTable from './DashboardTable.vue'
  import UserCreation from './UserCreation.vue'
+ import CsvUpload from './CsvUpload.vue'
  export default {
      props: [ 'library_id' ],
      components: {
          DashboardTable,
          UserCreation,
+         CsvUpload,
      },
      data() {
          return {
@@ -124,6 +126,9 @@
             <button class="btn-primary p-1" type="submit">{{ $gettext('Update') }}</button>
           </div>
         </form>
+        <div>
+          <CsvUpload :library_id="library_id" />
+        </div>
       </div>
       <div>
         <h1 class="font-bold text-xl mb-6">{{ $gettext('Users') }}</h1>

@@ -227,11 +227,10 @@
                type="text" placeholder="Search" v-model="query"/>
         <Listbox v-model="sort_by">
           <div class="relative m-0">
-            <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm
-                                  bg-perl-bush-50"
+            <ListboxButton class="mcrz-listbox-button"
                            v-slot="{ open }">
               <span class="block truncate">{{ $gettext(sort_by.name) }}</span>
-              <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <span class="mcrz-select-chevron-container">
                 <ChevronUpDownIcon
                     class="h-5 w-5 text-gray-400"
                     aria-hidden="true"
@@ -245,7 +244,7 @@
                 leave-active-class="transition duration-75 ease-in"
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0">
-              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-sm shadow-lg z-40">
+              <ListboxOptions class="mcrz-listbox-options">
                 <ListboxOption v-for="sv in sort_by_values"
                                :value="sv" :key="sv.id"
                                class="cursor-pointer hover:text-spectra-800 py-1"
@@ -256,11 +255,10 @@
         </Listbox>
         <Listbox v-if="sort_by.id != 'relevance'" v-model="sort_direction">
           <div class="relative m-0">
-            <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm
-                                  bg-perl-bush-50"
+            <ListboxButton class="mcrz-listbox-button"
                            v-slot="{ open }">
               <span class="block truncate">{{ $gettext(sort_direction.name) }}</span>
-              <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <span class="mcrz-select-chevron-container">
                 <ChevronUpDownIcon
                     class="h-5 w-5 text-gray-400"
                     aria-hidden="true"
@@ -274,7 +272,7 @@
                 leave-active-class="transition duration-75 ease-in"
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0">
-              <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 shadow-lg text-sm z-40">
+              <ListboxOptions class="mcrz-listbox-options">
                 <ListboxOption v-for="sd in sort_directions"
                                :value="sd" :key="sd.id"
                                class="cursor-pointer hover:text-spectra-800 py-1"

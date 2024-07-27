@@ -34,7 +34,7 @@ const router = createRouter({
             component: PasswordResetView,
         },
         {
-            path: '/edit-library/:id',
+            path: '/library-admin/:id',
             name: 'library_edit',
             component: LibraryEditView,
         },

@@ -93,6 +93,18 @@
     .mcrz-select {
         @apply outline outline-0 border border-0 focus:ring-0 active:ring-0 py-0;
     }
+    .mcrz-textarea {
+        @apply outline
+               outline-0
+               border
+               border-0
+               focus:ring-0 active:ring-0
+               px-2
+               text-old-copper-700
+               bg-perl-bush-50
+               placeholder:italic
+               flex-grow;
+    }
     .mcrz-input {
         @apply outline
                outline-0
@@ -104,4 +116,14 @@
                bg-perl-bush-50
                placeholder:italic flex-grow;
     }
+    .mcrz-listbox-button {
+        @apply relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50;
+    }
+    .mcrz-select-chevron-container {
+        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2;
+    }
+    .mcrz-listbox-options {
+        @apply absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-sm shadow-lg z-40;
+    }
 }
+
