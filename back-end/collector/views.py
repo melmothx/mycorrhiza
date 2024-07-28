@@ -678,6 +678,24 @@ def api_revert(request, target):
     return JsonResponse(out)
 
 @user_passes_test(user_is_library_admin)
+def api_spreadsheet(request, library_id):
+    out = {
+        "sites": [],
+        "csv_types": [ { "id": t[0], "title": t[1] } for t in SpreadsheetUpload.CSV_TYPES ],
+    }
+    library = None
+    sites = []
+    user = request.user
+    try:
+        library = Library.objects.get(pk=library_id)
+    except Library.DoesNotExist:
+        out['error'] = "Library does not exist"
+    if library:
+        if user.is_superuser or library.affiliated_profiles.filter(library_admin=True, user=user).count():
+            out['sites'] = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv") ]
+    return JsonResponse(out)
+
+@user_passes_test(user_is_library_admin)
 def upload_spreadsheet(request):
     user = request.user
     if user.is_superuser:

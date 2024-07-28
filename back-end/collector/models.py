@@ -100,7 +100,7 @@ class Site(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="sites")
     title = models.CharField(max_length=255)
-    url = models.URLField(max_length=255)
+    url = models.URLField(blank=True, max_length=255)
     last_harvested = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
     oai_set = models.CharField(max_length=64,
@@ -108,6 +108,7 @@ class Site(models.Model):
                                null=True)
     oai_metadata_format = models.CharField(max_length=32,
                                            null=True,
+                                           blank=True,
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     active = models.BooleanField(default=True, null=False)
@@ -118,7 +119,7 @@ class Site(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{} ({} - {})".format(self.title, self.site_type, self.url)
+        return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
 
     def last_harvested_zulu(self):
         dt = self.last_harvested
