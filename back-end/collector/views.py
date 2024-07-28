@@ -692,7 +692,34 @@ def api_spreadsheet(request, library_id):
         out['error'] = "Library does not exist"
     if library:
         if user.is_superuser or library.affiliated_profiles.filter(library_admin=True, user=user).count():
-            out['sites'] = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv") ]
+            sites = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv", active=True) ]
+    if sites:
+        if request.method == 'POST':
+            site_id = request.POST.get('site_id')
+            csv_type = request.POST.get('csv_type')
+            logger.debug("{} {}".format(site_id, csv_type))
+            logger.debug(pp.pformat(out))
+            logger.debug(pp.pformat(request.FILES))
+            logger.debug(pp.pformat(request.POST))
+            if site_id and site_id in [ str(s['id']) for s in sites ] and csv_type and csv_type in [ t['id'] for t in out['csv_types'] ]:
+                replace_all = False
+                if request.POST.get('replace_all', False):
+                    replace_all = True
+                logger.debug("Creating spreadsheet upload")
+
+                ss = SpreadsheetUpload.objects.create(user=user,
+                                                      spreadsheet=request.FILES['spreadsheet'],
+                                                      comment=request.POST.get('comment', ''),
+                                                      site_id=site_id,
+                                                      csv_type=csv_type,
+                                                      replace_all=replace_all)
+                out['uploaded'] = ss.id
+                out['success'] = "Spreadsheet uploaded"
+            else:
+                out['error'] = "Invalid parameters"
+        else:
+            out['sites'] = sites
+
     return JsonResponse(out)
 
 @user_passes_test(user_is_library_admin)

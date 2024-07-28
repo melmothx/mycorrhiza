@@ -46,6 +46,29 @@
          },
          upload () {
              console.log("Uploading");
+             let form_data = new FormData();
+             form_data.append('spreadsheet', this.spreadsheet);
+             form_data.append('site_id', this.site.id);
+             form_data.append('csv_type', this.csv_type.id);
+             form_data.append('comment', this.comment);
+             form_data.append('replace_all', this.replace_all ? "1" : "");
+             console.log(form_data);
+             this.error = null;
+             this.success = null;
+             axios.post('/collector/api/spreadsheet/' + this.library_id,
+                        form_data, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                  .then(res => {
+                      console.log(res.data);
+                      this.error = res.data.error;
+                      this.success = res.data.success;
+                  })
+                  .catch(err => {
+                      this.error = err;
+                  });
          },
      },
      mounted() {
