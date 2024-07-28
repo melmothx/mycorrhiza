@@ -713,12 +713,40 @@ def api_spreadsheet(request, library_id):
                                                       site_id=site_id,
                                                       csv_type=csv_type,
                                                       replace_all=replace_all)
-                out['uploaded'] = ss.id
-                out['success'] = "Spreadsheet uploaded"
+                validation = ss.validate_csv()
+                logger.debug(validation)
+                validated_sample = validation['sample']
+                out['sample'] = [ { "name": k, "value":  validated_sample[k] } for k in validated_sample ]
+                out['error'] = validation['error']
+                if not validation['error']:
+                    out['uploaded'] = ss.id
+                    out['success'] = "Spreadsheet uploaded"
+                else:
+                    # remove record?
+                    pass
             else:
                 out['error'] = "Invalid parameters"
         else:
             out['sites'] = sites
+
+    return JsonResponse(out)
+
+@user_passes_test(user_is_library_admin)
+def api_process_spreadsheet(request, spreadsheet_id):
+    user = request.user
+    out = {}
+    ss = None
+    try:
+        ss = user.uploaded_spreadsheets.filter(processed=None).get(pk=spreadsheet_id)
+    except SpreadsheetUpload.DoesNotExist:
+        out['error'] = "Bad ID"
+
+    if request.method == "POST" and ss:
+        if ss.validate_csv()['sample']:
+            ss.process_csv()
+            out['success'] = "Sheet processed"
+        else:
+            out['error'] = "Invalid CSV"
 
     return JsonResponse(out)
 

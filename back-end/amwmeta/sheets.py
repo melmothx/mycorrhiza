@@ -24,12 +24,18 @@ def parse_sheet(csv_type, sheet, **options):
     with open(sheet, newline='', encoding=args[csv_type]['encoding']) as csvfile:
         reader = csv.DictReader(csvfile, **args[csv_type]['csv'])
         out = []
-        for row in reader:
+        try:
+            for row in reader:
+                if options.get('sample'):
+                    logger.debug(row)
+                    return { "error": None, "sample": row }
+                out.append(row)
+            return out
+        except UnicodeDecodeError as error:
+            logger.error(error)
             if options.get('sample'):
-                logger.debug(row)
-                return row
-            out.append(row)
-        return out
+                return { "error": str(error), "sample": {} }
+            return []
 
 def normalize_records(csv_type, records):
     mappings = {

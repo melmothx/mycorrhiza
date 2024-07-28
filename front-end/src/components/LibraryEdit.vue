@@ -126,9 +126,6 @@
             <button class="btn-primary p-1" type="submit">{{ $gettext('Update') }}</button>
           </div>
         </form>
-        <div>
-          <CsvUpload :library_id="library_id" />
-        </div>
       </div>
       <div>
         <h1 class="font-bold text-xl mb-6">{{ $gettext('Users') }}</h1>
@@ -139,8 +136,8 @@
         <UserCreation :library_id="$route.params.id" @user-created="refresh_users"/>
       </div>
     </div>
-    <div v-if="success" class="py-2 text-spectra-800 font-bold">
-      {{ $gettext(success) }}
+    <div>
+      <CsvUpload :library_id="library_id" />
     </div>
   </div>
 </template>

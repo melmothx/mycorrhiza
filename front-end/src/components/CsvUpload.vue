@@ -22,6 +22,7 @@
              "replace_all": false,
              "error": null,
              "success": null,
+             "sample": [],
          }
      },
      methods: {
@@ -41,7 +42,6 @@
          },
          load_file(event) {
              this.spreadsheet = event.target.files[0];
-             console.log(this.spreadsheet);
              this.spreadsheet_name = this.spreadsheet.name;
          },
          upload () {
@@ -65,10 +65,35 @@
                       console.log(res.data);
                       this.error = res.data.error;
                       this.success = res.data.success;
+                      this.sample = res.data.sample;
+                      this.spreadsheet_id = res.data.uploaded;
                   })
                   .catch(err => {
                       this.error = err;
                   });
+         },
+         confirm_process() {
+             this.sample = [];
+             this.spreadsheet = null;
+             this.spreadsheet_name = null;
+             axios.post('/collector/api/spreadsheet/process/' + this.spreadsheet_id)
+                  .then(res => {
+                      console.log(res.data)
+                      this.spreadsheet_id = null;
+                      this.error = res.data.error;
+                      this.success = res.data.success;
+                  })
+                  .catch(err => {
+                      this.error = err;
+                  });
+         },
+         cancel_process() {
+             this.error = null;
+             this.success = null;
+             this.sample = [];
+             this.spreadsheet_id = null;
+             this.spreadsheet = null;
+             this.spreadsheet_name = null;
          },
      },
      mounted() {
@@ -77,15 +102,15 @@
  }
 </script>
 <template>
-  <div v-if="error" class="py-2 text-claret-900 font-bold">
-    {{ $gettext(error) }}
-  </div>
-  <div v-if="success" class="py-2 text-spectra-800 font-bold">
-    {{ $gettext(success) }}
-  </div>
-  <div class="mt-4" v-if="site_options.length">
+  <div class="mt-8" v-if="site_options.length && !sample.length">
     <form @submit.prevent="upload">
-      <h1 class="font-bold text-xl mb-6">{{ $gettext('Upload a CSV') }}</h1>
+      <h1 class="font-bold text-xl mb-2">{{ $gettext('Upload a CSV') }}</h1>
+      <div v-if="error" class="py-2 text-claret-900 font-bold">
+        {{ $gettext(error) }}
+      </div>
+      <div v-if="success" class="py-2 text-spectra-800 font-bold">
+        {{ $gettext(success) }}
+      </div>
       <div class="mb-4">
         <div>
           <label for="csv-upload-file" class="btn-accent p-1 mr-3 cursor-pointer">
@@ -180,5 +205,40 @@
         </button>
       </div>
     </form>
+  </div>
+  <div v-if="sample.length">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ $gettext('Column Name') }}</th>
+          <th>{{ $gettext('Value') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-for="col in sample">
+          <tr v-if="col.name">
+            <td>
+              {{ col.name }}
+            </td>
+            <td>
+              {{ col.value }}
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+    <button v-if="spreadsheet_id"
+            @click="confirm_process"
+            class="btn-primary p-1"
+            type="button">
+      {{ $gettext('Process File') }}
+    </button>
+    <button v-if="spreadsheet_id"
+            @click="cancel_process"
+            class="btn-primary p-1"
+            type="button">
+      {{ $gettext('Cancel') }}
+    </button>
+
   </div>
 </template>

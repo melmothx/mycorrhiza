@@ -22,6 +22,5 @@ urlpatterns = [
     path("api/create/<target>", views.api_create, name="api_create"),
     path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
-    path("spreadsheet", views.upload_spreadsheet, name="spreadsheet"),
-    path("spreadsheet/<target>", views.process_spreadsheet, name="process_spreadsheet"),
+    path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),
 ]
