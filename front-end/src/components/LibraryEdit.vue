@@ -126,7 +126,7 @@
         <DashboardTable :listing_url="'/collector/api/library/list-users/' + $route.params.id"
                         :removal_url="'/collector/api/library/remove-user/' + $route.params.id"
                         :key="user_list_key" />
-        <h1 class="font-bold text-xl my-6">{{ $gettext('Add User') }}</h1>
+        <h1 class="font-bold text-xl mt-6">{{ $gettext('Add User') }}</h1>
         <UserCreation :library_id="$route.params.id" @user-created="refresh_users"/>
       </div>
     </div>
