@@ -326,7 +326,6 @@ def api_library_action(request, action, library_id):
         "library": None,
     }
     columns = [
-        'name',
         'url',
         'email_public',
         'email_internal',

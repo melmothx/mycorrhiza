@@ -80,12 +80,6 @@
         <h1 class="font-bold text-xl">{{ library.name }}</h1>
         <form @submit.prevent="update">
           <div>
-            <label for="library-name">{{ $gettext('Name') }}</label>
-            <div class="flex">
-              <input class="mcrz-input" id="library-name" v-model="library.name" required/>
-            </div>
-          </div>
-          <div>
             <label for="library-url">{{ $gettext('Internet address') }}</label>
             <div class="flex">
               <input class="mcrz-input" id="library-url" v-model="library.url" />

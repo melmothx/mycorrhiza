@@ -110,7 +110,7 @@
       </div>
     </div>
     <div class="mt-2">
-      <button class="btn-primary p-1" type="submit">{{ $gettext('Add user to this library') }}</button>
+      <button class="btn-primary p-1" type="submit">{{ $gettext('Add') }}</button>
     </div>
   </form>
 </template>
