@@ -28,6 +28,8 @@ DATABASES = {
 }
 STATIC_ROOT = "/home/mycorrhiza/static"
 DEBUG = False
+CANONICAL_ADDRESS = "https://my.host.org"
+MYCORRHIZA_EMAIL_FROM  = "noreply@my.host.org"
 ```
 
 
@@ -51,3 +53,5 @@ python manage.py harvest
 
 Now `http://127.0.0.1:8000/admin` should be working.
 
+The `MEDIA_ROOT` should not be exposed to the webserver. The only
+uploads we have are CSV which should not be public.

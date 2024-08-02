@@ -90,6 +90,10 @@ class Site(models.Model):
         (OAI_DC, "Dublin Core"),
         (MARC21, "MARC XML"),
     ]
+    CSV_TYPES = [
+        ('calibre', 'Calibre'),
+        ('abebooks_home_base', 'Abebooks Home Base'),
+    ]
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),
         ('generic', "Generic OAI-PMH"),
@@ -111,6 +115,12 @@ class Site(models.Model):
                                            blank=True,
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
+    csv_type = models.CharField(
+        max_length=32,
+        null=True,
+        blank=True,
+        choices=CSV_TYPES,
+    )
     active = models.BooleanField(default=True, null=False)
     has_raw = models.BooleanField(default=False)
     has_text = models.BooleanField(default=False)
@@ -302,8 +312,7 @@ class Site(models.Model):
             languages.append(obj)
 
 
-
-        # logger.debug(record)
+        logger.debug(record)
         identifier = record.pop('identifier')
 
         ds_attributes = [
@@ -1076,10 +1085,6 @@ def spreadsheet_upload_directory(instance, filename):
                                              "".join(random.choice(choices) for i in range(20)))
 
 class SpreadsheetUpload(models.Model):
-    CSV_TYPES = [
-        ('calibre', 'Calibre'),
-        ('abebooks_home_base', 'Abebooks Home Base'),
-    ]
     user = models.ForeignKey(
         User,
         null=True,
@@ -1090,17 +1095,18 @@ class SpreadsheetUpload(models.Model):
     comment = models.TextField(blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
+
     replace_all = models.BooleanField(default=False, null=False)
     processed = models.DateTimeField(null=True, blank=True)
+    error = models.TextField(null=True, blank=True)
 
     def validate_csv(self):
-        return parse_sheet(self.csv_type, self.spreadsheet.path, sample=True)
+        return parse_sheet(self.site.csv_type, self.spreadsheet.path, sample=True)
 
     def process_csv(self):
         now = datetime.now(timezone.utc)
-        records = normalize_records(self.csv_type,
-                                    parse_sheet(self.csv_type, self.spreadsheet.path))
+        records = normalize_records(self.site.csv_type,
+                                    parse_sheet(self.site.csv_type, self.spreadsheet.path))
         site = self.site
         hostname = site.hostname()
         aliases = site.record_aliases()
@@ -1133,6 +1139,7 @@ class Profile(models.Model):
     library_admin = models.BooleanField(default=False)
     affiliated_to = models.ForeignKey('self',
                                       null=True,
+                                      blank=True,
                                       on_delete=models.CASCADE,
                                       related_name="affiliated_profiles")
     created = models.DateTimeField(auto_now_add=True)

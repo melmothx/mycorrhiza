@@ -17,7 +17,6 @@ from django.db.models import Q
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
-from .forms import SpreadsheetForm
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail
@@ -680,7 +679,6 @@ def api_revert(request, target):
 def api_spreadsheet(request, library_id):
     out = {
         "sites": [],
-        "csv_types": [ { "id": t[0], "title": t[1] } for t in SpreadsheetUpload.CSV_TYPES ],
     }
     library = None
     sites = []
@@ -695,22 +693,19 @@ def api_spreadsheet(request, library_id):
     if sites:
         if request.method == 'POST':
             site_id = request.POST.get('site_id')
-            csv_type = request.POST.get('csv_type')
-            logger.debug("{} {}".format(site_id, csv_type))
+            logger.debug("Site id {}".format(site_id))
             logger.debug(pp.pformat(out))
             logger.debug(pp.pformat(request.FILES))
             logger.debug(pp.pformat(request.POST))
-            if site_id and site_id in [ str(s['id']) for s in sites ] and csv_type and csv_type in [ t['id'] for t in out['csv_types'] ]:
+            if site_id and site_id in [ str(s['id']) for s in sites ]:
                 replace_all = False
                 if request.POST.get('replace_all', False):
                     replace_all = True
                 logger.debug("Creating spreadsheet upload")
-
                 ss = SpreadsheetUpload.objects.create(user=user,
                                                       spreadsheet=request.FILES['spreadsheet'],
                                                       comment=request.POST.get('comment', ''),
                                                       site_id=site_id,
-                                                      csv_type=csv_type,
                                                       replace_all=replace_all)
                 validation = ss.validate_csv()
                 logger.debug(validation)
@@ -749,53 +744,3 @@ def api_process_spreadsheet(request, spreadsheet_id):
 
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
-def upload_spreadsheet(request):
-    user = request.user
-    if user.is_superuser:
-        queryset = Site.objects.filter(active=True, site_type="csv").order_by("url")
-    else:
-        active_libraries = _active_libraries(user)
-        queryset = Site.objects.filter(library_id__in=active_libraries,
-                                       active=True,
-                                       site_type="csv").order_by("url")
-
-    form = SpreadsheetForm()
-    if request.method == "POST":
-        form = SpreadsheetForm(request.POST, request.FILES)
-
-    form.fields["site"].queryset = queryset
-
-    if request.method == "POST" and form.is_valid():
-        logger.debug("Form is valid")
-        new_sheet = form.save()
-        new_sheet.user = user
-        new_sheet.save()
-        return HttpResponseRedirect(reverse("process_spreadsheet", args=[new_sheet.id]))
-
-    return render(request, "collector/spreadsheet.html", { "form": form })
-
-@user_passes_test(user_is_library_admin)
-def process_spreadsheet(request, target):
-    sheet = get_object_or_404(SpreadsheetUpload, pk=target)
-    if sheet and sheet.user and sheet.user.id == request.user.id:
-        sample = sheet.validate_csv()
-        if sample:
-            if request.method == "POST" and request.POST and request.POST["process"]:
-                sheet.process_csv()
-                messages.success(request, "Spreadsheet Processed")
-                return HttpResponseRedirect(reverse("spreadsheet"))
-            else:
-                return render(
-                    request,
-                    "collector/process_spreadsheet.html",
-                    {
-                        "target": target,
-                        "sample": sample,
-                    }
-                )
-        else:
-            messages.error(request, "Invalid CSV")
-            return HttpResponseRedirect(reverse("spreadsheet"))
-    else:
-        raise Http404("You did not upload such sheet")
