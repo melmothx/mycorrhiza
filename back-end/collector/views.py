@@ -372,6 +372,7 @@ def api_library_action(request, action, library_id):
                 username = data.get('username', '').strip().lower()
                 logger.debug("Creating {}".format(username))
                 if username:
+                    user_created = False
                     try:
                         user = User.objects.get(username=username)
                     except User.DoesNotExist:
@@ -381,11 +382,32 @@ def api_library_action(request, action, library_id):
                             first_name=data.get('first_name', '').strip(),
                             last_name=data.get('last_name', '').strip(),
                         )
+                        user_created = True
 
                     if hasattr(user, 'profile'):
                         profile = user.profile
                     else:
                         profile = Profile.objects.create(user=user)
+
+                    if user_created:
+                        profile.password_reset_token = token_urlsafe(16)
+                        profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
+                        profile.save()
+                        url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
+                                                               user.username,
+                                                               profile.password_reset_token)
+                        mail_body = """
+Your user {} has been created.
+
+Please visit {} to set the password.
+
+The link is valid for 10 minutes. You can always request another links
+"""
+                        send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS,
+                                                                              user.username),
+                                  mail_body.format(user.username, url),
+                                  settings.MYCORRHIZA_EMAIL_FROM,
+                                  [user.email])
 
                     if profile.libraries.filter(pk=library.id).count():
                         logger.info("User already has the library")
