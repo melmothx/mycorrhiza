@@ -390,6 +390,10 @@ def api_library_action(request, action, library_id):
                         profile = Profile.objects.create(user=user)
 
                     if user_created:
+                        if data.get('can_merge'):
+                            profile.can_merge = True
+                        if data.get('expiration'):
+                            profile.expiration = data.get('expiration')
                         profile.password_reset_token = token_urlsafe(16)
                         profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
                         profile.save()
@@ -435,7 +439,14 @@ The link is valid for 10 minutes. You can always request another links
                     "email": user.email,
                     "name": "{} {}".format(user.first_name, user.last_name),
                     "last_login": None,
+                    "can_merge": None,
+                    "expiration": None,
                 }
+                if profile.can_merge:
+                    user_data["can_merge"] = "Yes"
+                if profile.expiration:
+                    user_data["expiration"] = profile.expiration.strftime('%Y-%m-%d')
+
                 if user.last_login:
                     user_data['last_login'] = user.last_login.strftime('%Y-%m-%d')
                 users.append(user_data)
@@ -447,6 +458,9 @@ The link is valid for 10 minutes. You can always request another links
                 { 'name': 'email', 'label': 'Email' },
                 { 'name': 'name', 'label': 'Name' },
                 { 'name': 'last_login', 'label': 'Last Login' },
+                { 'name': 'expiration', 'label': 'Expires' },
+                { 'name': 'can_merge', 'label': 'Can Merge' },
+
             ]
     return JsonResponse(out)
 

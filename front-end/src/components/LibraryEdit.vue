@@ -2,30 +2,17 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
- import DashboardTable from './DashboardTable.vue'
- import UserCreation from './UserCreation.vue'
- import CsvUpload from './CsvUpload.vue'
  export default {
      props: [ 'library_id' ],
-     components: {
-         DashboardTable,
-         UserCreation,
-         CsvUpload,
-     },
      data() {
          return {
              library: {},
              error: null,
              success: null,
              users: [],
-             user_list_key: 0,
          }
      },
      methods: {
-         refresh_users() {
-             console.log("Refreshing");
-             this.user_list_key = this.user_list_key + '-x';
-         },
          reset_messages() {
              this.error = null;
              this.success = null;
@@ -63,21 +50,20 @@
      mounted() {
          this.reset_messages();
          this.fetch();
-         this.user_list_key = 'lib' + this.$route.params.id;
      }
  }
 </script>
 <template>
-  <div class="m-8">
+  <div>
     <div v-if="error" class="py-2 text-claret-900 font-bold">
       {{ $gettext(error) }}
     </div>
     <div v-if="success" class="py-2 text-spectra-800 font-bold">
       {{ $gettext(success) }}
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-[250px_auto] gap-4">
+    <div>
       <div>
-        <h1 class="font-bold text-xl">{{ library.name }}</h1>
+        <h1 class="font-bold text-claret-900 text-xl">{{ library.name }}</h1>
         <form @submit.prevent="update">
           <div>
             <label for="library-url">{{ $gettext('Internet address') }}</label>
@@ -121,17 +107,6 @@
           </div>
         </form>
       </div>
-      <div>
-        <h1 class="font-bold text-xl mb-6">{{ $gettext('Users') }}</h1>
-        <DashboardTable :listing_url="'/collector/api/library/list-users/' + $route.params.id"
-                        :removal_url="'/collector/api/library/remove-user/' + $route.params.id"
-                        :key="user_list_key" />
-        <h1 class="font-bold text-xl mt-6">{{ $gettext('Add User') }}</h1>
-        <UserCreation :library_id="$route.params.id" @user-created="refresh_users"/>
-      </div>
-    </div>
-    <div>
-      <CsvUpload :library_id="library_id" />
     </div>
   </div>
 </template>

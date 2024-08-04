@@ -97,7 +97,7 @@
  }
 </script>
 <template>
-  <div class="mt-8" v-if="site_options.length && !sample.length">
+  <div v-if="site_options.length && !sample.length">
     <form @submit.prevent="upload">
       <h1 class="font-bold text-xl mb-2">{{ $gettext('Upload a CSV') }}</h1>
       <div v-if="error" class="py-2 text-claret-900 font-bold">

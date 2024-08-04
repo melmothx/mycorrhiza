@@ -1137,6 +1137,8 @@ class Profile(models.Model):
                                 related_name="profile")
     libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
     library_admin = models.BooleanField(default=False)
+    can_merge = models.BooleanField(default=False)
+    expiration = models.DateTimeField(null=True, blank=True)
     affiliated_to = models.ForeignKey('self',
                                       null=True,
                                       blank=True,

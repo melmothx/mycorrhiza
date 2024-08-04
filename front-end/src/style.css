@@ -105,6 +105,17 @@
                placeholder:italic
                flex-grow;
     }
+    .mcrz-date {
+        @apply outline
+               outline-0
+               border
+               border-0
+               focus:ring-0 active:ring-0
+               px-2
+               text-old-copper-700
+               bg-perl-bush-50
+               placeholder:italic
+    }
     .mcrz-input {
         @apply outline
                outline-0
