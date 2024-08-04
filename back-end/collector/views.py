@@ -397,21 +397,25 @@ def api_library_action(request, action, library_id):
                         profile.password_reset_token = token_urlsafe(16)
                         profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
                         profile.save()
-                        url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
+                        profile.refresh_from_db()
+                        if user.email:
+                            url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
                                                                user.username,
                                                                profile.password_reset_token)
-                        mail_body = """
-Your user {} has been created.
+                            mail_body = [
+                                "Your user {} has been created.".format(user.username),
+                                "Please visit {} to set the password.".format(url),
+                                "The link is valid for 10 minutes. You can always request another link one.",
+                            ]
+                            if profile.expiration:
+                                iso_date = profile.expiration.strftime('%Y-%m-%d')
+                                mail_body.append("This account will expire on {}.".format(iso_date))
 
-Please visit {} to set the password.
-
-The link is valid for 10 minutes. You can always request another links
-"""
-                        send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS,
-                                                                              user.username),
-                                  mail_body.format(user.username, url),
-                                  settings.MYCORRHIZA_EMAIL_FROM,
-                                  [user.email])
+                            send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS,
+                                                                                  user.username),
+                                      "\n\n".join(mail_body),
+                                      settings.MYCORRHIZA_EMAIL_FROM,
+                                      [user.email])
 
                     if profile.libraries.filter(pk=library.id).count():
                         logger.info("User already has the library")

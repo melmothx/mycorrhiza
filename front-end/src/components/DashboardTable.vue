@@ -121,10 +121,10 @@
  */
 </script>
 <template>
+  <div v-if="table_title">
+    <h1 class="font-bold text-xl mb-2">{{ table_title }}</h1>
+  </div>
   <div v-if="all_records.length > 0">
-    <div v-if="table_title">
-      <h1 class="font-bold text-xl mb-2">{{ table_title }}</h1>
-    </div>
     <div v-if="working" class="m-2 text-center">
       <span class="animate-ping rounded-full text-claret-900 p-2">{{ $gettext('Working') }}</span>
     </div>
@@ -176,6 +176,6 @@
     </table>
   </div>
   <div v-else>
-    <em>{{ $gettext('Nothing to show') }}</em>
+    <em>{{ $gettext('No records') }}</em>
   </div>
 </template>
