@@ -148,13 +148,26 @@ def api_user_check(request, username):
 
 def _user_data(user):
     out = {
-        "logged_in": user.username,
-        "is_superuser": user.is_superuser,
+        "logged_in": None,
+        "is_superuser": False,
         "is_library_admin": False,
         "libraries": [],
+        "message": None,
     }
-    if user.username and hasattr(user, "profile"):
-        profile = user.profile
+    if user and user.username:
+        # make sure we have a profile
+        if hasattr(user, 'profile'):
+            profile = user.profile
+        else:
+            profile = Profile.objects.create(user=user)
+
+        if profile.expiration and datetime.now(timezone.utc) > profile.expiration:
+            logger.info("Removing {}: expired account on {}".format(user.username, profile.expiration))
+            user.delete()
+            out["message"] = "Sorry, your account is expired!"
+            return out
+        out["logged_in"] = user.username
+        out["is_superuser"] = user.is_superuser
         out["is_library_admin"] = profile.library_admin
         out["libraries"] = [ { "id": l.id, "name": l.name } for l in profile.libraries.filter(active=True).all() ]
 

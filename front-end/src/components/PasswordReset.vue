@@ -16,19 +16,18 @@
      },
      methods: {
          reset_password() {
-             const vm = this;
-             vm.error = null;
+             this.error = null;
              axios.post('/collector/api/auth/reset-password', {
                  "operation": "reset",
-                 "username": vm.username,
-                 "token": vm.token,
-                 "password": vm.password,
-             }).then(function(res) {
+                 "username": this.username,
+                 "token": this.token,
+                 "password": this.password,
+             }).then((res) => {
                  if (res.data.logged_in) {
-                     vm.$router.push({ name: 'home' });
+                     this.$router.push({ name: 'home' });
                  }
                  else {
-                     vm.error = res.data.error;
+                     this.error = res.data.error;
                  }
              });
          }
@@ -59,6 +58,7 @@
   <h1 class="text-xl text-center font-semibold mt-8 mb-4">
     {{ $gettext('Reset password for %1', username) }}
   </h1>
+  <form @submit.prevent="reset_password">
   <div class="text-center p-2">
     <input class="mcrz-input shadow w-64"
            @input="error = ''"
@@ -72,9 +72,8 @@
     </p>
   </div>
   <div v-if="ready_to_go" class="text-center p-2">
-    <button @click="reset_password"
-            class="h-8 btn-secondary rounded-none italic font-normal w-64"
-            type="button">
+    <button class="h-8 btn-secondary rounded-none italic font-normal w-64"
+            type="submit">
       {{ $gettext('Reset password for %1', username) }}
     </button>
     <p v-if="error" class="text-claret-900 font-bold">
@@ -84,4 +83,5 @@
   <div v-else class="text-center p-2 font-bold">
     {{ $gettext('Please type your new password in both fields') }}
   </div>
+  </form>
 </template>
