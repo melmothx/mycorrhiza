@@ -876,7 +876,7 @@ class DataSource(models.Model):
         if site.site_type == 'amusewiki':
             return re.sub(r'((\.[a-z0-9]+)+)$',
                           '',
-                          self.uri)
+                          site.url)
         else:
             return None
 
@@ -1155,6 +1155,14 @@ class Profile(models.Model):
         else:
             return False
 
+    def can_merge_entries(self):
+        if self.library_admin:
+            return True
+        elif self.can_merge:
+            return True
+        else:
+            return False
+
 class ChangeLog(models.Model):
     user = models.ForeignKey(
         User,
@@ -1182,8 +1190,23 @@ def manipulate(op, user, main_id, *ids, create=None):
         "error": None,
         "msg": None,
     }
-    if user:
-        out['username'] = user.username
+    if not user:
+        out['error']: "Missing User"
+        return out
+
+    out['username'] = user.username
+
+    if op == "revert-exclusions" or op == "add-exclusion":
+        # we just need the login
+        pass
+    elif user.is_superuser:
+        pass
+    elif hasattr(user, 'profile') and user.profile.can_merge_entries():
+        # needs the can_merge_entries logic
+        pass
+    else:
+        out['error'] = "Cannot do that"
+        return out
 
     logger.info("Calling manipulate " + pp.pformat(out))
     reindex = []
@@ -1204,10 +1227,6 @@ def manipulate(op, user, main_id, *ids, create=None):
         # no revert at the moment
 
     }
-    if not user:
-        out['error']: "Missing User"
-        return out
-
     if not main_id and not create:
         out['error']: "Missing ID"
         return out
@@ -1284,9 +1303,12 @@ def manipulate(op, user, main_id, *ids, create=None):
         raise Exception('Not reached')
 
     elif op == 'revert-exclusions':
-        log_user_operation(user, op, main_object, None)
-        main_object.delete()
-        out['success'] = "Removed"
+        if main_object.user.username == user.username:
+            log_user_operation(user, op, main_object, None)
+            main_object.delete()
+            out['success'] = "Removed"
+        else:
+            out['error'] = "Cannot do that"
 
     else:
         raise Exception("Bug! Missing handler for " + op)

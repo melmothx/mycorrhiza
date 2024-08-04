@@ -155,7 +155,7 @@
                 {{ $gettext('Admin') }}
               </a>
             </MenuItem>
-            <MenuItem v-if="user_data.is_superuser || user_data.is_library_admin" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
                 {{ $gettext('Exclusions') }}
               </div>

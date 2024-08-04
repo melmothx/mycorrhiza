@@ -43,6 +43,15 @@ def user_is_library_admin(user):
     else:
         return False
 
+def user_can_merge(user):
+    if not user.username:
+        return False
+    if user.is_superuser:
+        return True
+    elif hasattr(user, "profile") and user.profile.can_merge_entries():
+        return True
+    else:
+        return False
 
 def api_login(request):
     out = { "logged_in": None, "error": None }
@@ -219,8 +228,13 @@ def api(request):
     res['is_authenticated'] = user.is_authenticated
     res['can_set_exclusions'] = user.is_superuser
     res['can_merge'] = user.is_superuser
+
     if user.is_authenticated and not user.is_superuser and hasattr(user, "profile"):
-        res['can_merge'] = res['can_set_exclusions'] = user.profile.library_admin
+        profile = user.profile
+        # authenticated users can set exclusion
+        res['can_set_exclusions'] = True
+        res['can_merge'] = profile.can_merge_entries()
+
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
@@ -481,7 +495,7 @@ def api_library_action(request, action, library_id):
             ]
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def exclusions(request):
     logger.debug(request.body)
     out = {}
@@ -536,7 +550,7 @@ def api_set_aggregated(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@user_passes_test(user_can_merge)
 def api_set_translations(request):
     out = {}
     data = None
@@ -553,7 +567,7 @@ def api_set_translations(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@user_passes_test(user_can_merge)
 def api_merge(request, target):
     logger.debug(target)
     out = {}
@@ -611,12 +625,12 @@ def api_create(request, target):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def api_listing(request, target):
     out = {
         "target": target
     }
-    if target == 'merged-agents':
+    if target == 'merged-agents' and user_can_merge(request.user):
         merged = []
         for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
             apidata = agent.as_api_dict(get_canonical=True)
@@ -632,7 +646,7 @@ def api_listing(request, target):
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
         ]
 
-    elif target == 'translations':
+    elif target == 'translations' and user_can_merge(request.user):
         translations = []
         for entry in Entry.objects.filter(original_entry_id__isnull=False).all():
             apidata = entry.as_api_dict(get_original=True)
@@ -660,7 +674,7 @@ def api_listing(request, target):
         out['records'] = translations
 
 
-    elif target == 'merged-entries':
+    elif target == 'merged-entries' and user_can_merge(request.user):
         merged = []
         for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
             apidata = entry.as_api_dict(get_canonical=True)
@@ -689,7 +703,7 @@ def api_listing(request, target):
 
     elif target == 'exclusions':
         records = []
-        for ex in Exclusion.objects.all():
+        for ex in Exclusion.objects.filter(user=request.user).all():
             rec = ex.as_api_dict()
             rec['username'] = rec['excluded_by']['username']
             records.append(rec)
@@ -704,7 +718,7 @@ def api_listing(request, target):
         ]
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def api_revert(request, target):
     logger.debug(target)
     out = {}

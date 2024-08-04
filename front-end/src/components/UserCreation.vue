@@ -14,6 +14,8 @@
              first_name: null,
              last_name: null,
              user_exists: false,
+             expiration: null,
+             can_merge: null,
          }
      },
      methods: {
