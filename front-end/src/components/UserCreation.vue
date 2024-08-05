@@ -14,6 +14,8 @@
              first_name: null,
              last_name: null,
              user_exists: false,
+             expiration: null,
+             can_merge: null,
          }
      },
      methods: {
@@ -24,6 +26,8 @@
              this.username = null;
              this.first_name = null;
              this.last_name = null;
+             this.expiration = null;
+             this.can_merge = false;
              this.user_exists = false;
          },
          create_user() {
@@ -33,6 +37,8 @@
                      email: this.email,
                      first_name: this.first_name || '',
                      last_name: this.last_name || '',
+                     expiration: this.expiration,
+                     can_merge: this.can_merge,
                  };
                  axios.post('/collector/api/library/create-user/' + this.library_id, user)
                       .then(res => {
@@ -75,6 +81,7 @@
  }
 </script>
 <template>
+  <h1 class="font-bold text-xl">{{ $gettext('Add User') }}</h1>
   <div v-if="error" class="py-2 text-claret-900 font-bold">
     {{ $gettext(error) }}
   </div>
@@ -109,8 +116,22 @@
         <input class="mcrz-input" id="user-last-name" v-model="last_name" />
       </div>
     </div>
+    <div>
+      <label for="user-expiration">{{ $gettext('User expiration (optional)') }}</label>
+      <div>
+        <input id="user-expiration" class="mcrz-date" type="date" v-model="expiration">
+      </div>
+    </div>
+    <div>
+      <label>
+        <input type="checkbox" class="mcrz-checkbox" v-model="can_merge">
+        <span class="ml-1">
+          {{ $gettext('Enabled for merging') }}
+        </span>
+      </label>
+    </div>
     <div class="mt-2">
-      <button class="btn-primary p-1" type="submit">{{ $gettext('Add user to this library') }}</button>
+      <button class="btn-primary p-1" type="submit">{{ $gettext('Add') }}</button>
     </div>
   </form>
 </template>

@@ -90,6 +90,10 @@ class Site(models.Model):
         (OAI_DC, "Dublin Core"),
         (MARC21, "MARC XML"),
     ]
+    CSV_TYPES = [
+        ('calibre', 'Calibre'),
+        ('abebooks_home_base', 'Abebooks Home Base'),
+    ]
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),
         ('generic', "Generic OAI-PMH"),
@@ -100,7 +104,7 @@ class Site(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="sites")
     title = models.CharField(max_length=255)
-    url = models.URLField(max_length=255)
+    url = models.URLField(blank=True, max_length=255)
     last_harvested = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
     oai_set = models.CharField(max_length=64,
@@ -108,8 +112,15 @@ class Site(models.Model):
                                null=True)
     oai_metadata_format = models.CharField(max_length=32,
                                            null=True,
+                                           blank=True,
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
+    csv_type = models.CharField(
+        max_length=32,
+        null=True,
+        blank=True,
+        choices=CSV_TYPES,
+    )
     active = models.BooleanField(default=True, null=False)
     has_raw = models.BooleanField(default=False)
     has_text = models.BooleanField(default=False)
@@ -118,7 +129,7 @@ class Site(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{} ({} - {})".format(self.title, self.site_type, self.url)
+        return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
 
     def last_harvested_zulu(self):
         dt = self.last_harvested
@@ -301,8 +312,7 @@ class Site(models.Model):
             languages.append(obj)
 
 
-
-        # logger.debug(record)
+        logger.debug(record)
         identifier = record.pop('identifier')
 
         ds_attributes = [
@@ -866,7 +876,7 @@ class DataSource(models.Model):
         if site.site_type == 'amusewiki':
             return re.sub(r'((\.[a-z0-9]+)+)$',
                           '',
-                          self.uri)
+                          site.url)
         else:
             return None
 
@@ -1075,10 +1085,6 @@ def spreadsheet_upload_directory(instance, filename):
                                              "".join(random.choice(choices) for i in range(20)))
 
 class SpreadsheetUpload(models.Model):
-    CSV_TYPES = [
-        ('calibre', 'Calibre'),
-        ('abebooks_home_base', 'Abebooks Home Base'),
-    ]
     user = models.ForeignKey(
         User,
         null=True,
@@ -1089,17 +1095,18 @@ class SpreadsheetUpload(models.Model):
     comment = models.TextField(blank=True)
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    csv_type = models.CharField(max_length=32, choices=CSV_TYPES)
+
     replace_all = models.BooleanField(default=False, null=False)
     processed = models.DateTimeField(null=True, blank=True)
+    error = models.TextField(null=True, blank=True)
 
     def validate_csv(self):
-        return parse_sheet(self.csv_type, self.spreadsheet.path, sample=True)
+        return parse_sheet(self.site.csv_type, self.spreadsheet.path, sample=True)
 
     def process_csv(self):
         now = datetime.now(timezone.utc)
-        records = normalize_records(self.csv_type,
-                                    parse_sheet(self.csv_type, self.spreadsheet.path))
+        records = normalize_records(self.site.csv_type,
+                                    parse_sheet(self.site.csv_type, self.spreadsheet.path))
         site = self.site
         hostname = site.hostname()
         aliases = site.record_aliases()
@@ -1130,8 +1137,11 @@ class Profile(models.Model):
                                 related_name="profile")
     libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
     library_admin = models.BooleanField(default=False)
+    can_merge = models.BooleanField(default=False)
+    expiration = models.DateTimeField(null=True, blank=True)
     affiliated_to = models.ForeignKey('self',
                                       null=True,
+                                      blank=True,
                                       on_delete=models.CASCADE,
                                       related_name="affiliated_profiles")
     created = models.DateTimeField(auto_now_add=True)
@@ -1141,6 +1151,14 @@ class Profile(models.Model):
 
     def has_valid_password_reset(self):
         if self.password_reset_token and self.password_reset_expiration > datetime.now(timezone.utc):
+            return True
+        else:
+            return False
+
+    def can_merge_entries(self):
+        if self.library_admin:
+            return True
+        elif self.can_merge:
             return True
         else:
             return False
@@ -1172,8 +1190,23 @@ def manipulate(op, user, main_id, *ids, create=None):
         "error": None,
         "msg": None,
     }
-    if user:
-        out['username'] = user.username
+    if not user:
+        out['error']: "Missing User"
+        return out
+
+    out['username'] = user.username
+
+    if op == "revert-exclusions" or op == "add-exclusion":
+        # we just need the login
+        pass
+    elif user.is_superuser:
+        pass
+    elif hasattr(user, 'profile') and user.profile.can_merge_entries():
+        # needs the can_merge_entries logic
+        pass
+    else:
+        out['error'] = "Cannot do that"
+        return out
 
     logger.info("Calling manipulate " + pp.pformat(out))
     reindex = []
@@ -1194,10 +1227,6 @@ def manipulate(op, user, main_id, *ids, create=None):
         # no revert at the moment
 
     }
-    if not user:
-        out['error']: "Missing User"
-        return out
-
     if not main_id and not create:
         out['error']: "Missing ID"
         return out
@@ -1274,9 +1303,12 @@ def manipulate(op, user, main_id, *ids, create=None):
         raise Exception('Not reached')
 
     elif op == 'revert-exclusions':
-        log_user_operation(user, op, main_object, None)
-        main_object.delete()
-        out['success'] = "Removed"
+        if main_object.user.username == user.username:
+            log_user_operation(user, op, main_object, None)
+            main_object.delete()
+            out['success'] = "Removed"
+        else:
+            out['error'] = "Cannot do that"
 
     else:
         raise Exception("Bug! Missing handler for " + op)

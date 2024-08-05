@@ -17,7 +17,6 @@ from django.db.models import Q
 from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from django.contrib.auth.models import User
 from amwmeta.xapian import MycorrhizaIndexer
-from .forms import SpreadsheetForm
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail
@@ -44,6 +43,15 @@ def user_is_library_admin(user):
     else:
         return False
 
+def user_can_merge(user):
+    if not user.username:
+        return False
+    if user.is_superuser:
+        return True
+    elif hasattr(user, "profile") and user.profile.can_merge_entries():
+        return True
+    else:
+        return False
 
 def api_login(request):
     out = { "logged_in": None, "error": None }
@@ -149,13 +157,26 @@ def api_user_check(request, username):
 
 def _user_data(user):
     out = {
-        "logged_in": user.username,
-        "is_superuser": user.is_superuser,
+        "logged_in": None,
+        "is_superuser": False,
         "is_library_admin": False,
         "libraries": [],
+        "message": None,
     }
-    if user.username and hasattr(user, "profile"):
-        profile = user.profile
+    if user and user.username:
+        # make sure we have a profile
+        if hasattr(user, 'profile'):
+            profile = user.profile
+        else:
+            profile = Profile.objects.create(user=user)
+
+        if profile.expiration and datetime.now(timezone.utc) > profile.expiration:
+            logger.info("Removing {}: expired account on {}".format(user.username, profile.expiration))
+            user.delete()
+            out["message"] = "Sorry, your account is expired!"
+            return out
+        out["logged_in"] = user.username
+        out["is_superuser"] = user.is_superuser
         out["is_library_admin"] = profile.library_admin
         out["libraries"] = [ { "id": l.id, "name": l.name } for l in profile.libraries.filter(active=True).all() ]
 
@@ -207,8 +228,13 @@ def api(request):
     res['is_authenticated'] = user.is_authenticated
     res['can_set_exclusions'] = user.is_superuser
     res['can_merge'] = user.is_superuser
+
     if user.is_authenticated and not user.is_superuser and hasattr(user, "profile"):
-        res['can_merge'] = res['can_set_exclusions'] = user.profile.library_admin
+        profile = user.profile
+        # authenticated users can set exclusion
+        res['can_set_exclusions'] = True
+        res['can_merge'] = profile.can_merge_entries()
+
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
@@ -326,7 +352,6 @@ def api_library_action(request, action, library_id):
         "library": None,
     }
     columns = [
-        'name',
         'url',
         'email_public',
         'email_internal',
@@ -374,6 +399,7 @@ def api_library_action(request, action, library_id):
                 username = data.get('username', '').strip().lower()
                 logger.debug("Creating {}".format(username))
                 if username:
+                    user_created = False
                     try:
                         user = User.objects.get(username=username)
                     except User.DoesNotExist:
@@ -383,11 +409,40 @@ def api_library_action(request, action, library_id):
                             first_name=data.get('first_name', '').strip(),
                             last_name=data.get('last_name', '').strip(),
                         )
+                        user_created = True
 
                     if hasattr(user, 'profile'):
                         profile = user.profile
                     else:
                         profile = Profile.objects.create(user=user)
+
+                    if user_created:
+                        if data.get('can_merge'):
+                            profile.can_merge = True
+                        if data.get('expiration'):
+                            profile.expiration = data.get('expiration')
+                        profile.password_reset_token = token_urlsafe(16)
+                        profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
+                        profile.save()
+                        profile.refresh_from_db()
+                        if user.email:
+                            url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
+                                                               user.username,
+                                                               profile.password_reset_token)
+                            mail_body = [
+                                "Your user {} has been created.".format(user.username),
+                                "Please visit {} to set the password.".format(url),
+                                "The link is valid for 10 minutes. You can always request another link one.",
+                            ]
+                            if profile.expiration:
+                                iso_date = profile.expiration.strftime('%Y-%m-%d')
+                                mail_body.append("This account will expire on {}.".format(iso_date))
+
+                            send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS,
+                                                                                  user.username),
+                                      "\n\n".join(mail_body),
+                                      settings.MYCORRHIZA_EMAIL_FROM,
+                                      [user.email])
 
                     if profile.libraries.filter(pk=library.id).count():
                         logger.info("User already has the library")
@@ -415,7 +470,14 @@ def api_library_action(request, action, library_id):
                     "email": user.email,
                     "name": "{} {}".format(user.first_name, user.last_name),
                     "last_login": None,
+                    "can_merge": None,
+                    "expiration": None,
                 }
+                if profile.can_merge:
+                    user_data["can_merge"] = "Yes"
+                if profile.expiration:
+                    user_data["expiration"] = profile.expiration.strftime('%Y-%m-%d')
+
                 if user.last_login:
                     user_data['last_login'] = user.last_login.strftime('%Y-%m-%d')
                 users.append(user_data)
@@ -427,10 +489,13 @@ def api_library_action(request, action, library_id):
                 { 'name': 'email', 'label': 'Email' },
                 { 'name': 'name', 'label': 'Name' },
                 { 'name': 'last_login', 'label': 'Last Login' },
+                { 'name': 'expiration', 'label': 'Expires' },
+                { 'name': 'can_merge', 'label': 'Can Merge' },
+
             ]
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def exclusions(request):
     logger.debug(request.body)
     out = {}
@@ -485,7 +550,7 @@ def api_set_aggregated(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@user_passes_test(user_can_merge)
 def api_set_translations(request):
     out = {}
     data = None
@@ -502,7 +567,7 @@ def api_set_translations(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@user_passes_test(user_can_merge)
 def api_merge(request, target):
     logger.debug(target)
     out = {}
@@ -560,12 +625,12 @@ def api_create(request, target):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def api_listing(request, target):
     out = {
         "target": target
     }
-    if target == 'merged-agents':
+    if target == 'merged-agents' and user_can_merge(request.user):
         merged = []
         for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
             apidata = agent.as_api_dict(get_canonical=True)
@@ -581,7 +646,7 @@ def api_listing(request, target):
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
         ]
 
-    elif target == 'translations':
+    elif target == 'translations' and user_can_merge(request.user):
         translations = []
         for entry in Entry.objects.filter(original_entry_id__isnull=False).all():
             apidata = entry.as_api_dict(get_original=True)
@@ -609,7 +674,7 @@ def api_listing(request, target):
         out['records'] = translations
 
 
-    elif target == 'merged-entries':
+    elif target == 'merged-entries' and user_can_merge(request.user):
         merged = []
         for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
             apidata = entry.as_api_dict(get_canonical=True)
@@ -638,7 +703,7 @@ def api_listing(request, target):
 
     elif target == 'exclusions':
         records = []
-        for ex in Exclusion.objects.all():
+        for ex in Exclusion.objects.filter(user=request.user).all():
             rec = ex.as_api_dict()
             rec['username'] = rec['excluded_by']['username']
             records.append(rec)
@@ -653,7 +718,7 @@ def api_listing(request, target):
         ]
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@login_required
 def api_revert(request, target):
     logger.debug(target)
     out = {}
@@ -678,52 +743,71 @@ def api_revert(request, target):
     return JsonResponse(out)
 
 @user_passes_test(user_is_library_admin)
-def upload_spreadsheet(request):
+def api_spreadsheet(request, library_id):
+    out = {
+        "sites": [],
+    }
+    library = None
+    sites = []
     user = request.user
-    if user.is_superuser:
-        queryset = Site.objects.filter(active=True, site_type="csv").order_by("url")
-    else:
-        active_libraries = _active_libraries(user)
-        queryset = Site.objects.filter(library_id__in=active_libraries,
-                                       active=True,
-                                       site_type="csv").order_by("url")
+    try:
+        library = Library.objects.get(pk=library_id)
+    except Library.DoesNotExist:
+        out['error'] = "Library does not exist"
+    if library:
+        if user.is_superuser or library.affiliated_profiles.filter(library_admin=True, user=user).count():
+            sites = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv", active=True) ]
+    if sites:
+        if request.method == 'POST':
+            site_id = request.POST.get('site_id')
+            logger.debug("Site id {}".format(site_id))
+            logger.debug(pp.pformat(out))
+            logger.debug(pp.pformat(request.FILES))
+            logger.debug(pp.pformat(request.POST))
+            if site_id and site_id in [ str(s['id']) for s in sites ]:
+                replace_all = False
+                if request.POST.get('replace_all', False):
+                    replace_all = True
+                logger.debug("Creating spreadsheet upload")
+                ss = SpreadsheetUpload.objects.create(user=user,
+                                                      spreadsheet=request.FILES['spreadsheet'],
+                                                      comment=request.POST.get('comment', ''),
+                                                      site_id=site_id,
+                                                      replace_all=replace_all)
+                validation = ss.validate_csv()
+                logger.debug(validation)
+                validated_sample = validation['sample']
+                out['sample'] = [ { "name": k, "value":  validated_sample[k] } for k in validated_sample ]
+                out['error'] = validation['error']
+                if not validation['error']:
+                    out['uploaded'] = ss.id
+                    out['success'] = "Spreadsheet uploaded"
+                else:
+                    # remove record?
+                    pass
+            else:
+                out['error'] = "Invalid parameters"
+        else:
+            out['sites'] = sites
 
-    form = SpreadsheetForm()
-    if request.method == "POST":
-        form = SpreadsheetForm(request.POST, request.FILES)
-
-    form.fields["site"].queryset = queryset
-
-    if request.method == "POST" and form.is_valid():
-        logger.debug("Form is valid")
-        new_sheet = form.save()
-        new_sheet.user = user
-        new_sheet.save()
-        return HttpResponseRedirect(reverse("process_spreadsheet", args=[new_sheet.id]))
-
-    return render(request, "collector/spreadsheet.html", { "form": form })
+    return JsonResponse(out)
 
 @user_passes_test(user_is_library_admin)
-def process_spreadsheet(request, target):
-    sheet = get_object_or_404(SpreadsheetUpload, pk=target)
-    if sheet and sheet.user and sheet.user.id == request.user.id:
-        sample = sheet.validate_csv()
-        if sample:
-            if request.method == "POST" and request.POST and request.POST["process"]:
-                sheet.process_csv()
-                messages.success(request, "Spreadsheet Processed")
-                return HttpResponseRedirect(reverse("spreadsheet"))
-            else:
-                return render(
-                    request,
-                    "collector/process_spreadsheet.html",
-                    {
-                        "target": target,
-                        "sample": sample,
-                    }
-                )
+def api_process_spreadsheet(request, spreadsheet_id):
+    user = request.user
+    out = {}
+    ss = None
+    try:
+        ss = user.uploaded_spreadsheets.filter(processed=None).get(pk=spreadsheet_id)
+    except SpreadsheetUpload.DoesNotExist:
+        out['error'] = "Bad ID"
+
+    if request.method == "POST" and ss:
+        if ss.validate_csv()['sample']:
+            ss.process_csv()
+            out['success'] = "Sheet processed"
         else:
-            messages.error(request, "Invalid CSV")
-            return HttpResponseRedirect(reverse("spreadsheet"))
-    else:
-        raise Http404("You did not upload such sheet")
+            out['error'] = "Invalid CSV"
+
+    return JsonResponse(out)
+

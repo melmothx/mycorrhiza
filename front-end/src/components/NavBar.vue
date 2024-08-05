@@ -36,15 +36,14 @@
      },
      methods: {
          check() {
-             const vm = this;
              console.log("Checking user");
              axios.get('/collector/api/auth/user')
-                  .then(function(res) {
+                  .then((res) => {
                       console.log(res.data);
-                      vm.authenticated = res.data.logged_in;
-                      vm.user_data = res.data
-                      vm.message = null;
-                      vm.reset_message = null;
+                      this.authenticated = res.data.logged_in;
+                      this.user_data = res.data
+                      this.message = res.data.message;
+                      this.reset_message = null;
                   });
          },
          login() {
@@ -121,10 +120,10 @@
                 type="submit">{{ $gettext('Login') }}</button>
       </form>
       <div v-if="message" class="pt-2">
-        <form @submit.prevent="password_reset" class="ml-4">
-          <div class="py-2 text-claret-900 font-bold">
-            {{ $gettext(message) }}
-          </div>
+        <div class="ml-4 py-2 text-claret-900 font-bold">
+          {{ $gettext(message) }}
+        </div>
+        <form v-if="username" @submit.prevent="password_reset" class="ml-4">
           <button id="reset-password"
                   class="h-8 btn-secondary rounded-none rounded-br-3xl pr-10 pl-4 italic font-normal h-8 mr-2"
                   type="submit">{{ $gettext('Reset Password for %1?', username) }}</button>
@@ -156,7 +155,7 @@
                 {{ $gettext('Admin') }}
               </a>
             </MenuItem>
-            <MenuItem v-if="user_data.is_superuser || user_data.is_library_admin" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
                 {{ $gettext('Exclusions') }}
               </div>
