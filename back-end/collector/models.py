@@ -57,7 +57,6 @@ class Library(models.Model):
                           blank=True,
                           null=True)
     public = models.BooleanField(default=False, null=False)
-    shared = models.BooleanField(default=False, null=False)
     active = models.BooleanField(default=True, null=False)
     email_public = models.EmailField(blank=True)
     email_internal = models.EmailField(blank=True)
@@ -1139,11 +1138,6 @@ class Profile(models.Model):
     library_admin = models.BooleanField(default=False)
     can_merge = models.BooleanField(default=False)
     expiration = models.DateTimeField(null=True, blank=True)
-    affiliated_to = models.ForeignKey('self',
-                                      null=True,
-                                      blank=True,
-                                      on_delete=models.CASCADE,
-                                      related_name="affiliated_profiles")
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     password_reset_token = models.CharField(max_length=255, null=True, blank=True)

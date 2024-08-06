@@ -183,20 +183,11 @@ def _user_data(user):
     return out
 
 def _active_libraries(user):
+    # default: active and public
     query = Q(active=True) & Q(public=True)
-    if user.is_authenticated and user.is_superuser:
-        # exclude only the inactive
+    if user.is_authenticated:
+        # admin: exclude only the inactive
         query = Q(active=True)
-    elif user.is_authenticated:
-        additional = Q(active=True) & Q(public=False) & Q(shared=True)
-        query = query | additional
-        if hasattr(user, "profile"):
-            private = []
-            for lib in user.profile.libraries.filter(active=True, public=False, shared=False).only('id').all():
-                private.append(lib.id)
-            if private:
-                query = query | Q(id__in=private)
-    logger.debug("Query is {}".format(query))
     active_libraries = [ lib.id for lib in Library.objects.filter(query).only('id').all() ]
     logger.debug("Active libs are {}".format(active_libraries))
     return active_libraries
