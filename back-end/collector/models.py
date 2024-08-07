@@ -875,7 +875,7 @@ class DataSource(models.Model):
         if site.site_type == 'amusewiki':
             return re.sub(r'((\.[a-z0-9]+)+)$',
                           '',
-                          site.url)
+                          self.uri)
         else:
             return None
 
