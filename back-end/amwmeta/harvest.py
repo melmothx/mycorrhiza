@@ -398,10 +398,14 @@ def extract_fields(record, hostname):
     if not out.get('uri'):
         try:
             out['uri'] = record['koha_uri'][0]
-        except IndexError:
+        except (IndexError, KeyError):
             pass
-        except KeyError:
+    if not out.get('uri'):
+        try:
+            out['uri'] = record['file_uri'][0]
+        except (IndexError, KeyError):
             pass
+
 
     if record.get('shelf_location_code'):
         out['shelf_location_code'] = ' / '.join(record.get('shelf_location_code'))

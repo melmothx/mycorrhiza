@@ -1,6 +1,10 @@
 from lxml import etree
 import os
 import sys
+import pprint
+
+pp = pprint.PrettyPrinter(indent=2)
+
 
 def parse_opf(opf_file):
     doc = etree.parse(opf_file)
@@ -15,25 +19,33 @@ def parse_opf(opf_file):
         'creator',
         'subject',
     ]
-    dublin_core = {}
+    out = {}
     for tag in tags:
         values = []
         for dc in metadata.findall('{http://purl.org/dc/elements/1.1/}' + tag):
+            print(tag + ' ' + str(dc.attrib))
+            if tag == 'identifier':
+                scheme = dc.attrib.get('{http://www.idpf.org/2007/opf}scheme')
+                if scheme and scheme.lower() == 'isbn':
+                    out['isbn'] = [ dc.text ]
+                    continue
             values.append(dc.text)
-        dublin_core[tag] = values
-    return dublin_core
+        out[tag] = values
+    return out
 
-def scan_tree(tree):
-    print(tree)
+def scan_calibre_tree(tree):
+    records = []
     for root, dirs, files in os.walk(tree):
         for hidden in [ d for d in dirs if d.startswith('.') ]:
-            print("Removing {}".format(hidden))
+            # print("Removing {}".format(hidden))
             dirs.remove(hidden)
-
-        print(root)
-        print(dirs)
-        print(files)
+        if 'metadata.opf' in files:
+            metadata = parse_opf(os.path.join(root, 'metadata.opf'))
+            metadata['uri'] = [ root ]
+            if metadata.get('identifier'):
+                records.append(metadata)
+    return records;
 
 if __name__ == "__main__":
-    scan_tree(sys.argv[1])
+    pp.pprint(scan_calibre_tree(sys.argv[1]))
     

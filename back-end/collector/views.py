@@ -251,9 +251,7 @@ class LatestEntriesFeed(Feed):
         title = ""
         try:
             title = item['title'][0]['value']
-        except KeyError:
-            pass
-        except IndexError:
+        except (KeyError, IndexError):
             pass
         return title
 
@@ -261,9 +259,7 @@ class LatestEntriesFeed(Feed):
         desc = ""
         try:
             desc = item['description'][0]['value']
-        except KeyError:
-            pass
-        except IndexError:
+        except (KeyError, IndexError):
             pass
         return desc
 
