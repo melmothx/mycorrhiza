@@ -521,7 +521,7 @@ def exclusions(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_is_library_admin)
+@user_passes_test(user_can_merge)
 def api_set_aggregated(request):
     out = {}
     data = None
