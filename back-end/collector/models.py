@@ -127,7 +127,7 @@ class Site(models.Model):
     has_raw = models.BooleanField(default=False)
     has_text = models.BooleanField(default=False)
     amusewiki_formats = models.JSONField(null=True)
-    tree_path = models.TextField(blank=True, null=True)
+    tree_path = models.CharField(blank=True, null=True, max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -403,6 +403,7 @@ class Site(models.Model):
         return (entry, ds)
 
     def process_generic_records(self, records, replace_all=False):
+        now = datetime.now(timezone.utc)
         hostname = self.hostname()
         aliases = self.record_aliases()
         xapian_records = []
@@ -423,9 +424,11 @@ class Site(models.Model):
                 xapian_records.append(entry.id)
         self.index_harvested_records(xapian_records, force=replace_all, now=now)
 
-    def scan_calibre_tree:
+    def process_calibre_tree(self):
         if self.site_type == 'calibretree' and self.tree_path:
             records = scan_calibre_tree(self.tree_path)
+            logger.debug(pp.pprint(records))
+            self.process_generic_records(records)
 
 # these are a level up from the oai pmh records
 
