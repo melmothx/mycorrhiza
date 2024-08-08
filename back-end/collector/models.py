@@ -139,7 +139,13 @@ class Site(models.Model):
             return None
 
     def hostname(self):
-        return urlparse(self.url).hostname
+        url = self.url
+        if not url:
+            url = self.library.url
+        if url:
+            return urlparse(url).hostname
+        else:
+            return "unknown-{}".format(self.id)
 
     def record_aliases(self):
         aliases = {
@@ -871,13 +877,13 @@ class DataSource(models.Model):
         return self.oai_pmh_identifier
 
     def amusewiki_base_url(self):
-        site = self.site
-        if site.site_type == 'amusewiki':
-            return re.sub(r'((\.[a-z0-9]+)+)$',
-                          '',
-                          self.uri)
-        else:
-            return None
+        if self.uri:
+            site = self.site
+            if site.site_type == 'amusewiki':
+                return re.sub(r'((\.[a-z0-9]+)+)$',
+                              '',
+                              self.uri)
+        return None
 
     def get_remote_file(self, ext):
         amusewiki_url = self.amusewiki_base_url()
