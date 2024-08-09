@@ -179,7 +179,15 @@ class Site(models.Model):
             self.amusewiki_formats = None
             self.save()
 
-    def harvest(self, force=False, oai_set=None):
+    def harvest(self, force=False):
+        if self.site_type in ['amusewiki', 'generic']:
+            self.pmh_harvest(force=force)
+        elif self.site_type == 'calibretree':
+            self.process_calibre_tree()
+        else:
+            pass
+
+    def pmh_harvest(self, force=False):
         self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
@@ -192,10 +200,6 @@ class Site(models.Model):
         set_last_harvested = True
         if last_harvested and not force:
             opts['from'] = last_harvested
-        if oai_set:
-            opts['set'] = oai_set
-            set_last_harvested = False
-            opts.pop('from', None)
         elif self.oai_set:
             opts['set'] = self.oai_set
 

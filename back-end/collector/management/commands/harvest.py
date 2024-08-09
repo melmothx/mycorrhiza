@@ -27,9 +27,6 @@ class Command(BaseCommand):
                             help="Remove all the aliases and variant relationships (only if --force without --site)")
         parser.add_argument("--entry",
                             help="Reindex a single entry")
-        parser.add_argument("--oai-set",
-                            help="Fetch only a set")
-
 
     def handle(self, *args, **options):
         logger.debug(options)
@@ -63,13 +60,13 @@ class Command(BaseCommand):
                     logger.debug(str(counter) + " records done")
             return
 
-        rs = Site.objects.filter(active=True, site_type__in=['amusewiki', 'generic'])
+        rs = Site.objects.filter(active=True)
         if options['site']:
             rs = rs.filter(url__contains=options['site'])
 
         for site in rs.all():
             try:
-                site.harvest(force=options['force'], oai_set=options['oai_set'])
+                site.harvest(force=options['force'])
             except requests.exceptions.HTTPError:
                 print("Server error for {}, skipping".format(site.url))
             except requests.exceptions.ConnectionError:
