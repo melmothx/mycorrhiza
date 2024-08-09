@@ -23,7 +23,6 @@ def parse_opf(opf_file):
     for tag in tags:
         values = []
         for dc in metadata.findall('{http://purl.org/dc/elements/1.1/}' + tag):
-            print(tag + ' ' + str(dc.attrib))
             if tag == 'identifier':
                 scheme = dc.attrib.get('{http://www.idpf.org/2007/opf}scheme')
                 if scheme and scheme.lower() == 'isbn':
@@ -31,6 +30,19 @@ def parse_opf(opf_file):
                     continue
             values.append(dc.text)
         out[tag] = values
+
+        # in a calibre tree we are probably going to find a single issue, not articles.
+        # our implementation for the aggregations is relative to single articles.
+        # So either we aggregate by "series" or don't aggreegate at all.
+        # aggregation = {}
+        # for meta in metadata.findall('{http://www.idpf.org/2007/opf}meta'):
+        #     if meta.attrib.get('name') == 'calibre:series':
+        #         aggregation['name'] = meta.attrib.get('content')
+        #     # we don't expect to find articles here, just whole issues
+        #     # if meta.attrib.get('name') == 'calibre:series_index':
+        #     #    aggregation['issue'] = meta.attrib.get('content')
+        # if 'name' in aggregation:
+        #     out['aggregation'] = [ aggregation ]
     return out
 
 def scan_calibre_tree(tree):
@@ -47,5 +59,6 @@ def scan_calibre_tree(tree):
     return records;
 
 if __name__ == "__main__":
+    # scan_calibre_tree(sys.argv[1])
     pp.pprint(scan_calibre_tree(sys.argv[1]))
     
