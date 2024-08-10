@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from datetime import datetime, timezone
 from django.db import transaction
 from amwmeta.xapian import MycorrhizaIndexer
+from amwmeta.calibre import scan_calibre_tree
 from django.contrib.auth.models import User
 from django.conf import settings
 import logging
@@ -13,6 +14,7 @@ import requests
 import re
 import pprint
 import hashlib
+from pathlib import Path
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
@@ -97,6 +99,7 @@ class Site(models.Model):
         ('amusewiki', "Amusewiki"),
         ('generic', "Generic OAI-PMH"),
         ('csv', "CSV Upload"),
+        ('calibretree', "Calibre File Tree"),
     ]
     library = models.ForeignKey(Library,
                                 null=False,
@@ -124,6 +127,7 @@ class Site(models.Model):
     has_raw = models.BooleanField(default=False)
     has_text = models.BooleanField(default=False)
     amusewiki_formats = models.JSONField(null=True)
+    tree_path = models.CharField(blank=True, null=True, max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -166,6 +170,8 @@ class Site(models.Model):
             r = requests.get(endpoint)
             if r.status_code == 200:
                 self.amusewiki_formats = r.json()
+                # for amusewikis, enforce the web set
+                self.oai_set = 'web'
                 self.save()
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
@@ -173,7 +179,15 @@ class Site(models.Model):
             self.amusewiki_formats = None
             self.save()
 
-    def harvest(self, force=False, oai_set=None):
+    def harvest(self, force=False):
+        if self.site_type in ['amusewiki', 'generic']:
+            self.pmh_harvest(force=force)
+        elif self.site_type == 'calibretree':
+            self.process_calibre_tree()
+        else:
+            pass
+
+    def pmh_harvest(self, force=False):
         self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
@@ -186,10 +200,6 @@ class Site(models.Model):
         set_last_harvested = True
         if last_harvested and not force:
             opts['from'] = last_harvested
-        if oai_set:
-            opts['set'] = oai_set
-            set_last_harvested = False
-            opts.pop('from', None)
         elif self.oai_set:
             opts['set'] = self.oai_set
 
@@ -396,7 +406,41 @@ class Site(models.Model):
         entry.save()
         return (entry, ds)
 
+    def process_generic_records(self, records, replace_all=False):
+        now = datetime.now(timezone.utc)
+        hostname = self.hostname()
+        aliases = self.record_aliases()
+        xapian_records = []
+        if replace_all:
+            # we need to reindex all the entries
+            xapian_records = [ i.entry_id for i in self.datasource_set.all() ]
+            self.datasource_set.all().delete()
 
+        logger.debug("Reindexing: {}".format(xapian_records))
+        site_type_ids = {
+            "calibretree": "ct",
+            "csv": "csv",
+            "generic": "pmh",
+            "amusewiki": "amw",
+        }
+        for full in records:
+            # logger.debug(full)
+            record = extract_fields(full, hostname)
+            if full.get('identifier'):
+                record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
+                                                         hostname,
+                                                         full['identifier'][0])
+            record['full_data'] = full
+            record['deleted'] = False
+            for entry in self.process_harvested_record(record, aliases, now):
+                xapian_records.append(entry.id)
+        self.index_harvested_records(xapian_records, force=replace_all, now=now)
+
+    def process_calibre_tree(self):
+        if self.site_type == 'calibretree' and self.tree_path:
+            records = scan_calibre_tree(self.tree_path)
+            logger.debug(pp.pprint(records))
+            self.process_generic_records(records)
 
 # these are a level up from the oai pmh records
 
@@ -878,11 +922,16 @@ class DataSource(models.Model):
 
     def amusewiki_base_url(self):
         if self.uri:
-            site = self.site
-            if site.site_type == 'amusewiki':
-                return re.sub(r'((\.[a-z0-9]+)+)$',
-                              '',
-                              self.uri)
+            return re.sub(r'((\.[a-z0-9]+)+)$',
+                          '',
+                          self.uri)
+        return None
+
+    def calibre_base_dir(self):
+        if self.uri:
+            tree = Path(self.uri)
+            if tree.is_dir():
+                return tree
         return None
 
     def get_remote_file(self, ext):
@@ -893,21 +942,81 @@ class DataSource(models.Model):
         else:
             return None
 
-    def full_text(self):
-        amusewiki_url = self.amusewiki_base_url()
-        if amusewiki_url:
-            try:
-                r = requests.get(amusewiki_url + '.bare.html')
-                if r.status_code == 200:
-                    r.encoding = 'UTF-8'
-                    return r.text
-            except ConnectionError:
-                logger.info("GET {0} had a connection error".format(endpoint))
-            except Timeout:
-                logger.info("GET {0} timed out".format(endpoint))
-            except TooManyRedirects:
-                logger.info("GET {0} had too many redirections".format(endpoint))
+    def get_calibre_file(self, ext):
+        tree = self.calibre_base_dir()
+        if tree:
+            for f in tree.iterdir():
+                if f.suffix == ext:
+                    return f
         return None
+
+    def full_text(self):
+        site_type = self.site.site_type
+        if site_type == 'amusewiki':
+            amusewiki_url = self.amusewiki_base_url()
+            if amusewiki_url:
+                try:
+                    r = requests.get(amusewiki_url + '.bare.html')
+                    if r.status_code == 200:
+                        r.encoding = 'UTF-8'
+                        return r.text
+                except ConnectionError:
+                    logger.info("GET {0} had a connection error".format(endpoint))
+                except Timeout:
+                    logger.info("GET {0} timed out".format(endpoint))
+                except TooManyRedirects:
+                    logger.info("GET {0} had too many redirections".format(endpoint))
+
+        elif site_type == 'calibretree':
+            tree = self.calibre_base_dir()
+            if tree:
+                for f in tree.iterdir():
+                    if f.suffix == '.txt':
+                        text = f.read_text(encoding='UTF-8')
+                        replacements = (
+                            ('&', '&amp;'),
+                            ('<', '&lt;'),
+                            ('>', '&gt;'),
+                            ('"', '&quot;'),
+                            ("'", '&#39;'),
+                            ("\n", '<br>'),
+                        )
+                        for replace in replacements:
+                            text = text.replace(replace[0], replace[1],)
+                        return text
+        return None
+
+    def download_options(self):
+        site = self.site
+        if self.is_aggregation:
+            return []
+        elif site.site_type == 'amusewiki':
+            # all files are supposed to have the same downloads, more or less
+            return site.amusewiki_formats
+        elif site.site_type == 'calibretree':
+            # the URI here holds the directory, so look into the dir
+            downloads = []
+            tree = self.calibre_base_dir()
+            if tree:
+                # we consider just a file per extension. If there are
+                # multiple, at this moment we don't care
+                download_options = {
+                    ".pdf": "PDF",
+                    ".epub": "EPUB",
+                    ".txt": "TXT",
+                }
+                seen = []
+                for f in tree.iterdir():
+                    if f.suffix in download_options:
+                        if f.suffix not in seen:
+                            downloads.append({
+                                "ext": f.suffix,
+                                "desc": download_options[f.suffix],
+                            })
+                            seen.append(f.suffix)
+            return downloads
+        else:
+            return []
 
     def indexing_data(self):
         site = self.site
@@ -921,8 +1030,10 @@ class DataSource(models.Model):
             "authors": [ author.name for author in original_entry.authors.all() ],
             "languages": [ lang.code for lang in original_entry.languages.all() ],
             "uri": self.uri,
+            # I think these should go
             "uri_label": self.uri_label,
             "content_type": self.content_type,
+
             "shelf_location_code": self.shelf_location_code,
             "public": False,
             "site_name": site.title,
@@ -934,7 +1045,7 @@ class DataSource(models.Model):
             "year_edition": self.year_edition,
             "year_first_edition": self.year_first_edition,
             "material_description": self.material_description,
-            "downloads": [] if self.is_aggregation else site.amusewiki_formats,
+            "downloads": self.download_options(),
             "entry_id": original_entry.id,
             "file_formats": [],
         }
@@ -1112,26 +1223,7 @@ class SpreadsheetUpload(models.Model):
         now = datetime.now(timezone.utc)
         records = normalize_records(self.site.csv_type,
                                     parse_sheet(self.site.csv_type, self.spreadsheet.path))
-        site = self.site
-        hostname = site.hostname()
-        aliases = site.record_aliases()
-        xapian_records = []
-        if self.replace_all:
-            # see above in site.harvest()
-            xapian_records = [ i.entry_id for i in site.datasource_set.all() ]
-            site.datasource_set.all().delete()
-
-        logger.debug("Reindexing: {}".format(xapian_records))
-        for full in records:
-            # logger.debug(full)
-            record = extract_fields(full, hostname)
-            if full.get('identifier'):
-                record['identifier'] = 'ss:{}:{}'.format(hostname, full['identifier'][0])
-            record['full_data'] = full
-            record['deleted'] = False
-            for entry in site.process_harvested_record(record, aliases, now):
-                xapian_records.append(entry.id)
-        site.index_harvested_records(xapian_records, force=self.replace_all, now=now)
+        self.site.process_generic_records(records, replace_all=self.replace_all)
         self.processed = now
         self.save()
 

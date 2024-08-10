@@ -45,6 +45,11 @@
                      return 1;
                  }
              }
+             if (src.site_type == 'calibretree') {
+                 if (src.downloads && src.downloads.filter((e) => e.ext == '.txt').length) {
+                     return 1;
+                 }
+             }
              return 0;
          }
      }

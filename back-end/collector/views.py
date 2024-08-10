@@ -251,9 +251,7 @@ class LatestEntriesFeed(Feed):
         title = ""
         try:
             title = item['title'][0]['value']
-        except KeyError:
-            pass
-        except IndexError:
+        except (KeyError, IndexError):
             pass
         return title
 
@@ -261,9 +259,7 @@ class LatestEntriesFeed(Feed):
         desc = ""
         try:
             desc = item['description'][0]['value']
-        except KeyError:
-            pass
-        except IndexError:
+        except (KeyError, IndexError):
             pass
         return desc
 
@@ -319,20 +315,38 @@ def download_datasource(request, target):
         ds_id = m.group(1)
         ds = get_object_or_404(DataSource, pk=ds_id)
         ext = m.group(2)
-        if ds.site.library_id in _active_libraries(request.user):
-            r = ds.get_remote_file(ext)
-            if r and r.status_code == 200:
-                response = HttpResponse(r.content, content_type=r.headers['content-type'])
-                target = urlparse(r.url)
-                response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(
-                    target.hostname,
-                    re.split(r'/', target.path)[-1]
-                )
-                return response
+        site = ds.site
+        if site.library_id in _active_libraries(request.user):
+            site_type = site.site_type
+            if site_type == 'amusewiki':
+                r = ds.get_remote_file(ext)
+                if r and r.status_code == 200:
+                    response = HttpResponse(r.content, content_type=r.headers['content-type'])
+                    target = urlparse(r.url)
+                    response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(
+                        target.hostname,
+                        re.split(r'/', target.path)[-1]
+                    )
+                    return response
+                else:
+                    raise Http404("File not found!")
+            elif site_type == 'calibretree':
+                f = ds.get_calibre_file(ext)
+                if f:
+                    content_types = {
+                        ".pdf": "application/pdf",
+                        ".epub": "application/epub+zip",
+                        ".txt": "text/plain",
+                    }
+                    response = HttpResponse(f.read_bytes(), content_type=content_types[ext])
+                    response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(site.hostname(), f.name)
+                    return response
+                else:
+                    raise Http404("File not found!")
             else:
-                raise Http404("File not found!")
+                raise Http404("Not such DS")
         else:
-            raise Http404("Not such DS")
+            raise Http404("Not found")
     else:
         raise Http404("Not found")
 
