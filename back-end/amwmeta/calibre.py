@@ -53,7 +53,7 @@ def scan_calibre_tree(tree):
             dirs.remove(hidden)
         if 'metadata.opf' in files:
             metadata = parse_opf(os.path.join(root, 'metadata.opf'))
-            metadata['uri'] = [ root ]
+            metadata['file_uri'] = [ root ]
             if metadata.get('identifier'):
                 records.append(metadata)
     return records;

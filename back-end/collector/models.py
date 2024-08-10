@@ -922,11 +922,16 @@ class DataSource(models.Model):
 
     def amusewiki_base_url(self):
         if self.uri:
-            site = self.site
-            if site.site_type == 'amusewiki':
-                return re.sub(r'((\.[a-z0-9]+)+)$',
-                              '',
-                              self.uri)
+            return re.sub(r'((\.[a-z0-9]+)+)$',
+                          '',
+                          self.uri)
+        return None
+
+    def calibre_base_dir(self):
+        if self.uri:
+            tree = Path(self.uri)
+            if tree.is_dir():
+                return tree
         return None
 
     def get_remote_file(self, ext):
@@ -937,20 +942,48 @@ class DataSource(models.Model):
         else:
             return None
 
+    def get_calibre_file(self, ext):
+        tree = self.calibre_base_dir()
+        if tree:
+            for f in tree.iterdir():
+                if f.suffix == ext:
+                    return f
+        return None
+
     def full_text(self):
-        amusewiki_url = self.amusewiki_base_url()
-        if amusewiki_url:
-            try:
-                r = requests.get(amusewiki_url + '.bare.html')
-                if r.status_code == 200:
-                    r.encoding = 'UTF-8'
-                    return r.text
-            except ConnectionError:
-                logger.info("GET {0} had a connection error".format(endpoint))
-            except Timeout:
-                logger.info("GET {0} timed out".format(endpoint))
-            except TooManyRedirects:
-                logger.info("GET {0} had too many redirections".format(endpoint))
+        site_type = self.site.site_type
+        if site_type == 'amusewiki':
+            amusewiki_url = self.amusewiki_base_url()
+            if amusewiki_url:
+                try:
+                    r = requests.get(amusewiki_url + '.bare.html')
+                    if r.status_code == 200:
+                        r.encoding = 'UTF-8'
+                        return r.text
+                except ConnectionError:
+                    logger.info("GET {0} had a connection error".format(endpoint))
+                except Timeout:
+                    logger.info("GET {0} timed out".format(endpoint))
+                except TooManyRedirects:
+                    logger.info("GET {0} had too many redirections".format(endpoint))
+
+        elif site_type == 'calibretree':
+            tree = self.calibre_base_dir()
+            if tree:
+                for f in tree.iterdir():
+                    if f.suffix == '.txt':
+                        text = f.read_text(encoding='UTF-8')
+                        replacements = (
+                            ('&', '&amp;'),
+                            ('<', '&lt;'),
+                            ('>', '&gt;'),
+                            ('"', '&quot;'),
+                            ("'", '&#39;'),
+                            ("\n", '<br>'),
+                        )
+                        for replace in replacements:
+                            text = text.replace(replace[0], replace[1],)
+                        return text
         return None
 
     def download_options(self):
@@ -960,11 +993,11 @@ class DataSource(models.Model):
         elif site.site_type == 'amusewiki':
             # all files are supposed to have the same downloads, more or less
             return site.amusewiki_formats
-        elif site.site_type == 'calibretree' and self.uri:
+        elif site.site_type == 'calibretree':
             # the URI here holds the directory, so look into the dir
-            tree = Path(self.uri)
             downloads = []
-            if tree.is_dir():
+            tree = self.calibre_base_dir()
+            if tree:
                 # we consider just a file per extension. If there are
                 # multiple, at this moment we don't care
                 download_options = {
