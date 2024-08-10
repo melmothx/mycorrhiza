@@ -25,12 +25,12 @@
          ];
          const sort_by_values = [
              {
-                 id: "relevance",
-                 name: 'Sort by Relevance',
-             },
-             {
                  id: "datestamp",
                  name: 'Sort by Acquisition Date',
+             },
+             {
+                 id: "relevance",
+                 name: 'Sort by Relevance',
              },
              {
                  id: "title",
