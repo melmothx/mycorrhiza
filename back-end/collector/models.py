@@ -417,11 +417,19 @@ class Site(models.Model):
             self.datasource_set.all().delete()
 
         logger.debug("Reindexing: {}".format(xapian_records))
+        site_type_ids = {
+            "calibretree": "ct",
+            "csv": "csv",
+            "generic": "pmh",
+            "amusewiki": "amw",
+        }
         for full in records:
             # logger.debug(full)
             record = extract_fields(full, hostname)
             if full.get('identifier'):
-                record['identifier'] = '{}:{}:{}'.format(self.site_type, hostname, full['identifier'][0])
+                record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
+                                                         hostname,
+                                                         full['identifier'][0])
             record['full_data'] = full
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
