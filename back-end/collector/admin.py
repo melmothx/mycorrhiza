@@ -1,25 +1,21 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
-from .models import Site, Harvest, Language, NameAlias, Profile, SpreadsheetUpload, Library
-
-class ProfileInline(admin.StackedInline):
-    model = Profile
-    can_delete = False
-    verbose_name_plural = "profiles"
-
-class UserAdmin(BaseUserAdmin):
-    inlines = [ProfileInline]
+from .models import Site, Harvest, Language, NameAlias, SpreadsheetUpload, Library, User
 
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
     exclude = ["last_harvested", "amusewiki_formats"]
 
-
-# Re-register UserAdmin
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
-
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    exclude = [
+        "password",
+        "groups",
+        "user_permissions",
+        "last_login",
+        "password_reset_token",
+        "password_reset_expiration",
+        "date_joined",
+    ]
 
 # Register your models here.
 admin.site.register(Harvest)

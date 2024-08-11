@@ -3,9 +3,9 @@ from amwmeta.harvest import harvest_oai_pmh, extract_fields
 from urllib.parse import urlparse
 from datetime import datetime, timezone
 from django.db import transaction
+from django.contrib.auth.models import AbstractUser
 from amwmeta.xapian import MycorrhizaIndexer
 from amwmeta.calibre import scan_calibre_tree
-from django.contrib.auth.models import User
 from django.conf import settings
 import logging
 from amwmeta.sheets import parse_sheet, normalize_records
@@ -82,6 +82,32 @@ class Library(models.Model):
 
     class Meta:
         verbose_name_plural = "Libraries"
+
+class User(AbstractUser):
+    email = models.EmailField(null=False, blank=False)
+    libraries = models.ManyToManyField(Library, related_name="affiliated_users")
+    library_admin = models.BooleanField(default=False)
+    can_merge = models.BooleanField(default=False)
+    expiration = models.DateTimeField(null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    password_reset_token = models.CharField(max_length=255, null=True, blank=True)
+    password_reset_expiration = models.DateTimeField(null=True, blank=True)
+
+    def has_valid_password_reset(self):
+        if self.password_reset_token and self.password_reset_expiration > datetime.now(timezone.utc):
+            return True
+        else:
+            return False
+
+    def can_merge_entries(self):
+        if self.library_admin:
+            return True
+        elif self.can_merge:
+            return True
+        else:
+            return False
+
 
 
 class Site(models.Model):
@@ -1227,33 +1253,6 @@ class SpreadsheetUpload(models.Model):
         self.processed = now
         self.save()
 
-class Profile(models.Model):
-    user = models.OneToOneField(User,
-                                primary_key=True,
-                                on_delete=models.CASCADE,
-                                related_name="profile")
-    libraries = models.ManyToManyField(Library, related_name="affiliated_profiles")
-    library_admin = models.BooleanField(default=False)
-    can_merge = models.BooleanField(default=False)
-    expiration = models.DateTimeField(null=True, blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    password_reset_token = models.CharField(max_length=255, null=True, blank=True)
-    password_reset_expiration = models.DateTimeField(null=True, blank=True)
-
-    def has_valid_password_reset(self):
-        if self.password_reset_token and self.password_reset_expiration > datetime.now(timezone.utc):
-            return True
-        else:
-            return False
-
-    def can_merge_entries(self):
-        if self.library_admin:
-            return True
-        elif self.can_merge:
-            return True
-        else:
-            return False
 
 class ChangeLog(models.Model):
     user = models.ForeignKey(
@@ -1293,7 +1292,7 @@ def manipulate(op, user, main_id, *ids, create=None):
         pass
     elif user.is_superuser:
         pass
-    elif hasattr(user, 'profile') and user.profile.can_merge_entries():
+    elif user.can_merge_entries():
         # needs the can_merge_entries logic
         pass
     else:

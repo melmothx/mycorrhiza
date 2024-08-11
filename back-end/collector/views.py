@@ -14,8 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
-from .models import Profile, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
-from django.contrib.auth.models import User
+from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
@@ -38,7 +37,7 @@ def user_is_library_admin(user):
         return False
     if user.is_superuser:
         return True
-    elif hasattr(user, "profile") and user.profile.library_admin:
+    elif user.library_admin:
         return True
     else:
         return False
@@ -48,7 +47,7 @@ def user_can_merge(user):
         return False
     if user.is_superuser:
         return True
-    elif hasattr(user, "profile") and user.profile.can_merge_entries():
+    elif user.can_merge_entries():
         return True
     else:
         return False
@@ -92,21 +91,15 @@ def api_reset_password(request):
     # logger.debug(pp.pformat(data))
 
     if user:
-        # make sure to create the profile, if missing
-        profile = None
-        if hasattr(user, 'profile'):
-            profile = user.profile
-        else:
-            profile = Profile.objects.create(user=user)
 
         if operation == 'send-link':
-            if not profile.has_valid_password_reset():
-                profile.password_reset_token = token_urlsafe(16)
-                profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
-                profile.save()
+            if not user.has_valid_password_reset():
+                user.password_reset_token = token_urlsafe(16)
+                user.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
+                user.save()
                 url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
                                                        user.username,
-                                                       profile.password_reset_token)
+                                                       user.password_reset_token)
                 send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS, user.username),
                           "Please visit {} to reset your password. The link is valid for 10 minutes.".format(url),
                           settings.MYCORRHIZA_EMAIL_FROM,
@@ -123,16 +116,16 @@ def api_reset_password(request):
                 password_validation_errors = " ".join(error)
 
             if not password_validation_errors:
-                if profile.has_valid_password_reset() and token == profile.password_reset_token:
+                if user.has_valid_password_reset() and token == user.password_reset_token:
                     logger.info("Successful password reset for {}".format(user.username))
                     user.set_password(new_password)
                     user.save()
                     new_user = authenticate(request, username=user.username, password=new_password)
                     if new_user is not None:
                         login(request, new_user)
-                        profile.password_reset_token = None
-                        profile.password_reset_expiration = None
-                        profile.save()
+                        user.password_reset_token = None
+                        user.password_reset_expiration = None
+                        user.save()
                         out['logged_in'] = user.username
                     else:
                         out['error'] = "We could not log you in, this is a bug"
@@ -164,21 +157,16 @@ def _user_data(user):
         "message": None,
     }
     if user and user.username:
-        # make sure we have a profile
-        if hasattr(user, 'profile'):
-            profile = user.profile
-        else:
-            profile = Profile.objects.create(user=user)
 
-        if profile.expiration and datetime.now(timezone.utc) > profile.expiration:
-            logger.info("Removing {}: expired account on {}".format(user.username, profile.expiration))
+        if user.expiration and datetime.now(timezone.utc) > user.expiration:
+            logger.info("Removing {}: expired account on {}".format(user.username, user.expiration))
             user.delete()
             out["message"] = "Sorry, your account is expired!"
             return out
         out["logged_in"] = user.username
         out["is_superuser"] = user.is_superuser
-        out["is_library_admin"] = profile.library_admin
-        out["libraries"] = [ { "id": l.id, "name": l.name } for l in profile.libraries.filter(active=True).all() ]
+        out["is_library_admin"] = user.library_admin
+        out["libraries"] = [ { "id": l.id, "name": l.name } for l in user.libraries.filter(active=True).all() ]
 
     return out
 
@@ -220,11 +208,10 @@ def api(request):
     res['can_set_exclusions'] = user.is_superuser
     res['can_merge'] = user.is_superuser
 
-    if user.is_authenticated and not user.is_superuser and hasattr(user, "profile"):
-        profile = user.profile
+    if user.is_authenticated and not user.is_superuser:
         # authenticated users can set exclusion
         res['can_set_exclusions'] = True
-        res['can_merge'] = profile.can_merge_entries()
+        res['can_merge'] = user.can_merge_entries()
 
     return JsonResponse(res)
 
@@ -369,8 +356,8 @@ def api_library_action(request, action, library_id):
     try:
         if user.is_superuser:
             library = Library.objects.get(pk=library_id)
-        elif hasattr(user, 'profile'):
-            library = user.profile.libraries.get(pk=library_id)
+        elif user.username:
+            library = user.libraries.get(pk=library_id)
     except Library.DoesNotExist:
         out['error'] = "You cannot access this library"
 
@@ -391,70 +378,62 @@ def api_library_action(request, action, library_id):
                 if userid:
                     logger.debug("Removing {}".format(userid))
                     try:
-                        profile = library.affiliated_profiles.get(pk=userid)
-                        profile.libraries.remove(library)
+                        affiliate = library.affiliated_users.get(pk=userid)
+                        affiliate.libraries.remove(library)
                         # should we keep the user or set the user inactive?
-                        if not profile.libraries.count():
+                        if not affiliate.libraries.count():
                             logger.info("No other library associated, removing")
-                            profile.user.delete();
-                    except Profile.DoesNotExist:
+                            affiliate.delete();
+                    except User.DoesNotExist:
                         out['error'] = "No such affiliated user"
             elif action == "create-user":
                 logger.debug(pp.pformat(data))
                 username = data.get('username', '').strip().lower()
                 logger.debug("Creating {}".format(username))
                 if username:
-                    user_created = False
                     try:
-                        user = User.objects.get(username=username)
+                        affiliate = User.objects.get(username=username)
                     except User.DoesNotExist:
-                        user = User.objects.create_user(
-                            username,
-                            data.get('email') or library.email_internal,
-                            first_name=data.get('first_name', '').strip(),
-                            last_name=data.get('last_name', '').strip(),
-                        )
-                        user_created = True
-
-                    if hasattr(user, 'profile'):
-                        profile = user.profile
-                    else:
-                        profile = Profile.objects.create(user=user)
-
-                    if user_created:
+                        user_args = {
+                            "first_name": data.get('first_name', '').strip(),
+                            "last_name": data.get('last_name', '').strip(),
+                            "password_reset_token": token_urlsafe(16),
+                            "password_reset_expiration": datetime.now(timezone.utc) + timedelta(minutes=10),
+                        }
                         if data.get('can_merge'):
-                            profile.can_merge = True
+                            user_args['can_merge'] = True
                         if data.get('expiration'):
-                            profile.expiration = data.get('expiration')
-                        profile.password_reset_token = token_urlsafe(16)
-                        profile.password_reset_expiration = datetime.now(timezone.utc) + timedelta(minutes=10)
-                        profile.save()
-                        profile.refresh_from_db()
-                        if user.email:
+                            user_args['expiration'] = data.get('expiration')
+
+                        affiliate = User.objects.create_user(username,
+                                                        data.get('email') or library.email_internal,
+                                                        **user_args)
+                        affiliate.refresh_from_db()
+                        if affiliate.email:
                             url = "{}/reset-password/{}/{}".format(settings.CANONICAL_ADDRESS,
-                                                               user.username,
-                                                               profile.password_reset_token)
+                                                                   affiliate.username,
+                                                                   affiliate.password_reset_token)
                             mail_body = [
-                                "Your user {} has been created.".format(user.username),
+                                "Your user {} has been created.".format(affiliate.username),
                                 "Please visit {} to set the password.".format(url),
                                 "The link is valid for 10 minutes. You can always request another link one.",
                             ]
-                            if profile.expiration:
-                                iso_date = profile.expiration.strftime('%Y-%m-%d')
+                            if affiliate.expiration:
+                                iso_date = affiliate.expiration.strftime('%Y-%m-%d')
                                 mail_body.append("This account will expire on {}.".format(iso_date))
 
                             send_mail("Password reset for {} (account {})".format(settings.CANONICAL_ADDRESS,
-                                                                                  user.username),
+                                                                                  affiliate.username),
                                       "\n\n".join(mail_body),
                                       settings.MYCORRHIZA_EMAIL_FROM,
-                                      [user.email])
+                                      [affiliate.email])
 
-                    if profile.libraries.filter(pk=library.id).count():
+                    if affiliate.libraries.filter(pk=library.id).count():
                         logger.info("User already has the library")
                         out['error'] = "User already present"
                     else:
-                        logger.info("Adding {} to {}".format(user.username, library.name))
-                        profile.libraries.add(library)
+                        logger.info("Adding {} to {}".format(affiliate.username, library.name))
+                        affiliate.libraries.add(library)
                         out['success'] = "User added"
 
         except json.JSONDecodeError:
@@ -462,29 +441,27 @@ def api_library_action(request, action, library_id):
 
     # refetch the values
     if library:
-
         if action == 'details':
             out['library'] = Library.objects.values().get(pk=library.id)
         elif action == 'list-users':
             users = []
-            for profile in library.affiliated_profiles.filter(library_admin=False).all():
-                user = profile.user
+            for affl in library.affiliated_users.filter(library_admin=False).all():
                 user_data = {
-                    "id": user.id,
-                    "username": user.username,
-                    "email": user.email,
-                    "name": "{} {}".format(user.first_name, user.last_name),
+                    "id": affl.id,
+                    "username": affl.username,
+                    "email": affl.email,
+                    "name": "{} {}".format(affl.first_name, affl.last_name),
                     "last_login": None,
                     "can_merge": None,
                     "expiration": None,
                 }
-                if profile.can_merge:
+                if affl.can_merge:
                     user_data["can_merge"] = "Yes"
-                if profile.expiration:
-                    user_data["expiration"] = profile.expiration.strftime('%Y-%m-%d')
+                if affl.expiration:
+                    user_data["expiration"] = affl.expiration.strftime('%Y-%m-%d')
 
-                if user.last_login:
-                    user_data['last_login'] = user.last_login.strftime('%Y-%m-%d')
+                if affl.last_login:
+                    user_data['last_login'] = affl.last_login.strftime('%Y-%m-%d')
                 users.append(user_data)
 
             out['records'] = users
@@ -760,7 +737,7 @@ def api_spreadsheet(request, library_id):
     except Library.DoesNotExist:
         out['error'] = "Library does not exist"
     if library:
-        if user.is_superuser or library.affiliated_profiles.filter(library_admin=True, user=user).count():
+        if user.is_superuser or library.affiliated_users.filter(library_admin=True, user=user).count():
             sites = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv", active=True) ]
     if sites:
         if request.method == 'POST':
