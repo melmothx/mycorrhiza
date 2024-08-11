@@ -3,7 +3,7 @@ asgiref==3.7.2
 Babel==2.13.1
 certifi==2023.11.17
 charset-normalizer==3.3.2
-Django==5.0.1
+Django==5.0.8
 docutils==0.20.1
 idna==3.4
 imagesize==1.4.1
