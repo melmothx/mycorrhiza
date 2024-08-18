@@ -150,8 +150,6 @@ class Site(models.Model):
         choices=CSV_TYPES,
     )
     active = models.BooleanField(default=True, null=False)
-    has_raw = models.BooleanField(default=False)
-    has_text = models.BooleanField(default=False)
     amusewiki_formats = models.JSONField(null=True)
     tree_path = models.CharField(blank=True, null=True, max_length=255)
     created = models.DateTimeField(auto_now_add=True)
@@ -621,7 +619,7 @@ class Entry(models.Model):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
                 data_sources.append(ds)
-        out['data_sources'] = sorted(data_sources, key=lambda i: i.get('year_edition'), reverse=True)
+        out['data_sources'] = sorted(data_sources, key=lambda i: i.get('year_edition') or 0, reverse=True)
         return out
 
     def display_data(self, library_ids=[]):
@@ -1081,10 +1079,13 @@ class DataSource(models.Model):
             # probably old records
             ds["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+        file_formats = [ ff['ext'] for ff in ds['downloads'] ]
 
-        if site.has_text or site.amusewiki_formats:
+        if '.txt' in file_formats:
             ds['file_formats'].append('text')
-        elif site.has_raw:
+        elif '.muse' in file_formats:
+            ds['file_formats'].append('text')
+        elif '.pdf' in file_formats:
             ds['file_formats'].append('raw')
 
         if library.active and library.public:
