@@ -42,16 +42,27 @@
              const src = this.source;
              if (src.site_type == 'amusewiki') {
                  if (src.aggregated && src.aggregated.length == 0) {
-                     return 1;
+                     return true;
                  }
              }
              if (src.site_type == 'calibretree') {
                  if (src.downloads && src.downloads.filter((e) => e.ext == '.txt').length) {
-                     return 1;
+                     return true;
                  }
              }
-             return 0;
-         }
+             return false;
+         },
+         has_pdf_only() {
+             if (!this.can_have_full_text()) {
+                 const src = this.source;
+                 if (src.site_type == 'calibretree') {
+                     if (src.downloads && src.downloads.filter((e) => e.ext == '.pdf').length) {
+                         return true;
+                     }
+                 }
+             }
+             return false;
+         },
      }
  }
 </script>
@@ -102,6 +113,15 @@
       </div>
       <div>
         <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
+      </div>
+      <div v-if="has_pdf_only()">
+        <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
+          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
+            <a :href="get_binary_file(source.data_source_id, dl.ext)">
+              {{ dl.desc }}
+            </a>
+          </div>
+        </div>
       </div>
       <div v-if="can_have_full_text()" class="text-center">
         <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>

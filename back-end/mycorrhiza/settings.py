@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTH_USER_MODEL = 'collector.User'
+
 ROOT_URLCONF = 'mycorrhiza.urls'
 
 TEMPLATES = [
