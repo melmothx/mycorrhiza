@@ -8,7 +8,7 @@ from amwmeta.xapian import MycorrhizaIndexer
 from amwmeta.calibre import scan_calibre_tree
 from django.conf import settings
 import logging
-from amwmeta.sheets import parse_sheet, normalize_records
+from amwmeta.sheets import parse_sheet
 import random
 import requests
 import re
@@ -120,6 +120,7 @@ class Site(models.Model):
     CSV_TYPES = [
         ('calibre', 'Calibre'),
         ('abebooks_home_base', 'Abebooks Home Base'),
+        ('disordine', 'Biblioteca Disordine'),
     ]
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),
@@ -1256,8 +1257,7 @@ class SpreadsheetUpload(models.Model):
 
     def process_csv(self):
         now = datetime.now(timezone.utc)
-        records = normalize_records(self.site.csv_type,
-                                    parse_sheet(self.site.csv_type, self.spreadsheet.path))
+        records = parse_sheet(self.site.csv_type, self.spreadsheet.path)
         self.site.process_generic_records(records, replace_all=self.replace_all)
         self.processed = now
         self.save()
