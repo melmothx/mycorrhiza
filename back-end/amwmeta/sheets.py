@@ -18,9 +18,13 @@ def sheet_definitions():
             return None
     def round_to_int(name, value):
         if value:
-            return str(int(value))
+            if isinstance(value, float):
+                return str(int(value))
+            else:
+                return str(value)
         else:
             return None
+
     definitions = {
         "calibre": {
             "type": "csv",
@@ -76,12 +80,12 @@ def sheet_definitions():
                 ('description', 'Note 1'),
                 ('description', 'Note 2'),
                 ('identifier', 'Posizione'),
-                ('date', 'Data'),
+                ('date', 'Data', None, (round_to_int,)),
                 ('place_date_of_publication_distribution', 'Luogo editore'),
                 ('country_of_publishing', 'Paese pubblicaz.'),
-                ('description', 'Curatore', None, add_name),
-                ('description', 'Traduzione', None, add_name),
-                ('physical_description', 'Npag', None, add_name),
+                ('description', 'Curatore', None, (add_name,)),
+                ('description', 'Traduzione', None, (add_name,)),
+                ('physical_description', 'Npag', None, (round_to_int, add_name)),
             ],
         },
     }
@@ -139,9 +143,9 @@ def parse_sheet(csv_type, sheet, **options):
                     record = {}
                     for cx, cname in enumerate(headers):
                         record[cname] = sh.cell(row, cx + 1).value
-                        if options.get('sample'):
-                            book.close()
-                            return { "error": None, "sample": record }
+                    if options.get('sample'):
+                        book.close()
+                        return { "error": None, "sample": record }
                     records.append(record)
         book.close()
 
@@ -173,9 +177,11 @@ def normalize_records(records, mapping):
                 normal[dest] = []
 
             value = rec.get(orig)
-            if interpolate:
-                value = interpolate(orig, value)
             if value:
+                if interpolate:
+                    for funct in interpolate:
+                        value = funct(orig, value)
+                value = str(value)
                 if split:
                     normal[dest].extend(split.split(str(value)))
                 else:

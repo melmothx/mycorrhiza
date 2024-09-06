@@ -961,8 +961,11 @@ class DataSource(models.Model):
     def calibre_base_dir(self):
         if self.uri:
             tree = Path(self.uri)
-            if tree.is_dir():
-                return tree
+            try:
+                if tree.is_dir():
+                    return tree
+            except PermissionError:
+                return None
         return None
 
     def get_remote_file(self, ext):
@@ -1233,8 +1236,15 @@ class Exclusion(models.Model):
 
 def spreadsheet_upload_directory(instance, filename):
     choices = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    return "spreadsheets/{0}-{1}.csv".format(int(datetime.now().timestamp()),
-                                             "".join(random.choice(choices) for i in range(20)))
+    ext = '.csv'
+    for tryext in ('.xls', '.xlsx'):
+        if filename.lower().endswith(tryext):
+            ext = tryext
+            break
+
+    return "spreadsheets/{0}-{1}.{2}".format(int(datetime.now().timestamp()),
+                                             "".join(random.choice(choices) for i in range(20)),
+                                             ext)
 
 class SpreadsheetUpload(models.Model):
     user = models.ForeignKey(
