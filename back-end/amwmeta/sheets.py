@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 pp = pprint.PrettyPrinter(indent=2)
 
-def parse_sheet(csv_type, sheet, **options):
+def sheet_definitions():
     def add_name(name, value):
         if value:
             return "{} {}".format(name, value)
@@ -21,7 +21,6 @@ def parse_sheet(csv_type, sheet, **options):
             return str(int(value))
         else:
             return None
-
     definitions = {
         "calibre": {
             "type": "csv",
@@ -86,6 +85,10 @@ def parse_sheet(csv_type, sheet, **options):
             ],
         },
     }
+    return definitions
+
+def parse_sheet(csv_type, sheet, **options):
+    definitions = sheet_definitions()
     try:
         args = definitions[csv_type]
     except KeyError:
@@ -142,9 +145,9 @@ def parse_sheet(csv_type, sheet, **options):
                     records.append(record)
         book.close()
 
-    return normalize_records(csv_type, records, args['mapping'])
+    return normalize_records(records, args['mapping'])
 
-def normalize_records(csv_type, records, mapping):
+def normalize_records(records, mapping):
     # let it crash with missing type
     out = []
     specification = []

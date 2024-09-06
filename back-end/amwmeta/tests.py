@@ -1,6 +1,6 @@
 import unittest
 from .harvest import extract_fields
-from .sheets import normalize_records
+from .sheets import normalize_records, sheet_definitions
 
 
 class HarvestTestCase(unittest.TestCase):
@@ -187,7 +187,7 @@ class HarvestTestCase(unittest.TestCase):
             '#isbn': '9788809062979',
             '#formats': '',
         }
-        got = normalize_records('calibre', [rec])[0]
+        got = normalize_records([rec], sheet_definitions()['calibre']['mapping'])[0]
         # print(got)
         self.assertEqual(got['language'], ['ita'])
         oai = extract_fields(got, 'pippo.org')
