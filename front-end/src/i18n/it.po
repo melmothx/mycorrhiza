@@ -266,7 +266,7 @@ msgstr ""
 #. $gettext('Please type your new password in both fields')
 #: src/components/PasswordReset.vue:85
 msgid "Please type your new password in both fields"
-msgstr "Per favore, digita la tua nuova npassword in entrambi i campi"
+msgstr "Per favore, digita la tua nuova password in entrambi i campi"
 
 #. $gettext('Previous')
 #: src/components/PaginationBox.vue:10
