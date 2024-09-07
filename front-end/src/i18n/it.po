@@ -266,7 +266,7 @@ msgstr ""
 #. $gettext('Please type your new password in both fields')
 #: src/components/PasswordReset.vue:85
 msgid "Please type your new password in both fields"
-msgstr ""
+msgstr "Per favore, digita la tua nuova npassword in entrambi i campi"
 
 #. $gettext('Previous')
 #: src/components/PaginationBox.vue:10
@@ -281,17 +281,17 @@ msgstr "Ragione"
 #. $gettext('Repeat Password')
 #: src/components/PasswordReset.vue:69
 msgid "Repeat Password"
-msgstr ""
+msgstr "Ripeti la Password"
 
 #. $gettext('Reset Password for %1?', username)
 #: src/components/NavBar.vue:127
 msgid "Reset Password for %1?"
-msgstr ""
+msgstr "Reset Password per %1?"
 
 #. $gettext('Reset password for %1', username) $gettext('Reset password for %1', username)
 #: src/components/PasswordReset.vue:60 src/components/PasswordReset.vue:78
 msgid "Reset password for %1"
-msgstr ""
+msgstr "Reset Password per %1?"
 
 #. $gettext('Restore')
 #: src/components/ExclusionRow.vue:37
@@ -358,7 +358,7 @@ msgstr "Bersaglio"
 #. $gettext('The passwords do not match')
 #: src/components/PasswordReset.vue:71
 msgid "The passwords do not match"
-msgstr ""
+msgstr "La password non corrisponde"
 
 #. $gettext('Title')
 #: src/components/DashboardTable.vue:123
