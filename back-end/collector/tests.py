@@ -1,14 +1,13 @@
 from pathlib import Path
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from .models import Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
+from .models import User, Entry, Agent, Site, DataSource, Library, Language, AggregationEntry
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 from amwmeta.xapian import search
 import copy
 import pprint
 import shutil
-from django.contrib.auth.models import User
 pp = pprint.PrettyPrinter(indent=4)
 
 xapian_test_db = Path('xapian', 'tests')
