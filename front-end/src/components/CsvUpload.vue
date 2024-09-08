@@ -21,6 +21,7 @@
              "error": null,
              "success": null,
              "sample": [],
+             "number_of_records": 0,
          }
      },
      methods: {
@@ -61,6 +62,7 @@
                       this.error = res.data.error;
                       this.success = res.data.success;
                       this.sample = res.data.sample;
+                      this.number_of_records = res.data.number_of_records;
                       this.spreadsheet_id = res.data.uploaded;
                   })
                   .catch(err => {
@@ -92,6 +94,7 @@
              this.spreadsheet_id = null;
              this.spreadsheet = null;
              this.spreadsheet_name = null;
+             this.number_of_records = 0;
          },
      },
      mounted() {
@@ -180,7 +183,8 @@
     </form>
   </div>
   <div v-if="sample.length">
-    <h1 class="font-bold text-xl mb-2">{{ $gettext('Sheet Preview, first record') }}</h1>
+    <h1 class="font-bold text-xl mb-2">
+      {{ $gettext('Sheet Preview, Total %1 records', number_of_records) }}</h1>
     <table>
       <thead>
         <tr>

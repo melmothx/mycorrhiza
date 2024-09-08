@@ -96,22 +96,18 @@ def parse_sheet(csv_type, sheet, **options):
     try:
         args = definitions[csv_type]
     except KeyError:
-        return { "error": "Wrong type", "sample": [] }
-
+        return { "error": "Wrong type", "sample": {}, "number_of_records": 0 }
+    sheet_error = None
     records = []
     if args['type'] == "csv":
         with open(sheet, newline='', encoding=args[csv_type]['encoding']) as csvfile:
             reader = csv.DictReader(csvfile, **args[csv_type]['csv'])
             try:
                 for row in reader:
-                    if options.get('sample'):
-                        logger.debug(row)
-                        return { "error": None, "sample": row }
                     records.append(row)
             except UnicodeDecodeError as error:
                 logger.error(error)
-                if options.get('sample'):
-                    return { "error": str(error), "sample": {} }
+                sheet_error = str(error)
 
     elif args['type'] == "excel" and sheet.lower().endswith('.xls'):
         book = xlrd.open_workbook(sheet)
@@ -126,8 +122,6 @@ def parse_sheet(csv_type, sheet, **options):
                     record = {}
                     for cx, cname in enumerate(headers):
                         record[cname] = sh.cell_value(row, cx)
-                    if options.get('sample'):
-                        return { "error": None, "sample": record }
                     records.append(record)
 
     elif args['type'] == "excel" and sheet.lower().endswith('.xlsx'):
@@ -143,13 +137,18 @@ def parse_sheet(csv_type, sheet, **options):
                     record = {}
                     for cx, cname in enumerate(headers):
                         record[cname] = sh.cell(row, cx + 1).value
-                    if options.get('sample'):
-                        book.close()
-                        return { "error": None, "sample": record }
                     records.append(record)
         book.close()
-
-    return normalize_records(records, args['mapping'])
+    else:
+        sheet_error = "Invalid file"
+    if options.get('sample'):
+        number_of_records = len(records)
+        sample = {}
+        if records:
+            sample = records[0]
+        return { "error": sheet_error, "number_of_records": number_of_records, "sample": sample }
+    else:
+        return normalize_records(records, args['mapping'])
 
 def normalize_records(records, mapping):
     # let it crash with missing type

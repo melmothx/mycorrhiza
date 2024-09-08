@@ -764,6 +764,7 @@ def api_spreadsheet(request, library_id):
                 if not validation['error']:
                     out['uploaded'] = ss.id
                     out['success'] = "Spreadsheet uploaded"
+                    out['number_of_records'] = validation['number_of_records']
                 else:
                     # remove record?
                     pass
