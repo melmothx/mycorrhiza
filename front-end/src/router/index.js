@@ -5,6 +5,8 @@ import ExclusionView from '../views/ExclusionView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import PasswordResetView from '../views/PasswordResetView.vue'
 import LibraryEditView from '../views/LibraryEditView.vue'
+import LibraryView from '../views/LibraryView.vue'
+import LibraryOverView from '../views/LibraryOverView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -37,6 +39,16 @@ const router = createRouter({
             path: '/library-admin/:id',
             name: 'library_edit',
             component: LibraryEditView,
+        },
+        {
+            path: '/libraries/:id',
+            name: 'library_view',
+            component: LibraryView,
+        },
+        {
+            path: '/libraries',
+            name: 'library_overview',
+            component: LibraryOverView,
         },
     ]
 })

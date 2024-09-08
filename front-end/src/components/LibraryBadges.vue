@@ -14,8 +14,10 @@
 </script>
 <template>
   <span v-for="l in libraries">
-    <a :href="'/library/' + l.id">
-      <span class="bg-claret-900 rounded text-white font-bold text-sm p-1 m-1">{{ l.name }}</span>
-    </a>
+    <router-link class="bg-claret-900 hover:bg-claret-800
+                        rounded text-white font-bold text-sm p-1 m-1"
+                 :to="{ name: 'library_view', params: { id: l.id } }">
+      {{ l.name }}
+    </router-link>
   </span>
 </template>
