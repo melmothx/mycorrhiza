@@ -270,7 +270,7 @@ class AggregationProcessingTestCase(TestCase):
                 'language': ['en'],
                 'national_bibliography_number': [],
                 'numbering_peculiarities__note': [],
-                'physical_description': [],
+                'material_description': [],
                 'place_date_of_publication_distribution': ['2022'],
                 'preceding_entry_place_publisher_date': [],
                 'preceding_entry_relationship_information': [],

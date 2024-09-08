@@ -105,15 +105,48 @@
       <div class="my-2" v-if="source.description && !short">
         {{ source.description }}
       </div>
-      <div v-if="source.shelf_location_code">
-        <span>{{ $gettext('Shelf Location Code') }}</span> <code>{{ source.shelf_location_code }}</code>
-      </div>
-      <div v-if="source.material_description">
-        {{ source.material_description }}
-      </div>
-      <div>
-        <code>{{ $gettext('ID:') }}</code> <code>{{ source.identifier }}</code>
-      </div>
+      <table class="my-4 w-full">
+        <tr class="border-b border-t p-2" v-if="source.shelf_location_code">
+          <td class="p-1 pr-2">
+            {{ $gettext('Shelf Location Code') }}
+          </td>
+          <td>
+            <code>{{ source.shelf_location_code }}</code>
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.material_description">
+          <td class="p-1 pr-2">
+            {{ $gettext('Material Description') }}
+          </td>
+          <td>
+            <code>{{ source.material_description }}</code>
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.isbn">
+          <td class="p-1 pr-2">
+            {{ $gettext('Codice ISBN') }}
+          </td>
+          <td>
+            <code>{{ source.isbn }}</code>
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.publisher">
+          <td class="p-1 pr-2">
+            {{ $gettext('Publisher') }}
+          </td>
+          <td>
+            {{ source.publisher }}
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.identifier">
+          <td class="p-1 pr-2">
+            {{ $gettext('Identifier') }}
+          </td>
+          <td>
+            <code>{{ source.identifier }}</code>
+          </td>
+        </tr>
+      </table>
       <div v-if="has_pdf_only()">
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
           <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">

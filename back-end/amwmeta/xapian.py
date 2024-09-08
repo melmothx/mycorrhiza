@@ -288,7 +288,7 @@ class MycorrhizaIndexer:
                 if sort_type == 'number':
                     doc.add_value(slot, xapian.sortable_serialise(sort_value[0]['value']))
                 elif sort_type == 'timestamp':
-                    logger.info("Adding {} {} for {}".format(slot, sort_value, identifier))
+                    # logger.info("Adding {} {} for {}".format(slot, sort_value, identifier))
                     doc.add_value(slot, sort_value)
                 elif sort_type == 'string':
                     stripped = unidecode(' '.join([ v['value'] for v in sort_value ])).lower()
@@ -320,7 +320,7 @@ class MycorrhizaIndexer:
                 if value:
                     termgenerator.index_text(value, 20)
 
-        for field in ['description', 'material_description']:
+        for field in ['description', 'material_description', 'publisher', 'isbn']:
             termgenerator.increase_termpos()
             for dsd in record['data_sources']:
                 value = dsd.get(field)

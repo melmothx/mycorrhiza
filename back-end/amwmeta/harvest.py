@@ -33,7 +33,7 @@ class MarcXMLRecord(Record):
             ('publisher', '264',  ('b')),
             ('place_date_of_publication_distribution', '260', ('a', 'c')),
             ('place_date_of_publication_distribution', '264', ('a', 'c')), # this is actually the place + date
-            ('physical_description', '300', ('a', 'b', 'c', 'e')),
+            ('material_description', '300', ('a', 'b', 'c', 'e')),
             ('content_type', '336',  ('a')),
             ('date', '264', ('c')),
             ('date', '363', ('i')),
@@ -407,11 +407,11 @@ def extract_fields(record, hostname):
             pass
 
 
-    if record.get('shelf_location_code'):
-        out['shelf_location_code'] = ' / '.join(record.get('shelf_location_code'))
+    # collapse these fields
+    for f in ('material_description', 'shelf_location_code', 'isbn', 'publisher'):
+        if record.get(f):
+            out[f] = ' '.join(record.get(f))
 
-    if record.get('physical_description'):
-        out['material_description'] = ' '.join(record.get('physical_description'))
 
     out['aggregations'] = []
     record['aggregation_names'] = []

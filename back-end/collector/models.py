@@ -364,6 +364,8 @@ class Site(models.Model):
             'year_edition',
             'year_first_edition',
             'description',
+            'isbn',
+            'publisher',
         ]
         ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
 
@@ -926,6 +928,10 @@ class DataSource(models.Model):
     year_edition = models.IntegerField(null=True)
     year_first_edition = models.IntegerField(null=True)
 
+    # allow multiple separated by a space
+    publisher = models.TextField(null=True)
+    isbn = models.TextField(null=True)
+
     # if digital, provide the url
     uri = models.URLField(max_length=2048, null=True)
     uri_label = models.CharField(max_length=2048, null=True)
@@ -1069,6 +1075,8 @@ class DataSource(models.Model):
             "year_edition": self.year_edition,
             "year_first_edition": self.year_first_edition,
             "material_description": self.material_description,
+            "isbn": self.isbn,
+            "publisher": self.publisher,
             "downloads": self.download_options(),
             "entry_id": original_entry.id,
             "file_formats": [],
