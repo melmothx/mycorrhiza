@@ -71,15 +71,18 @@
              this.sample = [];
              this.spreadsheet = null;
              this.spreadsheet_name = null;
+             this.processing = true;
              axios.post('/collector/api/spreadsheet/process/' + this.spreadsheet_id)
                   .then(res => {
                       console.log(res.data)
                       this.spreadsheet_id = null;
                       this.error = res.data.error;
                       this.success = res.data.success;
+                      this.processing = false;
                   })
                   .catch(err => {
                       this.error = err;
+                      this.processing = false;
                   });
          },
          cancel_process() {
@@ -105,6 +108,9 @@
       </div>
       <div v-if="success" class="py-2 text-spectra-800 font-bold">
         {{ $gettext(success) }}
+        <span v-if="processing"  class="animate-ping rounded-full text-claret-900 py-2">
+          {{ $gettext('Working') }}
+        </span>
       </div>
       <div class="mb-4">
         <div>
@@ -174,20 +180,23 @@
     </form>
   </div>
   <div v-if="sample.length">
+    <h1 class="font-bold text-xl mb-2">{{ $gettext('Sheet Preview, first record') }}</h1>
     <table>
       <thead>
         <tr>
-          <th>{{ $gettext('Column Name') }}</th>
-          <th>{{ $gettext('Value') }}</th>
+          <th class="p-1 font-bold border border-old-copper-700">
+            {{ $gettext('Column Name') }}</th>
+          <th class="p-1 font-bold border border-old-copper-700">
+            {{ $gettext('Value') }}</th>
         </tr>
       </thead>
       <tbody>
         <template v-for="col in sample">
-          <tr v-if="col.name">
-            <td>
+          <tr class="m-1 odd:bg-perl-bush-50 even:bg-perl-bush-100" v-if="col.name">
+            <td class="p-1 font-semibold border border-old-copper-700">
               {{ col.name }}
             </td>
-            <td>
+            <td class="p-1 border border-old-copper-700">
               {{ col.value }}
             </td>
           </tr>
@@ -196,13 +205,13 @@
     </table>
     <button v-if="spreadsheet_id"
             @click="confirm_process"
-            class="btn-primary p-1"
+            class="btn-primary p-1 mt-2 mr-1"
             type="button">
       {{ $gettext('Process File') }}
     </button>
     <button v-if="spreadsheet_id"
             @click="cancel_process"
-            class="btn-primary p-1"
+            class="btn-primary p-1 mt-2 ml-1"
             type="button">
       {{ $gettext('Cancel') }}
     </button>
