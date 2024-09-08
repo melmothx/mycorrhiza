@@ -36,7 +36,7 @@
    },
    "it" : {
       "Admin" : {
-         "msgstr" : "Amministratore"
+         "msgstr" : "Amministrazione"
       },
       "Aggregated" : {
          "msgstr" : "Aggregati"
@@ -185,11 +185,23 @@
       "Part of:" : {
          "msgstr" : "Parte di:"
       },
+      "Please type your new password in both fields" : {
+         "msgstr" : "Per favore, digita la tua nuova password in entrambi i campi"
+      },
       "Previous" : {
          "msgstr" : "Precedente"
       },
       "Reason" : {
          "msgstr" : "Ragione"
+      },
+      "Repeat Password" : {
+         "msgstr" : "Ripeti la Password"
+      },
+      "Reset Password for %1?" : {
+         "msgstr" : "Reset Password per %1?"
+      },
+      "Reset password for %1" : {
+         "msgstr" : "Reset Password per %1?"
       },
       "Restore" : {
          "msgstr" : "Rigenera"
@@ -238,6 +250,9 @@
       },
       "Target" : {
          "msgstr" : "Bersaglio"
+      },
+      "The passwords do not match" : {
+         "msgstr" : "La password non corrisponde"
       },
       "Title" : {
          "msgstr" : "Titolo"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 07:38:44 07:38+0000\n"
+"POT-Creation-Date: 07:13:16 07:13+0000\n"
 "PO-Revision-Date: 2024-03-04 10:13+0000\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -11,49 +11,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. $gettext('Add')
+#: src/components/UserCreation.vue:134
+msgid "Add"
+msgstr ""
+
+#. $gettext('Add User')
+#: src/components/UserCreation.vue:84
+msgid "Add User"
+msgstr ""
+
 #. $gettext('Admin') $gettext('Admin')
-#: src/components/NavBar.vue:153 src/components/MergeBox.vue:161
+#: src/components/NavBar.vue:155 src/components/MergeBox.vue:161
 msgid "Admin"
 msgstr ""
 
 #. $gettext('Aggregated')
-#: src/components/SearchPage.vue:190
+#: src/components/SearchPage.vue:191
 msgid "Aggregated"
 msgstr ""
 
 #. $gettext('Aggregation') $gettext('Aggregation') $gettext('Aggregation')
-#: src/components/SearchPage.vue:191 src/components/SearchPage.vue:192
-#: src/components/SearchPage.vue:311
+#: src/components/SearchPage.vue:192 src/components/SearchPage.vue:193
+#: src/components/SearchPage.vue:310
 msgid "Aggregation"
 msgstr ""
 
 #. $gettext('All entries (%1)', total_entries)
-#: src/components/SearchPage.vue:206
+#: src/components/SearchPage.vue:207
 msgid "All entries (%1)"
 msgstr ""
 
 #. $gettext('Authors')
-#: src/components/SearchPage.vue:339
+#: src/components/SearchPage.vue:338
 msgid "Authors"
 msgstr ""
 
 #. $gettext('Back') $gettext('Back')
-#: src/components/EntryPage.vue:79 src/components/DashboardTable.vue:135
+#: src/views/DashboardView.vue:17 src/components/EntryPage.vue:79
 msgid "Back"
 msgstr ""
 
 #. $gettext('Bibliographical entry only')
-#: src/components/SearchPage.vue:189
+#: src/components/SearchPage.vue:190
 msgid "Bibliographical entry only"
 msgstr ""
 
-#. $gettext('Cancel')
-#: src/components/ExclusionButton.vue:80
+#. $gettext('Cancel') $gettext('Cancel')
+#: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:207
 msgid "Cancel"
 msgstr ""
 
+#. $gettext('Choose another file')
+#: src/components/CsvUpload.vue:113
+msgid "Choose another file"
+msgstr ""
+
+#. $gettext('Choose file')
+#: src/components/CsvUpload.vue:116
+msgid "Choose file"
+msgstr ""
+
 #. $gettext('Clear')
-#: src/components/SearchPage.vue:223
+#: src/components/SearchPage.vue:224
 msgid "Clear"
 msgstr ""
 
@@ -63,13 +83,23 @@ msgid "Clear list"
 msgstr ""
 
 #. $gettext('Click to sort')
-#: src/components/DashboardTable.vue:150
+#: src/components/DashboardTable.vue:140
 msgid "Click to sort"
 msgstr ""
 
 #. $gettext('Close')
 #: src/components/HelpPopUp.vue:38
 msgid "Close"
+msgstr ""
+
+#. $gettext('Codice ISBN')
+#: src/components/DataSourceBox.vue:127
+msgid "Codice ISBN"
+msgstr ""
+
+#. $gettext('Column Name')
+#: src/components/CsvUpload.vue:180
+msgid "Column Name"
 msgstr ""
 
 #. $gettext('Contains:')
@@ -83,22 +113,32 @@ msgid "Create"
 msgstr ""
 
 #. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:36 src/components/SearchPage.vue:348
+#: src/components/ExclusionTable.vue:36 src/components/SearchPage.vue:347
 msgid "Date"
 msgstr ""
 
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:303
+#: src/components/SearchPage.vue:302
 msgid "Download Types"
 msgstr ""
 
 #. $gettext('Editable and printable text')
-#: src/components/SearchPage.vue:188
+#: src/components/SearchPage.vue:189
 msgid "Editable and printable text"
 msgstr ""
 
+#. $gettext('Email')
+#: src/components/UserCreation.vue:102
+msgid "Email"
+msgstr ""
+
+#. $gettext('Enabled for merging')
+#: src/components/UserCreation.vue:129
+msgid "Enabled for merging"
+msgstr ""
+
 #. $gettext('Exclusions')
-#: src/components/NavBar.vue:158
+#: src/components/NavBar.vue:160
 msgid "Exclusions"
 msgstr ""
 
@@ -107,13 +147,18 @@ msgstr ""
 msgid "First"
 msgstr ""
 
+#. $gettext('First Name')
+#: src/components/UserCreation.vue:108
+msgid "First Name"
+msgstr ""
+
 #. $gettext('Full text')
-#: src/components/DataSourceBox.vue:102
+#: src/components/DataSourceBox.vue:160
 msgid "Full text"
 msgstr ""
 
 #. $gettext('Hello, %1!', authenticated)
-#: src/components/NavBar.vue:107
+#: src/components/NavBar.vue:109
 msgid "Hello, %1!"
 msgstr ""
 
@@ -123,18 +168,28 @@ msgid "Help"
 msgstr ""
 
 #. $gettext('Home')
-#: src/components/NavBar.vue:103
+#: src/components/NavBar.vue:105
 msgid "Home"
 msgstr ""
 
 #. $gettext('ID')
-#: src/components/DashboardTable.vue:122
+#: src/components/DashboardTable.vue:118
 msgid "ID"
 msgstr ""
 
-#. $gettext('ID:')
-#: src/components/DataSourceBox.vue:99
-msgid "ID:"
+#. $gettext('Identifier')
+#: src/components/DataSourceBox.vue:143
+msgid "Identifier"
+msgstr ""
+
+#. $gettext('Internal email')
+#: src/components/LibraryEdit.vue:81
+msgid "Internal email"
+msgstr ""
+
+#. $gettext('Internet address')
+#: src/components/LibraryEdit.vue:69
+msgid "Internet address"
 msgstr ""
 
 #. $gettext('Justification')
@@ -143,12 +198,12 @@ msgid "Justification"
 msgstr ""
 
 #. $gettext('Landing page')
-#: src/components/DataSourceBox.vue:118
+#: src/components/DataSourceBox.vue:176
 msgid "Landing page"
 msgstr ""
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:319
+#: src/components/SearchPage.vue:318
 msgid "Language"
 msgstr ""
 
@@ -157,29 +212,54 @@ msgstr ""
 msgid "Last"
 msgstr ""
 
+#. $gettext('Last Name')
+#: src/components/UserCreation.vue:114
+msgid "Last Name"
+msgstr ""
+
+#. $gettext('Latitude')
+#: src/components/LibraryEdit.vue:94
+msgid "Latitude"
+msgstr ""
+
 #. $gettext('Libraries')
-#: src/components/SearchPage.vue:329
+#: src/components/SearchPage.vue:328
 msgid "Libraries"
 msgstr ""
 
+#. $gettext('Library Users')
+#: src/views/LibraryEditView.vue:46
+msgid "Library Users"
+msgstr ""
+
 #. $gettext('Login')
-#: src/components/NavBar.vue:118
+#: src/components/NavBar.vue:120
 msgid "Login"
 msgstr ""
 
 #. $gettext('Logout')
-#: src/components/NavBar.vue:163
+#: src/components/NavBar.vue:174
 msgid "Logout"
 msgstr ""
 
+#. $gettext('Longitude')
+#: src/components/LibraryEdit.vue:100
+msgid "Longitude"
+msgstr ""
+
 #. $gettext('MERGE_AUTHOR')
-#: src/components/SearchPage.vue:193
+#: src/components/SearchPage.vue:194
 msgid "MERGE_AUTHOR"
 msgstr ""
 
 #. $gettext('MERGE_ENTRY')
-#: src/components/SearchPage.vue:194
+#: src/components/SearchPage.vue:195
 msgid "MERGE_ENTRY"
+msgstr ""
+
+#. $gettext('Material Description')
+#: src/components/DataSourceBox.vue:119
+msgid "Material Description"
 msgstr ""
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge')
@@ -189,12 +269,12 @@ msgid "Merge"
 msgstr ""
 
 #. $gettext('Merge authors here')
-#: src/components/SearchPage.vue:375
+#: src/components/SearchPage.vue:374
 msgid "Merge authors here"
 msgstr ""
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:383
+#: src/components/SearchPage.vue:382
 msgid "Merge entries here"
 msgstr ""
 
@@ -211,6 +291,11 @@ msgstr ""
 #. $gettext('Next')
 #: src/components/PaginationBox.vue:7
 msgid "Next"
+msgstr ""
+
+#. $gettext('No records')
+#: src/components/DashboardTable.vue:179
+msgid "No records"
 msgstr ""
 
 #. $gettext('Nothing to show!')
@@ -238,6 +323,11 @@ msgstr ""
 msgid "Omit single entry"
 msgstr ""
 
+#. $gettext('Opening Hours')
+#: src/components/LibraryEdit.vue:88
+msgid "Opening Hours"
+msgstr ""
+
 #. $gettext('Original')
 #: src/components/EntryPage.vue:90
 msgid "Original"
@@ -254,18 +344,33 @@ msgid "Part of:"
 msgstr ""
 
 #. $gettext('Password') $gettext('Password')
-#: src/components/NavBar.vue:115 src/components/PasswordReset.vue:65
+#: src/components/NavBar.vue:117 src/components/PasswordReset.vue:65
 msgid "Password"
 msgstr ""
 
 #. $gettext('Please type your new password in both fields')
-#: src/components/PasswordReset.vue:85
+#: src/components/PasswordReset.vue:84
 msgid "Please type your new password in both fields"
 msgstr ""
 
 #. $gettext('Previous')
 #: src/components/PaginationBox.vue:10
 msgid "Previous"
+msgstr ""
+
+#. $gettext('Process File')
+#: src/components/CsvUpload.vue:201
+msgid "Process File"
+msgstr ""
+
+#. $gettext('Public email')
+#: src/components/LibraryEdit.vue:75
+msgid "Public email"
+msgstr ""
+
+#. $gettext('Publisher')
+#: src/components/DataSourceBox.vue:135
+msgid "Publisher"
 msgstr ""
 
 #. $gettext('Reason') $gettext('Reason')
@@ -278,13 +383,18 @@ msgstr ""
 msgid "Repeat Password"
 msgstr ""
 
+#. $gettext('Replace all records')
+#: src/components/CsvUpload.vue:166
+msgid "Replace all records"
+msgstr ""
+
 #. $gettext('Reset Password for %1?', username)
-#: src/components/NavBar.vue:127
+#: src/components/NavBar.vue:129
 msgid "Reset Password for %1?"
 msgstr ""
 
 #. $gettext('Reset password for %1', username) $gettext('Reset password for %1', username)
-#: src/components/PasswordReset.vue:60 src/components/PasswordReset.vue:78
+#: src/components/PasswordReset.vue:59 src/components/PasswordReset.vue:77
 msgid "Reset password for %1"
 msgstr ""
 
@@ -294,39 +404,39 @@ msgid "Restore"
 msgstr ""
 
 #. $gettext('SET_AGGREGATION')
-#: src/components/SearchPage.vue:196
+#: src/components/SearchPage.vue:197
 msgid "SET_AGGREGATION"
 msgstr ""
 
 #. $gettext('SET_TRANSLATION')
-#: src/components/SearchPage.vue:195
+#: src/components/SearchPage.vue:196
 msgid "SET_TRANSLATION"
 msgstr ""
 
 #. $gettext('Search')
-#: src/components/SearchPage.vue:286
+#: src/components/SearchPage.vue:285
 msgid "Search"
 msgstr ""
 
 #. $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries)
-#: src/components/SearchPage.vue:203
+#: src/components/SearchPage.vue:204
 msgid "Search results for %1: found %2 entry"
 msgid_plural "Search results for %1: found %2 entries"
 msgstr[0] ""
 msgstr[1] ""
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:400
+#: src/components/SearchPage.vue:399
 msgid "Set aggregations here"
 msgstr ""
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:391
+#: src/components/SearchPage.vue:390
 msgid "Set translations here"
 msgstr ""
 
 #. $gettext('Shelf Location Code')
-#: src/components/DataSourceBox.vue:93
+#: src/components/DataSourceBox.vue:111
 msgid "Shelf Location Code"
 msgstr ""
 
@@ -335,8 +445,13 @@ msgstr ""
 msgid "Sort"
 msgstr ""
 
+#. $gettext('Source:')
+#: src/components/CsvUpload.vue:132
+msgid "Source:"
+msgstr ""
+
 #. $gettext('Subtitle')
-#: src/components/DashboardTable.vue:124
+#: src/components/DashboardTable.vue:120
 msgid "Subtitle"
 msgstr ""
 
@@ -350,8 +465,13 @@ msgstr ""
 msgid "The passwords do not match"
 msgstr ""
 
+#. $gettext('This username already exist. You are going to add it to this library.')
+#: src/components/UserCreation.vue:95
+msgid "This username already exist. You are going to add it to this library."
+msgstr ""
+
 #. $gettext('Title')
-#: src/components/DashboardTable.vue:123
+#: src/components/DashboardTable.vue:119
 msgid "Title"
 msgstr ""
 
@@ -366,18 +486,43 @@ msgid "Type"
 msgstr ""
 
 #. $gettext('UI language')
-#: src/components/NavBar.vue:170
+#: src/components/NavBar.vue:181
 msgid "UI language"
 msgstr ""
 
-#. $gettext('Username')
-#: src/components/NavBar.vue:112
+#. $gettext('Update')
+#: src/components/LibraryEdit.vue:106
+msgid "Update"
+msgstr ""
+
+#. $gettext('Upload File')
+#: src/components/CsvUpload.vue:171
+msgid "Upload File"
+msgstr ""
+
+#. $gettext('Upload a CSV')
+#: src/components/CsvUpload.vue:102
+msgid "Upload a CSV"
+msgstr ""
+
+#. $gettext('User expiration (optional)')
+#: src/components/UserCreation.vue:120
+msgid "User expiration (optional)"
+msgstr ""
+
+#. $gettext('Username') $gettext('Username')
+#: src/components/NavBar.vue:114 src/components/UserCreation.vue:94
 msgid "Username"
 msgstr ""
 
+#. $gettext('Value')
+#: src/components/CsvUpload.vue:181
+msgid "Value"
+msgstr ""
+
 #. $gettext('Working') $gettext('Working') $gettext('Working')
-#: src/components/DashboardTable.vue:139 src/components/MergeBox.vue:226
-#: src/components/DataSourceBox.vue:128
+#: src/components/DashboardTable.vue:129 src/components/MergeBox.vue:226
+#: src/components/DataSourceBox.vue:186
 msgid "Working"
 msgstr ""
 
@@ -392,6 +537,6 @@ msgid "by term"
 msgstr ""
 
 #. $gettext('dashboard for ' + $route.params.type)
-#: src/views/DashboardView.vue:9
+#: src/views/DashboardView.vue:12
 msgid "dashboard for "
 msgstr ""
