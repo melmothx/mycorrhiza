@@ -1,8 +1,12 @@
 <script>
  import ExclusionButton from './ExclusionButton.vue'
  import { HandRaisedIcon } from '@heroicons/vue/24/solid'
+ import LibraryBadges from './LibraryBadges.vue'
  export default {
-     components: { ExclusionButton, HandRaisedIcon },
+     components: {
+         ExclusionButton, HandRaisedIcon,
+         LibraryBadges,
+     },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
      emits: [ 'refetchResults' ],
      computed: {
@@ -83,6 +87,10 @@
           </div>
         </div>
         <h3 class="italic px-3 pb-2" v-if="subtitle">{{ subtitle }}</h3>
+        <div class="pb-2">
+          <LibraryBadges :data_sources="record.data_sources">
+          </LibraryBadges>
+        </div>
       </div>
     </div>
   </div>
