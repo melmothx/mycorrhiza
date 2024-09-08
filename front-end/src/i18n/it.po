@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 07:38:44 07:38+0000\n"
-"PO-Revision-Date: 2024-05-15 13:18+0200\n"
+"PO-Revision-Date: 2024-09-08 09:12+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 #. $gettext('Admin') $gettext('Admin')
 #: src/components/NavBar.vue:153 src/components/MergeBox.vue:161
 msgid "Admin"
-msgstr "Amministratore"
+msgstr "Amministrazione"
 
 #. $gettext('Aggregated')
 #: src/components/SearchPage.vue:190
