@@ -123,6 +123,8 @@
          toggle_query_filter(name, term, checked) {
              console.log(`Toggling ${checked} ${name} ${term}`);
              let query = { ...this.$route.query };
+             query.sort_direction = this.sort_direction.id;
+             query.sort_by = this.sort_by.id;
              query.page_number = 1;
              // go back to the first page
              let query_name = 'filter_' + name;
@@ -150,17 +152,6 @@
              // just update the url to avoid old crap
              toggle_query_filter(name, term, false);
          },
-         handle_sorting_change() {
-             // populate the url from the model and searc
-             let query = { ...this.$route.query };
-             query.sort_direction = this.sort_direction.id;
-             query.sort_by = this.sort_by.id;
-             query.page_number = 1;
-             console.log("Handled sorting change");
-             console.log(query);
-             this.$router.push({ name: 'home', query: query });
-             this.get_results(query);
-         },
      },
      mounted() {
          console.log("Mounted");
@@ -173,14 +164,6 @@
          this.query = q.query;
          this.$router.push({ name: 'home', query: q });
          this.get_results(q, { update_facets: 1 });
-     },
-     watch: {
-         sort_by(new_s, old_s) {
-             this.handle_sorting_change();
-         },
-         sort_direction(new_s, old_s) {
-             this.handle_sorting_change();
-         },
      },
      beforeRouteUpdate(to, from) {
          console.log(from.fullPath);
