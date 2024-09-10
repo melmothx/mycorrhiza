@@ -376,6 +376,9 @@
                       @refetch-results="getResults({ update_facets: 1 })" />
           </template>
         </div>
+        <div v-if="!matches || matches.length == 0" class="font-bold text-xl">
+          {{ $gettext('No result found!') }}
+        </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
       <div v-if="can_merge">

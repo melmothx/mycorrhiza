@@ -158,6 +158,9 @@
       "Next" : {
          "msgstr" : "Prossima"
       },
+      "No result found!" : {
+         "msgstr" : "Non è stato trovato nessun risultato!"
+      },
       "Nothing to show!" : {
          "msgstr" : "Niente da mostrare!"
       },
