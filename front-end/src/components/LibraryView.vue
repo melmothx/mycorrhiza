@@ -37,10 +37,10 @@
       <a class="text-claret-900 font-bold hover:underline" :href="library.url">{{ $gettext('Visit Library Homepage') }}</a>
     </div>
     <div>
-      <router-link class="text-claret-900 font-bold hover:underline"
-                   :to="{ name: 'home', query: { filter_library: library.id } }">
-        {{ $gettext('See all entries') }}
-      </router-link>
+      <a class="text-claret-900 font-bold hover:underline"
+         :href="`/library/${library.id}/entries`">
+         {{ $gettext('See all entries') }}
+      </a>
     </div>
     <div v-if="library.opening_hours">
       <h2 class="font-bold">{{ $gettext('Opening Hours') }}</h2>

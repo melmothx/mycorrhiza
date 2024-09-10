@@ -64,7 +64,7 @@
              this.facets = [];
              this.sort_by = this.sort_by_values[0];
              this.sort_direction = this.sort_directions[0];
-             this.$router.push({ name: 'home' });
+             this.$router.push({ name: 'search' });
              this.get_results({}, { update_facets: 1 });
          },
          searchText() {
@@ -73,12 +73,15 @@
                  sort_by: this.sort_by.id,
                  sort_direction: this.sort_direction.id,
              };
-             this.$router.push({ name: 'home', query: fresh });
+             this.$router.push({ name: 'search', query: fresh });
              this.get_results(fresh, { update_facets: 1 });
          },
          get_results(query, opts) {
              let params = new URLSearchParams;
              console.log(query);
+             if (opts && opts.update_facets) {
+                 this.facets = [];
+             }
              for (const pname in query) {
                  let pvalues = query[pname];
                  if (pvalues instanceof Array) {
@@ -117,7 +120,7 @@
              console.log(`Switching to page ${page}`);
              let query = { ...this.$route.query };
              query.page_number = page;
-             this.$router.push({ name: 'home', query: query });
+             this.$router.push({ name: 'search', query: query });
              this.get_results(query);
          },
          toggle_query_filter(name, term, checked) {
@@ -141,7 +144,7 @@
                  filter_list = filter_list.filter((f) => f != term);
              }
              query[query_name] = filter_list;
-             this.$router.push({ name: 'home', query: query });
+             this.$router.push({ name: 'search', query: query });
              return query;
          },
          toggleFilter(name, term, checked) {
@@ -162,12 +165,8 @@
          this.sort_direction = this.sort_directions.find((i) => i.id == q.sort_direction)
                             || this.sort_directions[0];
          this.query = q.query;
-         this.$router.push({ name: 'home', query: q });
+         this.$router.push({ name: 'search', query: q });
          this.get_results(q, { update_facets: 1 });
-     },
-     beforeRouteUpdate(to, from) {
-         console.log(from.fullPath);
-         console.log(to.fullPath);
      },
  }
  /*

@@ -41,10 +41,10 @@
         <a class="text-claret-900 font-bold hover:underline" :href="library.url">{{ $gettext('Visit Library Homepage') }}</a>
       </div>
       <div>
-        <router-link class="text-claret-900 font-bold hover:underline"
-                     :to="{ name: 'home', query: { filter_library: library.id } }">
+        <a class="text-claret-900 font-bold hover:underline"
+           :href="`/library/${library.id}/entries`">
           {{ $gettext('See all entries') }}
-        </router-link>
+        </a>
       </div>
     </div>
   </div>

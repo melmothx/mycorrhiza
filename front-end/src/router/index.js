@@ -11,8 +11,12 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/',
-            name: 'home',
+            path:  '/',
+            redirect: { name: 'search' },
+        },
+        {
+            path: '/search',
+            name: 'search',
             component: HomeView,
         },
         {
@@ -39,6 +43,12 @@ const router = createRouter({
             path: '/library-admin/:id',
             name: 'library_edit',
             component: LibraryEditView,
+        },
+        {
+            path: '/library/:id/entries',
+            redirect: to => {
+                return { name: 'search', query: { filter_library: to.params.id } }
+            },
         },
         {
             path: '/libraries/:id',
