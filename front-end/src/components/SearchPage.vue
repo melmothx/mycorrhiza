@@ -151,9 +151,16 @@
              let query = this.toggle_query_filter(name, term, checked)
              this.get_results(query);
          },
-         remove_merged_filter(name, term) {
-             // just update the url to avoid old crap
-             toggle_query_filter(name, term, false);
+         remove_merged_filter(name, terms) {
+             let query = { ...this.$route.query };
+             let query_name = 'filter_' + name;
+             console.log(`Removing ${query_name} from url`);
+             delete query[query_name];
+             query.page_number = 1;
+             this.$router.push({ name: 'search', query: query });
+             this.get_results(query, { update_facets: true });
+         },
+         no_op() {
          },
      },
      mounted() {
@@ -345,7 +352,7 @@
                       remove_merged_filter="creator"
                       help_text="MERGE_AUTHOR"
                       @remove-merged-filter="remove_merged_filter"
-                      @refetch-results="getResults({ update_facets: 1 })">
+                      @refetch-results="no_op">
               {{ $gettext('Merge authors here') }}
             </MergeBox>
           </div>
