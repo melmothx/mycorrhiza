@@ -98,7 +98,7 @@ class ViewsTestCase(TestCase):
             # pp.pprint(res.json())
             found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
             self.assertTrue(found_rel)
-            res = self.client.get(reverse('api'), { "query": "Pizzosa" })
+            res = self.client.get(reverse('api_search'), { "query": "Pizzosa" })
             # pp.pprint(res.json())
             self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
 

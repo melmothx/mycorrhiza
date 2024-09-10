@@ -180,7 +180,7 @@ def _active_libraries(user):
     logger.debug("Active libs are {}".format(active_libraries))
     return active_libraries
 
-def api(request):
+def api_search(request):
     public_only = True
 
     user = request.user

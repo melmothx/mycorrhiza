@@ -94,7 +94,7 @@
                      }
                  }
              }
-             axios.get('/collector/api',
+             axios.get('/collector/api/search',
                        { params: params })
                   .then((res) => {
                       this.matches = res.data.matches;
