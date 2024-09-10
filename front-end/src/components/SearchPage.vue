@@ -65,7 +65,7 @@
              this.sort_by = this.sort_by_values[0];
              this.sort_direction = this.sort_directions[0];
              this.$router.push({ name: 'search' });
-             this.get_results({}, { update_facets: 1 });
+             this.get_results({}, { update_facets: true });
          },
          searchText() {
              let fresh = {
@@ -74,7 +74,7 @@
                  sort_direction: this.sort_direction.id,
              };
              this.$router.push({ name: 'search', query: fresh });
-             this.get_results(fresh, { update_facets: 1 });
+             this.get_results(fresh, { update_facets: true });
          },
          get_results(query, opts) {
              let params = new URLSearchParams;
@@ -166,7 +166,7 @@
                             || this.sort_directions[0];
          this.query = q.query;
          this.$router.push({ name: 'search', query: q });
-         this.get_results(q, { update_facets: 1 });
+         this.get_results(q, { update_facets: true });
      },
  }
  /*
