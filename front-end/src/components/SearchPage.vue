@@ -80,25 +80,20 @@
              let params = new URLSearchParams;
              console.log(query);
              for (const pname in query) {
-                 console.log(`Checking ${pname}`);
                  let pvalues = query[pname];
                  if (pvalues instanceof Array) {
                      for (const value of pvalues) {
                          if (value) {
-                             console.log(`Appending ${pname} ${value}`);
                              params.append(pname, value);
                          }
                      }
                  }
                  else {
                      if (pvalues) {
-                         console.log(`Appending ${pname} ${pvalues}`);
                          params.append(pname, pvalues);
                      }
                  }
              }
-             console.log("Query params are ");
-             console.log(params);
              axios.get('/collector/api',
                        { params: params })
                   .then((res) => {
