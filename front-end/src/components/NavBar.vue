@@ -156,15 +156,19 @@
               </a>
             </MenuItem>
             <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
-              <div @click="$router.push({ name: 'dashboard', params: { type: 'exclusions' } })">
-                {{ $gettext('Exclusions') }}
+              <div>
+                <router-link :to="{ name: 'dashboard', params: { type: 'exclusions' } }">
+                  {{ $gettext('Exclusions') }}
+                </router-link>
               </div>
             </MenuItem>
             <template v-if="user_data.is_library_admin">
               <template v-for="lib in user_data.libraries">
                 <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
-                  <div @click="$router.push({ name: 'library_edit', params: { id: lib.id }})">
-                    {{ lib.name }}
+                  <div>
+                    <router-link :to="{ name: 'library_edit', params: { id: lib.id }}">
+                      {{ lib.name }}
+                    </router-link>
                   </div>
                 </MenuItem>
               </template>

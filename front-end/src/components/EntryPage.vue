@@ -1,10 +1,11 @@
 <script>
  import EntryDetails from './EntryDetails.vue'
  import DataSourceBox from './DataSourceBox.vue'
+ import BackButton from './BackButton.vue'
  import axios from 'axios'
  export default {
      props: [ 'entry_id' ],
-     components: { EntryDetails, DataSourceBox },
+     components: { EntryDetails, DataSourceBox, BackButton },
      data() {
          return {
              record: {},
@@ -74,10 +75,7 @@
           <EntryDetails :record="record" />
         </div>
         <div class="ml-4" >
-          <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-                  type="button" @click="$router.go(-1)">
-            {{ $gettext('Back') }}
-          </button>
+          <BackButton />
         </div>
       </div>
       <div class="my-2 border rounded text-sm bg-perl-bush-50 shadow-md p-2" v-if="languages && languages.length > 0">

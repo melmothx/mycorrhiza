@@ -1,4 +1,5 @@
 <script setup>
+ import BackButton from '../components/BackButton.vue'
  import DashboardTable from '../components/DashboardTable.vue'
  import NavBar from '../components/NavBar.vue'
 </script>
@@ -13,8 +14,7 @@
           </h1>
         </div>
         <div>
-          <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-                  type="button" @click="$router.go(-1)">{{ $gettext('Back') }}</button>
+          <BackButton />
         </div>
       </div>
       <DashboardTable :listing_url="'/collector/api/listing/' + $route.params.type"
