@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, Http404, QueryDict
 from django.template import loader
 import json
 from amwmeta.xapian import search
@@ -207,6 +207,25 @@ def api_search(request):
     res['is_authenticated'] = user.is_authenticated
     res['can_set_exclusions'] = user.is_superuser
     res['can_merge'] = user.is_superuser
+
+    # use the facets from the base query
+    base_query = QueryDict.fromkeys(["query"], value=res['querystring'])
+    facets = search(
+        settings.XAPIAN_DB,
+        base_query,
+        active_libraries=active_libraries,
+        exclusions=exclusions,
+        facets_only=True,
+    )
+    # mark the facets as active
+    logger.debug('Filters:' + pp.pformat(res['filters']))
+    for facet in facets.values():
+        fname = facet.get('name')
+        active_filters = [ str(f) for f in res['filters'].get(fname) ]
+        for ft in facet.get('values'):
+            if str(ft['id']) in active_filters:
+                ft['active'] = True
+    res['facets'] = facets
 
     if user.is_authenticated and not user.is_superuser:
         # authenticated users can set exclusion
