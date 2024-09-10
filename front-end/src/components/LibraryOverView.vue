@@ -1,8 +1,12 @@
 <script>
+ import LibraryBox from './LibraryBox.vue'
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
+     components: {
+         LibraryBox,
+     },
      data() {
          return {
              libraries: [],
@@ -34,18 +38,9 @@
   <h1 class="font-bold text-2xl text-center mb-2">{{ $gettext('Our libraries') }}</h1>
   <div class="grid grid-cols-4 gap-4">
     <div class="m-4" v-for="library in libraries">
-      <h2 class="font-bold">
-        {{ library.name }}
-      </h2>
-      <div v-if="library.url">
-        <a class="text-claret-900 font-bold hover:underline" :href="library.url">{{ $gettext('Visit Library Homepage') }}</a>
-      </div>
-      <div>
-        <a class="text-claret-900 font-bold hover:underline"
-           :href="`/library/${library.id}/entries`">
-          {{ $gettext('See all entries') }}
-        </a>
-      </div>
+      <LibraryBox :library="library">
+        <h2 class="font-bold mb-1">{{ library.name }}</h2>
+      </LibraryBox>
     </div>
   </div>
 </template>

@@ -1,11 +1,15 @@
 <script>
  import ExclusionButton from './ExclusionButton.vue'
- import { HandRaisedIcon } from '@heroicons/vue/24/solid'
+ import {
+     HandRaisedIcon,
+     MagnifyingGlassIcon,
+ } from '@heroicons/vue/24/solid'
  import LibraryBadges from './LibraryBadges.vue'
  export default {
      components: {
          ExclusionButton, HandRaisedIcon,
          LibraryBadges,
+         MagnifyingGlassIcon,
      },
      props: [ 'record', 'can_set_exclusions', 'can_merge' ],
      emits: [ 'refetchResults' ],
@@ -40,6 +44,13 @@
           <div class="flex-grow px-3">
             {{ author.value }}
           </div>
+          <div>
+            <a :title="$gettext('See all entries')"
+               target="_blank"
+               :href="`/library/author/${author.id}`">
+              <MagnifyingGlassIcon class="h-4 w-4 m-1" />
+            </a>
+          </div>
           <div v-if="can_merge">
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
                          text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
@@ -60,10 +71,10 @@
       </div>
       <div>
         <div class="flex py-2">
-          <h2 class="font-semibold flex-grow cursor-pointer px-3"
-              @click="$router.push({name: 'entry', params: { id: record.entry_id } })">
+          <router-link class="font-semibold flex-grow cursor-pointer px-3"
+                       :to="{name: 'entry', params: { id: record.entry_id } }">
             {{ title }}
-          </h2>
+          </router-link>
           <div v-if="record.language" class="px-2">
             <small class="px-2" v-for="l in record.language" :key="l.id">
               [{{ l.value }}]

@@ -40,23 +40,29 @@ const router = createRouter({
             component: PasswordResetView,
         },
         {
-            path: '/library-admin/:id',
+            path: '/library/admin/:id',
             name: 'library_edit',
             component: LibraryEditView,
         },
         {
-            path: '/library/:id/entries',
+            path: '/library/entries/:id',
             redirect: to => {
                 return { name: 'search', query: { filter_library: to.params.id } }
             },
         },
         {
-            path: '/libraries/:id',
+            path: '/library/author/:id',
+            redirect: to => {
+                return { name: 'search', query: { filter_creator: to.params.id } }
+            },
+        },
+        {
+            path: '/library/details/:id',
             name: 'library_view',
             component: LibraryView,
         },
         {
-            path: '/libraries',
+            path: '/library/',
             name: 'library_overview',
             component: LibraryOverView,
         },
