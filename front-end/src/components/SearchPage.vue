@@ -137,7 +137,7 @@
              }
              if (checked) {
                  console.log(`Adding ${name} ${term} from url`);
-                 filter_list.push(term);
+                 filter_list = [ ...filter_list, `${term}` ];
              }
              else {
                  console.log(`Removing ${name} ${term} from url`);
