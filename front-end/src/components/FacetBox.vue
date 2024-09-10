@@ -78,6 +78,7 @@
         <div class="flex">
           <div class="flex-grow">
             <FacetButton
+                :key="facet.key"
                 :id="facet.id"
                 :term="facet.term"
                 :count="facet.count"

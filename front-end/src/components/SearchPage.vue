@@ -5,12 +5,12 @@
  import MergeBox from './MergeBox.vue'
  import axios from 'axios'
  import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from '@headlessui/vue'
- import { ChevronUpDownIcon,  } from '@heroicons/vue/24/solid'
+ import { ChevronUpDownIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid'
  export default {
      components: {
          Listbox, ListboxButton, ListboxOptions, ListboxOption,
          FacetBox, EntryBox, PaginationBox, MergeBox,
-         ChevronUpDownIcon,
+         ChevronUpDownIcon, XCircleIcon, XMarkIcon,
      },
      data() {
          const sort_directions = [
@@ -55,6 +55,7 @@
              sort_by: sort_by_values[0],
              sort_directions: sort_directions,
              sort_direction: sort_directions[0],
+             active_filters: [],
          }
      },
      methods: {
@@ -79,6 +80,7 @@
          get_results(query, opts) {
              let params = new URLSearchParams;
              console.log(query);
+             // it seems I can't remove this stupid thing
              if (opts && opts.update_facets) {
                  this.facets = [];
              }
@@ -103,6 +105,21 @@
                       this.matches = res.data.matches;
                       if (opts && opts.update_facets) {
                           this.facets = res.data.facets;
+                      }
+                      this.active_filters = [];
+                      for (const fn of [ 'library', 'language', 'creator', 'date', 'download', 'aggregate', ]) {
+                          let facet = res.data.facets[fn];
+                          if (facet) {
+                              for (const ff of res.data.facets[fn].values) {
+                                  if (ff.active) {
+                                      this.active_filters.push({
+                                          term: ff.term,
+                                          id: ff.id,
+                                          name: fn,
+                                      });
+                                  }
+                              }
+                          }
                       }
                       this.pager = res.data.pager;
                       this.total_entries = res.data.total_entries;
@@ -146,6 +163,10 @@
              query[query_name] = filter_list;
              this.$router.push({ name: 'search', query: query });
              return query;
+         },
+         remove_filter_and_reload_facets(name, term) {
+             let query = this.toggle_query_filter(name, term, false);
+             this.get_results(query, { update_facets: true });
          },
          toggleFilter(name, term, checked) {
              let query = this.toggle_query_filter(name, term, checked)
@@ -269,36 +290,25 @@
     </div>
   </form>
   <div class="m-1 md:m-5">
+    <div v-if="active_filters" class="mb-4 flex">
+      <template v-for="af in active_filters">
+        <div class="btn-primary mr-2 p-1 rounded flex cursor-pointer text-sm"
+             :title="$gettext('Click to remove the filter')"
+             @click="remove_filter_and_reload_facets(af.name, af.id)">
+          <div>
+            {{ af.term }}
+          </div>
+          <div class="h-3 w-3 m-1">
+            <XMarkIcon />
+          </div>
+        </div>
+      </template>
+    </div>
     <div class="grid gap-8 grid-cols-2
          md:grid-cols-[150px_auto]
          lg:grid-cols-[250px_auto_250px]">
       <div>
         <div class="sticky top-5">
-          <div v-if="facets.download" class="mb-3">
-            <FacetBox
-                :use_sorting="false"
-                :values="facets.download.values"
-                :name="facets.download.name"
-                @toggle-app-filter="toggleFilter"
-                :translate_values="true"
-            >{{ $gettext('Download Types') }}</FacetBox>
-          </div>
-          <div v-if="facets.aggregate" class="mb-3">
-            <FacetBox
-                :use_sorting="false"
-                :values="facets.aggregate.values"
-                :name="facets.aggregate.name"
-                @toggle-app-filter="toggleFilter"
-            >{{ $gettext('Aggregation') }}</FacetBox>
-          </div>
-          <div v-if="facets.language" class="mb-3">
-            <FacetBox
-                :use_sorting="true"
-                :values="facets.language.values"
-                :name="facets.language.name"
-                @toggle-app-filter="toggleFilter"
-            >{{ $gettext('Language') }}</FacetBox>
-          </div>
           <div v-if="facets.library" class="mb-3">
             <FacetBox
                 :use_sorting="true"
@@ -309,6 +319,14 @@
                 @refetch-results="getResults({ update_facets: 1 })">
               {{ $gettext('Libraries') }}
             </FacetBox>
+          </div>
+          <div v-if="facets.language" class="mb-3">
+            <FacetBox
+                :use_sorting="true"
+                :values="facets.language.values"
+                :name="facets.language.name"
+                @toggle-app-filter="toggleFilter"
+            >{{ $gettext('Language') }}</FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
@@ -328,6 +346,23 @@
                 @toggle-app-filter="toggleFilter">
               {{ $gettext('Date') }}
             </FacetBox>
+          </div>
+          <div v-if="facets.download" class="mb-3">
+            <FacetBox
+                :use_sorting="false"
+                :values="facets.download.values"
+                :name="facets.download.name"
+                @toggle-app-filter="toggleFilter"
+                :translate_values="true"
+            >{{ $gettext('Download Types') }}</FacetBox>
+          </div>
+          <div v-if="facets.aggregate" class="mb-3">
+            <FacetBox
+                :use_sorting="false"
+                :values="facets.aggregate.values"
+                :name="facets.aggregate.name"
+                @toggle-app-filter="toggleFilter"
+            >{{ $gettext('Aggregation') }}</FacetBox>
           </div>
         </div>
       </div>
