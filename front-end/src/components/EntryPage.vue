@@ -75,7 +75,7 @@
         </div>
         <div class="ml-4" >
           <button class="btn-primary rounded-br-3xl h-8 pr-10 pl-4 pr-10"
-                  type="button" @click="$router.push({ name: 'home' })">
+                  type="button" @click="$router.go(-1)">
             {{ $gettext('Back') }}
           </button>
         </div>

@@ -42,18 +42,12 @@
              },
          ];
          return {
-             flash_success: "",
-             flash_error: "",
              matches: [],
              facets: {},
-             filters: [],
              pager: [],
              query: '',
              searched_query: '',
              total_entries: 0,
-             current_page: 1,
-             merge_entry_records: [],
-             merge_author_records: [],
              is_authenticated: false,
              can_set_exclusions: false,
              can_merge: false,
@@ -67,123 +61,120 @@
          clear_all() {
              this.query = "";
              this.searched_query = "";
-             this.current_page = 1;
-             this.filters = [];
              this.facets = [];
              this.sort_by = this.sort_by_values[0];
              this.sort_direction = this.sort_directions[0];
-             this.getResults({ update_facets: 1 });
-         },
-         clear_flash_success() {
-             this.flash_success = "";
-         },
-         clear_flash_error() {
-             this.flash_error = "";
+             this.$router.push({ name: 'search' });
+             this.get_results({}, { update_facets: true });
          },
          searchText() {
-             // reset page, filters
-             this.current_page = 1;
-             this.filters = [];
-             this.facets = [];
-             this.getResults({ update_facets: 1 });
+             let fresh = {
+                 query: this.query,
+                 sort_by: this.sort_by.id,
+                 sort_direction: this.sort_direction.id,
+             };
+             this.$router.push({ name: 'search', query: fresh });
+             this.get_results(fresh, { update_facets: true });
          },
-         parse_query_params() {
-             console.log(this.$route.query);
-             let q = this.$route.query;
-             this.query = q.query || "";
-             this.current_page = q.page_number || 1;
-             this.sort_by = this.sort_by_values.find((i) => i.id == q.sort_by)
-                         || this.sort_by_values[0];
-             this.sort_direction = this.sort_directions.find((i) => i.id == q.sort_direction)
-                                || this.sort_directions[0];
-             for (const filter in q) {
-                 console.log(`filter is ${filter}`);
-                 if (filter.match(/^filter_/)) {
-                     console.log(`matched filter is ${filter}`);
-                     let fname = filter.replace(/^filter_/, '');
-                     let values = q[filter];
-                     console.log(fname);
-                     console.log(values);
-                     if (values instanceof Array) {
-                         for (const value of values) {
-                             this.filters.push({ name: fname, term: value });
+         get_results(query, opts) {
+             let params = new URLSearchParams;
+             console.log(query);
+             if (opts && opts.update_facets) {
+                 this.facets = [];
+             }
+             for (const pname in query) {
+                 let pvalues = query[pname];
+                 if (pvalues instanceof Array) {
+                     for (const value of pvalues) {
+                         if (value) {
+                             params.append(pname, value);
                          }
                      }
-                     else {
-                         this.filters.push({ name: fname, term: values });
+                 }
+                 else {
+                     if (pvalues) {
+                         params.append(pname, pvalues);
                      }
                  }
              }
-             console.log(this.filters);
-         },
-         getResults(args) {
-             let vm = this;
-             let params = new URLSearchParams;
-             params.append('query', vm.query);
-             params.append('page_number', vm.current_page);
-             params.append('sort_by', vm.sort_by.id);
-             params.append('sort_direction', vm.sort_direction.id);
-             let query = {
-                 query: vm.query,
-                 page_number: vm.current_page,
-                 sort_by: vm.sort_by.id,
-                 sort_direction: vm.sort_direction.id,
-             };
-             let filters = this.filters;
-             for (let i = 0; i < filters.length; i++) {
-                 let fname = 'filter_' + filters[i].name;
-                 params.append(fname, filters[i].term);
-                 query[fname] ||= [];
-                 query[fname].push(filters[i].term)
-             }
-             this.$router.replace({ name: 'home', query: query });
-             axios.get('/collector/api',
+             axios.get('/collector/api/search',
                        { params: params })
-                  .then(function(res) {
-                      vm.matches = res.data.matches;
-                      if (args && args.update_facets) {
-                          vm.facets = res.data.facets;
+                  .then((res) => {
+                      this.matches = res.data.matches;
+                      if (opts && opts.update_facets) {
+                          this.facets = res.data.facets;
                       }
-                      vm.pager = res.data.pager;
-                      vm.total_entries = res.data.total_entries;
-                      vm.can_merge = res.data.can_merge;
-                      vm.can_set_exclusions = res.data.can_set_exclusions;
-                      vm.searched_query = vm.query;
+                      this.pager = res.data.pager;
+                      this.total_entries = res.data.total_entries;
+                      this.can_merge = res.data.can_merge;
+                      this.can_set_exclusions = res.data.can_set_exclusions;
+                      this.searched_query = query.query;
                   });
          },
-         getPage(page) {
-             this.current_page = page;
-             this.getResults();
+         getResults(opts) {
+             let query = { ...this.$route.query };
+             console.log(query);
+             this.get_results(query, opts);
          },
-         toggleFilter(name, term, checked) {
+         getPage(page) {
+             console.log(`Switching to page ${page}`);
+             let query = { ...this.$route.query };
+             query.page_number = page;
+             this.$router.push({ name: 'search', query: query });
+             this.get_results(query);
+         },
+         toggle_query_filter(name, term, checked) {
              console.log(`Toggling ${checked} ${name} ${term}`);
+             let query = { ...this.$route.query };
+             query.sort_direction = this.sort_direction.id;
+             query.sort_by = this.sort_by.id;
+             query.page_number = 1;
              // go back to the first page
-             this.current_page = 1;
+             let query_name = 'filter_' + name;
+             let filter_list = query[query_name] || [];
+             if (!(filter_list instanceof Array)) {
+                 filter_list = [ filter_list ];
+             }
              if (checked) {
-                 this.filters.push({ 'name': name, 'term': term });
+                 console.log(`Adding ${name} ${term} from url`);
+                 filter_list = [ ...filter_list, `${term}` ];
              }
              else {
-                 this.filters = this.filters.filter((f) => f.name != name || f.term != term)
+                 console.log(`Removing ${name} ${term} from url`);
+                 filter_list = filter_list.filter((f) => f != term);
              }
-             this.getResults();
+             query[query_name] = filter_list;
+             this.$router.push({ name: 'search', query: query });
+             return query;
          },
-         remove_merged_filter(name, term) {
-             console.log(`Removing ${term} ${name}`);
-             this.filters = this.filters.filter((f) => f.name != name || f.term != term)
-         }
+         toggleFilter(name, term, checked) {
+             let query = this.toggle_query_filter(name, term, checked)
+             this.get_results(query);
+         },
+         remove_merged_filter(name, terms) {
+             let query = { ...this.$route.query };
+             let query_name = 'filter_' + name;
+             console.log(`Removing ${query_name} from url`);
+             delete query[query_name];
+             query.page_number = 1;
+             this.$router.push({ name: 'search', query: query });
+             this.get_results(query, { update_facets: true });
+         },
+         no_op() {
+         },
      },
      mounted() {
-         this.parse_query_params();
-         this.getResults({ update_facets: 1 });
+         console.log("Mounted");
+         let q = { ...this.$route.query };
+         // set the values from the model in the query
+         this.sort_by = this.sort_by_values.find((i) => i.id == q.sort_by)
+                     || this.sort_by_values[0];
+         this.sort_direction = this.sort_directions.find((i) => i.id == q.sort_direction)
+                            || this.sort_directions[0];
+         this.query = q.query;
+         this.$router.push({ name: 'search', query: q });
+         this.get_results(q, { update_facets: true });
      },
-     watch: {
-         sort_by(new_s, old_s) {
-             this.getResults();
-         },
-         sort_direction(new_s, old_s) {
-             this.getResults();
-         },
-     }
  }
  /*
     $gettext('Editable and printable text')
@@ -207,15 +198,6 @@
         {{ $gettext('All entries (%1)', total_entries) }}
       </template>
     </h1>
-    <div v-if="flash_success" class="bg-green-100 border-green-600 text-green-800 border rounded p-2 flex justify-center cursor-pointer"
-         @click="clear_flash_success">
-      {{ flash_success }}
-    </div>
-    <div v-if="flash_error" class="bg-red-100 border-red-600 text-red-800 border rounded p-2 flex justify-center cursor-pointer"
-         @click="clear_flash_error">
-      {{ flash_error }}
-    </div>
-
     <div>
       <div class="flex h-8">
         <button class="btn-primary rounded-none h-8 px-4"
@@ -370,7 +352,7 @@
                       remove_merged_filter="creator"
                       help_text="MERGE_AUTHOR"
                       @remove-merged-filter="remove_merged_filter"
-                      @refetch-results="getResults({ update_facets: 1 })">
+                      @refetch-results="no_op">
               {{ $gettext('Merge authors here') }}
             </MergeBox>
           </div>

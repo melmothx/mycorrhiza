@@ -24,7 +24,7 @@
                  "password": this.password,
              }).then((res) => {
                  if (res.data.logged_in) {
-                     this.$router.push({ name: 'home' });
+                     this.$router.push({ name: 'search' });
                  }
                  else {
                      this.error = res.data.error;

@@ -184,7 +184,7 @@
   </div>
   <div v-if="sample.length">
     <h1 class="font-bold text-xl mb-2">
-      {{ $gettext('Sheet Preview, Total %1 records', number_of_records) }}</h1>
+      {{ $gettext('Sheet Preview, Total %1 Records', number_of_records) }}</h1>
     <table>
       <thead>
         <tr>

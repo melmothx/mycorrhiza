@@ -206,7 +206,7 @@ export default {
             return format(...args)
         }
         function ngettext(msgid, msgid_plural, n, ...args) {
-            console.log("Called ngettext");
+            // console.log("Called ngettext");
             let lang = options.language;
             let msg;
             if (options.translations[lang]) {
@@ -214,10 +214,10 @@ export default {
                     let avail_plurals = options.translations[lang][msgid].plurals;
                     if (plural_functions[lang]) {
                         let got_plurals = plural_functions[lang](n);
-                        console.log(got_plurals);
+                        // console.log(got_plurals);
                         if (avail_plurals[got_plurals.plural]) {
                             msg = avail_plurals[got_plurals.plural];
-                            console.log(`Message is ${msg}`);
+                            // console.log(`Message is ${msg}`);
                         }
                     }
                 }

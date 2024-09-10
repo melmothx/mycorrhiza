@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("api", views.api, name="api"),
+    path("api/search", views.api_search, name="api_search"),
     path("api/auth/login", views.api_login, name="api_login"),
     path("api/auth/logout", views.api_logout, name="api_logout"),
     path("api/auth/reset-password", views.api_reset_password, name="api_reset_password"),
@@ -21,6 +21,8 @@ urlpatterns = [
     path("api/exclusions", views.exclusions, name="exclusions"),
     path("api/create/<target>", views.api_create, name="api_create"),
     path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
+    path("api/libraries", views.api_list_libraries, name="api_list_libraries"),
+    path("api/libraries/<int:library_id>", views.api_show_library, name="api_show_library"),
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
     path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),
 ]

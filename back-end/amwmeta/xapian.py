@@ -50,6 +50,7 @@ EXCLUSION_FIELDS = {
 def search(db_path, query_params,
            active_libraries=[],
            exclusions=[],
+           facets_only=False,
            matches_only=False):
     db = xapian.Database(db_path)
     querystring = query_params.get("query")
@@ -151,38 +152,34 @@ def search(db_path, query_params,
                      current_page=page_number)
     logger.info(pager)
 
-    for match in mset:
-        fields = json.loads(match.document.get_data().decode('utf8'))
-        rec = {}
-        for field in fields:
-            values = fields.get(field)
-            if values:
-                if field == "identifier":
-                    urls = [ i for i in values if re.match(r'^https?://', i) ]
-                    if len(urls):
-                        rec['url'] = urls[0]
-                        rec['identifiers'] = values
-                else:
-                    rec[field] = values
-
-        # logger.info(rec)
-
-        # if there are excluded sites, also remove them from here.
-        # Sole source are already filtered out.
-
-        # TODO There the case where the other one is private and does
-        # not show up. In that case it will have no link and no
-        # reference. So it's not showing up because it's excluded,
-        # while the other is private, so it's not seen as an unique
-        # source
-
-        if active_libraries:
-            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['library_id'] in active_libraries ]
-        else:
-            rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
-        if exclusions:
-            rec['data_sources'] = [ ds for ds in rec['data_sources'] if not excluded_libraries.get(ds['library_id']) ]
-        matches.append(rec)
+    if not facets_only:
+        for match in mset:
+            fields = json.loads(match.document.get_data().decode('utf8'))
+            rec = {}
+            for field in fields:
+                values = fields.get(field)
+                if values:
+                    if field == "identifier":
+                        urls = [ i for i in values if re.match(r'^https?://', i) ]
+                        if len(urls):
+                            rec['url'] = urls[0]
+                            rec['identifiers'] = values
+                    else:
+                        rec[field] = values
+            # if there are excluded sites, also remove them from here.
+            # Sole source are already filtered out.
+            # TODO There the case where the other one is private and does
+            # not show up. In that case it will have no link and no
+            # reference. So it's not showing up because it's excluded,
+            # while the other is private, so it's not seen as an unique
+            # source
+            if active_libraries:
+                rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['library_id'] in active_libraries ]
+            else:
+                rec['data_sources'] = [ ds for ds in rec['data_sources'] if ds['public'] ]
+            if exclusions:
+                rec['data_sources'] = [ ds for ds in rec['data_sources'] if not excluded_libraries.get(ds['library_id']) ]
+            matches.append(rec)
 
     if matches_only:
         return matches
@@ -223,6 +220,9 @@ def search(db_path, query_params,
     # if there are excluded libraries, remove them as well
     if exclusions and facets.get('library'):
         facets['library']['values'] = [ v for v in facets['library']['values'] if not excluded_libraries.get(v['id']) ]
+
+    if facets_only:
+        return facets
 
     context['facets'] = facets
     context['filters'] = active_facets

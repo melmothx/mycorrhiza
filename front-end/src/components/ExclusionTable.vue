@@ -29,11 +29,13 @@
     <h1 class="text-center text-lg font-semibold"><slot></slot></h1>
     <table class="m-1 border">
       <thead class="border">
-        <th class="border p-1"></th>
-        <th class="border p-1">{{ $gettext('Target') }}</th>
-        <th class="border p-1">{{ $gettext('Type') }}</th>
-        <th class="border p-1">{{ $gettext('Reason') }}</th>
-        <th class="border p-1">{{ $gettext('Date') }}</th>
+        <tr>
+          <th class="border p-1"></th>
+          <th class="border p-1">{{ $gettext('Target') }}</th>
+          <th class="border p-1">{{ $gettext('Type') }}</th>
+          <th class="border p-1">{{ $gettext('Reason') }}</th>
+          <th class="border p-1">{{ $gettext('Date') }}</th>
+        </tr>
       </thead>
       <tbody>
         <tr v-for="rec in records" :key="rec.id"

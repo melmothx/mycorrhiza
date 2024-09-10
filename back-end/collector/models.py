@@ -80,6 +80,14 @@ class Library(models.Model):
         out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
         return out
 
+    def public_data(self):
+        out = {}
+        public_fields = ["id", "name", "url", "email_public", "opening_hours",
+                         "latitude", "longitude"]
+        for f in public_fields:
+            out[f] = getattr(self, f)
+        return out
+
     class Meta:
         verbose_name_plural = "Libraries"
 

@@ -123,7 +123,7 @@
                       console.log(res.data)
                       if (res.data && res.data.success) {
                           if (vm.remove_merged_filter) {
-                              vm.merge_list.forEach((el) => vm.$emit('removeMergedFilter', vm.remove_merged_filter, el.id));
+                              vm.$emit('removeMergedFilter', vm.remove_merged_filter, vm.merge_list.map((el) => el.id));
                           }
                           vm.clear_list();
                           // emit a refetch

@@ -3,7 +3,7 @@
  import NavBar from '../components/NavBar.vue'
  import SearchPage from '../components/SearchPage.vue'
  export default {
-     name: "home",
+     name: "search",
      components: { NavBar, SearchPage },
      setup() {
          const search_page = ref(null)
