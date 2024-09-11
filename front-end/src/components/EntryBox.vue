@@ -40,7 +40,7 @@
     <div>
       <div v-if="record.creator"
            class="py-1 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
-        <div v-for="author in record.creator" :key="author.id" class="flex">
+        <div v-for="author in record.creator" :key="author.id" class="flex flex-wrap">
           <div class="flex-grow px-3">
             {{ author.value }}
           </div>
@@ -70,7 +70,7 @@
         </div>
       </div>
       <div>
-        <div class="flex py-2">
+        <div class="flex flex-wrap py-2">
           <router-link class="font-semibold flex-grow cursor-pointer px-3"
                        :to="{name: 'entry', params: { id: record.entry_id } }">
             {{ title }}

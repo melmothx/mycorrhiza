@@ -292,9 +292,9 @@
     </div>
   </form>
   <div class="m-1 md:m-5">
-    <div v-if="active_filters" class="mb-4 flex">
+    <div v-if="active_filters" class="mb-4 flex flex-wrap">
       <template v-for="af in active_filters">
-        <div class="btn-primary mr-2 p-1 rounded flex cursor-pointer text-sm"
+        <div class="btn-primary mr-2 my-1 p-1 rounded flex cursor-pointer text-sm"
              :title="$gettext('Click to remove the filter')"
              @click="remove_filter_and_reload_facets(af.name, af.id)">
           <div>
@@ -307,8 +307,8 @@
       </template>
     </div>
     <div class="grid gap-8 grid-cols-2
-         md:grid-cols-[150px_auto]
-         lg:grid-cols-[250px_auto_250px]">
+                sm:grid-cols-[250px_auto]
+                lg:grid-cols-[250px_auto_250px]">
       <div>
         <div class="sticky top-5">
           <div v-if="facets.library" class="mb-3">
