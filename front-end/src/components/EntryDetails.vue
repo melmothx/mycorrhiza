@@ -7,7 +7,9 @@
   <h2><slot></slot></h2>
   <div v-if="record.authors">
     <div v-for="author in record.authors" :key="author.id">
-      {{ author.value }}
+      <a :href="`/library/author/${author.id}`">
+        {{ author.value }}
+      </a>
     </div>
   </div>
   <div class="flex">

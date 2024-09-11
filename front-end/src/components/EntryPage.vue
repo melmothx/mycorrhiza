@@ -84,12 +84,12 @@
             {{ $gettext('Other languages:') }}
           </h5>
           <span v-for="lang in languages" :key="lang.id">
-            <span class="cursor-pointer mr-2 p-1 rounded shadow-md"
+            <router-link class="cursor-pointer mr-2 p-1 rounded shadow-md"
                   :title="lang.original ? $gettext('Original') : $gettext('Translation')"
                   :class="lang.original ? 'btn-accent' : 'btn-primary'"
-                @click="$router.push({ name: 'entry', params: { id: lang.entry_id } })">
+                  :to="{ name: 'entry', params: { id: lang.entry_id } }">
               {{ lang.lang_id }}
-            </span>
+            </router-link>
           </span>
         </div>
       </div>

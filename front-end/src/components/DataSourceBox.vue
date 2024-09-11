@@ -76,7 +76,9 @@
          class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
       <h3 class="font-semibold text-white"><slot></slot></h3>
       <h4 class="font-semibold text-white" v-if="!short">
-        <span class="text-white">{{ source.library_name }}</span>
+        <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
+          <span class="text-white">{{ source.library_name }}</span>
+        </router-link>
       </h4>
     </div>
     <div v-if="source.authors && source.authors.length" class="p-2 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
