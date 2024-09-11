@@ -156,12 +156,13 @@
           <span class="grow text-white">
             <slot>Drop {{ merge_type }} here for merging</slot>
           </span>
-          <span v-if="dashboard"
-                class="text-white mr-2 cursor-pointer hover:text-spectra-200"
-                :title="$gettext('Admin')"
-                @click="$router.push({ name: 'dashboard', params: { type: dashboard } })">
-            <Cog8ToothIcon class="m-1 h-4 w-4" />
-          </span>
+          <template v-if="dashboard">
+            <router-link class="text-white mr-2 cursor-pointer hover:text-spectra-200"
+                :to="{ name: 'dashboard', params: { type: dashboard } }"
+                :title="$gettext('Admin')">
+              <Cog8ToothIcon class="m-1 h-4 w-4" />
+            </router-link>
+          </template>
           <HelpPopUp v-if="help_text">
             {{ $gettext(help_text) || $gettext('Missing help, sorry...') }}
           </HelpPopUp>

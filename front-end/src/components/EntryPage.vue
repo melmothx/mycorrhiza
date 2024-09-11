@@ -96,19 +96,17 @@
       <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
         <div v-if="source.aggregated && source.aggregated.length > 0">
-          <div v-for="agg in source.aggregated" :key="agg.id">
-            <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
-            class="p-4 cursor-pointer">
+          <div v-for="agg in source.aggregated" :key="agg.id" class="p-4">
+            <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
               <DataSourceBox :source="agg" :short="true">{{ $gettext('Contains:') }}</DataSourceBox>
-            </div>
+            </router-link>
           </div>
         </div>
         <div v-if="source.aggregations && source.aggregations.length > 0">
-          <div v-for="agg in source.aggregations" :key="agg.id">
-            <div @click="$router.push({ name: 'entry', params: { id: agg.entry_id } })"
-            class="p-4 cursor-pointer">
+          <div v-for="agg in source.aggregations" :key="agg.id" class="p-4">
+            <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
               <DataSourceBox :source="agg" :short="true">{{ $gettext('Part of:') }}</DataSourceBox>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>

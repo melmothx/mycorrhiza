@@ -158,9 +158,9 @@
         <tr v-for="record in records" :id="record.id" class="bg-perl-bush-50 odd:bg-perl-bush-100">
           <td class="p-1" v-for="f in fields" :key="f.name">
             <template v-if="f.link == 'entry'">
-              <button @click="$router.push({ name: 'entry', params: { id: record[f.name] } })">
+              <router-link :to="{ name: 'entry', params: { id: record[f.name] } }">
                 {{ record[f.name] }}
-              </button>
+              </router-link>
             </template>
             <template v-else>
               {{ record[f.name] }}
