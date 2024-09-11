@@ -222,13 +222,13 @@
       </template>
     </h1>
     <div>
-      <div class="flex h-8">
-        <button class="btn-primary rounded-none h-8 px-4"
+      <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
+        <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto"
                 @click="clear_all"
                 type="button">
           {{ $gettext('Clear') }}
         </button>
-        <input class="mcrz-input shadow"
+        <input class="mcrz-input shadow w-full my-1 sm:my-0"
                type="text" placeholder="Search" v-model="query"/>
         <Listbox v-model="sort_by">
           <div class="relative m-0">
@@ -286,7 +286,7 @@
             </transition>
           </div>
         </Listbox>
-        <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10"
+        <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10 w-full sm:w-auto"
                 type="submit">{{ $gettext('Search') }}</button>
       </div>
     </div>
