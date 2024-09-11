@@ -99,11 +99,13 @@
  }
 </script>
 <template>
-  <div class="flex m-3">
-    <div class="flex-grow">
+  <div class="flex flex-wrap m-3">
+    <div>
       <a href="/">
-        <img class="h-16" src="/logobanner.png" :alt="$gettext('Home')" />
+        <img class="w-64" src="/logobanner.png" :alt="$gettext('Home')" />
       </a>
+    </div>
+    <div class="flex-grow">
     </div>
     <div v-if="authenticated">
       <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
