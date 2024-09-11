@@ -70,7 +70,7 @@
         </div>
       </div>
       <div>
-        <div class="flex flex-wrap py-2">
+        <div class="flex py-2">
           <router-link class="font-semibold flex-grow cursor-pointer px-3"
                        :to="{name: 'entry', params: { id: record.entry_id } }">
             {{ title }}
