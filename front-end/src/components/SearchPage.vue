@@ -56,6 +56,7 @@
              sort_directions: sort_directions,
              sort_direction: sort_directions[0],
              active_filters: [],
+             search_was_run: false,
          }
      },
      methods: {
@@ -102,6 +103,7 @@
              axios.get('/collector/api/search',
                        { params: params })
                   .then((res) => {
+                      this.search_was_run = true;
                       this.matches = res.data.matches;
                       if (opts && opts.update_facets) {
                           this.facets = res.data.facets;
@@ -211,7 +213,7 @@
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="searchText">
-    <h1 class="text-xl text-center font-semibold m-8">
+    <h1 v-if="search_was_run" class="text-xl text-center font-semibold m-8">
       <template v-if="searched_query">
         {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
@@ -376,7 +378,7 @@
                       @refetch-results="getResults({ update_facets: 1 })" />
           </template>
         </div>
-        <div v-if="!matches || matches.length == 0" class="font-bold text-xl">
+        <div v-if="search_was_run && (!matches || matches.length == 0)" class="font-bold text-xl">
           {{ $gettext('No result found!') }}
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />

@@ -364,6 +364,10 @@ def api_library_action(request, action, library_id):
     }
     columns = [
         'url',
+        'description',
+        'languages',
+        'logo_url',
+        'year_established',
         'email_public',
         'email_internal',
         'opening_hours',
@@ -387,7 +391,7 @@ def api_library_action(request, action, library_id):
             if action == "details":
                 for f in columns:
                     value = data[f]
-                    if not value and f in [ 'latitude', 'longitude']:
+                    if not value and f in [ 'latitude', 'longitude', 'year_established']:
                         value = None
                     setattr(library, f, value)
                 library.save()

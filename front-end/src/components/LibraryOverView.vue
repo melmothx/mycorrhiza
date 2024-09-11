@@ -35,11 +35,13 @@
   <div v-if="error" class="py-2 text-claret-900 font-bold">
     {{ $gettext(error) }}
   </div>
-  <h1 class="font-bold text-2xl text-center mb-2">{{ $gettext('Our libraries') }}</h1>
-  <div class="grid grid-cols-4 gap-4">
+  <h1 class="font-bold text-2xl text-center mb-2">{{ $gettext('Libraries') }}</h1>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <div class="m-4" v-for="library in libraries">
       <LibraryBox :library="library">
-        <h2 class="font-bold mb-1">{{ library.name }}</h2>
+        <router-link :to="{ name: 'library_view', params: { id: library.id } }">
+          <h2 class="font-bold mb-1">{{ library.name }}</h2>
+        </router-link>
       </LibraryBox>
     </div>
   </div>

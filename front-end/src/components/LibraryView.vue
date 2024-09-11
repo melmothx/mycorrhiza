@@ -37,4 +37,10 @@
   </div>
   <LibraryBox :library="library" :full="true">
   </LibraryBox>
+  <div class="my-5">
+    <router-link class="text-claret-900 font-bold hover:text-claret-700"
+                 :to="{ name: 'library_overview' }">
+      {{ $gettext('See all libraries') }}
+    </router-link>
+  </div>
 </template>

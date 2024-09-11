@@ -65,6 +65,12 @@ class Library(models.Model):
     opening_hours = models.TextField(blank=True)
     latitude  = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
     longitude = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
+    description = models.TextField(blank=True)
+    logo_url = models.URLField(max_length=255,
+                               blank=True,
+                               null=True)
+    languages = models.TextField(blank=True)
+    year_established = models.DateField(null=True, blank=True)
     enable_check = models.BooleanField(default=False)
     check_token = models.CharField(max_length=255, blank=True)
     last_check = models.DateTimeField(null=True, blank=True)
@@ -81,11 +87,14 @@ class Library(models.Model):
         return out
 
     def public_data(self):
-        out = {}
+        out = { "established": None }
         public_fields = ["id", "name", "url", "email_public", "opening_hours",
+                         "description", "logo_url", "languages",
                          "latitude", "longitude"]
         for f in public_fields:
             out[f] = getattr(self, f)
+        if self.year_established:
+            out['established'] = self.year_established.strftime('%Y')
         return out
 
     class Meta:

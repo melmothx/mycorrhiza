@@ -63,12 +63,20 @@
     </div>
     <div>
       <div>
-        <h1 class="font-bold text-claret-900 text-xl">{{ library.name }}</h1>
+        <router-link :to="{ name: 'library_view', params: { id: library.id } }">
+          <h1 class="font-bold text-claret-900 text-xl">{{ library.name }}</h1>
+        </router-link>
         <form @submit.prevent="update">
           <div>
             <label for="library-url">{{ $gettext('Internet address') }}</label>
             <div class="flex">
               <input class="mcrz-input" id="library-url" v-model="library.url" />
+            </div>
+          </div>
+          <div>
+            <label for="library-logo-url">{{ $gettext('Logo URL') }}</label>
+            <div class="flex">
+              <input class="mcrz-input" id="library-logo-url" v-model="library.logo_url" />
             </div>
           </div>
           <div>
@@ -88,6 +96,24 @@
             <label for="opening_hours">{{ $gettext('Opening Hours') }}</label>
             <div class="flex">
               <textarea class="mcrz-input" id="opening_hours" v-model="library.opening_hours"></textarea>
+            </div>
+          </div>
+          <div>
+            <label for="description">{{ $gettext('Description') }}</label>
+            <div class="flex">
+              <textarea class="mcrz-input" id="description" v-model="library.description"></textarea>
+            </div>
+          </div>
+          <div>
+            <label for="languages">{{ $gettext('Languages') }}</label>
+            <div class="flex">
+              <textarea class="mcrz-input" id="languages" v-model="library.languages"></textarea>
+            </div>
+          </div>
+          <div>
+            <label for="year_established">{{ $gettext('Date Established') }}</label>
+            <div class="flex">
+              <input class="mcrz-input" type="date" v-model="library.year_established" />
             </div>
           </div>
           <div>
