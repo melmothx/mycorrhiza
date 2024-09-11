@@ -69,6 +69,15 @@
              this.$router.push({ name: 'search' });
              this.get_results({}, { update_facets: true });
          },
+         refine() {
+             let query = { ...this.$route.query };
+             query.query = this.query;
+             query.page_number = 1;
+             query.sort_by = this.sort_by.id;
+             query.sort_direction = this.sort_direction.id;
+             this.$router.push({ name: 'search', query: query });
+             this.get_results(query, { update_facets: true });
+         },
          searchText() {
              let fresh = {
                  query: this.query,
@@ -212,7 +221,7 @@
   */
 </script>
 <template>
-  <form class="m-1 md:m-5" @submit.prevent="searchText">
+  <form class="m-1 md:m-5" @submit.prevent="refine">
     <h1 v-if="search_was_run" class="text-xl text-center font-semibold m-8">
       <template v-if="searched_query">
         {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
@@ -224,9 +233,9 @@
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
         <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto"
-                @click="clear_all"
+                @click="refine"
                 type="button">
-          {{ $gettext('Clear') }}
+          {{ $gettext('Refine') }}
         </button>
         <input class="mcrz-input shadow w-full my-1 sm:my-0"
                type="text" placeholder="Search" v-model="query"/>
@@ -287,7 +296,8 @@
           </div>
         </Listbox>
         <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10 w-full sm:w-auto"
-                type="submit">{{ $gettext('Search') }}</button>
+                type="button"
+                @click="searchText">{{ $gettext('Search') }}</button>
       </div>
     </div>
   </form>
