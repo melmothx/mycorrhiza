@@ -819,7 +819,7 @@ def api_process_spreadsheet(request, spreadsheet_id):
 
 def api_list_libraries(request):
     active_libraries = _active_libraries(request.user)
-    data = [ l.public_data() for l in Library.objects.filter(id__in=active_libraries).all() ]
+    data = [ l.public_data() for l in Library.objects.filter(id__in=active_libraries).order_by('name').all() ]
     return JsonResponse({ "libraries": data })
 
 def api_show_library(request, library_id):
