@@ -321,17 +321,6 @@
                 lg:grid-cols-[250px_auto_250px]">
       <div>
         <div class="sticky top-5">
-          <div v-if="facets.library" class="mb-3">
-            <FacetBox
-                :use_sorting="true"
-                :values="facets.library.values"
-                :name="facets.library.name"
-                :can_set_exclusions="can_set_exclusions"
-                @toggle-app-filter="toggleFilter"
-                @refetch-results="getResults({ update_facets: 1 })">
-              {{ $gettext('Libraries') }}
-            </FacetBox>
-          </div>
           <div v-if="facets.language" class="mb-3">
             <FacetBox
                 :use_sorting="true"
@@ -348,6 +337,19 @@
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter">
               {{ $gettext('Authors') }}
+            </FacetBox>
+          </div>
+          <div v-if="facets.library" class="mb-3">
+            <FacetBox
+                :use_sorting="true"
+                :values="facets.library.values"
+                :name="facets.library.name"
+                :can_set_exclusions="can_set_exclusions"
+                @toggle-app-filter="toggleFilter"
+                @refetch-results="getResults({ update_facets: 1 })">
+              <router-link :to="{ name: 'library_overview' }" class="hover:text-old-copper-200">
+                {{ $gettext('Libraries') }}
+              </router-link>
             </FacetBox>
           </div>
           <div v-if="facets.date" class="mb-3">
