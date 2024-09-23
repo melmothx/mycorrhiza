@@ -163,7 +163,9 @@
               <Cog8ToothIcon class="m-1 h-4 w-4" />
             </router-link>
           </template>
-          <HelpPopUp v-if="help_text">
+          <HelpPopUp container_class="cursor-pointer hover:text-spectra-200 text-lg text-white"
+                     icon_class="w-4 h-4 m-1 hover:text-spectra-200"
+                     v-if="help_text">
             {{ $gettext(help_text) || $gettext('Missing help, sorry...') }}
           </HelpPopUp>
         </span>

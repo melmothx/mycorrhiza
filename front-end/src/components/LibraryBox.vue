@@ -24,7 +24,7 @@
       </a>
     </div>
     <div v-if="library.established" class="font-bold my-1">
-      {{ $gettext('Since: %1', library.established) }}
+      {{ $gettext('Project established in %1', library.established) }}
     </div>
     <div v-if="library.languages" class="font-bold my-1">
       {{ library.languages }}
@@ -49,7 +49,7 @@
     <div class="mt-2">
       <a class="btn-primary p-1"
          :href="`/library/entries/${library.id}`">
-        {{ $gettext('See all entries') }}
+        {{ $gettext('See the library entries') }}
       </a>
     </div>
   </div>

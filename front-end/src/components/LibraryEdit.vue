@@ -2,8 +2,10 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import HelpPopUp from './HelpPopUp.vue'
  export default {
      props: [ 'library_id' ],
+     components: { HelpPopUp },
      data() {
          return {
              library: {},
@@ -74,7 +76,14 @@
             </div>
           </div>
           <div>
-            <label for="library-logo-url">{{ $gettext('Logo URL') }}</label>
+            <div class="flex">
+              <label class="flex-grow" for="library-logo-url">{{ $gettext('Logo URL') }}</label>
+              <HelpPopUp container_class="cursor-pointer"
+                         icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
+                {{ $gettext('Logo address, e.g. https://mydomain.org/path/to/image') }}
+              </HelpPopUp>
+            </div>
+
             <div class="flex">
               <input class="mcrz-input" id="library-logo-url" v-model="library.logo_url" />
             </div>
@@ -99,13 +108,25 @@
             </div>
           </div>
           <div>
-            <label for="description">{{ $gettext('Description') }}</label>
+            <div class="flex">
+              <label class="flex-grow" for="description">{{ $gettext('Description') }}</label>
+              <HelpPopUp container_class="cursor-pointer"
+                         icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
+                {{ $gettext('This is a free-text field. Please describe the project') }}
+              </HelpPopUp>
+            </div>
             <div class="flex">
               <textarea class="mcrz-input" id="description" v-model="library.description"></textarea>
             </div>
           </div>
           <div>
-            <label for="languages">{{ $gettext('Languages') }}</label>
+            <div class="flex">
+              <label class="flex-grow" for="languages">{{ $gettext('Languages') }}</label>
+              <HelpPopUp container_class="cursor-pointer"
+                         icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
+                {{ $gettext('This is a free-text field. Please explain briefly which are the project languages') }}
+              </HelpPopUp>
+            </div>
             <div class="flex">
               <textarea class="mcrz-input" id="languages" v-model="library.languages"></textarea>
             </div>
