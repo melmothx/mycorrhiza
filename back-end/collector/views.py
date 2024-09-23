@@ -373,6 +373,14 @@ def api_library_action(request, action, library_id):
         'opening_hours',
         'latitude',
         'longitude',
+        'short_desc',
+        'pgp_public_key',
+        'address_line_1',
+        'address_line_2',
+        'address_city',
+        'address_zip',
+        'address_state',
+        'address_country',
     ]
     library = None
     user = request.user

@@ -70,7 +70,8 @@ class Library(models.Model):
 
     pgp_public_key = models.TextField(blank=True)
 
-    address_line = models.CharField(max_length=255, blank=True)
+    address_line_1 = models.CharField(max_length=255, blank=True)
+    address_line_2 = models.CharField(max_length=255, blank=True)
     address_city = models.CharField(max_length=64, blank=True)
     address_zip = models.CharField(max_length=16, blank=True)
     address_state = models.CharField(max_length=64, blank=True)

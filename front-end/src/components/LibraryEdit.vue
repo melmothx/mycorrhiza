@@ -109,6 +109,18 @@
           </div>
           <div>
             <div class="flex">
+              <label class="flex-grow" for="short_desc">{{ $gettext('Short Description') }}</label>
+              <HelpPopUp container_class="cursor-pointer"
+                         icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
+                {{ $gettext('Please describe the project. Just a few words, for the preview') }}
+              </HelpPopUp>
+            </div>
+            <div class="flex">
+              <textarea class="mcrz-input" id="short_desc" v-model="library.short_desc"></textarea>
+            </div>
+          </div>
+          <div>
+            <div class="flex">
               <label class="flex-grow" for="description">{{ $gettext('Description') }}</label>
               <HelpPopUp container_class="cursor-pointer"
                          icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
@@ -129,6 +141,65 @@
             </div>
             <div class="flex">
               <textarea class="mcrz-input" id="languages" v-model="library.languages"></textarea>
+            </div>
+          </div>
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="pgp_public_key">{{ $gettext('PGP public key, if any') }}</label>
+            </div>
+            <div class="flex">
+              <textarea class="mcrz-input font-mono text-sm" id="pgp_public_key"
+                        v-model="library.pgp_public_key"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_line_1">{{ $gettext('Address Line') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_line_1" v-model="library.address_line_1" />
+            </div>
+          </div>
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_line_2">{{ $gettext('Additional Address Line') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_line_2" v-model="library.address_line_2" />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_zip">{{ $gettext('ZIP code') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_zip" v-model="library.address_zip" />
+            </div>
+          </div>
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_city">{{ $gettext('City') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_city" v-model="library.address_city" />
+            </div>
+          </div>
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_state">{{ $gettext('State or Province') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_state" v-model="library.address_state" />
+            </div>
+          </div>
+          <div>
+            <div class="flex">
+              <label class="flex-grow" for="address_country">{{ $gettext('Country') }}</label>
+            </div>
+            <div class="flex">
+              <input class="mcrz-input" id="address_country" v-model="library.address_country" />
             </div>
           </div>
           <div>
