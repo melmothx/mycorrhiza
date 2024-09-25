@@ -15,8 +15,8 @@
 <template>
   <div class="mt-1 mx-2 flex flex-wrap">
     <span v-for="l in libraries">
-      <router-link class="border-spectra-900 hover:border-spectra-700 border whitespace-nowrap
-                          rounded text-spectra-900 hover:text-spectra-700 text-[12px] p-px m-1 leading-8"
+      <router-link class="border border-spectra-500 whitespace-nowrap
+                          rounded text-spectra-600 hover:text-spectra-900 text-[12px] p-px m-1 leading-8"
                    :to="{ name: 'library_view', params: { id: l.id } }">
         {{ l.name }}
       </router-link>

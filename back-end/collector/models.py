@@ -101,7 +101,16 @@ class Library(models.Model):
         out = { "established": None }
         public_fields = ["id", "name", "url", "email_public", "opening_hours",
                          "description", "logo_url", "languages",
-                         "latitude", "longitude"]
+                         "pgp_public_key",
+                         "short_desc",
+                         "address_line_1",
+                         "address_line_2",
+                         "address_city",
+                         "address_zip",
+                         "address_state",
+                         "address_country",
+                         "latitude",
+                         "longitude"]
         for f in public_fields:
             out[f] = getattr(self, f)
         if self.year_established:
