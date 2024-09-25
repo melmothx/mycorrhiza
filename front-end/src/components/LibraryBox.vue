@@ -6,7 +6,8 @@
  }
 </script>
 <template>
-  <div v-if="library">
+  <div class="border border-perl-bush-200 bg-perl-bush-50 shadow
+              rounded p-4" v-if="library">
     <slot>
       <h1 class="font-bold text-xl mb-2">{{ library.name }}</h1>
     </slot>
@@ -19,7 +20,7 @@
       </a>
     </div>
     <div v-if="library.logo_url">
-      <img class="py-1 max-h-40" :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
+      <img class="py-1 max-h-64" :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
     </div>
     <div v-if="library.established" class="font-bold my-1">
       {{ $gettext('Project established in %1', library.established) }}

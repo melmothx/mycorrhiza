@@ -36,10 +36,13 @@
     {{ $gettext(error) }}
   </div>
   <h1 class="font-bold text-4xl text-center my-4">{{ $gettext('Libraries') }}</h1>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-    <div class="m-4" v-for="library in libraries">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+    <div class="m-1" v-for="library in libraries">
       <LibraryBox :library="library">
-        <h2 class="font-bold mb-1 text-xl">{{ library.name }}</h2>
+        <router-link class="font-bold text-xl"
+                     :to="{ name: 'library_view', params: { id: library.id } }">
+          <h2 class="font-bold mb-1 text-xl">{{ library.name }}</h2>
+        </router-link>
       </LibraryBox>
     </div>
   </div>
