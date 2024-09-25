@@ -66,6 +66,17 @@ class Library(models.Model):
     latitude  = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
     longitude = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=7)
     description = models.TextField(blank=True)
+    short_desc = models.TextField(blank=True)
+
+    pgp_public_key = models.TextField(blank=True)
+
+    address_line_1 = models.CharField(max_length=255, blank=True)
+    address_line_2 = models.CharField(max_length=255, blank=True)
+    address_city = models.CharField(max_length=64, blank=True)
+    address_zip = models.CharField(max_length=16, blank=True)
+    address_state = models.CharField(max_length=64, blank=True)
+    address_country = models.CharField(max_length=64, blank=True)
+
     logo_url = models.URLField(max_length=255,
                                blank=True,
                                null=True)
@@ -90,7 +101,16 @@ class Library(models.Model):
         out = { "established": None }
         public_fields = ["id", "name", "url", "email_public", "opening_hours",
                          "description", "logo_url", "languages",
-                         "latitude", "longitude"]
+                         "pgp_public_key",
+                         "short_desc",
+                         "address_line_1",
+                         "address_line_2",
+                         "address_city",
+                         "address_zip",
+                         "address_state",
+                         "address_country",
+                         "latitude",
+                         "longitude"]
         for f in public_fields:
             out[f] = getattr(self, f)
         if self.year_established:

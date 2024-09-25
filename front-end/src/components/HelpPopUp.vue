@@ -1,6 +1,10 @@
 <script>
  import { QuestionMarkCircleIcon } from '@heroicons/vue/24/solid'
  export default {
+     props: [
+         'container_class',
+         'icon_class',
+     ],
      components: {
          QuestionMarkCircleIcon,
      },
@@ -21,10 +25,10 @@
  }
 </script>
 <template>
-  <span class="cursor-pointer hover:text-spectra-200 text-lg"
+  <span :class="container_class"
         :title="$gettext('Help')"
         @click="toggle_dialog">
-    <QuestionMarkCircleIcon class="w-4 h-4 m-1 hover:text-spectra-200" />
+    <QuestionMarkCircleIcon :class="icon_class" />
   </span>
   <div v-if="open">
     <div class="fixed inset-x-0 top-0 overflow-y-auto font-normal">
