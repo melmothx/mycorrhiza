@@ -68,6 +68,20 @@
     }
 }
 
+.mcrz-micro-badge {
+    @apply border whitespace-nowrap text-[12px] p-px m-1 leading-8 rounded;
+}
+.mcrz-library-physical {
+    @apply border-claret-600 text-claret-600 hover:text-claret-900 hover:border-claret-900;
+}
+.mcrz-library-closed {
+    @apply border-old-copper-600 text-old-copper-600 hover:text-old-copper-900 hover:border-old-copper-900;
+}
+.mcrz-library-digital {
+    @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
+}
+
+
 @layer components {
     .btn-primary {
         @apply bg-gradient-to-tr from-spectra-700 to-spectra-900
