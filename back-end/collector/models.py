@@ -54,6 +54,11 @@ def log_user_operation(user, op, canonical, alias):
         )
 
 class Library(models.Model):
+    LIBRARY_TYPES = [
+        ('physical', 'Physical Library'),
+        ('digital', 'Digital Library'),
+        ('closed', 'Closed or Private Library'),
+    ]
     name = models.CharField(max_length=255)
     url = models.URLField(max_length=255,
                           blank=True,
@@ -87,6 +92,8 @@ class Library(models.Model):
     last_check = models.DateTimeField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    library_type = models.CharField(max_length=32, null=True, choices=LIBRARY_TYPES)
+
     def __str__(self):
         return "{} [{}]".format(self.name, self.id)
     def as_api_dict(self):
@@ -109,6 +116,7 @@ class Library(models.Model):
                          "address_zip",
                          "address_state",
                          "address_country",
+                         "library_type",
                          "latitude",
                          "longitude"]
         for f in public_fields:
