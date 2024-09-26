@@ -521,6 +521,7 @@ class Agent(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     description = models.TextField()
+    viaf_identifier = models.BigIntegerField(null=True)
     canonical_agent = models.ForeignKey(
         'self',
         null=True,
