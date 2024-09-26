@@ -222,7 +222,7 @@
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="refine">
-    <h1 v-if="search_was_run" class="text-xl text-center font-semibold m-8">
+    <h1 v-if="search_was_run" class="text-xl text-center font-semibold mt-8 mb-2">
       <template v-if="searched_query">
         {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
@@ -230,6 +230,20 @@
         {{ $gettext('All entries (%1)', total_entries) }}
       </template>
     </h1>
+    <div v-if="active_filters" class="mb-4 flex flex-wrap place-content-center">
+      <template v-for="af in active_filters">
+        <div class="btn-primary mr-2 my-1 p-1 rounded flex cursor-pointer text-sm"
+             :title="$gettext('Click to remove the filter')"
+             @click="remove_filter_and_reload_facets(af.name, af.id)">
+          <div>
+            {{ af.term }}
+          </div>
+          <div class="h-3 w-3 m-1">
+            <XMarkIcon />
+          </div>
+        </div>
+      </template>
+    </div>
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
         <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto"
@@ -302,20 +316,6 @@
     </div>
   </form>
   <div class="m-1 md:m-5">
-    <div v-if="active_filters" class="mb-4 flex flex-wrap">
-      <template v-for="af in active_filters">
-        <div class="btn-primary mr-2 my-1 p-1 rounded flex cursor-pointer text-sm"
-             :title="$gettext('Click to remove the filter')"
-             @click="remove_filter_and_reload_facets(af.name, af.id)">
-          <div>
-            {{ af.term }}
-          </div>
-          <div class="h-3 w-3 m-1">
-            <XMarkIcon />
-          </div>
-        </div>
-      </template>
-    </div>
     <div class="grid gap-8 grid-cols-2
                 sm:grid-cols-[250px_auto]
                 lg:grid-cols-[250px_auto_250px]">
