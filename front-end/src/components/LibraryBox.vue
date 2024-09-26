@@ -46,10 +46,6 @@
           <span class="font-mono">{{ library.email_public }}</span>
         </a>
       </div>
-      <div v-if="library.pgp_public_key">
-        <h2 class="mt-2 font-bold">{{ $gettext('PGP Public Key') }}</h2>
-        <pre>{{ library.pgp_public_key }}</pre>
-      </div>
       <div v-if="library.address_line_1 || library.address_zip || library.address_city || library.country">
         <h2 class="mt-2 font-bold">{{ $gettext('Address') }}</h2>
         <div v-if="library.address_line_1">
@@ -63,6 +59,10 @@
           {{ library.address_city }}
           {{ library.address_country }}
         </div>
+      </div>
+      <div v-if="library.pgp_public_key">
+        <h2 class="mt-2 font-bold">{{ $gettext('PGP Public Key') }}</h2>
+        <pre class="text-[12px] border p-1">{{ library.pgp_public_key }}</pre>
       </div>
     </div>
     <div v-else>
