@@ -841,7 +841,10 @@ def api_list_agents(request):
     data = []
     for agent in Agent.objects.prefetch_related('canonical_agent').order_by('name').all():
         data.append(agent.as_api_dict(get_canonical=True))
-    return JsonResponse({ "agents": data })
+    return JsonResponse({
+        "agents": data,
+        "can_merge": user_can_merge(request.user),
+    })
 
 @user_passes_test(user_can_merge)
 def api_agent(request, agent_id):
