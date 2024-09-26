@@ -75,7 +75,7 @@
           {{ $gettext('Authors') }}
         </span>
       </h1>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid lg:grid-cols-2 gap-2">
         <div class="m-1" v-for="agent in agents">
           <AgentBox :key="agent.id" :agent="agent" :can_edit="can_merge" />
         </div>

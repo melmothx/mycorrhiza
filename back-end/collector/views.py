@@ -846,6 +846,27 @@ def api_list_agents(request):
         "can_merge": user_can_merge(request.user),
     })
 
+@ensure_csrf_cookie
 @user_passes_test(user_can_merge)
 def api_agent(request, agent_id):
-    return JsonResponse({ "agent": {} })
+    agent = Agent.objects.get(pk=agent_id)
+    out = {}
+    if agent:
+        if request.method == 'POST':
+            data = None
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                out['error'] = "Invalid JSON!";
+
+            if data:
+                cols = ("first_name", "last_name", "description", "viaf_identifier")
+                for c in cols:
+                    setattr(agent, c, data.get(c))
+                agent.save()
+
+        out['agent'] = agent.as_api_dict(get_canonical=False)
+    else:
+        out['error'] = "No such ID"
+
+    return JsonResponse(out)

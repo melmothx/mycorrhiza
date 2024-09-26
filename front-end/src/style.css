@@ -134,12 +134,17 @@
         @apply outline
                outline-0
                border
-               border-0
+               border-perl-bush-100
+               active:border active:border-perl-bush-100
+               focus:border focus:border-perl-bush-100
                focus:ring-0 active:ring-0
                px-2
-               text-old-copper-700
+               text-old-copper-900
                bg-perl-bush-50
                placeholder:italic flex-grow;
+    }
+    .mcrz-label {
+        @apply text-old-copper-900 font-bold;
     }
     .mcrz-listbox-button {
         @apply relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50;
