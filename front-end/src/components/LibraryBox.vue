@@ -7,6 +7,7 @@
 </script>
 <template>
   <div class="border border-perl-bush-200 bg-perl-bush-50 shadow
+              max-w-prose mx-auto
               rounded p-4" v-if="library">
     <slot>
       <h1 class="font-bold text-xl mb-2">{{ library.name }}</h1>
