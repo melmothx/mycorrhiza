@@ -541,8 +541,10 @@ class Agent(models.Model):
 
         out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
         out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
+        out['search_link_id'] = self.id
         canonical = self.canonical_agent
         if canonical:
+            out['search_link_id'] = self.canonical_agent_id
             if get_canonical:
                 out['canonical'] = canonical.as_api_dict(get_canonical=False)
             else:

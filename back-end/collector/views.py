@@ -836,3 +836,13 @@ def api_show_library(request, library_id):
     if library_id in active_libraries:
         library = Library.objects.get(pk=library_id).public_data()
     return JsonResponse({ "library": library })
+
+def api_list_agents(request):
+    data = []
+    for agent in Agent.objects.prefetch_related('canonical_agent').order_by('name').all():
+        data.append(agent.as_api_dict(get_canonical=True))
+    return JsonResponse({ "agents": data })
+
+@user_passes_test(user_can_merge)
+def api_agent(request, agent_id):
+    return JsonResponse({ "agent": {} })

@@ -21,8 +21,12 @@ urlpatterns = [
     path("api/exclusions", views.exclusions, name="exclusions"),
     path("api/create/<target>", views.api_create, name="api_create"),
     path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
+
     path("api/libraries", views.api_list_libraries, name="api_list_libraries"),
     path("api/libraries/<int:library_id>", views.api_show_library, name="api_show_library"),
+    path("api/agents", views.api_list_agents, name="api_list_agents"),
+    path("api/agents/<int:agent_id>", views.api_agent, name="api_agent"),
+
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
     path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),
 ]
