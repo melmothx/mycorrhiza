@@ -41,7 +41,11 @@
       <LibraryBox :library="library">
         <router-link class="font-bold text-xl"
                      :to="{ name: 'library_view', params: { id: library.id } }">
-          <h2 class="font-bold mb-1 text-xl">{{ library.name }}</h2>
+          <h2 class="font-bold mb-1 text-xl">
+            <span :class="`mcrz-library-${library.library_type || 'digital'}`">
+              {{ library.name }}
+            </span>
+          </h2>
         </router-link>
       </LibraryBox>
     </div>

@@ -41,7 +41,15 @@
                  :to="{ name: 'library_overview' }">
         {{ $gettext('Libraries') }}
       </router-link>
-      <h1 class="font-bold text-xl mb-2">&nbsp;/ {{ library.name }}</h1>
+      <span class="font-bold text-xl">&nbsp;/&nbsp;</span>
+      <router-link class="font-bold text-xl"
+                   :to="{ name: 'library_view', params: { id: library.id } }">
+        <h1 class="font-bold mb-2 text-xl">
+          <span :class="`mcrz-library-${library.library_type || 'digital'}`">
+            {{ library.name }}
+          </span>
+        </h1>
+      </router-link>
     </div>
   </LibraryBox>
   <div class="my-5">
