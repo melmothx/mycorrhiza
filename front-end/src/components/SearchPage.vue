@@ -336,7 +336,9 @@
                 :values="facets.creator.values"
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter">
-              {{ $gettext('Authors') }}
+              <router-link :to="{ name: 'agent_overview' }" class="hover:text-old-copper-200">
+                {{ $gettext('Authors') }}
+              </router-link>
             </FacetBox>
           </div>
           <div v-if="facets.library" class="mb-3">

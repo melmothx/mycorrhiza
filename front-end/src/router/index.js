@@ -7,6 +7,7 @@ import PasswordResetView from '../views/PasswordResetView.vue'
 import LibraryEditView from '../views/LibraryEditView.vue'
 import LibraryView from '../views/LibraryView.vue'
 import LibraryOverView from '../views/LibraryOverView.vue'
+import AgentOverView from '../views/AgentOverView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -63,9 +64,14 @@ const router = createRouter({
             component: LibraryView,
         },
         {
-            path: '/library/',
+            path: '/library',
             name: 'library_overview',
             component: LibraryOverView,
+        },
+        {
+            path: '/agent',
+            name: 'agent_overview',
+            component: AgentOverView,
         },
     ]
 })

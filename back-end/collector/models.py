@@ -521,6 +521,7 @@ class Agent(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     description = models.TextField()
+    viaf_identifier = models.BigIntegerField(null=True)
     canonical_agent = models.ForeignKey(
         'self',
         null=True,
@@ -535,13 +536,19 @@ class Agent(models.Model):
 
     def as_api_dict(self, get_canonical=False):
         out = {}
-        for f in ["id", "name", "first_name", "last_name", "description", "canonical_agent_id"]:
+        public_columns = [
+            "id", "name", "first_name", "last_name", "description",
+            "canonical_agent_id", "viaf_identifier"
+        ]
+        for f in public_columns:
             out[f] = getattr(self, f)
 
         out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')
         out['last_modified'] = self.last_modified.strftime('%Y-%m-%dT%H:%M')
+        out['search_link_id'] = self.id
         canonical = self.canonical_agent
         if canonical:
+            out['search_link_id'] = self.canonical_agent_id
             if get_canonical:
                 out['canonical'] = canonical.as_api_dict(get_canonical=False)
             else:

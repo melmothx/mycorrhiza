@@ -836,3 +836,37 @@ def api_show_library(request, library_id):
     if library_id in active_libraries:
         library = Library.objects.get(pk=library_id).public_data()
     return JsonResponse({ "library": library })
+
+def api_list_agents(request):
+    data = []
+    for agent in Agent.objects.prefetch_related('canonical_agent').order_by('name').all():
+        data.append(agent.as_api_dict(get_canonical=True))
+    return JsonResponse({
+        "agents": data,
+        "can_merge": user_can_merge(request.user),
+    })
+
+@ensure_csrf_cookie
+@user_passes_test(user_can_merge)
+def api_agent(request, agent_id):
+    agent = Agent.objects.get(pk=agent_id)
+    out = {}
+    if agent:
+        if request.method == 'POST':
+            data = None
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                out['error'] = "Invalid JSON!";
+
+            if data:
+                cols = ("first_name", "last_name", "description", "viaf_identifier")
+                for c in cols:
+                    setattr(agent, c, data.get(c))
+                agent.save()
+
+        out['agent'] = agent.as_api_dict(get_canonical=False)
+    else:
+        out['error'] = "No such ID"
+
+    return JsonResponse(out)

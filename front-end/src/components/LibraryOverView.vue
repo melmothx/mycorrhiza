@@ -18,7 +18,7 @@
              axios.get('/collector/api/libraries')
                   .then(res => {
                       this.error = null;
-                      this.libraries = res.data.libraries
+                      this.libraries = res.data.libraries;
                   })
                   .catch(error => {
                       this.error = error;

@@ -53,7 +53,8 @@
           </div>
           <div v-if="can_merge">
             <span class="drag-el cursor-grab active:cursor-grabbing drag-author
-                         text-spectra-600 hover:text-spectra-800 hover:text-spectra-800
+                         text-spectra-600
+                         hover:text-spectra-800
                          focus:text-spectra-800"
                   :title="$gettext('Merge')"
                   draggable="true" @dragstart="drag_element($event, 'author', author.id, author.value)">
