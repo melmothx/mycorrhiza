@@ -1294,7 +1294,7 @@ def spreadsheet_upload_directory(instance, filename):
             ext = tryext
             break
 
-    return "spreadsheets/{0}-{1}.{2}".format(int(datetime.now().timestamp()),
+    return "spreadsheets/{0}-{1}{2}".format(int(datetime.now().timestamp()),
                                              "".join(random.choice(choices) for i in range(20)),
                                              ext)
 
