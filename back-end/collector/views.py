@@ -847,12 +847,11 @@ def api_list_agents(request):
     })
 
 @ensure_csrf_cookie
-@user_passes_test(user_can_merge)
 def api_agent(request, agent_id):
     agent = Agent.objects.get(pk=agent_id)
     out = {}
     if agent:
-        if request.method == 'POST':
+        if request.method == 'POST' and user_can_merge(request.user):
             data = None
             try:
                 data = json.loads(request.body)
