@@ -3,6 +3,7 @@
  import FacetBox from './FacetBox.vue'
  import EntryBox  from './EntryBox.vue'
  import MergeBox from './MergeBox.vue'
+ import SingleFilterBox from './SingleFilterBox.vue'
  import axios from 'axios'
  import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from '@headlessui/vue'
  import { ChevronUpDownIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid'
@@ -11,6 +12,7 @@
          Listbox, ListboxButton, ListboxOptions, ListboxOption,
          FacetBox, EntryBox, PaginationBox, MergeBox,
          ChevronUpDownIcon, XCircleIcon, XMarkIcon,
+         SingleFilterBox,
      },
      data() {
          const sort_directions = [
@@ -57,6 +59,7 @@
              sort_direction: sort_directions[0],
              active_filters: [],
              search_was_run: false,
+             single_filter_box: null,
          }
      },
      methods: {
@@ -131,6 +134,15 @@
                                   }
                               }
                           }
+                      }
+                      if (this.active_filters.length == 1) {
+                          this.single_filter_box = {
+                              name: this.active_filters[0].name,
+                              id: this.active_filters[0].id,
+                          }
+                      }
+                      else {
+                          this.single_filter_box = null;
                       }
                       this.pager = res.data.pager;
                       this.total_entries = res.data.total_entries;
@@ -397,8 +409,11 @@
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
-      <div v-if="can_merge">
-        <div class="sticky top-5">
+      <div>
+        <div v-if="single_filter_box">
+          <SingleFilterBox :id="single_filter_box.id" :name="single_filter_box.name" />
+        </div>
+        <div v-if="can_merge" class="sticky top-5">
           <div id="author-cards" class="mb-2">
             <MergeBox merge_type="author"
                       create_item="agent"

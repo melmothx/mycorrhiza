@@ -2,7 +2,7 @@
  import { LinkIcon } from '@heroicons/vue/24/solid'
  export default {
      components: { LinkIcon },
-     props: [ "library", "full" ],
+     props: [ "library", "full", "short" ],
  }
 </script>
 <template>
@@ -78,7 +78,7 @@
         </router-link>
       </div>
     </div>
-    <div class="my-4">
+    <div v-if="!short" class="my-4">
       <a class="btn-primary p-1"
          :href="`/library/entries/${library.id}`">
         {{ $gettext('See the library entries') }}

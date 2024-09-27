@@ -7,7 +7,7 @@
      HandRaisedIcon,
  } from '@heroicons/vue/24/solid'
  export default {
-     props: [ "agent", "can_edit" ],
+     props: [ "agent", "can_edit", "short" ],
      data() {
          return {
              error: null,
@@ -70,10 +70,15 @@
  }
 </script>
 <template>
-  <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-1 shadow">
-    <a :href="`/library/author/${agent.search_link_id}`" target="_blank">
+  <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow rounded">
+    <div v-if="short">
       <h2 class="font-bold">{{ agent.name }}</h2>
-    </a>
+    </div>
+    <div v-else>
+      <a :href="`/library/author/${agent.search_link_id}`" target="_blank">
+        <h2 class="font-bold">{{ agent.name }}</h2>
+      </a>
+    </div>
     <div v-if="edited && !show_editing">
       <div v-if="agent_editable_data.first_name">
         {{ $gettext('First Name: %1', agent_editable_data.first_name) }}
