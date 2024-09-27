@@ -59,7 +59,7 @@
              sort_direction: sort_directions[0],
              active_filters: [],
              search_was_run: false,
-             single_filter_box: null,
+             single_filter_boxes: [],
          }
      },
      methods: {
@@ -121,8 +121,10 @@
                           this.facets = res.data.facets;
                       }
                       this.active_filters = [];
+                      this.single_filter_boxes = [];
                       for (const fn of [ 'library', 'language', 'creator', 'date', 'download', 'aggregate', ]) {
                           let facet = res.data.facets[fn];
+                          let count = 0;
                           if (facet) {
                               for (const ff of res.data.facets[fn].values) {
                                   if (ff.active) {
@@ -131,18 +133,16 @@
                                           id: ff.id,
                                           name: fn,
                                       });
+                                      count++;
                                   }
                               }
                           }
-                      }
-                      if (this.active_filters.length == 1) {
-                          this.single_filter_box = {
-                              name: this.active_filters[0].name,
-                              id: this.active_filters[0].id,
+                          if (count == 1) {
+                              let idx = this.active_filters.length - 1;
+                              this.single_filter_boxes.push({
+                                  ...this.active_filters[idx]
+                              })
                           }
-                      }
-                      else {
-                          this.single_filter_box = null;
                       }
                       this.pager = res.data.pager;
                       this.total_entries = res.data.total_entries;
@@ -410,8 +410,8 @@
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
       <div>
-        <div v-if="single_filter_box">
-          <SingleFilterBox :id="single_filter_box.id" :name="single_filter_box.name" />
+        <div v-for="sf in single_filter_boxes">
+          <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" />
         </div>
         <div v-if="can_merge" class="sticky top-5">
           <div id="author-cards" class="mb-2">
