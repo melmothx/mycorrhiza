@@ -1,5 +1,6 @@
 <script>
  import NavBar from '../components/NavBar.vue'
+ import NavFooter from '../components/NavFooter.vue'
  import LibraryEdit from '../components/LibraryEdit.vue'
  import DashboardTable from '../components/DashboardTable.vue'
  import UserCreation from '../components/UserCreation.vue'
@@ -12,6 +13,7 @@
          UserCreation,
          CsvUpload,
          NavBar,
+         NavFooter,
      },
      data() {
          return {
@@ -27,8 +29,8 @@
  }
 </script>
 <template>
-  <main>
-    <NavBar />
+  <NavBar />
+  <main class="flex-grow">
     <div class="m-8">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 ">
         <div class="mb-6">
@@ -49,4 +51,5 @@
 
     </div>
   </main>
+  <NavFooter />
 </template>

@@ -2,10 +2,11 @@
  import BackButton from '../components/BackButton.vue'
  import DashboardTable from '../components/DashboardTable.vue'
  import NavBar from '../components/NavBar.vue'
+ import NavFooter from '../components/NavFooter.vue'
 </script>
 <template>
-  <main>
-    <NavBar />
+  <NavBar />
+  <main class="flex-grow">
     <div class="m-5 p-2">
       <div class="flex">
         <div class="flex-grow">
@@ -22,4 +23,5 @@
                       :key="$route.params.type" />
     </div>
   </main>
+  <NavFooter />
 </template>

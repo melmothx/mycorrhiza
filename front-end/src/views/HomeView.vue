@@ -1,10 +1,11 @@
 <script>
  import { ref } from 'vue'
  import NavBar from '../components/NavBar.vue'
+ import NavFooter from '../components/NavFooter.vue'
  import SearchPage from '../components/SearchPage.vue'
  export default {
      name: "search",
-     components: { NavBar, SearchPage },
+     components: { NavBar, SearchPage, NavFooter },
      setup() {
          const search_page = ref(null)
          return {
@@ -20,10 +21,9 @@
 </script>
 
 <template>
-  <nav>
-    <NavBar @refetch-results="refetch_results" />
-  </nav>
-  <main>
+  <NavBar @refetch-results="refetch_results" />
+  <main class="flex-grow">
     <SearchPage ref="search_page" />
   </main>
+  <NavFooter />
 </template>

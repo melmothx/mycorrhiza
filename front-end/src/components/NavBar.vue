@@ -100,6 +100,7 @@
  }
 </script>
 <template>
+  <header>
   <div class="flex flex-wrap m-3">
     <div class="flex-grow">
       <SiteLogo />
@@ -215,4 +216,5 @@
       {{ $gettext(reset_message) }}
     </div>
   </div>
+  </header>
 </template>
