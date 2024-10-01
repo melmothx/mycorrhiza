@@ -26,10 +26,14 @@
  }
 </script>
 <template>
-  <footer>
-    <div v-for="page in pages">
-      <strong>{{ page.title }}</strong>
-      <div>{{ page.summary }}</div>
+  <footer class="mt-8 p-4 bg-gradient-to-tr from-old-copper-200 to-old-copper-300">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+      <div v-for="page in pages" class="m-2">
+        <router-link class="hover:text-old-copper-900" :to="{ name: 'page_view', params: { id: page.id } }">
+          <strong>{{ page.title }}</strong>
+          <div>{{ page.summary }}</div>
+        </router-link>
+      </div>
     </div>
   </footer>
 </template>
