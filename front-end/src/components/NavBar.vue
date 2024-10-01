@@ -2,6 +2,7 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import SiteLogo from './SiteLogo.vue';
  import {
      Listbox,
      ListboxButton,
@@ -16,6 +17,7 @@
          'refetchResults',
      ],
      components: {
+         SiteLogo,
          Listbox,
          ListboxButton,
          ListboxOptions,
@@ -99,12 +101,8 @@
 </script>
 <template>
   <div class="flex flex-wrap m-3">
-    <div>
-      <a href="/">
-        <img class="w-64" src="/logobanner.png" :alt="$gettext('Home')" />
-      </a>
-    </div>
     <div class="flex-grow">
+      <SiteLogo />
     </div>
     <div :title="$gettext('UI language')">
       <Listbox v-model="current_language">

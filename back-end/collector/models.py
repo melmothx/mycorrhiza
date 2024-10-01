@@ -128,6 +128,46 @@ class Library(models.Model):
     class Meta:
         verbose_name_plural = "Libraries"
 
+class General(models.Model):
+    GENERAL_VALUE_NAMES = [
+        ("site_name", "Site Name"),
+        ("site_logo", "Site Logo"),
+        ("site_description", "Site Description")
+    ]
+    name = models.CharField(max_length=32,
+                            choices=GENERAL_VALUE_NAMES,
+                            unique=True)
+    value = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{}: {}".format(self.name, self.value)
+
+    @classmethod
+    def settings(self):
+        return { v.name: v.value for v in self.objects.all() }
+
+
+class Page(models.Model):
+    title = models.CharField(max_length=255)
+    summary = models.TextField(blank=True)
+    content = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
+    def __str__(self):
+        return "{} {}".format(self.id, self.title)
+
+    def overview(self):
+        return  { "id": self.id, "title": self.title, "summary": self.summary }
+
+    def details(self):
+        out = self.overview()
+        out['content'] = self.content
+        return out
+
+
 class User(AbstractUser):
     email = models.EmailField(null=False, blank=False)
     libraries = models.ManyToManyField(Library, related_name="affiliated_users")

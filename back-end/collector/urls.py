@@ -26,6 +26,9 @@ urlpatterns = [
     path("api/libraries/<int:library_id>", views.api_show_library, name="api_show_library"),
     path("api/agents", views.api_list_agents, name="api_list_agents"),
     path("api/agents/<int:agent_id>", views.api_agent, name="api_agent"),
+    path("api/pages", views.api_list_pages, name="api_list_pages"),
+    path("api/pages/<int:page_id>", views.api_view_page, name="api_view_page"),
+    path("api/general", views.api_general, name="api_general"),
 
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
     path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),

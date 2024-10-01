@@ -8,6 +8,7 @@ import LibraryEditView from '../views/LibraryEditView.vue'
 import LibraryView from '../views/LibraryView.vue'
 import LibraryOverView from '../views/LibraryOverView.vue'
 import AgentOverView from '../views/AgentOverView.vue'
+import PageView from '../views/PageView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -72,6 +73,11 @@ const router = createRouter({
             path: '/agent',
             name: 'agent_overview',
             component: AgentOverView,
+        },
+        {
+            path: '/page/:id',
+            name: 'page_view',
+            component: PageView,
         },
     ]
 })

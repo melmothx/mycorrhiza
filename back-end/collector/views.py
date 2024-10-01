@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
-from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, manipulate, log_user_operation
+from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, manipulate, log_user_operation
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
@@ -869,3 +869,16 @@ def api_agent(request, agent_id):
         out['error'] = "No such ID"
 
     return JsonResponse(out)
+
+def api_list_pages(request):
+    return JsonResponse({ "pages": [ p.overview() for p in Page.objects.filter(published=True).all() ] })
+
+def api_view_page(request, page_id):
+    try:
+        details = Page.objects.filter(published=True).get(pk=page_id).details()
+    except Page.DoesNotExist:
+        details = {}
+    return JsonResponse({ "page": details })
+
+def api_general(request):
+    return JsonResponse(General.settings())
