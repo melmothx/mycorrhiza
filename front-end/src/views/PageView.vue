@@ -7,7 +7,7 @@
   <NavBar />
   <main class="flex-grow">
     <div class="m-1 md:m-5">
-      <PageView :page_id="$route.params.id" />
+      <PageView :key="$route.params.id" :page_id="$route.params.id" />
     </div>
   </main>
   <NavFooter />
