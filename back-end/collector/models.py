@@ -558,9 +558,13 @@ class Site(models.Model):
 
 class Agent(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    description = models.TextField()
+    first_name = models.CharField(max_length=255, default="", blank=True)
+    middle_name = models.CharField(max_length=255, default="", blank=True)
+    last_name = models.CharField(max_length=255, default="", blank=True)
+    date_of_birth  = models.IntegerField(null=True)
+    date_of_death  = models.IntegerField(null=True)
+    place_of_birth = models.CharField(max_length=255, blank=True, null=True)
+    place_of_death = models.CharField(max_length=255, blank=True, null=True)
     viaf_identifier = models.BigIntegerField(null=True)
     canonical_agent = models.ForeignKey(
         'self',
@@ -577,7 +581,9 @@ class Agent(models.Model):
     def as_api_dict(self, get_canonical=False):
         out = {}
         public_columns = [
-            "id", "name", "first_name", "last_name", "description",
+            "id", "name", "first_name", "middle_name", "last_name",
+            "date_of_birth", "place_of_birth",
+            "date_of_death", "place_of_death",
             "canonical_agent_id", "viaf_identifier"
         ]
         for f in public_columns:

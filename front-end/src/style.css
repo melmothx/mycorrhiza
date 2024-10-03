@@ -98,6 +98,9 @@
         hover:bg-gradient-to-tr hover:from-cab-sav-800 hover:to-cab-sav-700
               font-semibold text-white;
     }
+    .mcrz-href-primary {
+        @apply text-spectra-800 hover:text-spectra-600 font-semibold;
+    }
     .mcrz-radio {
         @apply text-old-copper-800 focus:ring-old-copper-800 focus:ring-0 active:ring-0;
     }

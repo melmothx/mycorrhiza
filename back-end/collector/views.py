@@ -859,7 +859,12 @@ def api_agent(request, agent_id):
                 out['error'] = "Invalid JSON!";
 
             if data:
-                cols = ("first_name", "last_name", "description", "viaf_identifier")
+                cols = ("first_name",
+                        "middle_name",
+                        "last_name",
+                        "date_of_birth", "place_of_birth",
+                        "date_of_death", "place_of_death",
+                        "viaf_identifier")
                 for c in cols:
                     setattr(agent, c, data.get(c))
                 agent.save()

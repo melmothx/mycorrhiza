@@ -14,6 +14,7 @@
              edited: false,
              show_editing: false,
              agent_editable_data: {},
+             display_details: {},
          }
      },
      components: {
@@ -50,6 +51,7 @@
                       this.agent_editable_data = res.data.agent;
                       if (res.data.agent) {
                           this.show_editing = false;
+                          this.display_details = { ...this.agent_editable_data };
                       }
                   })
                   .catch(error => {
@@ -67,6 +69,9 @@
              }
          },
      },
+     mounted() {
+         this.display_details = { ...this.agent };
+     }
  }
 </script>
 <template>
@@ -79,39 +84,35 @@
         <h2 class="font-bold">{{ agent.name }}</h2>
       </a>
     </div>
-    <div v-if="edited && !show_editing">
-      <div v-if="agent_editable_data.first_name">
-        {{ $gettext('First Name: %1', agent_editable_data.first_name) }}
-      </div>
-      <div v-if="agent_editable_data.last_name">
-        {{ $gettext('Last Name: %1', agent_editable_data.last_name) }}
-      </div>
-      <div v-if="agent_editable_data.description" class="my-2" >
-        {{ agent_editable_data.description }}
-      </div>
-      <div v-if="agent_editable_data.viaf_identifier">
-        {{ $gettext('VIAF: %1', agent_editable_data.viaf_identifier) }}
-      </div>
-      <div v-if="agent_editable_data.canonical" class="font-bold text-gray-500">
-        {{ $gettext('See “%1”', agent_editable_data.canonical.name) }}
-      </div>
+    <div v-if="display_details.date_of_birth || display_details.date_of_death">
+      (<span v-if="display_details.date_of_birth">
+      <span v-if="display_details.place_of_birth">{{ display_details.place_of_birth }}&nbsp;</span>
+      <span>{{ display_details.date_of_birth }}</span>
+      </span>
+      <span>&nbsp;—&nbsp;</span>
+     <span v-if="display_details.date_of_death">
+      <span v-if="display_details.place_of_death">{{ display_details.place_of_death }}&nbsp;</span>
+      <span>{{ display_details.date_of_death }}</span>
+      </span>)
     </div>
-    <div v-else>
-      <div v-if="agent.first_name">
-        {{ $gettext('First Name: %1', agent.first_name) }}
-      </div>
-      <div v-if="agent.last_name">
-        {{ $gettext('Last Name: %1', agent.last_name) }}
-      </div>
-      <div v-if="agent.description" class="my-2" >
-        {{ agent.description }}
-      </div>
-      <div v-if="agent.viaf_identifier">
-        {{ $gettext('VIAF: %1', agent.viaf_identifier) }}
-      </div>
-      <div v-if="agent.canonical" class="font-bold text-gray-500">
-        {{ $gettext('See “%1”', agent.canonical.name) }}
-      </div>
+    <div v-if="display_details.first_name">
+      {{ $gettext('First Name: %1', display_details.first_name) }}
+    </div>
+    <div v-if="display_details.middle_name">
+      {{ $gettext('Middle Name: %1', display_details.middle_name) }}
+    </div>
+    <div v-if="display_details.last_name">
+      {{ $gettext('Last Name: %1', display_details.last_name) }}
+    </div>
+    <div v-if="display_details.viaf_identifier">
+      <a class="mcrz-href-primary"
+         target="_blank"
+         :href="`https://viaf.org/viaf/${display_details.viaf_identifier}/`">
+        {{ $gettext('VIAF: %1', display_details.viaf_identifier) }}
+      </a>
+    </div>
+    <div v-if="display_details.canonical" class="font-bold text-gray-500">
+      {{ $gettext('See “%1”', display_details.canonical.name) }}
     </div>
     <div class="flex" v-if="!agent.canonical && can_edit">
       <span @click="edit_agent" class="text-spectra-600
@@ -130,26 +131,84 @@
     </div>
     <div v-if="show_editing">
       <form @submit.prevent="update_agent">
-        <div>
-          <label class="mcrz-label" :for="`agent-first-name-${agent.id}`">{{ $gettext('First Name') }}</label>
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_first_name_${agent.id}`">
+            {{ $gettext('First Name') }}</label>
           <div class="flex">
-            <input :id="`agent-first-name-${agent.id}`" class="mcrz-input" v-model="agent_editable_data.first_name" />
+            <input class="mcrz-input"
+                   v-model="agent_editable_data.first_name"
+                   :id="`agent_first_name_${agent.id}`" />
           </div>
         </div>
-        <div>
-          <label class="mcrz-label" :for="`agent-last-name-${agent.id}`">{{ $gettext('Last Name') }}</label>
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_middle_name_${agent.id}`">
+            {{ $gettext('Middle Name') }}</label>
           <div class="flex">
-            <input :id="`agent-last-name-${agent.id}`" class="mcrz-input" v-model="agent_editable_data.last_name" />
+            <input class="mcrz-input"
+                   v-model="agent_editable_data.middle_name"
+                   :id="`agent_middle_name_${agent.id}`" />
           </div>
         </div>
-        <div>
-          <label class="mcrz-label" :for="`agent-description-${agent.id}`">{{ $gettext('Description') }}</label>
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_last_name_${agent.id}`">
+            {{ $gettext('Last Name') }}</label>
           <div class="flex">
-            <textarea class="mcrz-input" v-model="agent_editable_data.description"
-                      :id="`agent-description-${agent.id}`"></textarea>
+            <input class="mcrz-input"
+                   v-model="agent_editable_data.last_name"
+                   :id="`agent_last_name_${agent.id}`" />
           </div>
         </div>
-        <div>
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_place_of_birth_${agent.id}`">
+            {{ $gettext('Place of Birth') }}</label>
+          <div class="flex">
+            <input class="mcrz-input"
+                   v-model="agent_editable_data.place_of_birth"
+                   :id="`agent_place_of_birth_${agent.id}`" />
+          </div>
+        </div>
+
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_date_of_birth_${agent.id}`">
+            {{ $gettext('Date of Birth') }}</label>
+          <div class="flex">
+            <input class="mcrz-input"
+                   type="number" :max="new Date().getFullYear()" step="1"
+                   v-model="agent_editable_data.date_of_birth"
+                   :id="`agent_date_of_birth_${agent.id}`" />
+          </div>
+        </div>
+
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_place_of_death_${agent.id}`">
+            {{ $gettext('Place of Death') }}</label>
+          <div class="flex">
+            <input class="mcrz-input"
+                   v-model="agent_editable_data.place_of_death"
+                   :id="`agent_place_of_death_${agent.id}`" />
+          </div>
+        </div>
+
+        <div class="mt-1">
+          <label class="mcrz-label"
+                 :for="`agent_date_of_death_${agent.id}`">
+            {{ $gettext('Date of Death') }}</label>
+          <div class="flex">
+            <input class="mcrz-input"
+                   type="number" :max="new Date().getFullYear()" step="1"
+                   v-model="agent_editable_data.date_of_death"
+                   :id="`agent_date_of_death_${agent.id}`" />
+          </div>
+        </div>
+
+
+        <div class="mt-1">
           <label class="mcrz-label" :for="`agent-first-name-${agent.id}`">{{ $gettext('VIAF Identifier') }}</label>
           <div class="flex">
             <input type="number"
