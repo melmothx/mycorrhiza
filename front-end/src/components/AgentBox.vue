@@ -84,6 +84,17 @@
         <h2 class="font-bold">{{ agent.name }}</h2>
       </a>
     </div>
+    <div v-if="display_details.date_of_birth || display_details.date_of_death">
+      (<span v-if="display_details.date_of_birth">
+      <span v-if="display_details.place_of_birth">{{ display_details.place_of_birth }}&nbsp;</span>
+      <span>{{ display_details.date_of_birth }}</span>
+      </span>
+      <span>&nbsp;—&nbsp;</span>
+     <span v-if="display_details.date_of_death">
+      <span v-if="display_details.place_of_death">{{ display_details.place_of_death }}&nbsp;</span>
+      <span>{{ display_details.date_of_death }}</span>
+      </span>)
+    </div>
     <div v-if="display_details.first_name">
       {{ $gettext('First Name: %1', display_details.first_name) }}
     </div>
