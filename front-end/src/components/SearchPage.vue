@@ -6,12 +6,13 @@
  import SingleFilterBox from './SingleFilterBox.vue'
  import axios from 'axios'
  import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from '@headlessui/vue'
- import { ChevronUpDownIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid'
+ import { ChevronUpDownIcon, XCircleIcon, XMarkIcon, ListBulletIcon } from '@heroicons/vue/24/solid'
  export default {
      components: {
          Listbox, ListboxButton, ListboxOptions, ListboxOption,
          FacetBox, EntryBox, PaginationBox, MergeBox,
          ChevronUpDownIcon, XCircleIcon, XMarkIcon,
+         ListBulletIcon,
          SingleFilterBox,
      },
      data() {
@@ -348,8 +349,10 @@
                 :values="facets.creator.values"
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter">
-              <router-link :to="{ name: 'agent_overview' }" class="hover:text-old-copper-200">
+              <router-link :to="{ name: 'agent_overview' }" class="hover:underline flex">
+                <span class="flex-grow"></span>
                 {{ $gettext('Authors') }}
+                <ListBulletIcon class="h-4 w-4 ml-1 mt-px" />
               </router-link>
             </FacetBox>
           </div>
@@ -361,8 +364,10 @@
                 :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
                 @refetch-results="getResults({ update_facets: 1 })">
-              <router-link :to="{ name: 'library_overview' }" class="hover:text-old-copper-200">
+              <router-link :to="{ name: 'library_overview' }" class="hover:underline flex">
+                <span class="flex-grow"></span>
                 {{ $gettext('Libraries') }}
+                <ListBulletIcon class="h-4 w-4 ml-1 mt-px" />
               </router-link>
             </FacetBox>
           </div>
