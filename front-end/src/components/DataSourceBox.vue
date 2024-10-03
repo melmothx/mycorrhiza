@@ -81,7 +81,7 @@
         </router-link>
       </h4>
     </div>
-    <div v-if="source.authors && source.authors.length" class="p-2 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
+    <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100">
       <div v-for="author in source.authors" :key="author">
         {{ author }}
       </div>

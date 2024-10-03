@@ -69,7 +69,7 @@
 }
 
 .mcrz-micro-badge {
-    @apply border whitespace-nowrap text-[12px] p-px m-1 leading-8 rounded;
+    @apply border whitespace-nowrap text-[12px] py-px px-1 m-1 leading-8 rounded;
 }
 .mcrz-library-physical {
     @apply border-claret-600 text-claret-600 hover:text-claret-900 hover:border-claret-900;

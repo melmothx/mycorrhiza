@@ -36,11 +36,11 @@
  }
 </script>
 <template>
-  <div class="mb-6 font-serif bg-perl-bush-50 shadow-md">
+  <div class="mb-6 font-serif bg-perl-bush-50 shadow-md rounded-tl-2xl">
     <div>
       <div v-if="record.creator"
-           class="py-1 bg-gradient-to-t from-vanilla-ice-200 to-vanilla-ice-300 text-claret-900">
-        <div v-for="author in record.creator" :key="author.id" class="flex flex-wrap">
+           class="py-1">
+        <div v-for="author in record.creator" :key="author.id" class="flex flex-wrap border-b border-old-copper-100">
           <div class="flex-grow px-3">
             {{ author.value }}
           </div>
