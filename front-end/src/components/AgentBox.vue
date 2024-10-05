@@ -71,7 +71,20 @@
      },
      mounted() {
          this.display_details = { ...this.agent };
-     }
+     },
+     computed: {
+         full_name() {
+             const details = this.display_details;
+             const full_name_pieces = [ details.first_name, details.middle_name, details.last_name ];
+             const full_name = full_name_pieces.filter((w) => w).join(" ");
+             if (full_name != this.agent.name) {
+                 return full_name;
+             }
+             else {
+                 return "";
+             }
+         }
+     },
  }
 </script>
 <template>
@@ -84,6 +97,17 @@
         <h2 class="font-bold">{{ agent.name }}</h2>
       </a>
     </div>
+    <div v-if="full_name">
+      <span class="pr-1" v-if="display_details.first_name">
+        {{ display_details.first_name }}
+      </span>
+      <span class="pr-1" v-if="display_details.middle_name">
+        {{ display_details.middle_name }}
+      </span>
+      <span class="pr-1" v-if="display_details.last_name">
+        {{ display_details.last_name }}
+      </span>
+    </div>
     <div v-if="display_details.date_of_birth || display_details.date_of_death">
       (<span v-if="display_details.date_of_birth">
       <span v-if="display_details.place_of_birth">{{ display_details.place_of_birth }}&nbsp;</span>
@@ -94,15 +118,6 @@
       <span v-if="display_details.place_of_death">{{ display_details.place_of_death }}&nbsp;</span>
       <span>{{ display_details.date_of_death }}</span>
       </span>)
-    </div>
-    <div v-if="display_details.first_name">
-      {{ $gettext('First Name: %1', display_details.first_name) }}
-    </div>
-    <div v-if="display_details.middle_name">
-      {{ $gettext('Middle Name: %1', display_details.middle_name) }}
-    </div>
-    <div v-if="display_details.last_name">
-      {{ $gettext('Last Name: %1', display_details.last_name) }}
     </div>
     <div v-if="display_details.viaf_identifier">
       <a class="mcrz-href-primary"
@@ -115,7 +130,7 @@
       {{ $gettext('See “%1”', display_details.canonical.name) }}
     </div>
     <div class="flex" v-if="!agent.canonical && can_edit">
-      <span @click="edit_agent" class="text-spectra-600
+      <span @click="edit_agent" class="text-spectra-600 cursor-pointer
                    hover:text-spectra-800
                    focus:text-spectra-800">
         <PencilSquareIcon class="w-4 h-4 my-1 mr-2" />
@@ -175,7 +190,7 @@
         <div class="mt-1">
           <label class="mcrz-label"
                  :for="`agent_date_of_birth_${agent.id}`">
-            {{ $gettext('Date of Birth') }}</label>
+            {{ $gettext('Year of Birth') }}</label>
           <div class="flex">
             <input class="mcrz-input"
                    type="number" :max="new Date().getFullYear()" step="1"
@@ -198,7 +213,7 @@
         <div class="mt-1">
           <label class="mcrz-label"
                  :for="`agent_date_of_death_${agent.id}`">
-            {{ $gettext('Date of Death') }}</label>
+            {{ $gettext('Year of Death') }}</label>
           <div class="flex">
             <input class="mcrz-input"
                    type="number" :max="new Date().getFullYear()" step="1"

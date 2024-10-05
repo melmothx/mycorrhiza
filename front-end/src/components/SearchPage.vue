@@ -416,7 +416,7 @@
       </div>
       <div>
         <div v-for="sf in single_filter_boxes">
-          <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" />
+          <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" :editable="can_merge" />
         </div>
         <div v-if="can_merge" class="sticky top-5">
           <div id="author-cards" class="mb-2">
