@@ -1395,6 +1395,11 @@ class ChangeLog(models.Model):
     object_data = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     # last_modified = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = "Changelogs"
+
+    def __str__(self):
+        return "{} {} {}".format(self.username, self.operation, self.comment)
 
 # main router for user operations which need logging.
 def manipulate(op, user, main_id, *ids, create=None):
