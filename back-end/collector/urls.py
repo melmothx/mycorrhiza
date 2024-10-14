@@ -32,4 +32,6 @@ urlpatterns = [
 
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
     path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),
+    path("confirm-existence/<int:library_id>/<token>",
+         views.confirm_existence, name="confirm_existence"),
 ]

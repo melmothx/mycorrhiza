@@ -889,3 +889,20 @@ def api_view_page(request, page_id):
 
 def api_general(request):
     return JsonResponse(General.settings())
+
+def confirm_existence(request, library_id, token):
+    reply = ""
+    library = None
+    try:
+        library = Library.objects.get(pk=library_id)
+    except Library.DoesNotExist:
+        reply = "This library does not exist"
+    if library:
+        if library.check_token and library.check_token == token:
+            library.last_check = datetime.now(timezone.utc)
+            library.check_token = ''
+            library.save()
+            reply = "Thanks for confirming"
+        else:
+            reply = "Wrong token"
+    return HttpResponse(reply, content_type="text/plain")
