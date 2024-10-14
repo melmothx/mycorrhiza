@@ -859,6 +859,7 @@ def api_agent(request, agent_id):
                 out['error'] = "Invalid JSON!";
 
             if data:
+                log_user_operation(request.user, 'before-update-agent', agent, None)
                 cols = ("first_name",
                         "middle_name",
                         "last_name",
@@ -868,6 +869,7 @@ def api_agent(request, agent_id):
                 for c in cols:
                     setattr(agent, c, data.get(c))
                 agent.save()
+                log_user_operation(request.user, 'after-update-agent', agent, None)
 
         out['agent'] = agent.as_api_dict(get_canonical=False)
     else:

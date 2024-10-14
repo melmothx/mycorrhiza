@@ -23,6 +23,7 @@ def log_user_operation(user, op, canonical, alias):
     if user and op and canonical:
         canonical_title = "canonical"
         alias_title = "alias"
+        canonical_data = None
         if "translation" in op:
             canonical_title = "original"
             alias_title = "translation"
@@ -32,7 +33,11 @@ def log_user_operation(user, op, canonical, alias):
         elif "exclusion" in op:
             canonical_title = "excluded"
             alias_title = "excluded"
-
+        elif op.startswith("before-update-") or op.startswith("after-update-"):
+            canonical_title = op
+            canonical_data = canonical.as_api_dict()
+            if alias:
+                raise Exception("Alias argument should be None for {}".format(op))
 
         if alias:
             comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
@@ -51,6 +56,7 @@ def log_user_operation(user, op, canonical, alias):
             username=user.username,
             operation=op,
             comment=comment,
+            object_data=canonical_data,
         )
 
 class Library(models.Model):
@@ -1386,6 +1392,7 @@ class ChangeLog(models.Model):
     exclusion = models.ForeignKey(Exclusion, null=True, on_delete=models.SET_NULL, related_name="changelogs")
     operation = models.CharField(max_length=64)
     comment = models.TextField()
+    object_data = models.JSONField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     # last_modified = models.DateTimeField(auto_now=True)
 
