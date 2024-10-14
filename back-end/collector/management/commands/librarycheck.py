@@ -32,7 +32,7 @@ class Command(BaseCommand):
                 lib.check_token = token_urlsafe(16)
                 lib.save()
                 url = reverse('confirm_existence', args=[lib.id, lib.check_token])
-                send_mail("{}: please confirm you are monitoring this email",
+                send_mail("{}: please confirm you are monitoring this email".format(site_name),
                           "Please visit {}{} to confirm it".format(settings.CANONICAL_ADDRESS, url),
                           settings.MYCORRHIZA_EMAIL_FROM,
                           [ recipient ])
