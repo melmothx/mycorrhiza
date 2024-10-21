@@ -39,9 +39,9 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
     <div class="m-1" v-for="library in libraries">
       <LibraryBox :library="library">
-        <router-link class="font-bold text-xl"
+        <router-link class="font-bold"
                      :to="{ name: 'library_view', params: { id: library.id } }">
-          <h2 class="font-bold mb-1 text-xl">
+          <h2 class="font-bold mb-1">
             <span :class="`mcrz-library-${library.library_type || 'digital'}`">
               {{ library.name }}
             </span>

@@ -7,19 +7,20 @@
 </script>
 <template>
   <div class="mcrz-text-box" v-if="library">
+    <div v-if="library.logo_url">
+      <img class="py-1 max-h-12 mx-auto mb-2"
+           :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
+    </div>
     <slot>
-      <h1 class="font-bold text-xl mb-2">{{ library.name }}</h1>
+      <h1 class="font-bold">{{ library.name }}</h1>
     </slot>
     <div class="my-1" v-if="library.url">
-      <a class="text-claret-900 font-bold hover:text-claret-700"
+      <a class="text-sm text-claret-900 font-bold hover:text-claret-700"
          target="_blank"
          :title="$gettext('Visit Library Homepage')"
          :href="library.url">
         {{ library.url }}
       </a>
-    </div>
-    <div v-if="library.logo_url">
-      <img class="py-1 max-h-64" :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
     </div>
     <div v-if="library.established" class="font-bold my-1">
       {{ $gettext('Project established in %1', library.established) }}
@@ -70,14 +71,14 @@
           {{ library.short_desc }}
         </p>
       </div>
-      <div class="my-4">
-        <router-link class="btn-primary p-1" :to="{ name: 'library_view', params: { id: library.id } }">
+      <div class="my-4 text-sm">
+        <router-link class="btn-primary py-1 px-2" :to="{ name: 'library_view', params: { id: library.id } }">
           {{ $gettext('Library details') }}
         </router-link>
       </div>
     </div>
-    <div v-if="!short" class="my-4">
-      <a class="btn-primary p-1"
+    <div v-if="!short" class="my-4 text-sm">
+      <a class="btn-primary py-1 px-2"
          :href="`/library/entries/${library.id}`">
         {{ $gettext('See the library entries') }}
       </a>
