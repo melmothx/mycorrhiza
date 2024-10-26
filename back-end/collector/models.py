@@ -316,7 +316,7 @@ class Site(models.Model):
         set_last_harvested = True
         if last_harvested and not force:
             opts['from'] = last_harvested
-        elif self.oai_set:
+        if self.oai_set:
             opts['set'] = self.oai_set
 
         xapian_records = []
