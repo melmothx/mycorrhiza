@@ -131,8 +131,8 @@ def search(db_path, query_params,
         sort_by = None
         logger.debug("Sorting by relevance (default)")
     else:
-        sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
-        sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
+        sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['datestamp'])[0]
+        sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['desc'])
         logger.debug("Sorting by " + str(sort_by) + " " + str(sort_dir))
         enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
 
