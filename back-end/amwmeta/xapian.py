@@ -127,13 +127,14 @@ def search(db_path, query_params,
     logger.debug(query)
     enquire.set_query(query)
 
-    if SORTABLE_FIELDS.get(query_params.get('sort_by')):
+    if facets_only or query_params.get('sort_by', '') == 'relevance':
+        sort_by = None
+        logger.debug("Sorting by relevance (default)")
+    else:
         sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['title'])[0]
         sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['asc'])
-        logger.info("Sorting by " + str(sort_by) + " " + str(sort_dir))
+        logger.debug("Sorting by " + str(sort_by) + " " + str(sort_dir))
         enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
-    # otherwise keep the default ordering, decreasing relevance score
-
 
     matches = []
     facets = {}
