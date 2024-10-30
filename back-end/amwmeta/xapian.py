@@ -191,19 +191,15 @@ def search(db_path, query_params,
         for facet in spy.values():
             # logger.debug(facet.term)
             for facet_structure in json.loads(facet.term.decode('utf-8')):
-                facet_value = facet_structure['value']
-                facet_active = False
-                if facet_value in active_facets[spy_name]:
-                    facet_active = True
+                facet_id = facet_structure['id']
 
-                if facet_value in facet_values:
-                    facet_values[facet_value]['count'] += facet.termfreq
+                if facet_id in facet_values:
+                    facet_values[facet_id]['count'] += facet.termfreq
                 else:
-                    facet_values[facet_value] = {
+                    facet_values[facet_id] = {
                         "id": facet_structure['id'],
-                        "term": str(facet_value),
+                        "term": str(facet_structure['value']),
                         "count": facet.termfreq,
-                        "active": facet_active,
                         "key": spy_name + str(facet_structure['id']),
                     }
 

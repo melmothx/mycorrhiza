@@ -219,12 +219,17 @@ def api_search(request):
     )
     # mark the facets as active
     logger.debug('Filters:' + pp.pformat(res['filters']))
+    library_dict = { f['id']: f['name'] for f in Library.objects.values('id', 'name').all() }
+    # logger.debug(library_dict)
     for facet in facets.values():
         fname = facet.get('name')
         active_filters = [ str(f) for f in res['filters'].get(fname) ]
         for ft in facet.get('values'):
             if str(ft['id']) in active_filters:
                 ft['active'] = True
+            if fname == 'library':
+                ft['term'] = library_dict.get(ft['id'], ft['term'])
+
     res['facets'] = facets
 
     if user.is_authenticated and not user.is_superuser:
