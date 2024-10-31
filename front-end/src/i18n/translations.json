@@ -1,6 +1,12 @@
 {
    "de" : {
-      "Search results for %1: found %2 entry" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
          "plurals" : {
             "0" : "",
             "1" : ""
@@ -11,14 +17,27 @@
       "All entries (%1)" : {
          "msgstr" : "All entries (%1)"
       },
-      "Search results for %1: found %2 entry" : {
+      "Authors matching “%1” (%2 entry)" : {
          "plurals" : {
-            "0" : ""
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
          }
       }
    },
    "fr" : {
-      "Search results for %1: found %2 entry" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
          "plurals" : {
             "0" : "",
             "1" : ""
@@ -26,7 +45,14 @@
       }
    },
    "hr" : {
-      "Search results for %1: found %2 entry" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : "",
+            "2" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
          "plurals" : {
             "0" : "",
             "1" : "",
@@ -52,6 +78,12 @@
       },
       "Authors" : {
          "msgstr" : "Autori"
+      },
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
       },
       "Back" : {
          "msgstr" : "Indietro"
@@ -222,6 +254,12 @@
          "plurals" : {
             "0" : "Risultati di ricerca per %1: trovato %2 risultato",
             "1" : "Risultati di ricerca per %1: trovati %2 risultati"
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "Ricerca di “%1”: trovato %2 risultato",
+            "1" : "Ricerca di “%1”: trovati %2 risultati"
          }
       },
       "Set aggregations here" : {
