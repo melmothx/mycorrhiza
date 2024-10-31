@@ -17,16 +17,17 @@ pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
 # slot, prefix, boolean
-FIELD_MAPPING = {
-        'title':    (1, 'S',  False),
-        'creator':  (2, 'XA', True),
-        'date':     (4, 'XP', True),
-        'language': (5, 'L',  True),
-        'library':     (6, 'XH',  True),
-        'aggregate': (11, 'XG', True),
-        'download': (12, 'XD', True),
-        'translate': (13, 'XT', True),
-}
+FIELD_MAPPING = [
+        ( 'title',     1, 'S',   False, 'title'),
+        ( 'creator',   2, 'XA',  True,  None),
+        ( 'creator',   3, 'A',   False, 'author'),
+        ( 'date',      4, 'XP',  True,  None),
+        ( 'language',  5, 'L',   True,  None),
+        ( 'library',   6, 'XH',  True,  None),
+        ( 'aggregate', 11, 'XG', True,  None),
+        ( 'download',  12, 'XD', True,  None),
+        ( 'translate', 13, 'XT', True,  None),
+]
 # public prefix is 'P'
 
 SORTABLE_FIELDS = {
@@ -69,10 +70,11 @@ def search(db_path, query_params,
     queryparser.set_stemming_strategy(queryparser.STEM_NONE)
 
     for field in FIELD_MAPPING:
-        if FIELD_MAPPING[field][2]:
-            queryparser.add_boolean_prefix(field, FIELD_MAPPING[field][1])
-        else:
-            queryparser.add_prefix(field, FIELD_MAPPING[field][1])
+        # if boolean
+        if field[3]:
+            queryparser.add_boolean_prefix(field[0], field[2])
+        elif field[4]:
+            queryparser.add_prefix(field[4], field[2])
 
     excluded_libraries = { i[1]: True for i in exclusions if i[0] == 'library' }
     logger.debug("Excluded libraries: {}".format(excluded_libraries))
@@ -93,15 +95,16 @@ def search(db_path, query_params,
     if not matches_only:
         for field in FIELD_MAPPING:
             # booleans only
-            if FIELD_MAPPING[field][2]:
+            if field[3]:
+                field_name = field[0]
                 filters_ors = []
-                active_facets[field] = []
-                for value in query_params.getlist('filter_' + field):
+                active_facets[field_name] = []
+                for value in query_params.getlist('filter_' + field_name):
                     if value:
-                        filter_value = FIELD_MAPPING[field][1] + value.lower();
-                        logger.info("Filter value is " + filter_value)
+                        filter_value = field[2] + value.lower();
+                        logger.debug("Filter value is " + filter_value)
                         filters_ors.append(xapian.Query(filter_value))
-                        active_facets[field].append(value)
+                        active_facets[field_name].append(value)
                 if len(filters_ors):
                     filter_queries.append(xapian.Query(xapian.Query.OP_OR, filters_ors))
 
@@ -140,11 +143,11 @@ def search(db_path, query_params,
     facets = {}
     for field in FIELD_MAPPING:
         # boolean only
-        if FIELD_MAPPING[field][2]:
+        if field[3]:
             # use the slot
-            spy = xapian.ValueCountMatchSpy(FIELD_MAPPING[field][0])
+            spy = xapian.ValueCountMatchSpy(field[1])
             enquire.add_matchspy(spy)
-            spies[field] = spy
+            spies[field[0]] = spy
 
     start = (page_number - 1) * page_size
     mset = enquire.get_mset(start, page_size, db.get_doccount())
@@ -261,8 +264,9 @@ class MycorrhizaIndexer:
             doc.add_boolean_term('P0')
 
         for field in FIELD_MAPPING:
-            values = record.get(field)
-            slot, prefix, is_boolean = FIELD_MAPPING[field]
+            field_name, slot, prefix, is_boolean, search_prefix = field
+            values = record.get(field_name)
+
             if values:
                 value_list = []
                 for v in values:
