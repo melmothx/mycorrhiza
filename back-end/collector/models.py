@@ -725,7 +725,14 @@ class Entry(models.Model):
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
-                data_sources.append(ds)
+                try:
+                    library = Library.objects.values('id', 'name').get(pk=ds['library_id'])
+                    # make sure to use the current names
+                    ds['library_name'] = library.get('name', ds['library_name'])
+                    data_sources.append(ds)
+                except Library.DoesNotExist:
+                    pass
+
         out['data_sources'] = sorted(data_sources, key=lambda i: i.get('year_edition') or 0, reverse=True)
         return out
 
