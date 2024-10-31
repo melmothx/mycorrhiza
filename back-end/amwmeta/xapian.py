@@ -51,7 +51,6 @@ EXCLUSION_FIELDS = {
 def search(db_path, query_params,
            active_libraries=[],
            exclusions=[],
-           exclude_facets=[],
            facets_only=False,
            matches_only=False):
     db = xapian.Database(db_path)
@@ -193,10 +192,14 @@ def search(db_path, query_params,
     for spy_name in spies:
         spy = spies[spy_name]
         facet_values = {}
-        if spy_name in exclude_facets:
-            continue
+        spy_count = 0
         for facet in spy.values():
             # logger.debug(facet.term)
+            spy_count += 1
+            if spy_count > 50:
+                logger.debug("{}: too many facets, aborting".format(spy_name))
+                facet_values = {}
+                break
             for facet_structure in json.loads(facet.term.decode('utf-8')):
                 facet_id = facet_structure['id']
 
@@ -210,7 +213,7 @@ def search(db_path, query_params,
                         "key": spy_name + str(facet_structure['id']),
                     }
 
-        if len(facet_values):
+        if len(facet_values) > 1:
             facets[spy_name] = {
                 "name": spy_name,
                 "values": sorted(list(facet_values.values()), key=lambda el: (0 - el['count'], str(el['term']))),

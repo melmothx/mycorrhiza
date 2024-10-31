@@ -145,6 +145,15 @@
                               })
                           }
                       }
+                      const qre = /\b(library|creator):([0-9]+)\b/g;
+                      let match;
+                      while ((match = qre.exec(res.data.querystring)) !== null) {
+                          console.log(match);
+                          this.single_filter_boxes.push({
+                              name: match[1],
+                              id: match[2],
+                          })
+                      }
                       this.pager = res.data.pager;
                       this.total_entries = res.data.total_entries;
                       this.can_merge = res.data.can_merge;
@@ -237,7 +246,7 @@
   <form class="m-1 md:m-5" @submit.prevent="refine">
     <h1 v-if="search_was_run" class="text-xl text-center font-semibold mt-8 mb-2">
       <template v-if="searched_query">
-        {{ $ngettext("Search results for %1: found %2 entry", "Search results for %1: found %2 entries", total_entries, searched_query, total_entries) }}
+        {{ $ngettext("Search results for “%1”: found %2 entry", "Search results for “%1”: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
       <template v-else>
         {{ $gettext('All entries (%1)', total_entries) }}
