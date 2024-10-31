@@ -12,47 +12,34 @@
              search_string: "",
              agents: [],
              error: null,
+             warning: "",
              can_merge: false,
-             all_agents: [],
+             matches: 0,
          }
      },
      methods: {
          get_agents() {
-             axios.get('/collector/api/agents')
-                  .then(res => {
-                      this.error = null;
-                      this.can_merge = res.data.can_merge;
-                      this.all_agents = res.data.agents;
-                      this.filter_by_search();
-                      console.log(res.data.can_merge);
-                  })
-                  .catch(error => {
-                      this.error = error;
-                  });
-         },
-         filter_by_search() {
+             this.error = null;
              if (this.search_string) {
-                 const search = this.search_string.toLowerCase();
-                 const fields = ['fname', 'lname', 'name'];
-                 this.agents = this.all_agents.filter((el) => {
-                     for (const f of fields) {
-                         if (el[f] && el[f].toString().toLowerCase().includes(search)) {
-                             return true;
-                         }
-                     }
-                     let canonical = el.canonical;
-                     if (canonical) {
-                         for (const f of fields) {
-                             if (canonical[f] && canonical[f]
-                                 .toString().toLowerCase().includes(search)) {
-                                 return true;
-                             }
-                         }
-                     }
-                 });
+                 axios.get('/collector/api/agents',
+                           { params: { 'search': this.search_string } })
+                      .then(res => {
+                          this.can_merge = res.data.can_merge;
+                          this.agents = [];
+                          this.agents = res.data.agents;
+                          this.matches = res.data.matches;
+                          this.warning = res.data.warning;
+                      })
+                      .catch(error => {
+                          this.error = error;
+                      });
              }
              else {
-                 this.agents = this.all_agents.filter(() => true);
+                 console.log("get_agents called without a search");
+                 this.error = null;
+                 this.agents = [];
+                 this.matches = 0;
+                 this.warning = "Please search";
              }
          },
      },
@@ -67,28 +54,35 @@
   </div>
   <div class="grid grid-cols-[auto_300px] gap-2">
     <div>
-      <h1 class="font-bold text-4xl text-center my-4">
+      <h1 class="font-bold text-xl text-center my-4">
         <span v-if="search_string">
-          {{ $gettext('Authors matching %1', search_string) }}
+          {{ $ngettext("Authors matching “%1” (%2 entry)", "Authors matching “%1” (%2 entries)", matches, search_string, matches) }}
         </span>
         <span v-else>
           {{ $gettext('Authors') }}
         </span>
       </h1>
+      <div v-if="warning" class="font-bold text-center my-2">
+        {{ warning }}
+      </div>
+      <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8 my-8">
+        <input class="mcrz-input shadow w-full my-1 sm:my-0"
+               v-model="search_string"
+               @input="get_agents"
+               :placeholder="$gettext('Type here to search authors')">
+        <button
+            class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10 w-full sm:w-auto"
+            type="button"
+            @click="get_agents">{{ $gettext('Search') }}</button>
+      </div>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-2">
-        <div class="m-1" v-for="agent in agents">
-          <AgentBox :key="agent.id" :agent="agent" :can_edit="can_merge" />
+        <div class="m-1" v-for="agent in agents" :key="agent.id">
+          <AgentBox :key="`${agent.id}${agent.canonical}`" :agent="agent" :can_edit="can_merge" />
         </div>
       </div>
     </div>
     <div>
       <div class="mt-16 pt-2 top-4 sticky">
-        <div class="flex">
-          <input class="mcrz-input"
-                 v-model="search_string"
-                 @input="filter_by_search"
-                 :placeholder="$gettext('Type here to search authors')">
-        </div>
         <div v-if="can_merge">
           <div id="author-cards" class="my-1">
             <MergeBox merge_type="author"

@@ -848,13 +848,23 @@ def api_show_library(request, library_id):
     return JsonResponse({ "library": library })
 
 def api_list_agents(request):
-    data = []
-    for agent in Agent.objects.prefetch_related('canonical_agent').order_by('name').all():
-        data.append(agent.as_api_dict(get_canonical=True))
-    return JsonResponse({
-        "agents": data,
+    term = request.GET.get('search')
+    out = {
+        "agents": [],
         "can_merge": user_can_merge(request.user),
-    })
+        "warning": "",
+        "matches": 0
+    }
+    if term:
+        rs = Agent.objects.prefetch_related('canonical_agent').order_by('name').filter(name__icontains=term)
+        out['matches'] = rs.count()
+        if out['matches'] > 100:
+            out['warning'] = "Too many results, continue searching"
+        else:
+            out['agents'] = [ agent.as_api_dict(get_canonical=True) for agent in rs.all() ]
+    else:
+        out['error'] = "Please search for an author name"
+    return JsonResponse(out)
 
 @ensure_csrf_cookie
 def api_agent(request, agent_id):
