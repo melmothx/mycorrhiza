@@ -851,12 +851,20 @@ def api_list_agents(request):
         "matches": 0
     }
     if term:
-        rs = Agent.objects.prefetch_related('canonical_agent').order_by('name').filter(name__icontains=term)
-        out['matches'] = rs.count()
-        if out['matches'] > 100:
-            out['warning'] = "Too many results, continue searching"
+        words = [ w for w in re.split(r'\W+', term) if w ]
+        if words:
+            query = Q(name__icontains=words.pop())
+            while words:
+                query = query & Q(name__icontains=words.pop())
+            # logger.debug(query)
+            rs = Agent.objects.prefetch_related('canonical_agent').order_by('name').filter(query)
+            out['matches'] = rs.count()
+            if out['matches'] > 100:
+                out['warning'] = "Too many results, continue searching"
+            else:
+                out['agents'] = [ agent.as_api_dict(get_canonical=True) for agent in rs.all() ]
         else:
-            out['agents'] = [ agent.as_api_dict(get_canonical=True) for agent in rs.all() ]
+            out['error'] = "Please search for an author name"
     else:
         out['error'] = "Please search for an author name"
     return JsonResponse(out)
