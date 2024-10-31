@@ -1,6 +1,7 @@
 <script>
  import PaginationBox from './PaginationBox.vue'
  import FacetBox from './FacetBox.vue'
+ import FacetBoxHeader from './FacetBoxHeader.vue'
  import EntryBox  from './EntryBox.vue'
  import MergeBox from './MergeBox.vue'
  import SingleFilterBox from './SingleFilterBox.vue'
@@ -10,6 +11,7 @@
  export default {
      components: {
          Listbox, ListboxButton, ListboxOptions, ListboxOption,
+         FacetBoxHeader,
          FacetBox, EntryBox, PaginationBox, MergeBox,
          ChevronUpDownIcon, XCircleIcon, XMarkIcon,
          ListBulletIcon,
@@ -326,8 +328,9 @@
                 :use_sorting="true"
                 :values="facets.language.values"
                 :name="facets.language.name"
-                @toggle-app-filter="toggleFilter"
-            >{{ $gettext('Language') }}</FacetBox>
+                @toggle-app-filter="toggleFilter">
+              <FacetBoxHeader :title="$gettext('Language')" />
+            </FacetBox>
           </div>
           <div v-if="facets.creator" class="mb-3">
             <FacetBox
@@ -336,12 +339,11 @@
                 :values="facets.creator.values"
                 :name="facets.creator.name"
                 @toggle-app-filter="toggleFilter">
-              <router-link :to="{ name: 'agent_overview' }" class="hover:underline flex">
-                <span class="flex-grow"></span>
-                {{ $gettext('Authors') }}
-                <ListBulletIcon class="h-4 w-4 ml-1 mt-px" />
-              </router-link>
+              <FacetBoxHeader link_name="agent_overview" :title="$gettext('Authors')" />
             </FacetBox>
+          </div>
+          <div v-else class="mb-3">
+            <FacetBoxHeader link_name="agent_overview" :title="$gettext('Authors')" />
           </div>
           <div v-if="facets.library" class="mb-3">
             <FacetBox
@@ -351,12 +353,11 @@
                 :can_set_exclusions="can_set_exclusions"
                 @toggle-app-filter="toggleFilter"
                 @refetch-results="getResults({ update_facets: 1 })">
-              <router-link :to="{ name: 'library_overview' }" class="hover:underline flex">
-                <span class="flex-grow"></span>
-                {{ $gettext('Libraries') }}
-                <ListBulletIcon class="h-4 w-4 ml-1 mt-px" />
-              </router-link>
+              <FacetBoxHeader link_name="library_overview" :title="$gettext('Libraries')" />
             </FacetBox>
+          </div>
+          <div v-else class="mb-3">
+            <FacetBoxHeader link_name="library_overview" :title="$gettext('Libraries')" />
           </div>
           <div v-if="facets.date" class="mb-3">
             <FacetBox
@@ -364,7 +365,7 @@
                 :values="facets.date.values"
                 :name="facets.date.name"
                 @toggle-app-filter="toggleFilter">
-              {{ $gettext('Date') }}
+              <FacetBoxHeader :title="$gettext('Date')" />
             </FacetBox>
           </div>
           <div v-if="facets.download" class="mb-3">
@@ -373,16 +374,18 @@
                 :values="facets.download.values"
                 :name="facets.download.name"
                 @toggle-app-filter="toggleFilter"
-                :translate_values="true"
-            >{{ $gettext('Download Types') }}</FacetBox>
+                :translate_values="true">
+              <FacetBoxHeader :title="$gettext('Download Types')" />
+            </FacetBox>
           </div>
           <div v-if="facets.aggregate" class="mb-3">
             <FacetBox
                 :use_sorting="false"
                 :values="facets.aggregate.values"
                 :name="facets.aggregate.name"
-                @toggle-app-filter="toggleFilter"
-            >{{ $gettext('Aggregation') }}</FacetBox>
+                @toggle-app-filter="toggleFilter">
+              <FacetBoxHeader :title="$gettext('Aggregations')" />
+            </FacetBox>
           </div>
         </div>
       </div>

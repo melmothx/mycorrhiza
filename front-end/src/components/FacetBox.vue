@@ -48,11 +48,7 @@
 </script>
 <template>
   <div class="shadow-lg">
-    <div class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2">
-      <h2 class="font-semibold capitalize py-0 text-right text-white p-2 text-sm">
-        <slot>{{ name }}</slot>
-      </h2>
-    </div>
+    <slot>{{ name }}</slot>
     <div v-if="use_sorting"
          class="grid gap-2 grid-cols-1 lg:grid-cols-3 bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2">
       <div>
