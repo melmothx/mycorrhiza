@@ -51,6 +51,7 @@ EXCLUSION_FIELDS = {
 def search(db_path, query_params,
            active_libraries=[],
            exclusions=[],
+           exclude_facets=[],
            facets_only=False,
            matches_only=False):
     db = xapian.Database(db_path)
@@ -151,14 +152,15 @@ def search(db_path, query_params,
 
     start = (page_number - 1) * page_size
     mset = enquire.get_mset(start, page_size, db.get_doccount())
-    pager = DataPage(total_entries=mset.get_matches_estimated(),
+    total_entries = mset.get_matches_estimated()
+    pager = DataPage(total_entries=total_entries,
                      entries_per_page=page_size,
                      current_page=page_number)
     logger.info(pager)
 
     if not facets_only:
-        for match in mset:
-            fields = json.loads(match.document.get_data().decode('utf8'))
+        for matched in mset:
+            fields = json.loads(matched.document.get_data().decode('utf8'))
             rec = {}
             for field in fields:
                 values = fields.get(field)
@@ -191,6 +193,8 @@ def search(db_path, query_params,
     for spy_name in spies:
         spy = spies[spy_name]
         facet_values = {}
+        if spy_name in exclude_facets:
+            continue
         for facet in spy.values():
             # logger.debug(facet.term)
             for facet_structure in json.loads(facet.term.decode('utf-8')):

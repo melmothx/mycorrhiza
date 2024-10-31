@@ -208,6 +208,10 @@ def api_search(request):
     res['can_set_exclusions'] = user.is_superuser
     res['can_merge'] = user.is_superuser
 
+    exclude_facets = []
+    if res['total_entries'] > 200:
+        exclude_facets.append('creator')
+
     # use the facets from the base query
     base_query = QueryDict.fromkeys(["query"], value=res['querystring'])
     facets = search(
@@ -216,6 +220,7 @@ def api_search(request):
         active_libraries=active_libraries,
         exclusions=exclusions,
         facets_only=True,
+        exclude_facets=exclude_facets,
     )
     # mark the facets as active
     logger.debug('Filters:' + pp.pformat(res['filters']))
