@@ -100,7 +100,7 @@
         </div>
         <h3 class="italic px-3 pb-2" v-if="subtitle">{{ subtitle }}</h3>
         <div class="pb-2">
-          <LibraryBadges :data_sources="record.data_sources">
+          <LibraryBadges :data_sources="record.data_sources" :entry_id="record.entry_id">
           </LibraryBadges>
         </div>
       </div>

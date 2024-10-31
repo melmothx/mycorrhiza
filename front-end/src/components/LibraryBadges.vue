@@ -4,7 +4,7 @@
  const instance = Axios.create();
  const caxios = setupCache(instance)
  export default {
-     props: [ 'data_sources' ],
+     props: [ 'data_sources', 'entry_id' ],
      data() {
          return {
              libraries: [],
@@ -39,7 +39,7 @@
   <div class="mt-1 mx-2 flex flex-wrap">
     <span v-for="l in libraries">
       <router-link :class="`mcrz-micro-badge mcrz-library-${l.details.library_type || 'digital'}`"
-                   :to="{ name: 'library_view', params: { id: l.id } }">
+                   :to="{ name: 'entry', params: { id: entry_id }, hash: '#library-' + l.id }">
         {{ l.details.name }}
       </router-link>
     </span>

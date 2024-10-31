@@ -75,7 +75,7 @@
     <div v-else
          class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
       <h3 class="font-semibold text-white"><slot></slot></h3>
-      <h4 class="font-semibold text-white" v-if="!short">
+      <h4 class="font-semibold text-white" :id="`library-${source.library_id}`" v-if="!short">
         <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
           <span class="text-white">{{ source.library_name }}</span>
         </router-link>
@@ -140,14 +140,6 @@
             {{ source.publisher }}
           </td>
         </tr>
-        <tr class="border-b border-t p-2" v-if="source.identifier">
-          <td class="p-1 pr-2">
-            {{ $gettext('Identifier') }}
-          </td>
-          <td>
-            <code>{{ source.identifier }}</code>
-          </td>
-        </tr>
       </table>
       <div v-if="has_pdf_only()">
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
@@ -190,6 +182,9 @@
           <div class="full-text-container grid gap-4 grid-cols-[15em_1fr]"
                v-html="html"></div>
         </div>
+      </div>
+      <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
+        <code>{{ source.identifier }}</code>
       </div>
     </div>
   </div>

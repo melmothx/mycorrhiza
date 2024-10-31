@@ -11,6 +11,15 @@ import AgentOverView from '../views/AgentOverView.vue'
 import PageView from '../views/PageView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
+    scrollBehavior(to, from, savedPosition) {
+        if (to.hash) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve({ el: to.hash })
+                }, 500)
+            })
+        }
+    },
     routes: [
         {
             name: 'home',
