@@ -123,28 +123,6 @@
                       }
                       this.active_filters = [];
                       this.single_filter_boxes = [];
-                      for (const fn of [ 'library', 'language', 'creator', 'date', 'download', 'aggregate', ]) {
-                          let facet = res.data.facets[fn];
-                          let count = 0;
-                          if (facet) {
-                              for (const ff of res.data.facets[fn].values) {
-                                  if (ff.active) {
-                                      this.active_filters.push({
-                                          term: ff.term,
-                                          id: ff.id,
-                                          name: fn,
-                                      });
-                                      count++;
-                                  }
-                              }
-                          }
-                          if (count == 1) {
-                              let idx = this.active_filters.length - 1;
-                              this.single_filter_boxes.push({
-                                  ...this.active_filters[idx]
-                              })
-                          }
-                      }
                       const qre = /\b(library|creator):([0-9]+)\b/g;
                       let match;
                       while ((match = qre.exec(res.data.querystring)) !== null) {
