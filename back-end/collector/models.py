@@ -288,6 +288,7 @@ class Site(models.Model):
                 self.amusewiki_formats = r.json()
                 # for amusewikis, enforce the web set
                 self.oai_set = 'web'
+                self.oai_metadata_format = self.MARC21
                 self.save()
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
