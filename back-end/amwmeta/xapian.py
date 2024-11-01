@@ -213,7 +213,7 @@ def search(db_path, query_params,
                         "key": spy_name + str(facet_structure['id']),
                     }
 
-        if len(facet_values) > 1:
+        if len(facet_values):
             facets[spy_name] = {
                 "name": spy_name,
                 "values": sorted(list(facet_values.values()), key=lambda el: (0 - el['count'], str(el['term']))),
