@@ -154,7 +154,7 @@
                       this.total_entries = res.data.total_entries;
                       this.can_merge = res.data.can_merge;
                       this.can_set_exclusions = res.data.can_set_exclusions;
-                      this.searched_query = query.query;
+                      this.searched_query = res.data.pretty_query || query.query;
                   });
          },
          getResults(opts) {

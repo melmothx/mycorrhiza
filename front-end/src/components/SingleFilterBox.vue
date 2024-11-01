@@ -32,23 +32,7 @@
                  axios.get('/collector/api/agents/' + this.id)
                       .then(res => {
                           this.error = null;
-                          let agent = res.data.agent;
-                          if (this.editable) {
-                              this.agent = agent;
-                          }
-                          else {
-                              const material = [ "first_name", "middle_name", "last_name",
-                                                 "date_of_birth", "place_of_birth",
-                                                 "date_of_death", "place_of_death",
-                                                 "viaf_identifier"
-                              ];
-                              for (const value of material) {
-                                  if (agent[value]) {
-                                      this.agent = agent;
-                                      break;
-                                  }
-                              }
-                          }
+                          this.agent = res.data.agent;
                       })
                       .catch(error => {
                           this.error = error;

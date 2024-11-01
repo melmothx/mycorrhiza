@@ -237,6 +237,27 @@ def api_search(request):
         res['can_set_exclusions'] = True
         res['can_merge'] = user.can_merge_entries()
 
+    def replace_codes(m):
+        full, obj_name, obj_id = m.group(0, 1, 2)
+        obj = None
+        if obj_name == 'library':
+            try:
+                obj = Library.objects.get(pk=obj_id)
+            except Library.DoesNotExist:
+                pass
+        elif obj_name == 'creator':
+            try:
+                obj = Agent.objects.get(pk=obj_id)
+            except Library.DoesNotExist:
+                pass
+        if obj:
+            return "{} ({})".format(obj.name, full)
+        else:
+            return full
+
+    if res['querystring']:
+        res['pretty_query'] = re.sub(r'(creator|library):([0-9]+)', replace_codes, res['querystring'])
+
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
