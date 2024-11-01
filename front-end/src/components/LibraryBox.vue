@@ -3,6 +3,12 @@
  export default {
      components: { LinkIcon },
      props: [ "library", "full", "short" ],
+     methods: {
+         bare_url(url) {
+             console.log(url)
+             return url.replace(/https?:\/\//, '')
+         }
+     }
  }
 </script>
 <template>
@@ -19,7 +25,7 @@
          target="_blank"
          :title="$gettext('Visit Library Homepage')"
          :href="library.url">
-        {{ library.url }}
+        {{ bare_url(library.url) }}
       </a>
     </div>
     <div v-if="library.established" class="font-bold my-1">
