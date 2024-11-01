@@ -125,6 +125,22 @@
                       }
                       this.active_filters = [];
                       this.single_filter_boxes = [];
+                      for (const fn of [ 'library', 'language', 'creator', 'date', 'download', 'aggregate', ]) {
+                          let facet = res.data.facets[fn];
+                          let count = 0;
+                          if (facet) {
+                              for (const ff of res.data.facets[fn].values) {
+                                  if (ff.active) {
+                                      this.active_filters.push({
+                                          term: ff.term,
+                                          id: ff.id,
+                                          name: fn,
+                                      });
+                                      count++;
+                                  }
+                              }
+                          }
+                      }
                       const qre = /\b(library|creator):([0-9]+)\b/g;
                       let match;
                       while ((match = qre.exec(res.data.querystring)) !== null) {
