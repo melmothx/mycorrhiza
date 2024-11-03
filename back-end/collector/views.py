@@ -690,7 +690,10 @@ def api_listing(request, target):
 
     elif target == 'translations' and user_can_merge(request.user):
         translations = []
-        for entry in Entry.objects.filter(original_entry_id__isnull=False).all():
+        for entry in (Entry.objects.filter(original_entry_id__isnull=False)
+                      .prefetch_related('original_entry')
+                      .order_by('original_entry__title', 'title')
+                      .all()):
             apidata = entry.as_api_dict(get_original=True)
             if apidata.get('original'):
                 # flatten for the table
@@ -700,18 +703,18 @@ def api_listing(request, target):
                 apidata['original_languages'] = ' '.join(apidata['original']['languages'])
                 for f in ['id', 'title', 'created', 'last_modified', 'original']:
                     apidata['original_' + f] = apidata['original'][f]
+                for f in ['', 'original_']:
+                    if apidata[f + 'authors']:
+                        apidata[f + 'title'] = "{} — {}".format(apidata[f + 'title'], apidata[f + 'authors'])
                 translations.append(apidata)
-
             else:
                 logger.debug("Got an entry without a original? " + pp.pformat(apidata))
 
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
-            { 'name': 'authors', 'label': 'Authors' },
-            { 'name': 'title', 'label': 'Title' },
-            { 'name': 'original_id', 'label': 'Original ID', 'link': 'entry' },
-            { 'name': 'original_authors', 'label': 'Original Authors' },
             { 'name': 'original_title', 'label': 'Original Title' },
+            { 'name': 'original_id', 'label': 'Original ID', 'link': 'entry' },
+            { 'name': 'title', 'label': 'Title' },
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
         ]
         out['records'] = translations
 
@@ -721,7 +724,7 @@ def api_listing(request, target):
         for entry in (Entry.objects
                       .prefetch_related('canonical_entry')
                       .filter(canonical_entry_id__isnull=False)
-                      .order_by('canonical_entry__title')
+                      .order_by('canonical_entry__title', 'title')
                       .all()):
             apidata = entry.as_api_dict(get_canonical=True)
             if apidata.get('canonical'):
@@ -732,6 +735,9 @@ def api_listing(request, target):
                 apidata['canonical_languages'] = ' '.join(apidata['canonical']['languages'])
                 for f in ['id', 'title', 'created', 'last_modified', 'canonical']:
                     apidata['canonical_' + f] = apidata['canonical'][f]
+                for f in ['', 'canonical_']:
+                    if apidata[f + 'authors']:
+                        apidata[f + 'title'] = "{} — {}".format(apidata[f + 'title'], apidata[f + 'authors'])
                 merged.append(apidata)
 
             else:
@@ -739,11 +745,8 @@ def api_listing(request, target):
 
         out['fields'] = [
             { 'name': 'canonical_title', 'label': 'Canonical Title' },
-            { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
             { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'entry' },
-
             { 'name': 'title', 'label': 'Title' },
-            { 'name': 'authors', 'label': 'Authors' },
             { 'name': 'id', 'label': 'ID', 'link': 'entry' },
         ]
         out['records'] = merged
