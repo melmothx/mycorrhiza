@@ -20,6 +20,22 @@
          subtitle() {
              return this.record.title[1]['value'];
          },
+         is_translated() {
+             if (this.record.translate && this.record.translate.filter((e) => e.id == 'translated').length) {
+                 return true;
+             }
+             else {
+                 return false;
+             }
+         },
+         is_translation() {
+             if (this.record.translate && this.record.translate.filter((e) => e.id == 'translation').length) {
+                 return true;
+             }
+             else {
+                 return false;
+             }
+         },
      },
      methods: {
          drag_element(e, merge_type, id, label) {
