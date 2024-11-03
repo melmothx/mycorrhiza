@@ -85,6 +85,9 @@
              this.get_results(query, { update_facets: true });
          },
          searchText() {
+             if (this.query) {
+                 this.sort_by = this.sort_by_values.find((i) => i.id == 'relevance');
+             }
              let fresh = {
                  query: this.query,
                  sort_by: this.sort_by.id,
