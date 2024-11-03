@@ -158,6 +158,9 @@
                       this.can_merge = res.data.can_merge;
                       this.can_set_exclusions = res.data.can_set_exclusions;
                       this.searched_query = res.data.pretty_query || query.query;
+                      if (opts && opts.scroll) {
+                          document.getElementById('result-box').scrollIntoView({ behavior: "smooth" });
+                      }
                   });
          },
          getResults(opts) {
@@ -170,7 +173,7 @@
              let query = { ...this.$route.query };
              query.page_number = page;
              this.$router.push({ name: 'search', query: query });
-             this.get_results(query);
+             this.get_results(query, { scroll: true });
          },
          toggle_query_filter(name, term, checked) {
              console.log(`Toggling ${checked} ${name} ${term}`);
@@ -408,7 +411,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div id="result-box">
         <PaginationBox :pager="pager" @get-page="getPage" />
         <div class="mb-2">
           <template v-for="match in matches" :key="match.entry_id">
