@@ -267,11 +267,6 @@
     </div>
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
-        <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto"
-                @click="refine"
-                type="button">
-          {{ $gettext('Refine') }}
-        </button>
         <input class="mcrz-input shadow w-full my-1 sm:my-0"
                type="text" placeholder="Search" v-model="query"/>
         <Listbox v-model="sort_by">
@@ -330,7 +325,12 @@
             </transition>
           </div>
         </Listbox>
-        <button class="btn-primary rounded-none rounded-br-3xl h-8 pr-10 pl-4 pr-10 w-full sm:w-auto"
+        <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto sm:border-r"
+                @click="refine"
+                type="button">
+          {{ $gettext('Refine') }}
+        </button>
+        <button class="btn-primary rounded-none h-8 px-4 w-full  sm:w-auto sm:rounded-br-3xl sm:pr-10 sm:pl-4"
                 type="button"
                 @click="searchText">{{ $gettext('Search') }}</button>
       </div>
