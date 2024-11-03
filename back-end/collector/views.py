@@ -671,7 +671,7 @@ def api_listing(request, target):
     }
     if target == 'merged-agents' and user_can_merge(request.user):
         merged = []
-        for agent in Agent.objects.filter(canonical_agent_id__isnull=False).all():
+        for agent in Agent.objects.filter(canonical_agent_id__isnull=False).prefetch_related('canonical_agent').order_by('canonical_agent__name', 'name').all():
             apidata = agent.as_api_dict(get_canonical=True)
             if apidata.get('canonical'):
                 for f in ['id', 'name']:
@@ -679,10 +679,10 @@ def api_listing(request, target):
                 merged.append(apidata)
         out['records'] = merged
         out['fields'] = [
-            { 'name': 'id', 'label': 'Id' },
-            { 'name': 'name', 'label': 'Name' },
-            { 'name': 'canonical_id', 'label': 'Canonical ID' },
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'name', 'label': 'Name' },
+            { 'name': 'id', 'label': 'Id' },
         ]
 
     elif target == 'translations' and user_can_merge(request.user):
