@@ -92,10 +92,24 @@
                        :to="{name: 'entry', params: { id: record.entry_id } }">
             {{ title }}
           </router-link>
-          <div v-if="record.language" class="px-2">
-            <small class="px-2" v-for="l in record.language" :key="l.id">
-              [{{ l.value }}]
-            </small>
+          <div v-if="record.language">
+            <router-link :to="{name: 'entry', params: { id: record.entry_id } }">
+              <small class="px-2" v-for="l in record.language" :key="l.id">
+                <span v-if="is_translation"
+                      class="btn-primary p-1 rounded shadow-md"
+                      :title="$gettext('This text is a translation')">
+                  {{ l.value }}
+                </span>
+                <span v-else-if="is_translated"
+                      :title="$gettext('This text is translated')"
+                      class="btn-accent p-1 rounded shadow-md">
+                  {{ l.value }}
+                </span>
+                <span v-else>
+                  [{{ l.value }}]
+                </span>
+              </small>
+            </router-link>
           </div>
           <div v-if="can_merge">
             <span class="drag-el drag-title cursor-grab active:cursor-grabbing
