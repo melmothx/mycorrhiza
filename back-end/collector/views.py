@@ -671,7 +671,10 @@ def api_listing(request, target):
     }
     if target == 'merged-agents' and user_can_merge(request.user):
         merged = []
-        for agent in Agent.objects.filter(canonical_agent_id__isnull=False).prefetch_related('canonical_agent').order_by('canonical_agent__name', 'name').all():
+        for agent in (Agent.objects.filter(canonical_agent_id__isnull=False)
+                      .prefetch_related('canonical_agent')
+                      .order_by('canonical_agent__name', 'name')
+                      .all()):
             apidata = agent.as_api_dict(get_canonical=True)
             if apidata.get('canonical'):
                 for f in ['id', 'name']:
@@ -715,7 +718,11 @@ def api_listing(request, target):
 
     elif target == 'merged-entries' and user_can_merge(request.user):
         merged = []
-        for entry in Entry.objects.filter(canonical_entry_id__isnull=False).all():
+        for entry in (Entry.objects
+                      .prefetch_related('canonical_entry')
+                      .filter(canonical_entry_id__isnull=False)
+                      .order_by('canonical_entry__title')
+                      .all()):
             apidata = entry.as_api_dict(get_canonical=True)
             if apidata.get('canonical'):
                 # flatten for the table
@@ -731,12 +738,13 @@ def api_listing(request, target):
                 logger.debug("Got an entry without a canonical? " + pp.pformat(apidata))
 
         out['fields'] = [
-            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
-            { 'name': 'authors', 'label': 'Authors' },
-            { 'name': 'title', 'label': 'Title' },
-            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'entry' },
-            { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
             { 'name': 'canonical_title', 'label': 'Canonical Title' },
+            { 'name': 'canonical_authors', 'label': 'Canonical Authors' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'entry' },
+
+            { 'name': 'title', 'label': 'Title' },
+            { 'name': 'authors', 'label': 'Authors' },
+            { 'name': 'id', 'label': 'ID', 'link': 'entry' },
         ]
         out['records'] = merged
 
