@@ -1101,11 +1101,19 @@ class DataSource(models.Model):
         if site_type == 'amusewiki':
             amusewiki_url = self.amusewiki_base_url()
             if amusewiki_url:
+                cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
+                if self.datestamp and cache.exists():
+                    if cache.stat().st_mtime >= self.datestamp.timestamp():
+                        logger.info("Reusing cached content in {}".format(cache))
+                        return cache.read_text(encoding='UTF-8')
                 try:
                     r = requests.get(amusewiki_url + '.bare.html')
                     if r.status_code == 200:
                         r.encoding = 'UTF-8'
-                        return r.text
+                        out = r.text
+                        logger.info("Writing cache in {}".format(cache))
+                        cache.write_text(out, encoding='UTF-8')
+                        return out
                 except ConnectionError:
                     logger.info("GET {0} had a connection error".format(endpoint))
                 except Timeout:
