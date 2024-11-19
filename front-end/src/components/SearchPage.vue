@@ -221,6 +221,15 @@
          },
          no_op() {
          },
+         active_sort_by_values() {
+             if (this.query) {
+                 return this.sort_by_values.filter((f) => f.id != 'datestamp');
+             }
+             else {
+                 return this.sort_by_values;
+             }
+
+         },
      },
      mounted() {
          console.log("Mounted");
@@ -299,7 +308,7 @@
                 leave-from-class="transform scale-100 opacity-100"
                 leave-to-class="transform scale-95 opacity-0">
               <ListboxOptions class="mcrz-listbox-options">
-                <ListboxOption v-for="sv in sort_by_values"
+                <ListboxOption v-for="sv in active_sort_by_values()"
                                :value="sv" :key="sv.id"
                                class="cursor-pointer hover:text-spectra-800 py-1"
                 >{{ $gettext(sv.name) }}</ListboxOption>
