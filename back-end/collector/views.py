@@ -224,13 +224,20 @@ def api_search(request):
     for facet in facets.values():
         fname = facet.get('name')
         active_filters = [ str(f) for f in res['filters'].get(fname) ]
-        for ft in facet.get('values'):
+        facet_terms = facet.get('values')
+        for ft in facet_terms:
             if str(ft['id']) in active_filters:
                 ft['active'] = True
             if fname == 'library':
                 ft['term'] = library_dict.get(ft['id'], ft['term'])
 
-    res['facets'] = facets
+        # output only the active ones
+        if len(facet_terms) > 50:
+            facet['values'] = [ ft for ft in facet_terms if ft.get('active') ]
+
+    # and filter out empty facets after the pruning (too many and no active ones)
+    # logger.debug(pp.pformat(facets))
+    res['facets'] = { k: v for k, v in facets.items() if v.get('values') }
 
     if user.is_authenticated and not user.is_superuser:
         # authenticated users can set exclusion

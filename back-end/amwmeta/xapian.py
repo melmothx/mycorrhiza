@@ -192,14 +192,8 @@ def search(db_path, query_params,
     for spy_name in spies:
         spy = spies[spy_name]
         facet_values = {}
-        spy_count = 0
         for facet in spy.values():
             # logger.debug(facet.term)
-            spy_count += 1
-            if spy_count > 50:
-                logger.debug("{}: too many facets, aborting".format(spy_name))
-                facet_values = {}
-                break
             for facet_structure in json.loads(facet.term.decode('utf-8')):
                 facet_id = facet_structure['id']
 

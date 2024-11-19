@@ -59,13 +59,23 @@ const router = createRouter({
         {
             path: '/library/entries/:id',
             redirect: to => {
-                return { name: 'search', query: { query: "library:" + to.params.id } }
+                return { name: 'search',
+                         query: {
+                             query: "library:" + to.params.id,
+                             filter_library: to.params.id,
+                         }
+                       }
             },
         },
         {
             path: '/library/author/:id',
             redirect: to => {
-                return { name: 'search', query: { query: "creator:" + to.params.id } }
+                return { name: 'search',
+                         query: {
+                             query: "creator:" + to.params.id,
+                             filter_creator: to.params.id,
+                         }
+                       }
             },
         },
         {

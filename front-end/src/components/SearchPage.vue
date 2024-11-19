@@ -76,6 +76,9 @@
              this.get_results({}, { update_facets: true });
          },
          refine() {
+             if (this.query && this.sort_by.id == 'datestamp') {
+                 this.sort_by = this.sort_by_values.find((i) => i.id == 'relevance');
+             }
              let query = { ...this.$route.query };
              query.query = this.query;
              query.page_number = 1;
@@ -254,6 +257,10 @@
         {{ $gettext('All entries (%1)', total_entries) }}
       </template>
     </h1>
+    <div class="sm:hidden" v-for="sf in single_filter_boxes">
+      <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" :editable="can_merge" />
+    </div>
+
     <div v-if="active_filters" class="mb-4 flex flex-wrap place-content-center">
       <template v-for="af in active_filters">
         <div class="btn-primary mr-2 my-1 p-1 rounded flex cursor-pointer text-sm"
@@ -340,11 +347,12 @@
     </div>
   </form>
   <div class="m-1 md:m-5">
-    <div class="grid gap-8 grid-cols-2
+    <div class="grid gap-8
+                grid-cols-1
                 sm:grid-cols-[250px_auto]
                 lg:grid-cols-[250px_auto_250px]">
-      <div>
-        <div class="sticky top-5">
+      <div class="hidden sm:block">
+        <div class="sm:sticky sm:top-5">
           <div v-if="facets.language" class="mb-3">
             <FacetBox
                 :use_sorting="true"
@@ -426,7 +434,7 @@
         </div>
         <PaginationBox :pager="pager" @get-page="getPage" />
       </div>
-      <div>
+      <div class="hidden sm:block">
         <div v-for="sf in single_filter_boxes">
           <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" :editable="can_merge" />
         </div>
