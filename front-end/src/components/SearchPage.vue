@@ -18,16 +18,6 @@
          SingleFilterBox,
      },
      data() {
-         const sort_directions = [
-             {
-                 id: "desc",
-                 name: "Descending",
-             },
-             {
-                 id: "asc",
-                 name: "Ascending",
-             },
-         ];
          const sort_by_values = [
              {
                  id: "datestamp",
@@ -38,12 +28,12 @@
                  name: 'Sort by Relevance',
              },
              {
-                 id: "title",
-                 name: 'Sort by Title',
+                 id: "title_asc",
+                 name: 'Sort by Title (A-Z)',
              },
              {
-                 id: "date",
-                 name: 'Sort by Date',
+                 id: "title_desc",
+                 name: 'Sort by Title (Z-A)',
              },
          ];
          return {
@@ -58,8 +48,6 @@
              can_merge: false,
              sort_by_values: sort_by_values,
              sort_by: sort_by_values[0],
-             sort_directions: sort_directions,
-             sort_direction: sort_directions[0],
              active_filters: [],
              search_was_run: false,
              single_filter_boxes: [],
@@ -71,19 +59,32 @@
              this.searched_query = "";
              this.facets = [];
              this.sort_by = this.sort_by_values[0];
-             this.sort_direction = this.sort_directions[0];
              this.$router.push({ name: 'search' });
              this.get_results({}, { update_facets: true });
          },
-         refine() {
+         adjust_sorting() {
              if (this.query && this.sort_by.id == 'datestamp') {
                  this.sort_by = this.sort_by_values.find((i) => i.id == 'relevance');
              }
+             else if (!this.query && this.sort_by.id == 'relevance') {
+                 this.sort_by = this.sort_by_values.find((i) => i.id == 'datestamp');
+             }
+         },
+         active_sort_by_values() {
+             console.log("Called active_sort_by_values");
+             if (this.query) {
+                 return this.sort_by_values.filter((f) => f.id != 'datestamp');
+             }
+             else {
+                 return this.sort_by_values.filter((f) => f.id != 'relevance');
+             }
+         },
+         refine() {
              let query = { ...this.$route.query };
+             this.adjust_sorting();
              query.query = this.query;
              query.page_number = 1;
              query.sort_by = this.sort_by.id;
-             query.sort_direction = this.sort_direction.id;
              this.$router.push({ name: 'search', query: query });
              this.get_results(query, { update_facets: true });
          },
@@ -94,7 +95,6 @@
              let fresh = {
                  query: this.query,
                  sort_by: this.sort_by.id,
-                 sort_direction: this.sort_direction.id,
              };
              this.$router.push({ name: 'search', query: fresh });
              this.get_results(fresh, { update_facets: true });
@@ -181,7 +181,6 @@
          toggle_query_filter(name, term, checked) {
              console.log(`Toggling ${checked} ${name} ${term}`);
              let query = { ...this.$route.query };
-             query.sort_direction = this.sort_direction.id;
              query.sort_by = this.sort_by.id;
              query.page_number = 1;
              // go back to the first page
@@ -221,15 +220,6 @@
          },
          no_op() {
          },
-         active_sort_by_values() {
-             if (this.query) {
-                 return this.sort_by_values.filter((f) => f.id != 'datestamp');
-             }
-             else {
-                 return this.sort_by_values;
-             }
-
-         },
      },
      mounted() {
          console.log("Mounted");
@@ -237,8 +227,7 @@
          // set the values from the model in the query
          this.sort_by = this.sort_by_values.find((i) => i.id == q.sort_by)
                      || this.sort_by_values[0];
-         this.sort_direction = this.sort_directions.find((i) => i.id == q.sort_direction)
-                            || this.sort_directions[0];
+         this.adjust_sorting();
          this.query = q.query;
          this.$router.push({ name: 'search', query: q });
          this.get_results(q, { update_facets: true });
@@ -288,7 +277,7 @@
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
         <input class="mcrz-input shadow w-full my-1 sm:my-0"
                type="text" :placeholder="$gettext('Search')" v-model="query"/>
-        <Listbox v-model="sort_by">
+        <Listbox v-model="sort_by" @click="refine()">
           <div class="relative m-0">
             <ListboxButton class="mcrz-listbox-button"
                            v-slot="{ open }">
@@ -312,34 +301,6 @@
                                :value="sv" :key="sv.id"
                                class="cursor-pointer hover:text-spectra-800 py-1"
                 >{{ $gettext(sv.name) }}</ListboxOption>
-              </ListboxOptions>
-            </transition>
-          </div>
-        </Listbox>
-        <Listbox v-if="sort_by.id != 'relevance'" v-model="sort_direction">
-          <div class="relative m-0">
-            <ListboxButton class="mcrz-listbox-button"
-                           v-slot="{ open }">
-              <span class="block truncate">{{ $gettext(sort_direction.name) }}</span>
-              <span class="mcrz-select-chevron-container">
-                <ChevronUpDownIcon
-                    class="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                />
-              </span>
-            </ListboxButton>
-            <transition
-                enter-active-class="transition duration-100 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-100"
-                leave-active-class="transition duration-75 ease-in"
-                leave-from-class="transform scale-100 opacity-100"
-                leave-to-class="transform scale-95 opacity-0">
-              <ListboxOptions class="mcrz-listbox-options">
-                <ListboxOption v-for="sd in sort_directions"
-                               :value="sd" :key="sd.id"
-                               class="cursor-pointer hover:text-spectra-800 py-1"
-                >{{ $gettext(sd.name) }}</ListboxOption>
               </ListboxOptions>
             </transition>
           </div>

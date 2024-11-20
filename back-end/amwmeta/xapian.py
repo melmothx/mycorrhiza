@@ -86,7 +86,7 @@ def search(db_path, query_params,
     query = xapian.Query.MatchAll
     queryparser.set_default_op(xapian.Query.OP_AND)
     if querystring:
-        logger.info("Query is " + querystring)
+        # logger.info("Query is " + querystring)
         flags = queryparser.FLAG_PHRASE | queryparser.FLAG_BOOLEAN  | queryparser.FLAG_LOVEHATE | queryparser.FLAG_WILDCARD
         query = queryparser.parse_query(querystring, flags)
 
@@ -129,15 +129,22 @@ def search(db_path, query_params,
     enquire = xapian.Enquire(db)
     logger.debug(query)
     enquire.set_query(query)
+    logger.debug(query_params)
 
-    if facets_only or query_params.get('sort_by', '') == 'relevance':
-        sort_by = None
-        logger.debug("Sorting by relevance (default)")
+    web_sorting = {
+        'title_asc': ('title', 'asc'),
+        'title_desc': ('title', 'desc'),
+        'datestamp': ('datestamp', 'desc'),
+    }
+    web_sorting_chosen = web_sorting.get(query_params.get('sort_by', 'datestamp'))
+    if facets_only:
+        pass
+    elif web_sorting_chosen:
+        sort_by, sort_dir = web_sorting_chosen
+        logger.debug("Sorting by {} {}".format(sort_by, sort_dir))
+        enquire.set_sort_by_value_then_relevance(SORTABLE_FIELDS.get(sort_by)[0], SORT_DIRECTIONS.get(sort_dir))
     else:
-        sort_by = SORTABLE_FIELDS.get(query_params.get('sort_by', ''), SORTABLE_FIELDS['datestamp'])[0]
-        sort_dir = SORT_DIRECTIONS.get(query_params.get('sort_direction', ''), SORT_DIRECTIONS['desc'])
-        logger.debug("Sorting by " + str(sort_by) + " " + str(sort_dir))
-        enquire.set_sort_by_value_then_relevance(sort_by, sort_dir)
+        logger.debug("Default sorting (relevance)")
 
     matches = []
     facets = {}
@@ -155,8 +162,6 @@ def search(db_path, query_params,
     pager = DataPage(total_entries=total_entries,
                      entries_per_page=page_size,
                      current_page=page_number)
-    logger.info(pager)
-
     if not facets_only:
         for matched in mset:
             fields = json.loads(matched.document.get_data().decode('utf8'))

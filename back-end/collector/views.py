@@ -218,7 +218,7 @@ def api_search(request):
         facets_only=True,
     )
     # mark the facets as active
-    logger.debug('Filters:' + pp.pformat(res['filters']))
+    # logger.debug('Filters:' + pp.pformat(res['filters']))
     library_dict = { f['id']: f['name'] for f in Library.objects.values('id', 'name').all() }
     # logger.debug(library_dict)
     for facet in facets.values():

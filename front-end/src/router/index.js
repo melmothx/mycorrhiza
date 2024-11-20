@@ -63,8 +63,7 @@ const router = createRouter({
                          query: {
                              query: "library:" + to.params.id,
                              filter_library: to.params.id,
-                             sort_by: "title",
-                             sort_direction: "asc",
+                             sort_by: "title_asc",
                          }
                        }
             },
@@ -76,8 +75,7 @@ const router = createRouter({
                          query: {
                              query: "creator:" + to.params.id,
                              filter_creator: to.params.id,
-                             sort_by: "title",
-                             sort_direction: "asc",
+                             sort_by: "title_asc",
                          }
                        }
             },
