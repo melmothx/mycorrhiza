@@ -287,7 +287,7 @@
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
         <input class="mcrz-input shadow w-full my-1 sm:my-0"
-               type="text" placeholder="Search" v-model="query"/>
+               type="text" :placeholder="$gettext('Search')" v-model="query"/>
         <Listbox v-model="sort_by">
           <div class="relative m-0">
             <ListboxButton class="mcrz-listbox-button"
