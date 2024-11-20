@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 14:00:21 14:00+0000\n"
+"POT-Creation-Date: 14:42:03 14:42+0000\n"
 "PO-Revision-Date: 2024-10-31 15:08+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.4\n"
 
 #. $gettext('%1 logo', library.name)
-#: src/components/LibraryBox.vue:12
+#: src/components/LibraryBox.vue:18
 msgid "%1 logo"
 msgstr ""
 
@@ -33,7 +33,7 @@ msgid "Additional Address Line"
 msgstr "Parti aggiuntive dell'indirizzo"
 
 #. $gettext('Address')
-#: src/components/LibraryBox.vue:50
+#: src/components/LibraryBox.vue:56
 msgid "Address"
 msgstr "Indirizzo"
 
@@ -48,23 +48,28 @@ msgid "Admin"
 msgstr "Amministrazione"
 
 #. $gettext('Aggregated')
-#: src/components/SearchPage.vue:236
+#: src/components/SearchPage.vue:250
 msgid "Aggregated"
 msgstr "Aggregati"
 
-#. $gettext('Aggregation') $gettext('Aggregation') $gettext('Aggregation')
-#: src/components/SearchPage.vue:237 src/components/SearchPage.vue:238
-#: src/components/SearchPage.vue:407
+#. $gettext('Aggregation') $gettext('Aggregation')
+#: src/components/SearchPage.vue:251 src/components/SearchPage.vue:252
 msgid "Aggregation"
 msgstr "Aggregazione"
 
+#. $gettext('Aggregations')
+#: src/components/SearchPage.vue:426
+msgid "Aggregations"
+msgstr ""
+
 #. $gettext('All entries (%1)', total_entries)
-#: src/components/SearchPage.vue:252
+#: src/components/SearchPage.vue:266
 msgid "All entries (%1)"
 msgstr "Tutti i risultati (%1)"
 
-#. $gettext('Authors') $gettext('Authors')
-#: src/components/SearchPage.vue:363 src/components/AgentOverView.vue:62
+#. $gettext('Authors') $gettext('Authors') $gettext('Authors')
+#: src/components/SearchPage.vue:381 src/components/SearchPage.vue:385
+#: src/components/AgentOverView.vue:62
 msgid "Authors"
 msgstr "Autori"
 
@@ -81,7 +86,7 @@ msgid "Back"
 msgstr "Indietro"
 
 #. $gettext('Bibliographical entry only')
-#: src/components/SearchPage.vue:235
+#: src/components/SearchPage.vue:249
 msgid "Bibliographical entry only"
 msgstr "Solo riferimento bibliografico"
 
@@ -111,7 +116,7 @@ msgid "Clear list"
 msgstr "Pulisci elenco"
 
 #. $gettext('Click to remove the filter')
-#: src/components/SearchPage.vue:258
+#: src/components/SearchPage.vue:276
 msgid "Click to remove the filter"
 msgstr "Premi per rimuovere il filtro"
 
@@ -151,7 +156,7 @@ msgid "Create"
 msgstr "Crea"
 
 #. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:37 src/components/SearchPage.vue:389
+#: src/components/ExclusionTable.vue:37 src/components/SearchPage.vue:407
 msgid "Date"
 msgstr "Data"
 
@@ -166,12 +171,12 @@ msgid "Description"
 msgstr "Descrizione"
 
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:399
+#: src/components/SearchPage.vue:417
 msgid "Download Types"
 msgstr "Tipi di download"
 
 #. $gettext('Editable and printable text')
-#: src/components/SearchPage.vue:234
+#: src/components/SearchPage.vue:248
 msgid "Editable and printable text"
 msgstr "Testo editabile e stampabile"
 
@@ -181,7 +186,7 @@ msgid "Email"
 msgstr "Email"
 
 #. $gettext('Email:')
-#: src/components/LibraryBox.vue:44
+#: src/components/LibraryBox.vue:50
 msgid "Email:"
 msgstr "Email:"
 
@@ -246,7 +251,7 @@ msgid "Landing page"
 msgstr "Pagina sorgente"
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:352
+#: src/components/SearchPage.vue:371
 msgid "Language"
 msgstr "Lingua"
 
@@ -270,9 +275,9 @@ msgstr "Cognome"
 msgid "Latitude"
 msgstr "Latitudine"
 
-#. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
+#. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
 #: src/components/LibraryOverView.vue:38 src/components/LibraryView.vue:42
-#: src/components/SearchPage.vue:378
+#: src/components/SearchPage.vue:395 src/components/SearchPage.vue:399
 msgid "Libraries"
 msgstr "Biblioteche"
 
@@ -282,7 +287,7 @@ msgid "Library Users"
 msgstr "Utenti della biblioteca"
 
 #. $gettext('Library details')
-#: src/components/LibraryBox.vue:76
+#: src/components/LibraryBox.vue:82
 msgid "Library details"
 msgstr "Dettagli sulla biblioteca"
 
@@ -312,7 +317,7 @@ msgid "Longitude"
 msgstr "Longitudine"
 
 #. $gettext('MERGE_AUTHOR')
-#: src/components/SearchPage.vue:239
+#: src/components/SearchPage.vue:253
 msgid "MERGE_AUTHOR"
 msgstr ""
 "Con questa funzione puoi unificare le forme alternative del nome di chi ha "
@@ -320,7 +325,7 @@ msgstr ""
 "Bakunin e Bakunin -> Bakunin"
 
 #. $gettext('MERGE_ENTRY')
-#: src/components/SearchPage.vue:240
+#: src/components/SearchPage.vue:254
 msgid "MERGE_ENTRY"
 msgstr ""
 "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
@@ -331,18 +336,18 @@ msgid "Material Description"
 msgstr ""
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge') $gettext('Merge')
-#: src/components/EntryBox.vue:59 src/components/EntryBox.vue:88
+#: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118
 #: src/components/AgentBox.vue:142 src/components/MergeBox.vue:211
 msgid "Merge"
 msgstr "Unisci"
 
 #. $gettext('Merge authors here') $gettext('Merge authors here')
-#: src/components/SearchPage.vue:439 src/components/AgentOverView.vue:94
+#: src/components/SearchPage.vue:459 src/components/AgentOverView.vue:94
 msgid "Merge authors here"
 msgstr "Unisci gli autori qui"
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:447
+#: src/components/SearchPage.vue:467
 msgid "Merge entries here"
 msgstr "Unisci le voci qui"
 
@@ -372,7 +377,7 @@ msgid "No records"
 msgstr "Nessun dato"
 
 #. $gettext('No result found!')
-#: src/components/SearchPage.vue:422
+#: src/components/SearchPage.vue:442
 msgid "No result found!"
 msgstr "Non è stato trovato nessun risultato!"
 
@@ -387,22 +392,22 @@ msgid "Omit"
 msgstr "Ometti"
 
 #. $gettext('Omit Library')
-#: src/components/FacetBox.vue:104
+#: src/components/FacetBox.vue:100
 msgid "Omit Library"
 msgstr "Ometti biblioteca"
 
 #. $gettext('Omit author')
-#: src/components/EntryBox.vue:68
+#: src/components/EntryBox.vue:84
 msgid "Omit author"
 msgstr "Ometti autore"
 
 #. $gettext('Omit single entry')
-#: src/components/EntryBox.vue:97
+#: src/components/EntryBox.vue:127
 msgid "Omit single entry"
 msgstr "Ometti singola voce"
 
 #. $gettext('Opening Hours') $gettext('Opening Hours')
-#: src/components/LibraryBox.vue:38 src/components/LibraryEdit.vue:105
+#: src/components/LibraryBox.vue:44 src/components/LibraryEdit.vue:105
 msgid "Opening Hours"
 msgstr "Orari di apertura"
 
@@ -417,7 +422,7 @@ msgid "Other languages:"
 msgstr "Altre lingue:"
 
 #. $gettext('PGP Public Key')
-#: src/components/LibraryBox.vue:64
+#: src/components/LibraryBox.vue:70
 msgid "PGP Public Key"
 msgstr "PGP Public Key"
 
@@ -449,7 +454,8 @@ msgstr "Luogo di morte"
 #. $gettext('Please describe the project. Just a few words, for the preview')
 #: src/components/LibraryEdit.vue:115
 msgid "Please describe the project. Just a few words, for the preview"
-msgstr "Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
+msgstr ""
+"Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
 
 #. $gettext('Please type your new password in both fields')
 #: src/components/PasswordReset.vue:84
@@ -467,7 +473,7 @@ msgid "Process File"
 msgstr "Elaborazione del file"
 
 #. $gettext('Project established in %1', library.established)
-#: src/components/LibraryBox.vue:26
+#: src/components/LibraryBox.vue:32
 msgid "Project established in %1"
 msgstr "Progetto iniziato nel %1"
 
@@ -487,7 +493,7 @@ msgid "Reason"
 msgstr "Ragione"
 
 #. $gettext('Refine')
-#: src/components/SearchPage.vue:274
+#: src/components/SearchPage.vue:350
 msgid "Refine"
 msgstr "Rifinisci"
 
@@ -517,7 +523,7 @@ msgid "Restore"
 msgstr "Rigenera"
 
 #. $gettext('SET_AGGREGATION')
-#: src/components/SearchPage.vue:242
+#: src/components/SearchPage.vue:256
 msgid "SET_AGGREGATION"
 msgstr ""
 "Con questa funzione puoi unire più riferimenti all'interno di una stessa "
@@ -525,31 +531,31 @@ msgstr ""
 "diversi testi che compongono un'antologia"
 
 #. $gettext('SET_TRANSLATION')
-#: src/components/SearchPage.vue:241
+#: src/components/SearchPage.vue:255
 msgid "SET_TRANSLATION"
 msgstr ""
 "Con questa funzione puoi collegare due traduzioni in lingue diverse dello "
 "stesso testo"
 
 #. $gettext('Search') $gettext('Search')
-#: src/components/SearchPage.vue:336 src/components/AgentOverView.vue:76
+#: src/components/SearchPage.vue:354 src/components/AgentOverView.vue:76
 msgid "Search"
 msgstr "Cerca"
 
 #. $ngettext("Search results for “%1”: found %2 entry", "Search results for “%1”: found %2 entries", total_entries, searched_query, total_entries)
-#: src/components/SearchPage.vue:249
+#: src/components/SearchPage.vue:263
 msgid "Search results for “%1”: found %2 entry"
 msgid_plural "Search results for “%1”: found %2 entries"
 msgstr[0] "Ricerca di “%1”: trovato %2 risultato"
 msgstr[1] "Ricerca di “%1”: trovati %2 risultati"
 
 #. $gettext('See all entries')
-#: src/components/EntryBox.vue:48
+#: src/components/EntryBox.vue:64
 msgid "See all entries"
 msgstr "Guarda tutti gli inserimenti"
 
 #. $gettext('See the library entries')
-#: src/components/LibraryBox.vue:83
+#: src/components/LibraryBox.vue:89
 msgid "See the library entries"
 msgstr "Guarda gli inserimenti della biblioteca"
 
@@ -559,12 +565,12 @@ msgid "See “%1”"
 msgstr "Guarda “%1”"
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:464
+#: src/components/SearchPage.vue:484
 msgid "Set aggregations here"
 msgstr "Imposta le aggregazioni qui"
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:455
+#: src/components/SearchPage.vue:475
 msgid "Set translations here"
 msgstr "Imposta le traduzioni qui"
 
@@ -584,7 +590,7 @@ msgid "Short Description"
 msgstr "Descrizione breve"
 
 #. $gettext('Sort')
-#: src/components/FacetBox.vue:59
+#: src/components/FacetBox.vue:55
 msgid "Sort"
 msgstr "Disponi"
 
@@ -631,6 +637,16 @@ msgid ""
 msgstr ""
 "Questo è un campo di testo libero. Per favore descrivi brevemente quali sono "
 "le lingue del progetto"
+
+#. $gettext('This text is a translation')
+#: src/components/EntryBox.vue:100
+msgid "This text is a translation"
+msgstr ""
+
+#. $gettext('This text is translated')
+#: src/components/EntryBox.vue:104
+msgid "This text is translated"
+msgstr ""
 
 #. $gettext('This username already exist. You are going to add it to this library.')
 #: src/components/UserCreation.vue:95
@@ -708,7 +724,7 @@ msgid "Value"
 msgstr "Valore"
 
 #. $gettext('Visit Library Homepage')
-#: src/components/LibraryBox.vue:20
+#: src/components/LibraryBox.vue:26
 msgid "Visit Library Homepage"
 msgstr "Visita il sito della biblioteca"
 
@@ -734,12 +750,12 @@ msgid "ZIP code"
 msgstr "CAP"
 
 #. $gettext('by count')
-#: src/components/FacetBox.vue:72
+#: src/components/FacetBox.vue:68
 msgid "by count"
 msgstr "per numero"
 
 #. $gettext('by term')
-#: src/components/FacetBox.vue:65
+#: src/components/FacetBox.vue:61
 msgid "by term"
 msgstr "ordine alfabetico"
 

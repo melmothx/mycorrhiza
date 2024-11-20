@@ -61,6 +61,21 @@
       }
    },
    "it" : {
+      "Add" : {
+         "msgstr" : "Aggiungi"
+      },
+      "Add User" : {
+         "msgstr" : "Aggiungi utente"
+      },
+      "Additional Address Line" : {
+         "msgstr" : "Parti aggiuntive dell'indirizzo"
+      },
+      "Address" : {
+         "msgstr" : "Indirizzo"
+      },
+      "Address Line" : {
+         "msgstr" : "Parti dell'indirizzo"
+      },
       "Admin" : {
          "msgstr" : "Amministrazione"
       },
@@ -81,8 +96,8 @@
       },
       "Authors matching “%1” (%2 entry)" : {
          "plurals" : {
-            "0" : "",
-            "1" : ""
+            "0" : "Autore che corrisponde a “%1” (%2 entry)",
+            "1" : "Autori che corrispondono a “%1” (%2 entry)"
          }
       },
       "Back" : {
@@ -94,11 +109,23 @@
       "Cancel" : {
          "msgstr" : "Cancella"
       },
+      "Choose another file" : {
+         "msgstr" : "Scegli un altro file"
+      },
+      "Choose file" : {
+         "msgstr" : "Scegli un file"
+      },
+      "City" : {
+         "msgstr" : "Città"
+      },
       "Clear" : {
          "msgstr" : "Pulisci"
       },
       "Clear list" : {
          "msgstr" : "Pulisci elenco"
+      },
+      "Click to remove the filter" : {
+         "msgstr" : "Premi per rimuovere il filtro"
       },
       "Click to sort" : {
          "msgstr" : "Ordina"
@@ -106,8 +133,17 @@
       "Close" : {
          "msgstr" : "Chiudi"
       },
+      "Codice ISBN" : {
+         "msgstr" : "Codice ISBN"
+      },
+      "Column Name" : {
+         "msgstr" : "Nome della colonna"
+      },
       "Contains:" : {
          "msgstr" : "Contiene:"
+      },
+      "Country" : {
+         "msgstr" : "Nazione"
       },
       "Create" : {
          "msgstr" : "Crea"
@@ -115,8 +151,14 @@
       "Date" : {
          "msgstr" : "Data"
       },
+      "Date Established" : {
+         "msgstr" : "Data di fondazione"
+      },
       "Descending" : {
          "msgstr" : "Discendente"
+      },
+      "Description" : {
+         "msgstr" : "Descrizione"
       },
       "Download Types" : {
          "msgstr" : "Tipi di download"
@@ -124,11 +166,23 @@
       "Editable and printable text" : {
          "msgstr" : "Testo editabile e stampabile"
       },
+      "Email" : {
+         "msgstr" : "Email"
+      },
+      "Email:" : {
+         "msgstr" : "Email:"
+      },
+      "Enabled for merging" : {
+         "msgstr" : "Autorizzato al merging"
+      },
       "Exclusions" : {
          "msgstr" : "Esclusioni"
       },
       "First" : {
          "msgstr" : "Prima"
+      },
+      "First Name" : {
+         "msgstr" : "Nome proprio"
       },
       "Full text" : {
          "msgstr" : "Testo integrale"
@@ -145,6 +199,12 @@
       "ID:" : {
          "msgstr" : "ID:"
       },
+      "Internal email" : {
+         "msgstr" : "Email interna"
+      },
+      "Internet address" : {
+         "msgstr" : "Indirizzo internet"
+      },
       "Justification" : {
          "msgstr" : "Giustificazione"
       },
@@ -154,17 +214,41 @@
       "Language" : {
          "msgstr" : "Lingua"
       },
+      "Languages" : {
+         "msgstr" : "Lingue"
+      },
       "Last" : {
          "msgstr" : "Ultima"
+      },
+      "Last Name" : {
+         "msgstr" : "Cognome"
+      },
+      "Latitude" : {
+         "msgstr" : "Latitudine"
       },
       "Libraries" : {
          "msgstr" : "Biblioteche"
       },
+      "Library Users" : {
+         "msgstr" : "Utenti della biblioteca"
+      },
+      "Library details" : {
+         "msgstr" : "Dettagli sulla biblioteca"
+      },
       "Login" : {
          "msgstr" : "Accedi"
       },
+      "Logo URL" : {
+         "msgstr" : "URL del logo"
+      },
+      "Logo address, e.g. https://mydomain.org/path/to/image" : {
+         "msgstr" : "Indirizzo del logo, a.e. https://mydomain.org/path/to/image"
+      },
       "Logout" : {
          "msgstr" : "Esci"
+      },
+      "Longitude" : {
+         "msgstr" : "Longitudine"
       },
       "MERGE_AUTHOR" : {
          "msgstr" : "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\nBakunin e Bakunin -> Bakunin"
@@ -181,6 +265,9 @@
       "Merge entries here" : {
          "msgstr" : "Unisci le voci qui"
       },
+      "Middle Name" : {
+         "msgstr" : "Ulteriori nomi"
+      },
       "Missing help, sorry..." : {
          "msgstr" : "Aiuto mancante, ci scusiamo..."
       },
@@ -189,6 +276,9 @@
       },
       "Next" : {
          "msgstr" : "Prossima"
+      },
+      "No records" : {
+         "msgstr" : "Nessun dato"
       },
       "No result found!" : {
          "msgstr" : "Non è stato trovato nessun risultato!"
@@ -208,6 +298,9 @@
       "Omit single entry" : {
          "msgstr" : "Ometti singola voce"
       },
+      "Opening Hours" : {
+         "msgstr" : "Orari di apertura"
+      },
       "Original" : {
          "msgstr" : "Originale"
       },
@@ -217,8 +310,26 @@
       "Other languages:" : {
          "msgstr" : "Altre lingue:"
       },
+      "PGP Public Key" : {
+         "msgstr" : "PGP Public Key"
+      },
+      "PGP public key, if any" : {
+         "msgstr" : "PGP Public Key, se esiste"
+      },
       "Part of:" : {
          "msgstr" : "Parte di:"
+      },
+      "Password" : {
+         "msgstr" : "Password"
+      },
+      "Place of Birth" : {
+         "msgstr" : "Luogo di nascita"
+      },
+      "Place of Death" : {
+         "msgstr" : "Luogo di morte"
+      },
+      "Please describe the project. Just a few words, for the preview" : {
+         "msgstr" : "Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
       },
       "Please type your new password in both fields" : {
          "msgstr" : "Per favore, digita la tua nuova password in entrambi i campi"
@@ -226,11 +337,29 @@
       "Previous" : {
          "msgstr" : "Precedente"
       },
+      "Process File" : {
+         "msgstr" : "Elaborazione del file"
+      },
+      "Project established in %1" : {
+         "msgstr" : "Progetto iniziato nel %1"
+      },
+      "Public email" : {
+         "msgstr" : "Email pubblica"
+      },
+      "Publisher" : {
+         "msgstr" : "Editore"
+      },
       "Reason" : {
          "msgstr" : "Ragione"
       },
+      "Refine" : {
+         "msgstr" : "Rifinisci"
+      },
       "Repeat Password" : {
          "msgstr" : "Ripeti la Password"
+      },
+      "Replace all records" : {
+         "msgstr" : "Sostituisci tutti i dati"
       },
       "Reset Password for %1?" : {
          "msgstr" : "Reset Password per %1?"
@@ -262,14 +391,29 @@
             "1" : "Ricerca di “%1”: trovati %2 risultati"
          }
       },
+      "See all entries" : {
+         "msgstr" : "Guarda tutti gli inserimenti"
+      },
+      "See the library entries" : {
+         "msgstr" : "Guarda gli inserimenti della biblioteca"
+      },
+      "See “%1”" : {
+         "msgstr" : "Guarda “%1”"
+      },
       "Set aggregations here" : {
          "msgstr" : "Imposta le aggregazioni qui"
       },
       "Set translations here" : {
          "msgstr" : "Imposta le traduzioni qui"
       },
+      "Sheet Preview, Total %1 Records" : {
+         "msgstr" : "Anteprima del foglio, in totale ci sono %1 dati"
+      },
       "Shelf Location Code" : {
          "msgstr" : "Codice di Localizzazione a Scaffale"
+      },
+      "Short Description" : {
+         "msgstr" : "Descrizione breve"
       },
       "Sort" : {
          "msgstr" : "Disponi"
@@ -286,6 +430,12 @@
       "Sort by Title" : {
          "msgstr" : "Disponi per titolo"
       },
+      "Source:" : {
+         "msgstr" : "Origine:"
+      },
+      "State or Province" : {
+         "msgstr" : "Stato o provincia"
+      },
       "Subtitle" : {
          "msgstr" : "Sottotitolo"
       },
@@ -294,6 +444,15 @@
       },
       "The passwords do not match" : {
          "msgstr" : "La password non corrisponde"
+      },
+      "This is a free-text field. Please describe the project" : {
+         "msgstr" : "Questo è un campo di testo libero. Per favore descrivi il progetto"
+      },
+      "This is a free-text field. Please explain briefly which are the project languages" : {
+         "msgstr" : "Questo è un campo di testo libero. Per favore descrivi brevemente quali sono le lingue del progetto"
+      },
+      "This username already exist. You are going to add it to this library." : {
+         "msgstr" : "Questo username esiste già. Lo stai per aggiungere a questa biblioteca"
       },
       "Title" : {
          "msgstr" : "Titolo"
@@ -308,16 +467,58 @@
          "msgstr" : "Traduzioni"
       },
       "Type" : {
-         "msgstr" : "Tipo"
+         "msgstr" : "Digita"
+      },
+      "Type here to search authors" : {
+         "msgstr" : "Digita qui per cercare tra gli autori"
       },
       "UI language" : {
          "msgstr" : "Lingua dell'interfaccia utente"
       },
+      "Update" : {
+         "msgstr" : "Aggiorna"
+      },
+      "Upload File" : {
+         "msgstr" : "Carica file"
+      },
+      "Upload a CSV" : {
+         "msgstr" : "Carica un CSV"
+      },
+      "User Menu" : {
+         "msgstr" : "Menu utente"
+      },
+      "User expiration (optional)" : {
+         "msgstr" : "Scadenza dell'utenza (opzionale)"
+      },
+      "Username" : {
+         "msgstr" : "username"
+      },
+      "VIAF Identifier" : {
+         "msgstr" : "Identificatore VIAF"
+      },
+      "VIAF: %1" : {
+         "msgstr" : "VIAF: %1"
+      },
+      "Value" : {
+         "msgstr" : "Valore"
+      },
       "View full text" : {
          "msgstr" : "Guarda il testo integrale"
       },
+      "Visit Library Homepage" : {
+         "msgstr" : "Visita il sito della biblioteca"
+      },
       "Working" : {
          "msgstr" : "Elaborazione"
+      },
+      "Year of Birth" : {
+         "msgstr" : "Anno di nascita"
+      },
+      "Year of Death" : {
+         "msgstr" : "Anno di morte"
+      },
+      "ZIP code" : {
+         "msgstr" : "CAP"
       },
       "by count" : {
          "msgstr" : "per numero"
