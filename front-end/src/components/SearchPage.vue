@@ -54,14 +54,6 @@
          }
      },
      methods: {
-         clear_all() {
-             this.query = "";
-             this.searched_query = "";
-             this.facets = [];
-             this.sort_by = this.sort_by_values[0];
-             this.$router.push({ name: 'search' });
-             this.get_results({}, { update_facets: true });
-         },
          adjust_sorting() {
              if (this.query && this.sort_by.id == 'datestamp') {
                  this.sort_by = this.sort_by_values.find((i) => i.id == 'relevance');
@@ -79,8 +71,9 @@
                  return this.sort_by_values.filter((f) => f.id != 'relevance');
              }
          },
-         refine() {
-             let query = { ...this.$route.query };
+         run_search(query) {
+             console.log("Running search");
+             console.log(query);
              this.adjust_sorting();
              query.query = this.query;
              query.page_number = 1;
@@ -88,16 +81,18 @@
              this.$router.push({ name: 'search', query: query });
              this.get_results(query, { update_facets: true });
          },
-         searchText() {
+         clear_filters() {
              if (this.query) {
                  this.sort_by = this.sort_by_values.find((i) => i.id == 'relevance');
              }
-             let fresh = {
-                 query: this.query,
-                 sort_by: this.sort_by.id,
-             };
-             this.$router.push({ name: 'search', query: fresh });
-             this.get_results(fresh, { update_facets: true });
+             else {
+                 this.sort_by = this.sort_by_values.find((i) => i.id == 'datestamp');
+             }
+             this.run_search({});
+         },
+         refine() {
+             // same as above, but picks the parameters from the url
+             this.run_search({ ...this.$route.query });
          },
          get_results(query, opts) {
              let params = new URLSearchParams;
@@ -306,13 +301,13 @@
           </div>
         </Listbox>
         <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto sm:border-r"
-                @click="refine"
+                @click="clear_filters"
                 type="button">
-          {{ $gettext('Refine') }}
+          {{ $gettext('Clear') }}
         </button>
         <button class="btn-primary rounded-none h-8 px-4 w-full  sm:w-auto sm:rounded-br-3xl sm:pr-10 sm:pl-4"
                 type="button"
-                @click="searchText">{{ $gettext('Search') }}</button>
+                @click="refine">{{ $gettext('Search') }}</button>
       </div>
     </div>
   </form>
