@@ -74,6 +74,7 @@
              this.spreadsheet = null;
              this.spreadsheet_name = null;
              this.processing = true;
+             document.getElementById('csv-upload-title').scrollIntoView({ behavior: "smooth" });
              axios.post('/collector/api/spreadsheet/process/' + this.spreadsheet_id)
                   .then(res => {
                       console.log(res.data)
@@ -105,7 +106,7 @@
 <template>
   <div v-if="site_options.length && !sample.length">
     <form @submit.prevent="upload">
-      <h1 class="font-bold text-xl mb-2">{{ $gettext('Upload a CSV') }}</h1>
+      <h1 id="csv-upload-title" class="font-bold text-xl mb-2">{{ $gettext('Upload a CSV') }}</h1>
       <div v-if="error" class="py-2 text-claret-900 font-bold">
         {{ $gettext(error) }}
       </div>
