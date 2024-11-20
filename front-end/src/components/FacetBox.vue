@@ -8,7 +8,6 @@
       emits: [ 'toggleAppFilter', 'refetchResults' ],
       data() {
           return {
-              limit_facets: null,
               sort_method: "count",
           }
       },
@@ -33,7 +32,6 @@
           facet_list() {
               let sort = this.sort_method || "count";
               return this.values
-                         .filter((el) => el.count > (this.limit_facets || 0))
                          .sort((a, b) => {
                              if (sort === "term") {
                                  return a.term.localeCompare(b.term);

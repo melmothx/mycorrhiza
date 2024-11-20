@@ -220,6 +220,37 @@ def api_search(request):
     # mark the facets as active
     # logger.debug('Filters:' + pp.pformat(res['filters']))
     library_dict = { f['id']: f['name'] for f in Library.objects.values('id', 'name').all() }
+
+    # if we have active filters, make sure they are listed as facets, even if the base query
+    # doesn't produce one.
+    logger.debug(pp.pformat(facets))
+    for fname, id_list in res['filters'].items():
+        for term_id in id_list:
+            if str(term_id) not in [ str(k['id']) for k in facets.get(fname, {}).get('values', []) ]:
+                logger.debug("MIssing: {} {}".format(fname, term_id ))
+                if fname not in facets:
+                    facets[fname] = {
+                        "name": fname,
+                        "values": [],
+                    }
+                missing_term = term_id
+                if fname == 'library':
+                    missing_term = library_dict.get(int(term_id))
+                elif fname == 'creator':
+                    try:
+                        missing_term = Agent.objects.get(pk=term_id).name
+                    except Agent.DoesNotExist:
+                        missing_term = "N/A"
+
+                facets[fname]['values'].append({
+                    "count": 0,
+                    "id": term_id,
+                    "key": "{}{}".format(fname, term_id),
+                    "term": missing_term,
+                    "active": True,
+                })
+                logger.debug(facets[fname]['values'])
+
     # logger.debug(library_dict)
     for facet in facets.values():
         fname = facet.get('name')
