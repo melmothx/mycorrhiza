@@ -879,6 +879,9 @@ class Entry(models.Model):
         if self.aggregation_entries.count():
             # if it has aggregation entries, it's an aggregated
             xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
+        if not xapian_record['aggregate']:
+            # logger.debug("This is not an aggregated")
+            xapian_record['aggregate'].append({ "id": "none", "value": "None" })
 
         if self.original_entry_id:
             xapian_record['translate'].append({ "id": "translation", "value": "Translations" })
@@ -1102,10 +1105,17 @@ class DataSource(models.Model):
             amusewiki_url = self.amusewiki_base_url()
             if amusewiki_url:
                 cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
-                if self.datestamp and cache.exists():
-                    if cache.stat().st_mtime >= self.datestamp.timestamp():
-                        logger.info("Reusing cached content in {}".format(cache))
-                        return cache.read_text(encoding='UTF-8')
+                if self.datestamp:
+                    if cache.exists():
+                        if cache.stat().st_mtime >= self.datestamp.timestamp():
+                            logger.info("Reusing cached content in {}".format(cache))
+                            return cache.read_text(encoding='UTF-8')
+                        else:
+                            logger.debug("Cache {} is stale".format(cache))
+                    else:
+                        logger.debug("Cache {} does not exist".format(cache))
+                else:
+                    logger.debug("{} has no datestamp")
                 try:
                     r = requests.get(amusewiki_url + '.bare.html')
                     if r.status_code == 200:

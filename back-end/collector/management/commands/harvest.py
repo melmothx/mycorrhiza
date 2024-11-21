@@ -60,7 +60,7 @@ class Command(BaseCommand):
         if options['reindex']:
             indexer = MycorrhizaIndexer(db_path=db_path)
             counter = 0
-            for entry in Entry.objects.all():
+            for entry in Entry.objects.iterator():
                 indexer.index_record(entry.indexing_data())
                 counter += 1
                 if counter % 1000 == 0:
