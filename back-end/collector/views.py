@@ -223,11 +223,11 @@ def api_search(request):
 
     # if we have active filters, make sure they are listed as facets, even if the base query
     # doesn't produce one.
-    logger.debug(pp.pformat(facets))
+    # logger.debug(pp.pformat(facets))
     for fname, id_list in res['filters'].items():
         for term_id in id_list:
             if str(term_id) not in [ str(k['id']) for k in facets.get(fname, {}).get('values', []) ]:
-                logger.debug("MIssing: {} {}".format(fname, term_id ))
+                logger.debug("Missing: {} {}".format(fname, term_id ))
                 if fname not in facets:
                     facets[fname] = {
                         "name": fname,
@@ -249,7 +249,7 @@ def api_search(request):
                     "term": missing_term,
                     "active": True,
                 })
-                logger.debug(facets[fname]['values'])
+                # logger.debug(facets[fname]['values'])
 
     # logger.debug(library_dict)
     for facet in facets.values():
