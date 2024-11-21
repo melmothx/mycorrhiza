@@ -8,6 +8,9 @@ from django.conf import settings
 from pathlib import Path
 import requests.exceptions
 import pprint
+import fcntl
+import os
+
 pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
 
@@ -29,7 +32,11 @@ class Command(BaseCommand):
                             help="Reindex a single entry")
 
     def handle(self, *args, **options):
+        lock = open('.harvest.lock', 'w')
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lock.write(str(os.getpid()))
         logger.debug(options)
+
         db_path = settings.XAPIAN_DB
         db_path_object = Path(settings.XAPIAN_DB)
         if options['force'] and not options['site']:
@@ -71,3 +78,5 @@ class Command(BaseCommand):
                 print("Server error for {}, skipping".format(site.url))
             except requests.exceptions.ConnectionError:
                 print("Failure on connection to {}, skipping".format(site.url))
+        fcntl.flock(lock, fcntl.LOCK_UN)
+        lock.close()
