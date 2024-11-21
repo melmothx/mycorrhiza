@@ -22,18 +22,22 @@
              {
                  id: "datestamp",
                  name: 'Sort by Acquisition Date',
+                 highlight: false,
              },
              {
                  id: "relevance",
                  name: 'Sort by Relevance',
+                 highlight: false,
              },
              {
                  id: "title_asc",
                  name: 'Sort by Title (A-Z)',
+                 highlight: true,
              },
              {
                  id: "title_desc",
                  name: 'Sort by Title (Z-A)',
+                 highlight: true,
              },
          ];
          return {
@@ -276,7 +280,8 @@
           <div class="relative m-0">
             <ListboxButton class="mcrz-listbox-button"
                            v-slot="{ open }">
-              <span class="block truncate">{{ $gettext(sort_by.name) }}</span>
+              <span v-if="sort_by.highlight" class="block truncate text-claret-800 font-bold">{{ $gettext(sort_by.name) }}</span>
+              <span v-else class="block truncate">{{ $gettext(sort_by.name) }}</span>
               <span class="mcrz-select-chevron-container">
                 <ChevronUpDownIcon
                     class="h-5 w-5 text-gray-400"
