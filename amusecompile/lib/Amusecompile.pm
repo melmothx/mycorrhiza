@@ -22,7 +22,11 @@ sub startup ($self) {
     $self->helper(pg => sub {
                       state $pg = Mojo::Pg->new($config->{dbi_connection_string});
                   });
+    $self->helper(wd => sub {
+                      state $wd = path($config->{working_directory} || 'muse')->absolute;
+                  });
     $self->plugin(Minion => { Pg => $config->{dbi_connection_string} });
+    $self->pg->migrations->from_file('migrations.sql')->migrate;
     my $r = $self->routes;
     my $admin = $r->under('/minion' => sub ($c) {
                               $c->log->debug("In minion route");
@@ -44,6 +48,24 @@ sub startup ($self) {
                               $c->render(text => 'Authentication required!', status => 401);
                               return undef;
                           });
+    my $api = $r->under('/api/v1', sub ($c) {
+                            if (my $token = $c->req->headers->header('X-AMC-API-Key')) {
+                                if (grep { $_ eq $token } @{$self->config('api_keys') || []}) {
+                                    $c->log->debug("Valid Token");
+                                    return 1;
+                                }
+                                else {
+                                    $c->log->debug("Invalid Token");
+                                }
+                            }
+                            else {
+                                $c->log->debug("Missing Token");
+                            }
+                            $c->render(text => 'Authentication required!', status => 401);
+                            return undef;
+                        });
+    $api->get('/check')->to('API#check')->name('api_check');
+    $api->post('/create-session')->to('API#create_session')->name('api_create_session');
     $self->plugin('Minion::Admin' => { route => $admin });
 }
 
