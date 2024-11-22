@@ -63,6 +63,15 @@
              }
              return false;
          },
+         pdf_reader() {
+             const src = this.source;
+             if (src.downloads) {
+                 if (src.downloads.find((e) => e.ext == '.pdf')) {
+                     return '/pdfjs/web/viewer.html?file=' + this.get_binary_file(src.data_source_id, '.pdf');
+                 }
+             }
+             return;
+         },
      }
  }
 </script>
@@ -182,6 +191,9 @@
           <div class="full-text-container grid gap-4 grid-cols-[15em_1fr]"
                v-html="html"></div>
         </div>
+      </div>
+      <div class="my-4 p-1 shadow" v-if="pdf_reader()">
+        <iframe :src="pdf_reader()" width="100%" height="500px"></iframe>
       </div>
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
         <code>{{ source.identifier }}</code>

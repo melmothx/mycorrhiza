@@ -3213,7 +3213,7 @@
   --doorhanger-height:8px;
 
   --main-color:rgb(12 12 13);
-  --body-bg-color:rgb(212 212 215);
+  --body-bg-color:rgb(249 247 243);
   --progressBar-color:rgb(10 132 255);
   --progressBar-bg-color:rgb(221 221 222);
   --progressBar-blend-color:rgb(116 177 239);
@@ -3223,8 +3223,8 @@
   --toolbar-icon-hover-bg-color:rgb(0 0 0);
 
   --sidebar-narrow-bg-color:rgb(212 212 215 / 0.9);
-  --sidebar-toolbar-bg-color:rgb(245 246 247);
-  --toolbar-bg-color:rgb(249 249 250);
+  --sidebar-toolbar-bg-color:rgb(249 247 243);
+  --toolbar-bg-color:rgb(249 247 243);
   --toolbar-border-color:rgb(184 184 184);
   --toolbar-box-shadow:0 1px 0 var(--toolbar-border-color);
   --toolbar-border-bottom:none;
