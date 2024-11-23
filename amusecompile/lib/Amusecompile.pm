@@ -27,6 +27,7 @@ sub startup ($self) {
                   });
     $self->plugin(Minion => { Pg => $config->{dbi_connection_string} });
     $self->pg->migrations->from_file('migrations.sql')->migrate;
+    $self->max_request_size(1024 * 1024 * 32);
     my $r = $self->routes;
     my $admin = $r->under('/minion' => sub ($c) {
                               $c->log->debug("In minion route");
@@ -66,6 +67,7 @@ sub startup ($self) {
                         });
     $api->get('/check')->to('API#check')->name('api_check');
     $api->post('/create-session')->to('API#create_session')->name('api_create_session');
+    $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
     $self->plugin('Minion::Admin' => { route => $admin });
 }
 

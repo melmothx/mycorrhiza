@@ -4,6 +4,7 @@ use Test::More;
 use Test::Mojo;
 use Data::Dumper::Concise;
 use YAML qw/LoadFile/;
+use Path::Tiny;
 
 my $creds = LoadFile('amusecompile.yml');
 my $key = $creds->{api_keys}->[0];
@@ -14,6 +15,22 @@ $t->get_ok('/api/v1/check', { 'X-AMC-API-Key' => 'rand' })->status_is(401);
 $t->post_ok('/api/v1/create-session', { 'X-AMC-API-Key' => 'rand' })->status_is(401);
 my $h = { 'X-AMC-API-Key' => $key };
 $t->get_ok('/api/v1/check', $h)->status_is(200)->json_is({ status => 'OK' });
-$t->post_ok('/api/v1/create-session', $h)->status_is(200)->json_has('/session', "Session id returned");
+$t->post_ok('/api/v1/create-session', $h)->status_is(200)->json_has('/session_id', "Session id returned");
 diag Dumper($t->tx->res->json);
+my $sid = $t->tx->res->json->{session_id};
+$t->post_ok("/api/v1/add/$sid")->status_is(401);
+$t->post_ok("/api/v1/add/xyz", $h)->status_is(200)->json_hasnt('/success', "Random id is not a success");
+diag Dumper($t->tx->res->json);
+$t->post_ok("/api/v1/add/0", $h)->status_is(200)->json_hasnt('/success', "Random id is not a success");
+diag Dumper($t->tx->res->json);
+
+foreach my $i (1,2,3) {
+    $t->post_ok("/api/v1/add/$sid", $h, form => {
+                                                 muse => { file => 't/testfiles/install.zip' },
+                                                })->status_is(200)->json_is('/success', 1, "Created OK");
+    diag Dumper($t->tx->res->json);
+    my $expected_file = path('muse', $sid, sprintf('%03d.zip', $i));
+    ok $expected_file->exists, "$expected_file exists";
+}
+
 done_testing();
