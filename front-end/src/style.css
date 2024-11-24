@@ -81,6 +81,39 @@
     @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
 }
 
+.mcrz-text-box h1 {
+    @apply mt-8 mb-2 font-bold text-2xl;
+}
+.mcrz-text-box h2 {
+    @apply mt-7 mb-2 font-bold text-xl;
+}
+.mcrz-text-box h3 {
+    @apply mt-6 mb-2 font-bold text-lg;
+}
+.mcrz-text-box h4 {
+    @apply mt-5 mb-2 font-bold text-base;
+}
+.mcrz-text-box h5 {
+    @apply mt-4 mb-2 italic;
+}
+.mcrz-text-box h6 {
+    @apply mt-3 mb-2;
+}
+.mcrz-text-box p {
+    @apply my-1;
+}
+.mcrz-text-box em {
+    @apply italic;
+}
+
+.mcrz-text-box a {
+    @apply text-spectra-700 hover:text-spectra-500;
+}
+
+.mcrz-text-box blockquote {
+    @apply m-2;
+}
+
 
 @layer components {
     .btn-primary {

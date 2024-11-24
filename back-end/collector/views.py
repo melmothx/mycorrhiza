@@ -970,8 +970,11 @@ def api_agent(request, agent_id):
 
     return JsonResponse(out)
 
-def api_list_pages(request):
-    return JsonResponse({ "pages": [ p.overview() for p in Page.objects.filter(published=True).all() ] })
+def api_list_pages(request, location, language):
+    pages = Page.objects.filter(published=True,
+                                location=location,
+                                language=language).order_by('sorting').all()
+    return JsonResponse({ "pages": [ p.overview() for p in pages ] })
 
 def api_view_page(request, page_id):
     try:

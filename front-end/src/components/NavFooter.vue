@@ -10,7 +10,7 @@
      },
      methods: {
          get_site_pages() {
-             axios.get('/collector/api/pages')
+             axios.get('/collector/api/pages/footer/' + this.$getlanguage())
                   .then(res => {
                       this.error = null;
                       this.pages = res.data.pages;

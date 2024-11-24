@@ -156,10 +156,49 @@ class General(models.Model):
 
 
 class Page(models.Model):
+    PAGE_LANGUAGES = [
+        ( 'bg', 'Български' ),
+        ( 'cs', 'Čeština' ),
+        ( 'da', 'Dansk' ),
+        ( 'de', 'Deutsch' ),
+        ( 'el', 'Ελληνικά' ),
+        ( 'en', 'English' ),
+        ( 'eo', 'Esperanto' ),
+        ( 'es', 'Español' ),
+        ( 'eu', 'Euskara' ),
+        ( 'fa', 'فارسی' ),
+        ( 'fi', 'Suomi' ),
+        ( 'fr', 'Français' ),
+        ( 'hr', 'Hrvatski' ),
+        ( 'hu', 'Magyar' ),
+        ( 'id', 'Bahasa Indonesia' ),
+        ( 'it', 'Italiano' ),
+        ( 'ja', '日本語' ),
+        ( 'mk', 'Македонски' ),
+        ( 'nl', 'Nederlands' ),
+        ( 'pl', 'Polski' ),
+        ( 'pt', 'Português' ),
+        ( 'ro', 'Română' ),
+        ( 'ru', 'Русский' ),
+        ( 'sq', 'Shqip' ),
+        ( 'sr', 'Srpski' ),
+        ( 'sv', 'Svenska' ),
+        ( 'tl', 'Tagalog' ),
+        ( 'tr', 'Türkçe' ),
+        ( 'uk', 'Українська' ),
+        ( 'zh', '中文' ),
+    ]
+    PAGE_LOCATIONS = [
+        ( 'draft', 'Drafts' ),
+        ( 'footer', 'Footer' ),
+    ]
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True)
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
+    language = models.CharField(max_length=4, default="en", choices=PAGE_LANGUAGES)
+    location = models.CharField(max_length=16, default="draft", choices=PAGE_LOCATIONS)
+    sorting = models.IntegerField(default=0)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
     def __str__(self):
