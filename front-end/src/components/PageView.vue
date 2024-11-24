@@ -30,7 +30,7 @@
 <template>
   <div v-if="page && page.title">
     <h1 class="font-bold mx-auto text-xl text-center my-8">{{ page.title }}</h1>
-    <div class="mcrz-text-box" v-html="page.content">
+    <div id="thework" class="mcrz-text-box" v-html="page.content">
     </div>
   </div>
 </template>
