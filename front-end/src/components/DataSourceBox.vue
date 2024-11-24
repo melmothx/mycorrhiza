@@ -6,16 +6,22 @@
          return {
              html: "",
              show_html: false,
+             show_pdf_reader: false,
              working: false,
          }
      },
      methods: {
          toggle_full_text() {
+             this.show_pdf_reader = false;
              this.show_html = !this.show_html;
              if (this.show_html && !this.html) {
                  this.working = true;
                  this.get_full_text();
              }
+         },
+         toggle_pdf_reader() {
+             this.show_html = false;
+             this.show_pdf_reader = !this.show_pdf_reader;
          },
          get_full_text() {
              const vm = this;
@@ -159,8 +165,15 @@
           </div>
         </div>
       </div>
-      <div v-if="can_have_full_text()" class="text-center">
-        <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+      <div class="flex mb-8">
+        <div class="grow"></div>
+        <div v-if="can_have_full_text()">
+          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+        </div>
+        <div v-if="pdf_reader()">
+          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
+        </div>
+        <div class="grow"></div>
       </div>
       <div v-if="show_html">
         <!-- mettere sotto full text -->
@@ -192,7 +205,7 @@
                v-html="html"></div>
         </div>
       </div>
-      <div class="my-4 p-1 shadow" v-if="pdf_reader()">
+      <div class="my-4 p-1 shadow" v-if="show_pdf_reader && pdf_reader()">
         <iframe :src="pdf_reader()" width="100%" height="500px"></iframe>
       </div>
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
