@@ -11,7 +11,10 @@
 #thework h4 { @apply text-lg   mt-3 mb-2 font-bold }
 #thework h3 { @apply text-xl   mt-4 mb-3 font-bold }
 #thework h2 { @apply text-2xl  mt-5 mb-4 font-bold }
+#thework h1 { @apply text-3xl  mt-6 mb-5 font-bold }
 #thework p { @apply indent-4 }
+#thework em { @apply italic }
+#thework a { @apply text-spectra-700 hover:text-spectra-500 }
 #thework blockquote { @apply p-4 }
 #thework blockquote p { @apply indent-0 }
 #thework ul { @apply list-disc px-8 py-4 }
@@ -80,40 +83,6 @@
 .mcrz-library-digital {
     @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
 }
-
-.mcrz-text-box h1 {
-    @apply mt-8 mb-2 font-bold text-2xl;
-}
-.mcrz-text-box h2 {
-    @apply mt-7 mb-2 font-bold text-xl;
-}
-.mcrz-text-box h3 {
-    @apply mt-6 mb-2 font-bold text-lg;
-}
-.mcrz-text-box h4 {
-    @apply mt-5 mb-2 font-bold text-base;
-}
-.mcrz-text-box h5 {
-    @apply mt-4 mb-2 italic;
-}
-.mcrz-text-box h6 {
-    @apply mt-3 mb-2;
-}
-.mcrz-text-box p {
-    @apply my-1;
-}
-.mcrz-text-box em {
-    @apply italic;
-}
-
-.mcrz-text-box a {
-    @apply text-spectra-700 hover:text-spectra-500;
-}
-
-.mcrz-text-box blockquote {
-    @apply m-2;
-}
-
 
 @layer components {
     .btn-primary {
