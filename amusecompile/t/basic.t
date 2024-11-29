@@ -36,6 +36,7 @@ foreach my $i (1,2,3) {
 
 $t->get_ok("/api/v1/list/$sid", $h)->status_is(200)->json_is('/texts/2/title', 'Test Text 3');
 diag Dumper($t->tx->res->json);
+$t->get_ok("/api/v1/compile/$sid", $h)->status_is(404, "not ready");
 $t->post_ok("/api/v1/compile/$sid", $h)->status_is(200);
 diag Dumper($t->tx->res->json);
 my $jid = $t->tx->res->json->{job_id};
@@ -46,8 +47,6 @@ $t->app->minion->perform_jobs_in_foreground;
 $t->get_ok("/api/v1/job-status/$jid", $h)->status_is(200)->json_is('/status', 'finished');
 diag Dumper($t->tx->res->json);
 diag Dumper($t->app->minion->job($jid)->info);
-
-
-
+$t->get_ok("/api/v1/compile/$sid", $h)->status_is(200)->content_type_is('application/pdf');
 
 done_testing();
