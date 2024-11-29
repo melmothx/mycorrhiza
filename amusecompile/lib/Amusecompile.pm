@@ -8,6 +8,9 @@ use Mojo::Util 'secure_compare';
 use Path::Tiny;
 use Data::Dumper::Concise;
 
+BEGIN {
+    $ENV{PATH} = "$ENV{PATH}:/opt/amusewiki-texlive/current/bin/arch";
+}
 
 # This method will run once at server start
 sub startup ($self) {
@@ -26,6 +29,7 @@ sub startup ($self) {
                       state $wd = path($config->{working_directory} || 'muse')->absolute;
                   });
     $self->plugin(Minion => { Pg => $config->{dbi_connection_string} });
+    $self->plugin('Amusecompile::Task::Compile');
     $self->pg->migrations->from_file('migrations.sql')->migrate;
     $self->max_request_size(1024 * 1024 * 32);
     my $r = $self->routes;
@@ -68,6 +72,8 @@ sub startup ($self) {
     $api->get('/check')->to('API#check')->name('api_check');
     $api->post('/create-session')->to('API#create_session')->name('api_create_session');
     $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
+    $api->get('/list/:sid')->to('API#list_texts')->name('api_list_texts');
+    $api->post('/compile/:sid')->to('API#compile')->name('api_compile');
     $self->plugin('Minion::Admin' => { route => $admin });
 }
 

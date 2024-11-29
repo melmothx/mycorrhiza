@@ -1,6 +1,10 @@
 -- 1 up
 CREATE TABLE amc_sessions (
    sid VARCHAR(64) PRIMARY  KEY,
+   compiler_options JSONB NULL,
+   job_id INTEGER NULL,
+   compiled_file TEXT NULL,
+   logs JSONB NULL,
    created TIMESTAMP WITH TIME ZONE NOT NULL,
    last_modified TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -11,6 +15,7 @@ CREATE TABLE amc_session_files (
    basename VARCHAR(255) NOT NULL,
    original_filename VARCHAR(255) NOT NULL,
    sorting_index INTEGER NOT NULL,
+   title TEXT NULL,
    file_size INTEGER NOT NULL,
    created TIMESTAMP WITH TIME ZONE NOT NULL,
    last_modified TIMESTAMP WITH TIME ZONE NOT NULL

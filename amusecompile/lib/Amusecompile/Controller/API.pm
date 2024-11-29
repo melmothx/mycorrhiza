@@ -1,5 +1,4 @@
 package Amusecompile::Controller::API;
-use Path::Tiny ();
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::Dumper::Concise;
 
@@ -43,13 +42,14 @@ sub add_file ($self) {
                     $self->log->info("Uploaded $destination");
                     my $sql =<<'SQL';
 INSERT INTO amc_session_files
-       (sid, basename, original_filename, sorting_index, file_size, created, last_modified)
-VALUES (?,   ?,        ?,                 ?,             ?,         NOW(),    NOW()       )
+       (sid, basename, original_filename, sorting_index, file_size, title, created, last_modified)
+VALUES (?,   ?,        ?,                 ?,             ?,         ?,     NOW(),    NOW()       )
 RETURNING id
 SQL
                     my $inserted = $db->query($sql,
-                                              $sid, $basename, $upload->filename, $index, $upload->size)
-                      ->hash->{id};
+                                              $sid, $basename, $upload->filename, $index, $upload->size,
+                                              $self->param('title'),
+                                             )->hash->{id};
                     $out->{success} = 1;
                     $out->{status} = 'OK';
                     $out->{file_id} = $inserted;
@@ -64,6 +64,24 @@ SQL
         $out->{status} = 'Missing session id';
     }
     $self->render(json => $out);
+}
+
+sub _get_file_list ($self) {
+    my @all;
+    if (my $sid = $self->param('sid')) {
+        @all = $self->pg->db->select(amc_session_files => undef, { sid => $sid }, { order_by => 'sorting_index' })->hashes->each;
+    }
+    return \@all;
+};
+
+sub list_texts ($self) {
+    $self->render(json => { texts => $self->_get_file_list });
+}
+
+sub compile ($self) {
+    my $sid = $self->param('sid');
+    my $jid = $self->minion->enqueue(compile => [ $sid ]);
+    return $self->render(json => { job_id => $jid });
 }
 
 1;

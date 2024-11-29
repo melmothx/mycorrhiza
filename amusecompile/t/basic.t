@@ -27,10 +27,17 @@ diag Dumper($t->tx->res->json);
 foreach my $i (1,2,3) {
     $t->post_ok("/api/v1/add/$sid", $h, form => {
                                                  muse => { file => 't/testfiles/install.zip' },
+                                                 title => "Test Text $i"
                                                 })->status_is(200)->json_is('/success', 1, "Created OK");
     diag Dumper($t->tx->res->json);
     my $expected_file = path('muse', $sid, sprintf('%03d.zip', $i));
     ok $expected_file->exists, "$expected_file exists";
 }
+
+$t->get_ok("/api/v1/list/$sid", $h)->status_is(200)->json_is('/texts/2/title', 'Test Text 3');
+diag Dumper($t->tx->res->json);
+$t->post_ok("/api/v1/compile/$sid", $h)->status_is(200);
+diag Dumper($t->tx->res->json);
+$t->app->minion->perform_jobs_in_foreground;
 
 done_testing();
