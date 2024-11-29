@@ -1,7 +1,7 @@
 package Amusecompile::Controller::API;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::Dumper::Concise;
-
+use Path::Tiny ();
 
 sub check ($self) {
     # Render template "example/welcome.html.ep" with message
@@ -94,6 +94,18 @@ sub job_status ($self) {
                                   job_id => $jid,
                                   status => $status,
                                  });
+}
+
+sub get_compiled_file ($self) {
+    my $sid = $self->param('sid');
+    if (my $session = $self->pg->db->query('SELECT * FROM amc_sessions WHERE sid = ?', $sid)->hash) {
+        $self->log->info(Dumper($session));
+        if ($session->{compiled_file} and -f $session->{compiled_file}) {
+            my $data = Path::Tiny::path($session->{compiled_file})->slurp_raw;
+            return $self->render(data => $data, format => 'pdf');
+        }
+    }
+    return $self->render(text => "Not found", status => 404);
 }
 
 1;

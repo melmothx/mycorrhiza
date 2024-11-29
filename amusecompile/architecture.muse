@@ -23,7 +23,7 @@ Receive the set of parameters, save them as JSON. Create a job.
  - put files in a dir
  - compile and produce the output
 
-** GET /compiler/api/v1/status/:sid
+** GET /compiler/api/v1/job-status/:jid
 
 Get the job status.
 
