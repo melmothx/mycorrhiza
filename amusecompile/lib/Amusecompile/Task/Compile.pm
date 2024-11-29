@@ -24,7 +24,7 @@ sub register {
                                if (my $outfile = $c->compile) {
                                    $update->{compiled_file} = "$outfile";
                                }
-                               $db->update(amc_sessions => $update, { job_id => $sid });
+                               $db->update(amc_sessions => $update, { sid => $sid });
                            });
 }
 

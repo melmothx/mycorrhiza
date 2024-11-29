@@ -84,4 +84,16 @@ sub compile ($self) {
     return $self->render(json => { job_id => $jid });
 }
 
+sub job_status ($self) {
+    my $jid = $self->param('jid');
+    my $status = "not found";
+    if (my $job = $self->minion->job($jid)) {
+        $status = $job->info->{state};
+    }
+    return $self->render(json => {
+                                  job_id => $jid,
+                                  status => $status,
+                                 });
+}
+
 1;
