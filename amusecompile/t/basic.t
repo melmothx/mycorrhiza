@@ -38,6 +38,16 @@ $t->get_ok("/api/v1/list/$sid", $h)->status_is(200)->json_is('/texts/2/title', '
 diag Dumper($t->tx->res->json);
 $t->post_ok("/api/v1/compile/$sid", $h)->status_is(200);
 diag Dumper($t->tx->res->json);
+my $jid = $t->tx->res->json->{job_id};
+$t->get_ok("/api/v1/job-status/$jid", $h)->status_is(200)->json_is('/status', 'inactive');
+diag Dumper($t->tx->res->json);
 $t->app->minion->perform_jobs_in_foreground;
+# check again
+$t->get_ok("/api/v1/job-status/$jid", $h)->status_is(200)->json_is('/status', 'finished');
+diag Dumper($t->tx->res->json);
+diag Dumper($t->app->minion->job($jid)->info);
+
+
+
 
 done_testing();

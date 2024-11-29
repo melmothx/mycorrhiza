@@ -74,6 +74,7 @@ sub startup ($self) {
     $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
     $api->get('/list/:sid')->to('API#list_texts')->name('api_list_texts');
     $api->post('/compile/:sid')->to('API#compile')->name('api_compile');
+    $api->get('/job-status/:jid')->to('API#job_status')->name('api_job_status');
     $self->plugin('Minion::Admin' => { route => $admin });
 }
 
