@@ -1003,10 +1003,24 @@ def confirm_existence(request, library_id, token):
             reply = "Wrong token"
     return HttpResponse(reply, content_type="text/plain")
 
+def download_compiled_book(request, session_id):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    r = requests.get(base_url + '/compile/' + session_id, headers=api_auth)
+    if r.status_code == 200:
+        return HttpResponse(r.content,
+                            content_type=r.headers['content-type'],
+                            headers={
+                                'Content-Disposition': r.headers['Content-Disposition']
+                            })
+    else:
+        raise Http404("File not found!")
+
 def api_bookbuilder(request):
     api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
     base_url = settings.AMUSECOMPILE_URL
     params = json.loads(request.body)
+    logger.debug(params)
     amc_sid = params.get('session_id')
     if amc_sid:
         logger.debug("AMC session is " + amc_sid)

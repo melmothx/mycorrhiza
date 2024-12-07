@@ -18,11 +18,13 @@
              axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
                       console.log(res.data)
-                      if (res.data.texts) {
-                          this.bookbuilder.session_id = res.data.session_id;
-                          this.bookbuilder.text_list = res.data.texts
-                      }
+                      this.bookbuilder.add_text(res.data);
                   });
+         },
+         download_url() {
+             if (this.bookbuilder.job_produced) {
+                 return '/collector/api/bookbuilder/' + this.bookbuilder.session_id;
+             }
          },
          build() {
              let args = {
@@ -48,13 +50,14 @@
                  axios.post('/collector/api/bookbuilder', args)
                       .then(res => {
                           console.log(res.data)
-                          status = res.data.status
+                          status = this.bookbuilder.status = res.data.status
                           console.log("Status is " + status)
                           if (status == 'finished') {
                               console.log("Finished");
+                              this.bookbuilder.finish();
                           }
                           else if (status == 'failed') {
-                              console.log("Failed!");
+                              this.bookbuilder.fail("Job failed");
                           }
                           else {
                               console.log("Repeating it and checking " + jid),
@@ -73,9 +76,29 @@
   <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
     <div class="font-bold">{{ text.title }}</div>
   </div>
-  <div v-if="bookbuilder.text_list.length > 0">
+  <div v-if="bookbuilder.can_be_compiled()">
     <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build">
       {{ $gettext('Build') }}
+    </button>
+  </div>
+  <div v-if="bookbuilder.status == 'finished'">
+    <a :href="download_url()" class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+      {{ $gettext('Download') }}
+    </a>
+  </div>
+  <div v-if="bookbuilder.status == 'failed'">
+    <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+      {{ $gettext('Failed') }}
+    </button>
+  </div>
+  <div v-if="bookbuilder.status == 'inactive'">
+    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg animate-pulse">
+      {{ $gettext('Queued') }}
+    </button>
+  </div>
+  <div v-if="bookbuilder.status == 'active'">
+    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg animate-pulse">
+      {{ $gettext('Working') }}
     </button>
   </div>
 </template>

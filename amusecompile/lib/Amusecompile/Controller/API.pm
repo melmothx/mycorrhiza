@@ -2,6 +2,7 @@ package Amusecompile::Controller::API;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::Dumper::Concise;
 use Path::Tiny ();
+use DateTime;
 
 sub check ($self) {
     # Render template "example/welcome.html.ep" with message
@@ -110,6 +111,8 @@ sub get_compiled_file ($self) {
         $self->log->info(Dumper($session));
         if ($session->{compiled_file} and -f $session->{compiled_file}) {
             my $data = Path::Tiny::path($session->{compiled_file})->slurp_raw;
+            my $now = DateTime->now->strftime('%Y-%m-%d--%H-%M-%S');
+            $self->res->headers->content_disposition(qq{attachment; filename="bookbuilder-$now.pdf"});
             return $self->render(data => $data, format => 'pdf');
         }
     }

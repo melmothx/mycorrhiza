@@ -30,7 +30,7 @@ urlpatterns = [
     path("api/pages/<int:page_id>", views.api_view_page, name="api_view_page"),
     path("api/general", views.api_general, name="api_general"),
     path("api/bookbuilder", views.api_bookbuilder, name="api_bookbuilder"),
-
+    path("api/bookbuilder/<session_id>", views.download_compiled_book, name="api_bookbuilder_download"),
     path("api/spreadsheet/<int:library_id>", views.api_spreadsheet, name="api_spreadsheet"),
     path("api/spreadsheet/process/<int:spreadsheet_id>", views.api_process_spreadsheet, name="api_process_spreadsheet"),
     path("confirm-existence/<int:library_id>/<token>",
