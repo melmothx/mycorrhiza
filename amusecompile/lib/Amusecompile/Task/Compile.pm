@@ -3,12 +3,14 @@ use strict;
 use warnings;
 use Mojo::Base 'Mojolicious::Plugin';
 use Amusecompile::Model::BookBuilder;
+use Data::Dumper::Concise;
 
 sub register {
     my ($self, $app) = @_;
     $app->minion->add_task(compile => sub {
                                my ($job, $sid) = @_;
-                               my $logger = $job->app->log->info("Compiling $sid");
+                               my $logger = $job->app->log;
+                               $logger->info("Compiling $sid");
                                my $db = $job->app->pg->db;
                                my $wd = $job->app->wd;
                                my @all = $db->select(amc_session_files => undef, { sid => $sid },
@@ -24,6 +26,7 @@ sub register {
                                if (my $outfile = $c->compile) {
                                    $update->{compiled_file} = "$outfile";
                                }
+                               $logger->info("Updating record: " . Dumper($update));
                                $db->update(amc_sessions => $update, { sid => $sid });
                            });
 }

@@ -81,9 +81,15 @@ sub list_texts ($self) {
 }
 
 sub compile ($self) {
-    my $sid = $self->param('sid');
-    my $jid = $self->minion->enqueue(compile => [ $sid ]);
-    return $self->render(json => { job_id => $jid });
+    my $db = $self->pg->db;
+    if (my $sid = $self->param('sid')) {
+        if (my $check = $db->select(amc_sessions => undef, { sid => $sid })) {
+            my $jid = $self->minion->enqueue(compile => [ $sid ]);
+            $db->update(amc_sessions => { job_id => $jid, last_modified => \'NOW()' }, { sid => $sid });
+            return $self->render(json => { job_id => $jid });
+        }
+    }
+    return $self->render(json => { error => 'not found' });
 }
 
 sub job_status ($self) {

@@ -1023,6 +1023,9 @@ def api_bookbuilder(request):
         bbargs = {}
         r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
         out['job_id'] = r.json()['job_id']
+    elif params.get('check_job_id'):
+        r = requests.get("{}/job-status/{}".format(base_url, params.get('check_job_id')), headers=api_auth)
+        out['status'] = r.json()['status']
     elif params.get('add'):
         try:
             ds = DataSource.objects.get(pk=params.get('add'))
@@ -1036,7 +1039,7 @@ def api_bookbuilder(request):
                 filename = ds.amusewiki_uri()
                 logger.debug("Filename is {}".format(filename))
                 files = {
-                    'muse': (filename, r.content, 'application/zip')
+                    'muse': ("{}.zip".format(filename), r.content, 'application/zip')
                 }
                 # logger.debug(files)
                 rc = requests.post(base_url + '/add/' + amc_sid,

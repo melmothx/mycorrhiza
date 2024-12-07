@@ -32,8 +32,37 @@
              axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
                       console.log(res.data)
+                      if (res.data.job_id) {
+                          this.bookbuilder.job_id = res.data.job_id;
+                          this.check_job_status();
+                      }
                   });
          },
+         check_job_status() {
+             let jid = this.bookbuilder.job_id;
+             if (jid) {
+                 let args = {
+                     session_id: this.bookbuilder.session_id,
+                     check_job_id: jid,
+                 };
+                 axios.post('/collector/api/bookbuilder', args)
+                      .then(res => {
+                          console.log(res.data)
+                          status = res.data.status
+                          console.log("Status is " + status)
+                          if (status == 'finished') {
+                              console.log("Finished");
+                          }
+                          else if (status == 'failed') {
+                              console.log("Failed!");
+                          }
+                          else {
+                              console.log("Repeating it and checking " + jid),
+                              setTimeout(() => { this.check_job_status() }, 1000);
+                          }
+                      });
+             }
+         }
      },
      mounted() {
          this.refresh_list();

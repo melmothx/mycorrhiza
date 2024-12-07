@@ -26,14 +26,14 @@ sub unpack_files {
             my $musename = $1;
             my $zipfile = $wd->child($f->{basename});
             my $zip = Archive::Zip->new;
-            if ($zip->read("$zipfile") == AZ_OK) {
+            if (-f $zipfile and $zip->read("$zipfile") == AZ_OK) {
                 $self->logger->("Extracting $zipfile $musename to $wd");
                 $zip->extractTree($musename, "$wd");
                 my $musefile = $wd->child($musename . '.muse');
                 if ($musefile->exists) {
                     $self->logger->("Adding $musefile");
                     push @muse_list, { path => $musefile };
-                    $zipfile->remove;
+                    # $zipfile->remove;
                 }
             }
         }
@@ -48,7 +48,7 @@ sub session_id {
 sub compile {
     my $self = shift;
     if (my @muse_files = @{$self->unpack_files}) {
-        $self->logger->(Dumper(\@muse_files));
+        # $self->logger->(Dumper(\@muse_files));
         my $homedir = getcwd();
         my $c = Text::Amuse::Compile->new(pdf => 1);
         my $outfile;
@@ -57,7 +57,6 @@ sub compile {
             $c->compile($file);
             $file =~ s/\.muse$/.pdf/;
             $outfile = path($file);
-            
         }
         else {
             my $target = {
@@ -71,6 +70,7 @@ sub compile {
         }
         die "cwd changed. This is a bug" if getcwd() ne $homedir;
         if ($outfile and -f $outfile) {
+            $self->logger->("Created $outfile");
             return $outfile;
         }
     }
