@@ -68,6 +68,7 @@
          }
      },
      mounted() {
+         this.bookbuilder.restore();
          this.refresh_list();
      },
  }

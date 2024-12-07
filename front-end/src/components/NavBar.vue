@@ -103,6 +103,7 @@
      mounted() {
          this.check();
          this.current_language = this.$getlanguage();
+         this.bookbuilder.restore();
      },
  }
 </script>

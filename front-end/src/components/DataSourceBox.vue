@@ -15,6 +15,10 @@
              bookbuilder,
          }
      },
+     mounted() {
+         console.log("Restoring the bookbuilder");
+         this.bookbuilder.restore();
+     },
      methods: {
          toggle_full_text() {
              this.show_pdf_reader = false;
