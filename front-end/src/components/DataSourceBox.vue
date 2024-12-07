@@ -1,5 +1,7 @@
 <script>
  import axios from 'axios'
+ axios.defaults.xsrfCookieName = "csrftoken";
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'source', 'short' ],
      data() {
@@ -76,8 +78,25 @@
                      return '/pdfjs/web/viewer.html?file=' + this.get_binary_file(src.data_source_id, '.pdf');
                  }
              }
-             return;
+             return false;
          },
+         add_to_bookbuilder() {
+             axios.post('/collector/api/bookbuilder',
+                        { add: this.source.data_source_id })
+                  .then(res => {
+                      console.log(res.data)
+                  });
+             console.log(this.source);
+         },
+         can_have_the_bookbuilder() {
+             const src = this.source;
+             if (src.downloads) {
+                 if (src.downloads.find((e) => e.ext == '.muse') && src.downloads.find((e) => e.ext == '.zip')) {
+                     return true;
+                 }
+             }
+             return false;
+         }
      }
  }
 </script>
@@ -172,6 +191,11 @@
         </div>
         <div v-if="pdf_reader()">
           <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
+        </div>
+        <div v-if="can_have_the_bookbuilder()">
+          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="add_to_bookbuilder">
+            {{ $gettext('Add to the Book Builder') }}
+          </button>
         </div>
         <div class="grow"></div>
       </div>
