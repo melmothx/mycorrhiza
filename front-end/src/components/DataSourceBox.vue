@@ -11,6 +11,7 @@
              show_html: false,
              show_pdf_reader: false,
              working: false,
+             added_to_the_bookbuilder: false,
              bookbuilder,
          }
      },
@@ -91,7 +92,8 @@
                   .then(res => {
                       console.log(res.data)
                       if (res.data.session_id) {
-                          this.bookbuilder.set_session_id(res.data.session_id)
+                          this.bookbuilder.set_session_id(res.data.session_id);
+                          this.added_to_the_bookbuilder = true;
                       }
                   });
              console.log(this.source);
@@ -200,10 +202,14 @@
         <div v-if="pdf_reader()">
           <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
         </div>
-        <div v-if="can_have_the_bookbuilder()">
+        <div v-if="can_have_the_bookbuilder() && !added_to_the_bookbuilder">
           <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="add_to_bookbuilder">
             {{ $gettext('Add to the Book Builder') }}
           </button>
+        </div>
+        <div v-if="added_to_the_bookbuilder"
+             class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
+          {{ $gettext('Added to the Book Builder!') }}
         </div>
         <div class="grow"></div>
       </div>
