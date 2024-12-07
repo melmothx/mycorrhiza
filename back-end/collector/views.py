@@ -1002,3 +1002,16 @@ def confirm_existence(request, library_id, token):
         else:
             reply = "Wrong token"
     return HttpResponse(reply, content_type="text/plain")
+
+def api_bookbuilder(request):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    logger.debug(request.session)
+    amc_sid = request.session.get('amc_sid', None)
+    if amc_sid:
+        logger.debug("AMC session is " + amc_sid)
+    else:
+        r = requests.post(base_url + '/create-session', headers=api_auth)
+        request.session['amc_sid'] = amc_sid
+        amc_sid = r.json()['session_id']
+    return JsonResponse({ "amc_session_id": amc_sid })
