@@ -1,5 +1,6 @@
 <script>
  import axios from 'axios'
+ import { bookbuilder } from '../stores/bookbuilder.js'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
@@ -10,6 +11,7 @@
              show_html: false,
              show_pdf_reader: false,
              working: false,
+             bookbuilder,
          }
      },
      methods: {
@@ -81,10 +83,16 @@
              return false;
          },
          add_to_bookbuilder() {
-             axios.post('/collector/api/bookbuilder',
-                        { add: this.source.data_source_id })
+             let args = {
+                 add: this.source.data_source_id,
+                 session_id: this.bookbuilder.session_id,
+             };
+             axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
                       console.log(res.data)
+                      if (res.data.session_id) {
+                          this.bookbuilder.set_session_id(res.data.session_id)
+                      }
                   });
              console.log(this.source);
          },
