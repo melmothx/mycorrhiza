@@ -1112,6 +1112,14 @@ class DataSource(models.Model):
                           self.uri)
         return None
 
+    def amusewiki_uri(self):
+        amw_base_url = self.amusewiki_base_url()
+        if amw_base_url:
+            m = re.fullmatch(r'.*?/([a-z0-9-]+)$', amw_base_url)
+            if m:
+                return m.group(1)
+        return None
+
     def calibre_base_dir(self):
         if self.uri:
             tree = Path(self.uri)

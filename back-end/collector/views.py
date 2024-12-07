@@ -1014,4 +1014,32 @@ def api_bookbuilder(request):
         r = requests.post(base_url + '/create-session', headers=api_auth)
         request.session['amc_sid'] = amc_sid
         amc_sid = r.json()['session_id']
-    return JsonResponse({ "session_id": amc_sid })
+    out = { "session_id": amc_sid }
+
+    if params.get('add'):
+        try:
+            ds = DataSource.objects.get(pk=params.get('add'))
+        except DataSource.DoesNotExist:
+            out['error'] = "Not found"
+            return JsonResponse(out)
+        site = ds.site
+        if site.library_id in _active_libraries(request.user):
+            if site.site_type == 'amusewiki':
+                r = ds.get_remote_file('.zip')
+                filename = ds.amusewiki_uri()
+                logger.debug("Filename is {}".format(filename))
+                files = {
+                    'muse': (filename, r.content, 'application/zip')
+                }
+                # logger.debug(files)
+                rc = requests.post(base_url + '/add/' + amc_sid,
+                                   files=files,
+                                   # data={'title': ds.entry.title},
+                                   headers=api_auth)
+                # logger.debug(rc.request.headers)
+                res = rc.json()
+                logger.debug(res)
+                out['status'] = res.get('status')
+                out['file_id'] = res.get('file_id')
+            logger.debug("OK")
+    return JsonResponse(out)

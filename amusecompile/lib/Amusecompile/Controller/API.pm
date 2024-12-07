@@ -32,23 +32,25 @@ sub add_file ($self) {
                 my $stack = $db->query($stack_sql, $sid)->hash;
                 my $index = $stack->{idx} + 1;
                 $self->log->debug(Dumper($stack));
-                if ($stack->{total_size} > (1024 * 1024 * 64)) {
+                if ($stack->{total_size} and $stack->{total_size} > (1024 * 1024 * 64)) {
                     return $self->render(json => { status => 'Quota exceeded' });
                 }
-                if (my $upload = $self->param('muse')) {
+                if (my $upload = $self->req->upload('muse')) {
                     my $basename = sprintf('%03d.zip', $index);
                     my $destination = $self->wd->child($sid)->child($basename);
                     $upload->move_to($destination);
-                    $self->log->info("Uploaded $destination");
+                    my $file_title = $self->param('title') || '';
+                    $self->log->info("Uploaded $destination $file_title");
                     my $sql =<<'SQL';
 INSERT INTO amc_session_files
        (sid, basename, original_filename, sorting_index, file_size, title, created, last_modified)
 VALUES (?,   ?,        ?,                 ?,             ?,         ?,     NOW(),    NOW()       )
 RETURNING id
 SQL
+
                     my $inserted = $db->query($sql,
                                               $sid, $basename, $upload->filename, $index, $upload->size,
-                                              $self->param('title'),
+                                              $file_title,
                                              )->hash->{id};
                     $out->{success} = 1;
                     $out->{status} = 'OK';
