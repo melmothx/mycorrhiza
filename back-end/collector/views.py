@@ -1016,7 +1016,14 @@ def api_bookbuilder(request):
         amc_sid = r.json()['session_id']
     out = { "session_id": amc_sid }
 
-    if params.get('add'):
+    if params.get('list'):
+        r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)
+        out['texts'] = r.json()['texts']
+    elif params.get('build'):
+        bbargs = {}
+        r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
+        out['job_id'] = r.json()['job_id']
+    elif params.get('add'):
         try:
             ds = DataSource.objects.get(pk=params.get('add'))
         except DataSource.DoesNotExist:
@@ -1034,12 +1041,12 @@ def api_bookbuilder(request):
                 # logger.debug(files)
                 rc = requests.post(base_url + '/add/' + amc_sid,
                                    files=files,
-                                   # data={'title': ds.entry.title},
+                                   data={'title': ds.entry.title},
                                    headers=api_auth)
                 # logger.debug(rc.request.headers)
                 res = rc.json()
                 logger.debug(res)
                 out['status'] = res.get('status')
                 out['file_id'] = res.get('file_id')
-            logger.debug("OK")
+    logger.debug(out)
     return JsonResponse(out)

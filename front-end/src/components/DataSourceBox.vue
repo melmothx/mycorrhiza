@@ -92,7 +92,7 @@
                   .then(res => {
                       console.log(res.data)
                       if (res.data.session_id) {
-                          this.bookbuilder.set_session_id(res.data.session_id);
+                          this.bookbuilder.session_id = res.data.session_id;
                           this.added_to_the_bookbuilder = true;
                       }
                   });

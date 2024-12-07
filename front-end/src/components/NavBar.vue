@@ -150,7 +150,9 @@
       <UserIcon class="h-5 w-5 m-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
     </div>
     <div v-if="bookbuilder.session_id">
-      <BookOpenIcon class="h-5 w-5 my-2 text-cab-sav-800 cursor-pointer" />
+      <router-link :to="{ name: 'bookbuilder' }">
+        <BookOpenIcon class="h-5 w-5 my-2 text-cab-sav-800 cursor-pointer" />
+      </router-link>
     </div>
     <div v-if="authenticated">
       <Menu as="div" class="relative z-10">

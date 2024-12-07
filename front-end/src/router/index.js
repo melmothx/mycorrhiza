@@ -9,6 +9,7 @@ import LibraryView from '../views/LibraryView.vue'
 import LibraryOverView from '../views/LibraryOverView.vue'
 import AgentOverView from '../views/AgentOverView.vue'
 import PageView from '../views/PageView.vue'
+import BookBuilderView from '../views/BookBuilderView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     scrollBehavior(to, from, savedPosition) {
@@ -99,6 +100,11 @@ const router = createRouter({
             path: '/page/:id',
             name: 'page_view',
             component: PageView,
+        },
+        {
+            path: '/bookbuilder',
+            name: 'bookbuilder',
+            component: BookBuilderView,
         },
     ]
 })
