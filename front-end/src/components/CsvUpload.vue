@@ -74,7 +74,7 @@
              this.spreadsheet = null;
              this.spreadsheet_name = null;
              this.processing = true;
-             document.getElementById('csv-upload-title').scrollIntoView({ behavior: "smooth" });
+             document.getElementById('app').scrollIntoView({ behavior: "smooth" });
              axios.post('/collector/api/spreadsheet/process/' + this.spreadsheet_id)
                   .then(res => {
                       console.log(res.data)
