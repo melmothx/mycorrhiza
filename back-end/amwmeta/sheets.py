@@ -100,8 +100,8 @@ def parse_sheet(csv_type, sheet, **options):
     sheet_error = None
     records = []
     if args['type'] == "csv":
-        with open(sheet, newline='', encoding=args[csv_type]['encoding']) as csvfile:
-            reader = csv.DictReader(csvfile, **args[csv_type]['csv'])
+        with open(sheet, newline='', encoding=args['encoding']) as csvfile:
+            reader = csv.DictReader(csvfile, **args['csv'])
             try:
                 for row in reader:
                     records.append(row)
