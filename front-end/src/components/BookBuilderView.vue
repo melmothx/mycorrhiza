@@ -3,11 +3,12 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
- import { TrashIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
+ import { TrashIcon, Cog8ToothIcon, ArrowPathIcon } from '@heroicons/vue/24/solid'
  export default {
      components: {
          TrashIcon,
          Cog8ToothIcon,
+         ArrowPathIcon,
      },
      data() {
          return {
@@ -139,13 +140,19 @@
     </button>
   </div>
   <div v-if="bookbuilder.status == 'inactive'">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg animate-pulse">
-      {{ $gettext('Queued') }}
+    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+      <span class="flex items-center">
+        <ArrowPathIcon class="h-4 w-4 mr-1 animate-spin" />
+        {{ $gettext('Queued') }}
+      </span>
     </button>
   </div>
   <div v-if="bookbuilder.status == 'active'">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg animate-pulse">
-      {{ $gettext('Working') }}
+    <button type="button" class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+      <span class="flex items-center">
+        <Cog8ToothIcon class="h-4 w-4 mr-1 animate-spin" />
+        {{ $gettext('Working') }}
+      </span>
     </button>
   </div>
 </template>
