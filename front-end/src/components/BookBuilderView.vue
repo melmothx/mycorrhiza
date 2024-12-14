@@ -3,13 +3,31 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import { TrashIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
  export default {
+     components: {
+         TrashIcon,
+         Cog8ToothIcon,
+     },
      data() {
          return {
              bookbuilder
          }
      },
      methods: {
+         drop_element(event, id) {
+             const move_id = event.dataTransfer.getData('move_id');
+             console.log(`Dropping ${move_id} into ${id}`);
+         },
+         drag_element(e, id) {
+             console.log(`Dragging ${id}`);
+             e.dataTransfer.dropEffect = 'move';
+             e.dataTransfer.effectAllowed = 'move';
+             e.dataTransfer.setData('move_id', id);
+         },
+         remove_element(id) {
+             console.log(`Removing ${id}`);
+         },
          refresh_list() {
              let args = {
                  session_id: this.bookbuilder.session_id,
@@ -75,7 +93,13 @@
 </script>
 <template>
   <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
-    <div class="font-bold">{{ text.title }}</div>
+    <div class="flex my-2">
+      <TrashIcon class="h-6 w-6 text-cab-sav-800" @click="remove_element(text.id)" />
+      <div @drop="drop_element($event, text.id)"
+         @dragover.prevent @dragenter.prevent
+         @dragstart="drag_element($event, text.id)"
+         draggable="true" class="font-bold cursor-grab">{{ text.id }} {{ text.title }}</div>
+    </div>
   </div>
   <div v-if="bookbuilder.can_be_compiled()">
     <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build">

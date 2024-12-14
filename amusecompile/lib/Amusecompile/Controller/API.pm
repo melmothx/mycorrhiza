@@ -29,33 +29,34 @@ sub add_file ($self) {
         my $db = $self->pg->db;
         if (my $check = $db->query('SELECT sid FROM amc_sessions WHERE sid = ?', $sid)->hash) {
             if ($check and $check->{sid}) {
-                my $stack_sql = 'SELECT COUNT(*) AS idx, SUM(file_size) AS total_size FROM amc_session_files WHERE sid = ?';
+                my $stack_sql = 'SELECT MAX(sorting_index) AS idx, SUM(file_size) AS total_size FROM amc_session_files WHERE sid = ?';
                 my $stack = $db->query($stack_sql, $sid)->hash;
-                my $index = $stack->{idx} + 1;
+                my $index = ($stack->{idx} || 0) + 1;
                 $self->log->debug(Dumper($stack));
                 if ($stack->{total_size} and $stack->{total_size} > (1024 * 1024 * 64)) {
                     return $self->render(json => { status => 'Quota exceeded' });
                 }
                 if (my $upload = $self->req->upload('muse')) {
-                    my $basename = sprintf('%03d.zip', $index);
-                    my $destination = $self->wd->child($sid)->child($basename);
-                    $upload->move_to($destination);
                     my $file_title = $self->param('title') || '';
-                    $self->log->info("Uploaded $destination $file_title");
                     my $sql =<<'SQL';
 INSERT INTO amc_session_files
-       (sid, basename, original_filename, sorting_index, file_size, title, created, last_modified)
-VALUES (?,   ?,        ?,                 ?,             ?,         ?,     NOW(),    NOW()       )
+       (sid, original_filename, sorting_index, file_size, title, created, last_modified)
+VALUES (?,   ?,                 ?,             ?,         ?,     NOW(),    NOW()       )
 RETURNING id
 SQL
 
-                    my $inserted = $db->query($sql,
-                                              $sid, $basename, $upload->filename, $index, $upload->size,
+                    my $id = $db->query($sql,
+                                              $sid, $upload->filename, $index, $upload->size,
                                               $file_title,
                                              )->hash->{id};
+                    my $basename = sprintf('%08d.zip', $id);
+                    my $destination = $self->wd->child($sid)->child($basename);
+                    $upload->move_to($destination);
+                    $self->log->info("Uploaded $destination $file_title");
+                    $db->update(amc_session_files => { basename => $basename }, { id => $id });
                     $out->{success} = 1;
                     $out->{status} = 'OK';
-                    $out->{file_id} = $inserted;
+                    $out->{file_id} = $id;
                 }
             }
         }

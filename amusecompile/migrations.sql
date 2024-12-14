@@ -12,7 +12,7 @@ CREATE TABLE amc_sessions (
 CREATE TABLE amc_session_files (
    id SERIAL NOT NULL PRIMARY KEY,
    sid VARCHAR(64) NOT NULL REFERENCES amc_sessions(sid) ON DELETE CASCADE ON UPDATE CASCADE,
-   basename VARCHAR(255) NOT NULL,
+   basename VARCHAR(255) NULL,
    original_filename VARCHAR(255) NOT NULL,
    sorting_index INTEGER NOT NULL,
    title TEXT NULL,
