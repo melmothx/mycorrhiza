@@ -89,6 +89,7 @@
          },
          add_to_bookbuilder() {
              let args = {
+                 action: "add",
                  add: this.source.data_source_id,
                  session_id: this.bookbuilder.session_id,
              };

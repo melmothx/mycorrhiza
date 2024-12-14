@@ -1030,17 +1030,19 @@ def api_bookbuilder(request):
         amc_sid = r.json()['session_id']
     out = { "session_id": amc_sid }
 
-    if params.get('list'):
+    action = params.get('action', '')
+
+    if action == 'list':
         r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)
         out['texts'] = r.json()['texts']
-    elif params.get('build'):
+    elif action == 'build':
         bbargs = {}
         r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
         out['job_id'] = r.json()['job_id']
-    elif params.get('check_job_id'):
+    elif action == 'check_job_id':
         r = requests.get("{}/job-status/{}".format(base_url, params.get('check_job_id')), headers=api_auth)
         out['status'] = r.json()['status']
-    elif params.get('add'):
+    elif action == 'add':
         try:
             ds = DataSource.objects.get(pk=params.get('add'))
         except DataSource.DoesNotExist:
@@ -1065,5 +1067,10 @@ def api_bookbuilder(request):
                 logger.debug(res)
                 out['status'] = res.get('status')
                 out['file_id'] = res.get('file_id')
+    elif action == 'remove':
+        r = requests.post("{}/list/{}/remove/{}".format(base_url, amc_sid, params.get('remove_id')), headers=api_auth)
+        rj = r.json()
+        out['status'] = rj['status']
+        out['texts'] = rj['texts']
     logger.debug(out)
     return JsonResponse(out)

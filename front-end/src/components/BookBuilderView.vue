@@ -27,11 +27,21 @@
          },
          remove_element(id) {
              console.log(`Removing ${id}`);
+             let args = {
+                 session_id: this.bookbuilder.session_id,
+                 action: "remove",
+                 remove_id: id,
+             };
+             axios.post('/collector/api/bookbuilder', args)
+                  .then(res => {
+                      console.log(res.data)
+                      this.bookbuilder.add_text(res.data);
+                  });
          },
          refresh_list() {
              let args = {
                  session_id: this.bookbuilder.session_id,
-                 list: true,
+                 action: "list",
              };
              axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
@@ -47,7 +57,7 @@
          build() {
              let args = {
                  session_id: this.bookbuilder.session_id,
-                 build: true,
+                 action: "build",
              };
              axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
@@ -63,6 +73,7 @@
              if (jid) {
                  let args = {
                      session_id: this.bookbuilder.session_id,
+                     action: "check_job",
                      check_job_id: jid,
                  };
                  axios.post('/collector/api/bookbuilder', args)

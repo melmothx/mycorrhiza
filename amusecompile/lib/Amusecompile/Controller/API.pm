@@ -82,6 +82,16 @@ sub list_texts ($self) {
     $self->render(json => { texts => $self->_get_file_list });
 }
 
+sub remove_from_list ($self) {
+    if (my $sid = $self->param('sid')) {
+        if (my $tid = $self->param('tid')) {
+            $self->pg->db->delete(amc_session_files => { sid => $sid, id => $tid });
+            return $self->render(json => { texts => $self->_get_file_list, status => 'OK' });
+        }
+    }
+    $self->render(json => { error => 'not found' });
+}
+
 sub compile ($self) {
     my $db = $self->pg->db;
     if (my $sid = $self->param('sid')) {
