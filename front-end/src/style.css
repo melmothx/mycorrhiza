@@ -84,6 +84,20 @@
     @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
 }
 
+.mcrz-tab-common {
+    @apply inline-block p-4 border-b-2 rounded-t-lg font-bold;
+}
+
+.mcrz-tab-normal {
+    @apply mcrz-tab-common border-perl-bush-300 hover:text-spectra-600 hover:border-spectra-600;
+}
+
+.mcrz-tab-active {
+    @apply mcrz-tab-common text-spectra-700 border-b-2 border-spectra-700;
+}
+
+
+
 @layer components {
     .btn-primary {
         @apply bg-gradient-to-tr from-spectra-700 to-spectra-900
