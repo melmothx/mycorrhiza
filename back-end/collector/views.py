@@ -1031,7 +1031,7 @@ def api_bookbuilder(request):
     out = { "session_id": amc_sid }
 
     action = params.get('action', '')
-
+    logger.debug("Action is " + action)
     if action == 'list':
         r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)
         out['texts'] = r.json()['texts']
@@ -1039,7 +1039,7 @@ def api_bookbuilder(request):
         bbargs = {}
         r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
         out['job_id'] = r.json()['job_id']
-    elif action == 'check_job_id':
+    elif action == 'check_job':
         r = requests.get("{}/job-status/{}".format(base_url, params.get('check_job_id')), headers=api_auth)
         out['status'] = r.json()['status']
     elif action == 'add':
@@ -1069,6 +1069,15 @@ def api_bookbuilder(request):
                 out['file_id'] = res.get('file_id')
     elif action == 'remove':
         r = requests.post("{}/list/{}/remove/{}".format(base_url, amc_sid, params.get('remove_id')), headers=api_auth)
+        rj = r.json()
+        out['status'] = rj['status']
+        out['texts'] = rj['texts']
+    elif action == 'reorder':
+        r = requests.post("{}/list/{}/reorder/{}/{}".format(base_url,
+                                                            amc_sid,
+                                                            params.get('move_id'),
+                                                            params.get('to_id')),
+                          headers=api_auth)
         rj = r.json()
         out['status'] = rj['status']
         out['texts'] = rj['texts']

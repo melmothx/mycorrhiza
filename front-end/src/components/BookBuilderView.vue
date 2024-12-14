@@ -18,6 +18,17 @@
          drop_element(event, id) {
              const move_id = event.dataTransfer.getData('move_id');
              console.log(`Dropping ${move_id} into ${id}`);
+             const args = {
+                 session_id: this.bookbuilder.session_id,
+                 action: "reorder",
+                 move_id: move_id,
+                 to_id: id,
+             };
+             axios.post('/collector/api/bookbuilder', args)
+                  .then(res => {
+                      console.log(res.data)
+                      this.bookbuilder.add_text(res.data);
+                  });
          },
          drag_element(e, id) {
              console.log(`Dragging ${id}`);
@@ -27,7 +38,7 @@
          },
          remove_element(id) {
              console.log(`Removing ${id}`);
-             let args = {
+             const args = {
                  session_id: this.bookbuilder.session_id,
                  action: "remove",
                  remove_id: id,
@@ -39,7 +50,7 @@
                   });
          },
          refresh_list() {
-             let args = {
+             const args = {
                  session_id: this.bookbuilder.session_id,
                  action: "list",
              };
@@ -55,7 +66,7 @@
              }
          },
          build() {
-             let args = {
+             const args = {
                  session_id: this.bookbuilder.session_id,
                  action: "build",
              };
@@ -71,7 +82,7 @@
          check_job_status() {
              let jid = this.bookbuilder.job_id;
              if (jid) {
-                 let args = {
+                 const args = {
                      session_id: this.bookbuilder.session_id,
                      action: "check_job",
                      check_job_id: jid,

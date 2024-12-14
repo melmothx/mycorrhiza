@@ -92,6 +92,38 @@ sub remove_from_list ($self) {
     $self->render(json => { error => 'not found' });
 }
 
+sub reorder_list ($self) {
+    if (my $sid = $self->param('sid')) {
+        if (my $move_id = $self->param('move_id')) {
+            if (my $to_id = $self->param('to_id')) {
+                my $db = $self->pg->db;
+                my @pos = map { $_->{id} }
+                  $db->select(amc_session_files => [qw/id/], { sid => $sid },
+                                        { order_by => 'sorting_index' })->hashes->each;
+                my @newpos;
+                foreach my $id (@pos) {
+                    if ($id != $move_id) {
+                        if ($id == $to_id) {
+                            push @newpos, $move_id, $to_id;
+                        }
+                        else {
+                            push @newpos, $id;
+                        }
+                    }
+                }
+                $self->log->debug(Dumper([\@pos, \@newpos]));
+                my $order = 0;
+                foreach my $id (@newpos) {
+                    $order++;
+                    $db->update(amc_session_files => { sorting_index => $order }, { id => $id });
+                }
+                return $self->render(json => { texts => $self->_get_file_list, status => 'OK' });
+            }
+        }
+    }
+    $self->render(json => { error => 'not found' });
+}
+
 sub compile ($self) {
     my $db = $self->pg->db;
     if (my $sid = $self->param('sid')) {
