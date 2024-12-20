@@ -52,7 +52,9 @@ sub compile {
     if (my @muse_files = @{$self->unpack_files}) {
         # $self->logger->(Dumper(\@muse_files));
         my $homedir = getcwd();
-        my $c = Text::Amuse::Compile->new(pdf => 1);
+        my $bbargs = $self->bbargs;
+        my %extra = map { $_ => $bbargs->{$_} } (qw/papersize/);
+        my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
         my $outfile;
         if (@muse_files == 1) {
             my $file = $muse_files[0]{path}->stringify;
@@ -61,7 +63,7 @@ sub compile {
             $outfile = path($file);
         }
         else {
-            my %vheader = map { $_ => $self->bbargs->{$_} // ''} (qw/title author subtitle date notes source/);
+            my %vheader = map { $_ => $bbargs->{$_} // ''} (qw/title author subtitle date notes source/);
             $vheader{title} ||= "My collection";
             my $target = {
                           path => $self->working_directory->stringify,

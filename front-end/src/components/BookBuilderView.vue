@@ -80,9 +80,10 @@
              this.bookbuilder.save();
              const args = {
                  session_id: this.bookbuilder.session_id,
-                 collection_data: this.bookbuilder.collection_data,
+                 collection_data: this.bookbuilder.api_collection_data(),
                  action: "build",
              };
+             console.log(args);
              axios.post('/collector/api/bookbuilder', args)
                   .then(res => {
                       console.log(res.data)
@@ -157,8 +158,31 @@
     </ul>
   </div>
   <div id="bb-tabs">
+    <div v-if="current_tab == 'layout'" id="bb-layout">
+      <select class="mcrz-select" v-model="bookbuilder.collection_data.papersize">
+        <option value="generic">Generic (fits in A4 and Letter)</option>
+        <option value="a3">A3</option>
+        <option value="a4">A4</option>
+        <option value="a5">A5</option>
+        <option value="a6">A6</option>
+        <option value="88mm:115mm">6" E-reader</option>
+        <option value="b3">B3</option>
+        <option value="b4">B4</option>
+        <option value="b5">B5</option>
+        <option value="b6">B6</option>
+        <option value="letter">Letter paper</option>
+        <option value="5.5in:8.5in">Half Letter paper</option>
+        <option value="4.25in:5.5in">Quarter Letter paper</option>
+        <option value="">Custom</option>
+      </select>
+      <div v-if="!bookbuilder.collection_data.papersize">
+        <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_width">
+        x
+        <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_height">
+      </div>
+    </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">
-      <div class="my-4" v-if="bookbuilder.needs_collection_data()">
+      <div class="my-4" v-if="bookbuilder.needs_virtual_header()">
         <div>
           <div clas="flex">
             <input id="library-collection-title" class="w-full mcrz-input" :placeholder="$gettext('Title')"
@@ -211,11 +235,11 @@
         {{ $gettext('Reset') }}
       </button>
     </div>
-    <div v-if="bookbuilder.status == 'finished'">
-      <a :href="download_url()" class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+    <a v-if="bookbuilder.status == 'finished'" :href="download_url()">
+      <div class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
         {{ $gettext('Download') }}
-      </a>
-    </div>
+      </div>
+    </a>
     <div v-if="bookbuilder.status == 'failed'">
       <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
         {{ $gettext('Failed') }}
@@ -237,5 +261,10 @@
         </span>
       </button>
     </div>
+  </div>
+  <div class="mt-10">
+    <pre class="text-sm">
+{{ bookbuilder.collection_data }}
+    </pre>
   </div>
 </template>
