@@ -1036,7 +1036,7 @@ def api_bookbuilder(request):
         r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)
         out['texts'] = r.json()['texts']
     elif action == 'build':
-        bbargs = {}
+        bbargs = params.get('collection_data')
         r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
         out['job_id'] = r.json()['job_id']
     elif action == 'check_job':

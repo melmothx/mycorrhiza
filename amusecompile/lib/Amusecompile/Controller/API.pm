@@ -127,7 +127,9 @@ sub compile ($self) {
     my $db = $self->pg->db;
     if (my $sid = $self->param('sid')) {
         if (my $check = $db->select(amc_sessions => undef, { sid => $sid })) {
-            my $jid = $self->minion->enqueue(compile => [ $sid ]);
+            my $bbargs = $self->req->body_params->to_hash;
+            $self->log->debug(Dumper($bbargs));
+            my $jid = $self->minion->enqueue(compile => [ $sid, $bbargs ]);
             $db->update(amc_sessions => { job_id => $jid, last_modified => \'NOW()' }, { sid => $sid });
             return $self->render(json => { job_id => $jid });
         }

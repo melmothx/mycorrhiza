@@ -17,6 +17,8 @@ has file_list => (is => 'ro', isa => ArrayRef[HashRef], required => 1);
 
 has logger => (is => 'ro', isa => CodeRef, default => sub { sub {} });
 
+has bbargs => (is => 'ro', isa => HashRef, default => sub { +{} });
+
 sub unpack_files {
     my $self = shift;
     my $wd = $self->working_directory;
@@ -59,12 +61,15 @@ sub compile {
             $outfile = path($file);
         }
         else {
+            my %vheader = map { $_ => $self->bbargs->{$_} // ''} (qw/title author subtitle date notes source/);
+            $vheader{title} ||= "My collection";
             my $target = {
                           path => $self->working_directory->stringify,
                           files => [ map { $_->{path}->stringify } @muse_files ],
                           name => $self->session_id,
-                          title => "My collection",
+                          %vheader,
                          };
+            $self->logger->("Compiling " . Dumper($target));
             $c->compile($target);
             $outfile = $self->working_directory->child($self->session_id . ".pdf");
         }
@@ -72,6 +77,9 @@ sub compile {
         if ($outfile and -f $outfile) {
             $self->logger->("Created $outfile");
             return $outfile;
+        }
+        else {
+            die "$outfile not created";
         }
     }
     return;

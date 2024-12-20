@@ -23,6 +23,7 @@
      },
      methods: {
          set_tab(tab) {
+             this.bookbuilder.save();
              this.current_tab = tab;
          },
          drop_element(event, id) {
@@ -76,8 +77,10 @@
              }
          },
          build() {
+             this.bookbuilder.save();
              const args = {
                  session_id: this.bookbuilder.session_id,
+                 collection_data: this.bookbuilder.collection_data,
                  action: "build",
              };
              axios.post('/collector/api/bookbuilder', args)
@@ -155,6 +158,34 @@
   </div>
   <div id="bb-tabs">
     <div v-if="current_tab == 'overview'" id="bb-overview">
+      <div class="my-4" v-if="bookbuilder.needs_collection_data()">
+        <div>
+          <div clas="flex">
+            <input id="library-collection-title" class="w-full mcrz-input" :placeholder="$gettext('Title')"
+                   v-model="bookbuilder.collection_data.title" />
+          </div>
+          <div clas="flex">
+            <input id="library-collection-subtitle" class="w-full mcrz-input" :placeholder="$gettext('Subtitle')"
+                   v-model="bookbuilder.collection_data.subtitle" />
+          </div>
+          <div clas="flex">
+            <input id="library-collection-author" class="w-full mcrz-input" :placeholder="$gettext('Author')"
+                   v-model="bookbuilder.collection_data.author" />
+          </div>
+          <div clas="flex">
+            <input id="library-collection-date" class="w-full mcrz-input" :placeholder="$gettext('Date')"
+                   v-model="bookbuilder.collection_data.date" />
+          </div>
+          <div clas="flex">
+            <input id="library-collection-notes" class="w-full mcrz-input" :placeholder="$gettext('Notes')"
+                   v-model="bookbuilder.collection_data.notes" />
+          </div>
+          <div clas="flex">
+            <input id="library-collection-source" class="w-full mcrz-input" :placeholder="$gettext('Source')"
+                   v-model="bookbuilder.collection_data.source" />
+          </div>
+        </div>
+      </div>
       <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
         <div class="flex my-3">
           <router-link :to="{name: 'entry', params: { id: text.attributes.entry_id } }">
@@ -164,7 +195,7 @@
          @dragover.prevent @dragenter.prevent
          @dragstart="drag_element($event, text.id)"
          draggable="true" class="font-bold cursor-grab">{{ text.attributes.title }}</div>
-          <TrashIcon class="ml-3 h-6 w-6 text-cab-sav-800" @click="remove_element(text.id)" />
+          <TrashIcon class="ml-3 h-6 w-6 text-cab-sav-800 cursor-pointer" @click="remove_element(text.id)" />
         </div>
       </div>
     </div>

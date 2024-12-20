@@ -8,7 +8,7 @@ use Data::Dumper::Concise;
 sub register {
     my ($self, $app) = @_;
     $app->minion->add_task(compile => sub {
-                               my ($job, $sid) = @_;
+                               my ($job, $sid, $bbargs) = @_;
                                my $logger = $job->app->log;
                                $logger->info("Compiling $sid");
                                my $db = $job->app->pg->db;
@@ -17,6 +17,7 @@ sub register {
                                                      { order_by => 'sorting_index' })->hashes->each;
                                my @logs;
                                my $c = Amusecompile::Model::BookBuilder->new(working_directory => $wd->child($sid),
+                                                                             bbargs => $bbargs,
                                                                              logger => sub { push @logs, @_ },
                                                                              file_list => \@all);
                                my $update = {

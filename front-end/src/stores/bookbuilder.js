@@ -8,6 +8,7 @@ export const bookbuilder = reactive({
     error: null,
     status: null,
     loaded: false,
+    collection_data: {},
     save() {
         console.log("Saving the state");
         localStorage.setItem('bookbuilder', JSON.stringify({
@@ -17,6 +18,7 @@ export const bookbuilder = reactive({
             job_produced: this.job_produced,
             error:        this.error,
             status:       this.status,
+            collection_data: this.collection_data,
         }));
     },
     restore() {
@@ -31,6 +33,7 @@ export const bookbuilder = reactive({
                 this.job_produced = stored_obj.job_produced;
                 this.error        = stored_obj.error;
                 this.status       = stored_obj.status;
+                this.collection_data =  stored_obj.collection_data || {};
                 this.loaded = true;
             }
         }
@@ -43,10 +46,19 @@ export const bookbuilder = reactive({
         this.error = null,
         this.status = null,
         this.loaded = true,
+        this.collection_data = {},
         this.save();
     },
     can_be_compiled() {
         if (this.text_list.length > 0 && !this.job_id && !this.job_produced) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+    needs_collection_data() {
+        if (this.text_list.length > 1) {
             return true;
         }
         else {
