@@ -37,22 +37,20 @@ sub add_file ($self) {
                     return $self->render(json => { status => 'Quota exceeded' });
                 }
                 if (my $upload = $self->req->upload('muse')) {
-                    my $file_title = $self->param('title') || '';
-                    my $sql =<<'SQL';
-INSERT INTO amc_session_files
-       (sid, original_filename, sorting_index, file_size, title, created, last_modified)
-VALUES (?,   ?,                 ?,             ?,         ?,     NOW(),    NOW()       )
-RETURNING id
-SQL
-
-                    my $id = $db->query($sql,
-                                              $sid, $upload->filename, $index, $upload->size,
-                                              $file_title,
-                                             )->hash->{id};
+                    my $id = $db->insert(amc_session_files => {
+                                                               sid => $sid,
+                                                               original_filename => $upload->filename,
+                                                               sorting_index => $index,
+                                                               file_size => $upload->size,
+                                                               attributes => { -json => $self->req->body_params->to_hash },
+                                                               created => \'NOW()',
+                                                               last_modified => \'NOW()',
+                                                              },
+                                         { returning => 'id' })->hash->{id};
                     my $basename = sprintf('%08d.zip', $id);
                     my $destination = $self->wd->child($sid)->child($basename);
                     $upload->move_to($destination);
-                    $self->log->info("Uploaded $destination $file_title");
+                    $self->log->info("Uploaded $destination");
                     $db->update(amc_session_files => { basename => $basename }, { id => $id });
                     $out->{success} = 1;
                     $out->{status} = 'OK';
@@ -73,7 +71,8 @@ SQL
 sub _get_file_list ($self) {
     my @all;
     if (my $sid = $self->param('sid')) {
-        @all = $self->pg->db->select(amc_session_files => undef, { sid => $sid }, { order_by => 'sorting_index' })->hashes->each;
+        @all = $self->pg->db->select(amc_session_files => undef, { sid => $sid }, { order_by => 'sorting_index' })
+          ->expand->hashes->each;
     }
     return \@all;
 };

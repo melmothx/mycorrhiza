@@ -35,6 +35,16 @@ export const bookbuilder = reactive({
             }
         }
     },
+    reset() {
+        this.session_id = null,
+        this.job_id = null,
+        this.text_list = [],
+        this.job_produced = null,
+        this.error = null,
+        this.status = null,
+        this.loaded = true,
+        this.save();
+    },
     can_be_compiled() {
         if (this.text_list.length > 0 && !this.job_id && !this.job_produced) {
             return true;

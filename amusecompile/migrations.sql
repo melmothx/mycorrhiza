@@ -15,7 +15,7 @@ CREATE TABLE amc_session_files (
    basename VARCHAR(255) NULL,
    original_filename VARCHAR(255) NOT NULL,
    sorting_index INTEGER NOT NULL,
-   title TEXT NULL,
+   attributes JSONB NULL,
    file_size INTEGER NOT NULL,
    created TIMESTAMP WITH TIME ZONE NOT NULL,
    last_modified TIMESTAMP WITH TIME ZONE NOT NULL

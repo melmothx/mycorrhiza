@@ -3,17 +3,22 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
- import { TrashIcon, Cog8ToothIcon, ArrowPathIcon } from '@heroicons/vue/24/solid'
+ import { TrashIcon,
+          Cog8ToothIcon,
+          ArrowPathIcon,
+          BookOpenIcon,
+ } from '@heroicons/vue/24/solid'
  export default {
      components: {
          TrashIcon,
          Cog8ToothIcon,
          ArrowPathIcon,
-     },
+         BookOpenIcon,
+      },
      data() {
          return {
              bookbuilder,
-             current_tab: "general",
+             current_tab: "overview",
          }
      },
      methods: {
@@ -122,49 +127,57 @@
   <div class="font-medium text-center text-gray-500 mb-8">
     <ul class="flex flex-wrap">
       <li>
-        <a href="#" @click="set_tab('general')" :class="current_tab == 'general' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
-          General
+        <a href="#" @click="set_tab('overview')" :class="current_tab == 'overview' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
+          {{ $gettext('Overview') }}
         </a>
       </li>
       <li>
         <a href="#" @click="set_tab('layout')" :class="current_tab == 'layout' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
-          Layout
+          {{ $gettext('Layout') }}
         </a>
       </li>
       <li>
         <a href="#" @click="set_tab('fonts')" :class="current_tab == 'fonts' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
-          Fonts
+          {{ $gettext('Fonts') }}
         </a>
       </li>
       <li>
         <a href="#" @click="set_tab('imposition')" :class="current_tab == 'imposition' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
-          Imposition
+          {{ $gettext('Imposition') }}
         </a>
       </li>
       <li>
         <a href="#" @click="set_tab('advanced')" :class="current_tab == 'advanced' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
-          Advanced
+          {{ $gettext('Advanced') }}
         </a>
       </li>
     </ul>
   </div>
   <div id="bb-tabs">
-    <div v-if="current_tab == 'general'" id="bb-general">
+    <div v-if="current_tab == 'overview'" id="bb-overview">
       <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
-        <div class="flex my-2">
-          <TrashIcon class="h-6 w-6 text-cab-sav-800" @click="remove_element(text.id)" />
+        <div class="flex my-3">
+          <router-link :to="{name: 'entry', params: { id: text.attributes.entry_id } }">
+            <BookOpenIcon class="h-6 w-6 mr-3 text-spectra-700" />
+          </router-link>
           <div @drop="drop_element($event, text.id)"
          @dragover.prevent @dragenter.prevent
          @dragstart="drag_element($event, text.id)"
-         draggable="true" class="font-bold cursor-grab">{{ text.id }} {{ text.title }}</div>
+         draggable="true" class="font-bold cursor-grab">{{ text.attributes.title }}</div>
+          <TrashIcon class="ml-3 h-6 w-6 text-cab-sav-800" @click="remove_element(text.id)" />
         </div>
       </div>
     </div>
   </div>
-  <div id="bb-action" class="text-center mt-8">
+  <div id="bb-action" class="mt-8 flex">
     <div v-if="bookbuilder.can_be_compiled()">
       <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build">
         {{ $gettext('Build') }}
+      </button>
+    </div>
+    <div v-if="bookbuilder.session_id && !bookbuilder.status">
+      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="bookbuilder.reset">
+        {{ $gettext('Reset') }}
       </button>
     </div>
     <div v-if="bookbuilder.status == 'finished'">

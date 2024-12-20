@@ -1060,7 +1060,7 @@ def api_bookbuilder(request):
                 # logger.debug(files)
                 rc = requests.post(base_url + '/add/' + amc_sid,
                                    files=files,
-                                   data={'title': ds.entry.title},
+                                   data={'title': ds.entry.title, "entry_id": ds.entry_id, "ds_id": ds.id },
                                    headers=api_auth)
                 # logger.debug(rc.request.headers)
                 res = rc.json()
