@@ -12,6 +12,9 @@ export const bookbuilder = reactive({
     default_collection_data() {
         return {
             papersize: "a4",
+            mainfont: "DejaVu Serif",
+            sansfont: "DejaVu Sans",
+            monofont: "DejaVu Sans Mono",
         };
     },
     save() {
@@ -61,6 +64,9 @@ export const bookbuilder = reactive({
         else {
             return false;
         }
+    },
+    needs_sans_font() {
+        return false;
     },
     needs_virtual_header() {
         if (this.text_list.length > 1) {

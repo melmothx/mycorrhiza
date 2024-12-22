@@ -19,6 +19,7 @@
          return {
              bookbuilder,
              current_tab: "overview",
+             fonts: [],
          }
      },
      methods: {
@@ -58,6 +59,13 @@
                   .then(res => {
                       console.log(res.data)
                       this.bookbuilder.add_text(res.data);
+                  });
+         },
+         get_fonts() {
+             axios.post('/collector/api/bookbuilder', { action: "get_fonts" })
+                  .then(res => {
+                      console.log(res.data);
+                      this.fonts = res.data.fonts;
                   });
          },
          refresh_list() {
@@ -122,6 +130,7 @@
          }
      },
      mounted() {
+         this.get_fonts();
          this.bookbuilder.restore();
          this.refresh_list();
      },
@@ -179,6 +188,32 @@
         <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_width">
         x
         <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_height">
+      </div>
+    </div>
+    <div v-if="current_tab == 'fonts'" id ="bb-fonts">
+      <div>
+        <label for="mainfont">{{ $gettext('Main Font')  }}</label>
+        <div>
+          <select id="mainfont" class="mcrz-select" v-model="bookbuilder.collection_data.mainfont">
+            <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label for="monofont">{{ $gettext('Mono Font')  }}</label>
+        <div>
+          <select id="monofont" class="mcrz-select" v-model="bookbuilder.collection_data.monofont">
+            <option v-for="font in fonts.filter(f => f.type == 'mono')" :value="font.name">{{ font.desc }}</option>
+          </select>
+        </div>
+      </div>
+      <div v-if="bookbuilder.needs_sans_font()">
+        <label for="sansfont">{{ $gettext('Sans Font') }}</label>
+        <div>
+          <select id="sansfont" class="mcrz-select" v-model="bookbuilder.collection_data.sansfont">
+            <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
+          </select>
+        </div>
       </div>
     </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">

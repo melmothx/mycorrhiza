@@ -7,6 +7,7 @@ use Mojo::Pg;
 use Mojo::Util 'secure_compare';
 use Path::Tiny;
 use Data::Dumper::Concise;
+use Text::Amuse::Compile::Fonts::Import;
 
 BEGIN {
     $ENV{PATH} = "$ENV{PATH}:/opt/amusewiki-texlive/current/bin/arch";
@@ -30,6 +31,12 @@ sub startup ($self) {
                   });
     $self->plugin(Minion => { Pg => $config->{dbi_connection_string} });
     $self->plugin('Amusecompile::Task::Compile');
+    my $fontspec = path($config->{fontspec_file} || 'fontspec.json')->absolute;
+    unless ($fontspec->exists) {
+        $self->log->info("Generating $fontspec");
+        Text::Amuse::Compile::Fonts::Import->new(output => "$fontspec")->import_and_save;
+    }
+    $self->helper(fontspec_file => sub { state $fontspec = $fontspec; });
     $self->pg->migrations->from_file('migrations.sql')->migrate;
     $self->max_request_size(1024 * 1024 * 32);
     my $r = $self->routes;
@@ -70,6 +77,7 @@ sub startup ($self) {
                             return undef;
                         });
     $api->get('/check')->to('API#check')->name('api_check');
+    $api->get('/fonts')->to('API#fonts')->name('api_fonts');
     $api->post('/create-session')->to('API#create_session')->name('api_create_session');
     $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
     $api->get('/list/:sid')->to('API#list_texts')->name('api_list_texts');

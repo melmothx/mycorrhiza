@@ -1020,6 +1020,11 @@ def api_bookbuilder(request):
     api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
     base_url = settings.AMUSECOMPILE_URL
     params = json.loads(request.body)
+    action = params.get('action', '')
+    # no session id needed
+    if action == 'get_fonts':
+        r = requests.get(base_url + '/fonts', headers=api_auth)
+        return JsonResponse(r.json())
     logger.debug(params)
     amc_sid = params.get('session_id')
     if amc_sid:
@@ -1030,7 +1035,6 @@ def api_bookbuilder(request):
         amc_sid = r.json()['session_id']
     out = { "session_id": amc_sid }
 
-    action = params.get('action', '')
     logger.debug("Action is " + action)
     if action == 'list':
         r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)

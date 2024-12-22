@@ -53,7 +53,10 @@ sub compile {
         # $self->logger->(Dumper(\@muse_files));
         my $homedir = getcwd();
         my $bbargs = $self->bbargs;
-        my %extra = map { $_ => $bbargs->{$_} } (qw/papersize/);
+        my %extra = map { $_ => $bbargs->{$_} } (qw/papersize
+                                                    mainfont
+                                                    sansfont
+                                                    monofont/);
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
         my $outfile;
         if (@muse_files == 1) {

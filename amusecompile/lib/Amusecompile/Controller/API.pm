@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Data::Dumper::Concise;
 use Path::Tiny ();
 use DateTime;
+use JSON::MaybeXS qw/decode_json/;
 
 sub check ($self) {
     # Render template "example/welcome.html.ep" with message
@@ -161,6 +162,16 @@ sub get_compiled_file ($self) {
         }
     }
     return $self->render(text => "Not found", status => 404);
+}
+
+sub fonts ($self) {
+    my $fonts = [];
+    if (my $fontspec = $self->fontspec_file) {
+        if ($fontspec->exists) {
+            $fonts = decode_json($fontspec->slurp_raw);
+        }
+    }
+    $self->render(json => { fonts => $fonts });
 }
 
 1;
