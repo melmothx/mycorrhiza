@@ -21,7 +21,7 @@ sub startup ($self) {
     $self->helper(log => sub {
                       state $log = Mojo::Log->new;
                   });
-    $self->log->info("Starting up with " . Dumper($config));
+    # $self->log->info("Starting up with " . Dumper($config));
     $self->secrets($config->{secrets}) if $config->{secrets};
     $self->helper(pg => sub {
                       state $pg = Mojo::Pg->new($config->{dbi_connection_string});

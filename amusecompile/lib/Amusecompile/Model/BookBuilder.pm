@@ -81,6 +81,20 @@ sub compile {
         die "cwd changed. This is a bug" if getcwd() ne $homedir;
         if ($outfile and -f $outfile) {
             $self->logger->("Created $outfile");
+            if (my $imposition_schema = $bbargs->{imposition_schema}) {
+                my %imposer_options = (
+                                       file => $outfile,
+                                       suffix => '_imp',
+                                       schema => $imposition_schema,
+                                      );
+                $self->logger->("Imposing $outfile with $imposition_schema");
+                my $imposer = PDF::Imposition->new(%imposer_options);
+                $imposer->impose;
+                my $imposed_file = $imposer->outfile;
+                undef $imposer;
+                # overwrite the original pdf, we can get another one any time
+                rename $imposed_file, $outfile or die "Could not move $imposed_file to $outfile $!";
+            }
             return $outfile;
         }
         else {

@@ -20,6 +20,57 @@
              bookbuilder,
              current_tab: "overview",
              fonts: [],
+             schemas: [
+                 "2up",
+                 "duplex2up",
+                 "2down",
+                 "2side",
+                 "2x4x2",
+                 "1x4x2cutfoldbind",
+                 "2x4x1",
+                 "4up",
+                 "ea4x4",
+                 "1x8x2",
+                 "1x1",
+             ],
+             schema_images: [
+                 'schema-1x1-1.png',
+                 'schema-1x1-2.png',
+                 'schema-1x4x2cutfoldbind-1.png',
+                 'schema-1x4x2cutfoldbind-2.png',
+                 'schema-1x8x2-1.png',
+                 'schema-1x8x2-2.png',
+                 'schema-2down-1.png',
+                 'schema-2down-2.png',
+                 'schema-2down-3.png',
+                 'schema-2down-4.png',
+                 'schema-2side-1.png',
+                 'schema-2side-2.png',
+                 'schema-2side-3.png',
+                 'schema-2side-4.png',
+                 'schema-2up-1.png',
+                 'schema-2up-2.png',
+                 'schema-2up-3.png',
+                 'schema-2up-4.png',
+                 'schema-duplex2up-1.png',
+                 'schema-duplex2up-2.png',
+                 'schema-duplex2up-3.png',
+                 'schema-duplex2up-4.png',
+                 'schema-2x4x1-1.png',
+                 'schema-2x4x1-2.png',
+                 'schema-2x4x2-1.png',
+                 'schema-2x4x2-2.png',
+                 'schema-2x4x2-3.png',
+                 'schema-2x4x2-4.png',
+                 'schema-4up-1.png',
+                 'schema-4up-2.png',
+                 'schema-4up-3.png',
+                 'schema-4up-4.png',
+                 'schema-ea4x4-1.png',
+                 'schema-ea4x4-2.png',
+                 'schema-ea4x4-3.png',
+                 'schema-ea4x4-4.png',
+             ],
          }
      },
      methods: {
@@ -67,6 +118,10 @@
                       console.log(res.data);
                       this.fonts = res.data.fonts;
                   });
+         },
+         get_schema_images(schema) {
+             console.log(`Calling get_schema images for ${schema}`);
+             return this.schema_images.filter(img => img.includes('-' + schema + '-'));
          },
          refresh_list() {
              const args = {
@@ -214,6 +269,20 @@
             <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
           </select>
         </div>
+      </div>
+    </div>
+    <div v-if="current_tab == 'imposition'" id="bb-imposition">
+      <div>
+        <select id="imposition_schema" class="mcrz-select" v-model="bookbuilder.collection_data.imposition_schema">
+          <option value="">{{ $gettext('None') }}</option>
+          <option v-for="schema in schemas" :value="schema">{{ schema }}</option>
+        </select>
+      </div>
+      <div class="flex">
+        <img v-for="image in get_schema_images(bookbuilder.collection_data.imposition_schema)"
+             :src="'/schemas/' + image"
+             class="w-full m-2 max-w-64"
+        >
       </div>
     </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">

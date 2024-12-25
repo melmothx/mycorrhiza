@@ -15,6 +15,7 @@ export const bookbuilder = reactive({
             mainfont: "DejaVu Serif",
             sansfont: "DejaVu Sans",
             monofont: "DejaVu Sans Mono",
+            imposition_schema: "",
         };
     },
     save() {
