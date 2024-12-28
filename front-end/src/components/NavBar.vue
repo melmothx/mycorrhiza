@@ -109,7 +109,7 @@
 </script>
 <template>
   <header>
-  <div class="flex flex-wrap m-3">
+  <div class="flex flex-wrap m-3 items-center">
     <div class="flex-grow">
       <SiteLogo />
     </div>
@@ -148,11 +148,11 @@
       <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
     </div>
     <div v-else>
-      <UserIcon class="h-5 w-5 m-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
+      <UserIcon class="h-5 w-5 mx-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
     </div>
     <div v-if="bookbuilder.session_id">
       <router-link :to="{ name: 'bookbuilder' }">
-        <BookOpenIcon class="h-5 w-5 my-2 text-cab-sav-800 cursor-pointer" />
+        <BookOpenIcon class="h-5 w-5 text-cab-sav-800 cursor-pointer" />
       </router-link>
     </div>
     <div v-if="authenticated">
