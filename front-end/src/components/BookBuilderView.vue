@@ -223,7 +223,7 @@
   </div>
   <div id="bb-tabs">
     <div v-if="current_tab == 'layout'" id="bb-layout">
-      <select class="mcrz-select" v-model="bookbuilder.collection_data.papersize">
+      <select class="mcrz-select h-8" v-model="bookbuilder.collection_data.papersize">
         <option value="generic">Generic (fits in A4 and Letter)</option>
         <option value="a3">A3</option>
         <option value="a4">A4</option>
@@ -239,34 +239,143 @@
         <option value="4.25in:5.5in">Quarter Letter paper</option>
         <option value="">Custom</option>
       </select>
-      <div v-if="!bookbuilder.collection_data.papersize">
-        <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_width">
-        x
-        <input type="number" step="1" min="80" max="500" class="mcrz-input" v-model="bookbuilder.collection_data.papersize_height">
+      <div v-if="!bookbuilder.collection_data.papersize" class="my-2">
+        <div class="flex items-center">
+          <div class="mr-2">
+            {{ $gettext('Width in mm') }}:
+          </div>
+          <div>
+            <input type="number" step="1" min="80" max="500" class="mcrz-input h-8" v-model="bookbuilder.collection_data.papersize_width">
+          </div>
+          <div class="w-4"></div>
+          <div class="mr-2">
+            {{ $gettext('Height in mm') }}:
+          </div>
+          <div>
+            <input type="number" step="1" min="80" max="500" class="mcrz-input h-8" v-model="bookbuilder.collection_data.papersize_height">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-64">
+            {{ $gettext('Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest') }}
+          </div>
+          <div>
+            <select class="mcrz-select h-8 w-32" v-model="bookbuilder.collection_data.division_factor">
+              <option value="0">Custom</option>
+              <option v-for="div in [9, 10, 11, 12, 13, 14, 15]" :value="div">{{ div }}</option>
+            </select>
+          </div>
+        </div>
+        <div v-if="bookbuilder.collection_data.division_factor == 0">
+          <div class="flex items-center my-4">
+            <div class="mr-2 w-64">
+              {{ $gettext('Text block width in mm') }}
+              <div v-if="bookbuilder.needs_areaset_width()"
+                   class="text-sm text-claret-700">
+                <small class="font-bold">{{ $gettext('Please set') }}</small>
+              </div>
+            </div>
+            <div>
+              <input class="mcrz-input w-32 h-8"
+                     type="number"
+                     step="1" min="30" v-model="bookbuilder.collection_data.areaset_width">
+            </div>
+          </div>
+          <div class="flex items-center my-4">
+            <div class="mr-2 w-64">
+              {{ $gettext('Text block height in mm') }}
+              {{ bookbuilder.needs_areaset_width() }}
+              <div v-if="bookbuilder.needs_areaset_height()"
+                   class="text-sm text-claret-700">
+                <small class="font-bold">{{ $gettext('Please set') }}</small>
+              </div>
+            </div>
+            <div>
+              <input class="mcrz-input w-32 h-8"
+                     type="number"
+                     min="30"
+                     step="1" v-model="bookbuilder.collection_data.areaset_height">
+            </div>
+          </div>
+          <div class="flex items-center my-4">
+            <div class="mr-2 w-64">
+              {{ $gettext('Outer margin') }}
+              <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              <div v-if="bookbuilder.needs_geometry_outer_margin()"
+                   class="text-sm text-claret-700">
+                <small class="font-bold">{{ $gettext('Please set') }}</small>
+              </div>
+            </div>
+            <div>
+              <input type="number"
+                     class="mcrz-input w-32 h-8"
+                     min="0"
+                     step="1" v-model="bookbuilder.collection_data.geometry_outer_margin">
+            </div>
+          </div>
+          <div class="flex items-center my-4">
+            <div class="mr-2 w-64">
+              {{ $gettext('Top margin') }}
+              <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              <div v-if="bookbuilder.needs_geometry_top_margin()"
+                   class="text-sm text-claret-700">
+                <small class="font-bold">{{ $gettext('Please set') }}</small>
+              </div>
+            </div>
+            <div>
+              <input type="number"
+                     class="mcrz-input w-32 h-8"
+                     min="0"
+                     step="1" v-model="bookbuilder.collection_data.geometry_top_margin">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-64">
+            {{ $gettext('Binding correction in mm (additional inner margin)') }}
+          </div>
+          <div>
+            <input type="number" step="1" min="0" max="50" class="mcrz-input w-32 h-8"
+                   v-model="bookbuilder.collection_data.binding_correction" />
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
-      <div>
-        <label for="mainfont">{{ $gettext('Main Font')  }}</label>
-        <div>
-          <select id="mainfont" class="mcrz-select" v-model="bookbuilder.collection_data.mainfont">
+      <div class="flex items-center my-4">
+        <label class="w-32" for="mainfont">{{ $gettext('Main Font')  }}</label>
+        <div class="flex-grow">
+          <select id="mainfont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.mainfont">
             <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
           </select>
         </div>
       </div>
-      <div>
-        <label for="monofont">{{ $gettext('Mono Font')  }}</label>
-        <div>
-          <select id="monofont" class="mcrz-select" v-model="bookbuilder.collection_data.monofont">
+      <div class="flex items-center my-4">
+        <label class="w-32" for="monofont">{{ $gettext('Mono Font')  }}</label>
+        <div class="flex-grow">
+          <select id="monofont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.monofont">
             <option v-for="font in fonts.filter(f => f.type == 'mono')" :value="font.name">{{ font.desc }}</option>
           </select>
         </div>
       </div>
-      <div v-if="bookbuilder.needs_sans_font()">
-        <label for="sansfont">{{ $gettext('Sans Font') }}</label>
-        <div>
-          <select id="sansfont" class="mcrz-select" v-model="bookbuilder.collection_data.sansfont">
+      <div class="flex items-center my-4" v-if="bookbuilder.needs_sans_font()">
+        <label class="w-32" for="sansfont">{{ $gettext('Sans Font') }}</label>
+        <div class="flex-grow">
+          <select id="sansfont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.sansfont">
             <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center my-4">
+        <label class="w-32" for="fontsize">{{ $gettext('Font Size') }}</label>
+        <div class="flex-grow">
+          <select id="fontsize" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.fontsize">
+            <option v-for="fs in [9, 10, 11, 12, 13, 14]" :value="fs">{{ fs }}pt</option>
           </select>
         </div>
       </div>
@@ -368,7 +477,7 @@
   </div>
   <div class="mt-10">
     <pre class="text-sm">
-{{ bookbuilder.collection_data }}
+{{ bookbuilder.api_collection_data() }}
     </pre>
   </div>
 </template>

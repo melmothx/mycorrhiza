@@ -56,7 +56,16 @@ sub compile {
         my %extra = map { $_ => $bbargs->{$_} } (qw/papersize
                                                     mainfont
                                                     sansfont
-                                                    monofont/);
+                                                    monofont
+                                                    fontsize
+                                                    areaset_width
+                                                    areaset_height
+                                                    geometry_top_margin
+                                                    geometry_outer_margin
+                                                    bcor
+                                                    division
+                                                   /);
+        $self->logger->("Options are " . Dumper(\%extra));
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
         my $outfile;
         if (@muse_files == 1) {

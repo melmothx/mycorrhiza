@@ -16,6 +16,9 @@ export const bookbuilder = reactive({
             sansfont: "DejaVu Sans",
             monofont: "DejaVu Sans Mono",
             imposition_schema: "",
+            fontsize: "12",
+            division_factor: "12",
+            binding_correction: "0",
         };
     },
     save() {
@@ -96,11 +99,52 @@ export const bookbuilder = reactive({
         this.error = error;
         this.save();
     },
+    needs_areaset_height() {
+        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_height) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+    needs_areaset_width() {
+        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_width) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+    needs_geometry_top_margin() {
+        if (!this.collection_data.geometry_top_margin && this.collection_data.geometry_outer_margin) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+    needs_geometry_outer_margin() {
+        if (!this.collection_data.geometry_outer_margin && this.collection_data.geometry_top_margin) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
     api_collection_data() {
         const bbargs = { ...this.collection_data };
         // possible interpolation here
         if (!bbargs.papersize && bbargs.papersize_width && bbargs.papersize_height) {
             bbargs.papersize = `${bbargs.papersize_width}mm:${bbargs.papersize_height}mm`
+        }
+        bbargs.bcor = (bbargs.binding_correction || 0) + 'mm';
+        if (!bbargs.division_factor || bbargs.division_factor == 0) {
+            bbargs.division = 9;
+        }
+        for (const field of ['areaset_width', 'areaset_height', 'geometry_top_margin', 'geometry_outer_margin']) {
+            if (bbargs[field]) {
+                bbargs[field] = `${bbargs[field]}mm`;
+            }
         }
         return bbargs;
     },
