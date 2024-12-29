@@ -66,6 +66,7 @@ sub compile {
                                                     division
                                                     twoside
                                                     opening
+                                                    linespacing
                                                    /);
         $self->logger->("Options are " . Dumper(\%extra));
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);

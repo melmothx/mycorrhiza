@@ -139,15 +139,23 @@ export const bookbuilder = reactive({
             bbargs.papersize = `${bbargs.papersize_width}mm:${bbargs.papersize_height}mm`
         }
         bbargs.bcor = (bbargs.binding_correction || 0) + 'mm';
+        let has_custom_dimensions = false;
         if (!bbargs.division_factor || bbargs.division_factor == 0) {
+            // just set the default
             bbargs.division = 9;
+            has_custom_dimensions = true;
         }
         else {
             bbargs.division = bbargs.division_factor;
         }
         for (const field of ['areaset_width', 'areaset_height', 'geometry_top_margin', 'geometry_outer_margin']) {
-            if (bbargs[field]) {
-                bbargs[field] = `${bbargs[field]}mm`;
+            if (has_custom_dimensions) {
+                if (bbargs[field]) {
+                    bbargs[field] = `${bbargs[field]}mm`;
+                }
+            }
+            else {
+                delete bbargs[field];
             }
         }
         if (bbargs.twoside) {
@@ -155,6 +163,9 @@ export const bookbuilder = reactive({
         }
         else {
             bbargs.twoside = 0;
+        }
+        if (bbargs.linespacing <= 1) {
+            bbargs.linespacing = "";
         }
         return bbargs;
     },

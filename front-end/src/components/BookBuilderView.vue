@@ -324,7 +324,7 @@
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
               <label for="bb-gom">
-                {{ $gettext('Outer margin') }}
+                {{ $gettext('Outer margin in mm') }} <br>
                 <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
               </label>
               <div v-if="bookbuilder.needs_geometry_outer_margin()"
@@ -342,7 +342,7 @@
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
               <label for="bb-gtm">
-                {{ $gettext('Top margin') }}
+                {{ $gettext('Top margin in mm') }} <br>
                 <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
               </label>
               <div v-if="bookbuilder.needs_geometry_top_margin()"
@@ -401,6 +401,23 @@
       </div>
 
     </div>
+
+    <div v-if="current_tab == 'advanced'" id="bb-layout">
+      <div class="flex items-center my-4">
+        <div class="mr-2 w-32">
+          <label for="bb-linespacing">
+            {{ $gettext('Line spacing') }}
+          </label>
+        </div>
+        <div>
+          <input class="mcrz-input" type="number"
+                 id="bb-linespacing"
+                 v-model="bookbuilder.collection_data.linespacing"
+                 min="1.0" max="2.0" step="0.1" />
+        </div>
+      </div>
+    </div>
+
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
       <div class="flex items-center my-4">
         <label class="w-32" for="mainfont">{{ $gettext('Main Font')  }}</label>
