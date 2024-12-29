@@ -4,6 +4,7 @@ use Data::Dumper::Concise;
 use Path::Tiny ();
 use DateTime;
 use JSON::MaybeXS qw/decode_json/;
+use Text::Amuse::Compile::TemplateOptions;
 
 sub check ($self) {
     # Render template "example/welcome.html.ep" with message
@@ -172,6 +173,11 @@ sub fonts ($self) {
         }
     }
     $self->render(json => { fonts => $fonts });
+}
+
+sub headings ($self) {
+    my @options = grep { $_->{desc} } Text::Amuse::Compile::TemplateOptions->all_headings;
+    $self->render(json => { headings => \@options });
 }
 
 1;

@@ -24,6 +24,7 @@ export const bookbuilder = reactive({
             linespacing: 1,
             tex_tolerance: 200,
             tex_emergencystretch: 30,
+            headings: '0',
         };
     },
     save() {

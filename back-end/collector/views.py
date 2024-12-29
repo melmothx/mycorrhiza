@@ -1025,6 +1025,9 @@ def api_bookbuilder(request):
     if action == 'get_fonts':
         r = requests.get(base_url + '/fonts', headers=api_auth)
         return JsonResponse(r.json())
+    if action == 'get_headings':
+        r = requests.get(base_url + '/headings', headers=api_auth)
+        return JsonResponse(r.json())
     logger.debug(params)
     amc_sid = params.get('session_id')
     if amc_sid:

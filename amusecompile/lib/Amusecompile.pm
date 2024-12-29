@@ -78,6 +78,7 @@ sub startup ($self) {
                         });
     $api->get('/check')->to('API#check')->name('api_check');
     $api->get('/fonts')->to('API#fonts')->name('api_fonts');
+    $api->get('/headings')->to('API#headings')->name('api_headings');
     $api->post('/create-session')->to('API#create_session')->name('api_create_session');
     $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
     $api->get('/list/:sid')->to('API#list_texts')->name('api_list_texts');

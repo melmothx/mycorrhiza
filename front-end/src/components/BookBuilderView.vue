@@ -20,6 +20,7 @@
              bookbuilder,
              current_tab: "overview",
              fonts: [],
+             headings: [],
              schemas: [
                  "2up",
                  "duplex2up",
@@ -119,6 +120,13 @@
                       this.fonts = res.data.fonts;
                   });
          },
+         get_headings() {
+             axios.post('/collector/api/bookbuilder', { action: "get_headings" })
+                  .then(res => {
+                      console.log(res.data);
+                      this.headings = res.data.headings;
+                  });
+         },
          get_schema_images(schema) {
              console.log(`Calling get_schema images for ${schema}`);
              return this.schema_images.filter(img => img.includes('-' + schema + '-'));
@@ -186,6 +194,7 @@
      },
      mounted() {
          this.get_fonts();
+         this.get_headings();
          this.bookbuilder.restore();
          this.refresh_list();
      },
@@ -388,7 +397,7 @@
         </div>
       </div>
       <div v-if="bookbuilder.collection_data.twoside" class="flex items-center my-4">
-        <div class="mr-2 w-64">
+        <div class="mr-2 w-32">
           <label for="bb-opening">
             {{ $gettext('Page where to start a chapter') }}
           </label>
@@ -399,7 +408,18 @@
           </select>
         </div>
       </div>
-
+      <div class="flex items-center my-4">
+        <div class="mr-2 w-32">
+          <label for="bb-headings">
+            {{ $gettext('Running headings') }}
+          </label>
+        </div>
+        <div>
+          <select id="bb-headings" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.headings">
+            <option v-for="heading in headings" :value="heading.name" :key="heading.name">{{ heading.desc }}</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div v-if="current_tab == 'advanced'" id="bb-layout"
