@@ -20,6 +20,10 @@ export const bookbuilder = reactive({
             division_factor: "12",
             binding_correction: "0",
             opening: 'any',
+            parindent: 15,
+            linespacing: 1,
+            tex_tolerance: 200,
+            tex_emergencystretch: 30,
         };
     },
     save() {
@@ -158,14 +162,25 @@ export const bookbuilder = reactive({
                 delete bbargs[field];
             }
         }
-        if (bbargs.twoside) {
-            bbargs.twoside = 1;
+        // add the pt measures
+        for (const ptfield of ['tex_emergencystretch']) {
+            if (bbargs[ptfield]) {
+                bbargs[ptfield] = `${bbargs[ptfield]}pt`;
+            }
+            else {
+                delete bbargs[ptfield];
+            }
         }
-        else {
-            bbargs.twoside = 0;
+        for (const boolfield of ['twoside']) {
+            if (bbargs[boolfield]) {
+                bbargs[boolfield] = 1;
+            }
+            else {
+                bbargs[boolfield] = 0;
+            }
         }
         if (bbargs.linespacing <= 1) {
-            bbargs.linespacing = "";
+            delete bbargs.linespacing;
         }
         return bbargs;
     },

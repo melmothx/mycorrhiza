@@ -53,21 +53,25 @@ sub compile {
         # $self->logger->(Dumper(\@muse_files));
         my $homedir = getcwd();
         my $bbargs = $self->bbargs;
-        my %extra = map { $_ => $bbargs->{$_} } (qw/papersize
-                                                    mainfont
-                                                    sansfont
-                                                    monofont
-                                                    fontsize
-                                                    areaset_width
-                                                    areaset_height
-                                                    geometry_top_margin
-                                                    geometry_outer_margin
-                                                    bcor
-                                                    division
-                                                    twoside
-                                                    opening
-                                                    linespacing
-                                                   /);
+        my %extra = map { $_ => $bbargs->{$_} }
+          grep { defined $bbargs->{$_} } (qw/papersize
+                                             mainfont
+                                             sansfont
+                                             monofont
+                                             fontsize
+                                             areaset_width
+                                             areaset_height
+                                             geometry_top_margin
+                                             geometry_outer_margin
+                                             bcor
+                                             division
+                                             twoside
+                                             opening
+                                             linespacing
+                                             parindent
+                                             tex_tolerance
+                                             tex_emergencystretch
+                                            /);
         $self->logger->("Options are " . Dumper(\%extra));
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
         my $outfile;

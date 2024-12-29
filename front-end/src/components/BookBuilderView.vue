@@ -416,6 +416,45 @@
                  min="1.0" max="2.0" step="0.1" />
         </div>
       </div>
+      <div class="flex items-center my-4">
+        <div class="mr-2 w-32">
+          <label for="bb-parindent">
+            {{ $gettext('Paragraph indentation in points (pt)') }}
+          </label>
+        </div>
+        <div>
+          <input class="mcrz-input" type="number"
+                 id="bb-parindent"
+                 v-model="bookbuilder.collection_data.parindent"
+                 min="-100" max="100" step="1" />
+        </div>
+      </div>
+      <div class="flex items-center my-4">
+        <div class="mr-2 w-32">
+          <label for="bb-tex_tolerance">
+            {{ $gettext('TeX tolerance') }}
+          </label>
+        </div>
+        <div>
+          <input class="mcrz-input" type="number"
+                 id="bb-tex_tolerance"
+                 v-model="bookbuilder.collection_data.tex_tolerance"
+                 min="0" max="10000" step="1" />
+        </div>
+      </div>
+      <div class="flex items-center my-4">
+        <div class="mr-2 w-32">
+          <label for="bb-tex_emergencystretch">
+            {{ $gettext('TeX emergency stretch in pt') }}
+          </label>
+        </div>
+        <div>
+          <input class="mcrz-input" type="number"
+                 id="bb-tex_emergencystretch"
+                 v-model="bookbuilder.collection_data.tex_emergencystretch"
+                 min="0" max="10000" step="1" />
+        </div>
+      </div>
     </div>
 
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
