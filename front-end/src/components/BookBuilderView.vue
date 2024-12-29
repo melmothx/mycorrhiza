@@ -223,36 +223,51 @@
   </div>
   <div id="bb-tabs">
     <div v-if="current_tab == 'layout'" id="bb-layout">
-      <select class="mcrz-select h-8" v-model="bookbuilder.collection_data.papersize">
-        <option value="generic">Generic (fits in A4 and Letter)</option>
-        <option value="a3">A3</option>
-        <option value="a4">A4</option>
-        <option value="a5">A5</option>
-        <option value="a6">A6</option>
-        <option value="88mm:115mm">6" E-reader</option>
-        <option value="b3">B3</option>
-        <option value="b4">B4</option>
-        <option value="b5">B5</option>
-        <option value="b6">B6</option>
-        <option value="letter">Letter paper</option>
-        <option value="5.5in:8.5in">Half Letter paper</option>
-        <option value="4.25in:5.5in">Quarter Letter paper</option>
-        <option value="">Custom</option>
-      </select>
+      <div class="flex items-center">
+        <div class="mr-2 w-32">
+          <label for="bb-papersize">{{ $gettext('Please choose a paper size') }}</label>
+        </div>
+        <select id="bb-papersize" class="mcrz-select h-8 w-96" v-model="bookbuilder.collection_data.papersize">
+          <option value="generic">Generic (fits in A4 and Letter)</option>
+          <option value="a3">A3</option>
+          <option value="a4">A4</option>
+          <option value="a5">A5</option>
+          <option value="a6">A6</option>
+          <option value="88mm:115mm">6" E-reader</option>
+          <option value="b3">B3</option>
+          <option value="b4">B4</option>
+          <option value="b5">B5</option>
+          <option value="b6">B6</option>
+          <option value="letter">Letter paper</option>
+          <option value="5.5in:8.5in">Half Letter paper</option>
+          <option value="4.25in:5.5in">Quarter Letter paper</option>
+          <option value="">Custom</option>
+        </select>
+      </div>
       <div v-if="!bookbuilder.collection_data.papersize" class="my-2">
         <div class="flex items-center">
-          <div class="mr-2">
-            {{ $gettext('Width in mm') }}:
+          <div class="mr-2 w-32">
+            <label for="bb-ppw">
+              {{ $gettext('Width in mm') }}:
+            </label>
           </div>
           <div>
-            <input type="number" step="1" min="80" max="500" class="mcrz-input h-8" v-model="bookbuilder.collection_data.papersize_width">
+            <input type="number"
+                   id="bb-ppw"
+                   step="1" min="80" max="500"
+                   class="mcrz-input h-8 w-32"
+                   v-model="bookbuilder.collection_data.papersize_width">
           </div>
           <div class="w-4"></div>
-          <div class="mr-2">
-            {{ $gettext('Height in mm') }}:
+          <div class="mr-2 w-32">
+            <label for="bb-pph">
+              {{ $gettext('Height in mm') }}:
+            </label>
           </div>
           <div>
-            <input type="number" step="1" min="80" max="500" class="mcrz-input h-8" v-model="bookbuilder.collection_data.papersize_height">
+            <input type="number" id="bb-pph" class="mcrz-input h-8 w-32"
+                   step="1" min="80" max="500"
+                   v-model="bookbuilder.collection_data.papersize_height">
           </div>
         </div>
       </div>
@@ -260,10 +275,13 @@
       <div>
         <div class="flex items-center my-4">
           <div class="mr-2 w-64">
-            {{ $gettext('Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest') }}
+            <label for="bb-div">
+              {{ $gettext('Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest') }}
+            </label>
           </div>
           <div>
-            <select class="mcrz-select h-8 w-32" v-model="bookbuilder.collection_data.division_factor">
+            <select id="bb-div" class="mcrz-select h-8 w-32"
+                    v-model="bookbuilder.collection_data.division_factor">
               <option value="0">Custom</option>
               <option v-for="div in [9, 10, 11, 12, 13, 14, 15]" :value="div">{{ div }}</option>
             </select>
@@ -272,29 +290,32 @@
         <div v-if="bookbuilder.collection_data.division_factor == 0">
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
-              {{ $gettext('Text block width in mm') }}
+              <label for="bb-aw">
+                {{ $gettext('Text block width in mm') }}
+              </label>
               <div v-if="bookbuilder.needs_areaset_width()"
                    class="text-sm text-claret-700">
                 <small class="font-bold">{{ $gettext('Please set') }}</small>
               </div>
             </div>
             <div>
-              <input class="mcrz-input w-32 h-8"
+              <input class="mcrz-input w-32 h-8" id="bb-aw"
                      type="number"
                      step="1" min="30" v-model="bookbuilder.collection_data.areaset_width">
             </div>
           </div>
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
-              {{ $gettext('Text block height in mm') }}
-              {{ bookbuilder.needs_areaset_width() }}
+              <label for="bb-ah">
+                {{ $gettext('Text block height in mm') }}
+              </label>
               <div v-if="bookbuilder.needs_areaset_height()"
                    class="text-sm text-claret-700">
                 <small class="font-bold">{{ $gettext('Please set') }}</small>
               </div>
             </div>
             <div>
-              <input class="mcrz-input w-32 h-8"
+              <input class="mcrz-input w-32 h-8" id="bb-ah"
                      type="number"
                      min="30"
                      step="1" v-model="bookbuilder.collection_data.areaset_height">
@@ -302,8 +323,10 @@
           </div>
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
-              {{ $gettext('Outer margin') }}
-              <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              <label for="bb-gom">
+                {{ $gettext('Outer margin') }}
+                <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              </label>
               <div v-if="bookbuilder.needs_geometry_outer_margin()"
                    class="text-sm text-claret-700">
                 <small class="font-bold">{{ $gettext('Please set') }}</small>
@@ -311,15 +334,17 @@
             </div>
             <div>
               <input type="number"
-                     class="mcrz-input w-32 h-8"
+                     class="mcrz-input w-32 h-8" id="bb-gom"
                      min="0"
                      step="1" v-model="bookbuilder.collection_data.geometry_outer_margin">
             </div>
           </div>
           <div class="flex items-center my-4">
             <div class="mr-2 w-64">
-              {{ $gettext('Top margin') }}
-              <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              <label for="bb-gtm">
+                {{ $gettext('Top margin') }}
+                <small class="text-asphalt-700">{{ $gettext('leave blank for default') }}</small>
+              </label>
               <div v-if="bookbuilder.needs_geometry_top_margin()"
                    class="text-sm text-claret-700">
                 <small class="font-bold">{{ $gettext('Please set') }}</small>
@@ -327,7 +352,7 @@
             </div>
             <div>
               <input type="number"
-                     class="mcrz-input w-32 h-8"
+                     class="mcrz-input w-32 h-8" id="bb-gtm"
                      min="0"
                      step="1" v-model="bookbuilder.collection_data.geometry_top_margin">
             </div>
@@ -337,10 +362,12 @@
       <div>
         <div class="flex items-center my-4">
           <div class="mr-2 w-64">
-            {{ $gettext('Binding correction in mm (additional inner margin)') }}
+            <label for="bb-bcor">
+              {{ $gettext('Binding correction in mm (additional inner margin)') }}
+            </label>
           </div>
           <div>
-            <input type="number" step="1" min="0" max="50" class="mcrz-input w-32 h-8"
+            <input id="bb-bcor" type="number" step="1" min="0" max="50" class="mcrz-input w-32 h-8"
                    v-model="bookbuilder.collection_data.binding_correction" />
           </div>
         </div>
