@@ -71,6 +71,18 @@ sub compile {
                                              parindent
                                              tex_tolerance
                                              tex_emergencystretch
+                                             notoc
+                                             nofinalpage
+                                             nocoverpage
+                                             body_only
+                                             impressum
+                                             sansfontsections
+                                             nobold
+                                             start_with_empty_page
+                                             ignore_cover
+                                             continuefootnotes
+                                             centerchapter
+                                             centersection
                                             /);
         $self->logger->("Options are " . Dumper(\%extra));
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);

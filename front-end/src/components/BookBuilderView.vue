@@ -402,61 +402,173 @@
 
     </div>
 
-    <div v-if="current_tab == 'advanced'" id="bb-layout">
-      <div class="flex items-center my-4">
-        <div class="mr-2 w-32">
-          <label for="bb-linespacing">
-            {{ $gettext('Line spacing') }}
-          </label>
+    <div v-if="current_tab == 'advanced'" id="bb-layout"
+         class="grid sm:grid-cols-[300px_auto] gap-2">
+      <div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-32">
+            <label for="bb-linespacing">
+              {{ $gettext('Line spacing') }}
+            </label>
+          </div>
+          <div>
+            <input class="mcrz-input" type="number"
+                   id="bb-linespacing"
+                   v-model="bookbuilder.collection_data.linespacing"
+                   min="1.0" max="2.0" step="0.1" />
+          </div>
         </div>
-        <div>
-          <input class="mcrz-input" type="number"
-                 id="bb-linespacing"
-                 v-model="bookbuilder.collection_data.linespacing"
-                 min="1.0" max="2.0" step="0.1" />
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-32">
+            <label for="bb-parindent">
+              {{ $gettext('Paragraph indentation in points (pt)') }}
+            </label>
+          </div>
+          <div>
+            <input class="mcrz-input" type="number"
+                   id="bb-parindent"
+                   v-model="bookbuilder.collection_data.parindent"
+                   min="-100" max="100" step="1" />
+          </div>
+        </div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-32">
+            <label for="bb-tex_tolerance">
+              {{ $gettext('TeX tolerance') }}
+            </label>
+          </div>
+          <div>
+            <input class="mcrz-input" type="number"
+                   id="bb-tex_tolerance"
+                   v-model="bookbuilder.collection_data.tex_tolerance"
+                   min="0" max="10000" step="1" />
+          </div>
+        </div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-32">
+            <label for="bb-tex_emergencystretch">
+              {{ $gettext('TeX emergency stretch in pt') }}
+            </label>
+          </div>
+          <div>
+            <input class="mcrz-input" type="number"
+                   id="bb-tex_emergencystretch"
+                   v-model="bookbuilder.collection_data.tex_emergencystretch"
+                   min="0" max="10000" step="1" />
+          </div>
         </div>
       </div>
-      <div class="flex items-center my-4">
-        <div class="mr-2 w-32">
-          <label for="bb-parindent">
-            {{ $gettext('Paragraph indentation in points (pt)') }}
+      <div class="my-4">
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.notoc" />
+            <span class="ml-2">
+              {{ $gettext('Never generate a table of content') }}
+            </span>
           </label>
         </div>
         <div>
-          <input class="mcrz-input" type="number"
-                 id="bb-parindent"
-                 v-model="bookbuilder.collection_data.parindent"
-                 min="-100" max="100" step="1" />
-        </div>
-      </div>
-      <div class="flex items-center my-4">
-        <div class="mr-2 w-32">
-          <label for="bb-tex_tolerance">
-            {{ $gettext('TeX tolerance') }}
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.nofinalpage" />
+            <span class="ml-2">
+              {{ $gettext('Never generate the final page with text details') }}
+            </span>
           </label>
         </div>
         <div>
-          <input class="mcrz-input" type="number"
-                 id="bb-tex_tolerance"
-                 v-model="bookbuilder.collection_data.tex_tolerance"
-                 min="0" max="10000" step="1" />
-        </div>
-      </div>
-      <div class="flex items-center my-4">
-        <div class="mr-2 w-32">
-          <label for="bb-tex_emergencystretch">
-            {{ $gettext('TeX emergency stretch in pt') }}
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.nocoverpage" />
+            <span class="ml-2">
+              {{ $gettext('Do not create a cover page and start the text on the first page') }}
+            </span>
           </label>
         </div>
         <div>
-          <input class="mcrz-input" type="number"
-                 id="bb-tex_emergencystretch"
-                 v-model="bookbuilder.collection_data.tex_emergencystretch"
-                 min="0" max="10000" step="1" />
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.body_only" />
+            <span class="ml-2">
+              {{ $gettext('Text body only (no title, no final pages)') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.impressum" />
+            <span class="ml-2">
+              {{ $gettext('Place the notes on the back of the first page, impressum-style') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.sansfontsections" />
+            <span class="ml-2">
+              {{ $gettext('Use sans fonts for section titles') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.nobold" />
+            <span class="ml-2">
+              {{ $gettext('Do not use bold fonts') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.start_with_empty_page" />
+            <span class="ml-2">
+              {{ $gettext('Start the document with an empty page') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.ignore_cover" />
+            <span class="ml-2">
+              {{ $gettext('Never display the cover image') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.continuefootnotes" />
+            <span class="ml-2">
+              {{ $gettext('Continuous footnote numbering across the whole document') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.centerchapter" />
+            <span class="ml-2">
+              {{ $gettext('Center chapter titles') }}
+            </span>
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox" value="1" class="mcrz-checkbox"
+                   v-model="bookbuilder.collection_data.centersection" />
+            <span class="ml-2">
+              {{ $gettext('Center all section titles') }}
+            </span>
+          </label>
         </div>
       </div>
     </div>
-
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
       <div class="flex items-center my-4">
         <label class="w-32" for="mainfont">{{ $gettext('Main Font')  }}</label>

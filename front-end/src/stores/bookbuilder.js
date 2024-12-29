@@ -75,7 +75,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_sans_font() {
-        return false;
+        return this.collection_data.sansfontsections;
     },
     needs_virtual_header() {
         if (this.text_list.length > 1) {
@@ -171,12 +171,25 @@ export const bookbuilder = reactive({
                 delete bbargs[ptfield];
             }
         }
-        for (const boolfield of ['twoside']) {
+        for (const boolfield of ['twoside',
+                                 'notoc',
+                                 'nofinalpage',
+                                 'nocoverpage',
+                                 'body_only',
+                                 'impressum',
+                                 'sansfontsections',
+                                 'nobold',
+                                 'start_with_empty_page',
+                                 'ignore_cover',
+                                 'continuefootnotes',
+                                 'centerchapter',
+                                 'centersection',
+                                ]) {
             if (bbargs[boolfield]) {
                 bbargs[boolfield] = 1;
             }
             else {
-                bbargs[boolfield] = 0;
+                delete bbargs[boolfield];
             }
         }
         if (bbargs.linespacing <= 1) {
