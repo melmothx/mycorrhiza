@@ -345,6 +345,34 @@
           </div>
         </div>
       </div>
+      <div>
+        <div class="flex items-center my-4">
+          <div class="mr-2 w-64">
+            <label>
+              <input type="checkbox" value="1" class="mcrz-checkbox"
+                     v-model="bookbuilder.collection_data.twoside" />
+              <span class="ml-2">
+                {{ $gettext('Two side layout') }}
+              </span>
+            </label>
+          </div>
+          <div>
+          </div>
+        </div>
+      </div>
+      <div v-if="bookbuilder.collection_data.twoside" class="flex items-center my-4">
+        <div class="mr-2 w-64">
+          <label for="bb-opening">
+            {{ $gettext('Page where to start a chapter') }}
+          </label>
+        </div>
+        <div>
+          <select id="bb-opening" class="mcrz-select h-8 w-32" v-model="bookbuilder.collection_data.opening">
+            <option v-for="opening in ['any', 'right', 'left']" :value="opening">{{ opening }}</option>
+          </select>
+        </div>
+      </div>
+
     </div>
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
       <div class="flex items-center my-4">

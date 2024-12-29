@@ -19,6 +19,7 @@ export const bookbuilder = reactive({
             fontsize: "12",
             division_factor: "12",
             binding_correction: "0",
+            opening: 'any',
         };
     },
     save() {
@@ -141,10 +142,19 @@ export const bookbuilder = reactive({
         if (!bbargs.division_factor || bbargs.division_factor == 0) {
             bbargs.division = 9;
         }
+        else {
+            bbargs.division = bbargs.division_factor;
+        }
         for (const field of ['areaset_width', 'areaset_height', 'geometry_top_margin', 'geometry_outer_margin']) {
             if (bbargs[field]) {
                 bbargs[field] = `${bbargs[field]}mm`;
             }
+        }
+        if (bbargs.twoside) {
+            bbargs.twoside = 1;
+        }
+        else {
+            bbargs.twoside = 0;
         }
         return bbargs;
     },

@@ -64,6 +64,8 @@ sub compile {
                                                     geometry_outer_margin
                                                     bcor
                                                     division
+                                                    twoside
+                                                    opening
                                                    /);
         $self->logger->("Options are " . Dumper(\%extra));
         my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
