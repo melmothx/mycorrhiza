@@ -25,6 +25,8 @@ export const bookbuilder = reactive({
             tex_tolerance: 200,
             tex_emergencystretch: 30,
             headings: '0',
+            signature_2up: '0',
+            signature_4up: '0',
         };
     },
     save() {
@@ -137,11 +139,21 @@ export const bookbuilder = reactive({
             return false;
         }
     },
+    needs_signature_2up() {
+        const imposition_schema = this.collection_data.imposition_schema;
+        const schemas = [ '2up', 'duplex2up', '2down' ];
+        return schemas.includes(imposition_schema);
+    },
+    needs_signature_4up() {
+        const imposition_schema = this.collection_data.imposition_schema;
+        const schemas = [ '4up' ];
+        return schemas.includes(imposition_schema);
+    },
     api_collection_data() {
         const bbargs = { ...this.collection_data };
         // possible interpolation here
         if (!bbargs.papersize && bbargs.papersize_width && bbargs.papersize_height) {
-            bbargs.papersize = `${bbargs.papersize_width}mm:${bbargs.papersize_height}mm`
+            bbargs.papersize = `${bbargs.papersize_width}mm:${bbargs.papersize_height}mm`;
         }
         bbargs.bcor = (bbargs.binding_correction || 0) + 'mm';
         let has_custom_dimensions = false;

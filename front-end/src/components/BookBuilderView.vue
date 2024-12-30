@@ -26,10 +26,10 @@
                  "duplex2up",
                  "2down",
                  "2side",
+                 "4up",
                  "2x4x2",
                  "1x4x2cutfoldbind",
                  "2x4x1",
-                 "4up",
                  "ea4x4",
                  "1x8x2",
                  "1x1",
@@ -624,8 +624,13 @@
       </div>
     </div>
     <div v-if="current_tab == 'imposition'" id="bb-imposition">
-      <div>
-        <select id="imposition_schema" class="mcrz-select" v-model="bookbuilder.collection_data.imposition_schema">
+      <div class="flex items-center my-4">
+        <label class="w-32" for="imposition_schema">
+          {{ $gettext('Imposition Schema') }}
+        </label>
+        <select id="imposition_schema"
+                class="mcrz-select h-8"
+                v-model="bookbuilder.collection_data.imposition_schema">
           <option value="">{{ $gettext('None') }}</option>
           <option v-for="schema in schemas" :value="schema">{{ schema }}</option>
         </select>
@@ -635,6 +640,99 @@
              :src="'/schemas/' + image"
              class="w-full m-2 max-w-64"
         >
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '2up'" class="m-2">
+        <p>
+          {{ $gettext('Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == 'duplex2up'" class="m-2">
+        <p>
+          {{ $gettext('Same as 2UP, but for duplex printers') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '2down'" class="m-2">
+        <p>
+          {{ $gettext('Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, binding on the top edge.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '2side'" class="m-2">
+        <p>
+          {{ $gettext('Pairs of consecutives pages are put on the same sheet side by side.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.needs_signature_2up()" class="m-2 flex items-center">
+        <div class="mr-2 w-32">
+          <label for="bb-signature-2up">
+            {{ $gettext('Please select the signature size') }}
+          </label>
+        </div>
+        <select class="mcrz-select h-8"
+                id="bb-signature-2up" v-model="bookbuilder.collection_data.signature_2up">
+          <option value="0">{{ $gettext('The whole book in as single signature') }}</option>
+          <option value="40-80">{{ $gettext('Use optimized signatures with 40-80 pages each') }}</option>
+          <option v-for="signature in [ 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80 ]"
+                  :value="signature">
+            {{ signature }}
+          </option>
+        </select>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '4up'" class="m-2">
+        <p>
+          {{ $gettext('Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.needs_signature_4up()" class="m-2 flex items-center">
+        <div class="mr-2 w-32">
+          <label for="bb-signature-4up">
+            {{ $gettext('Please select the signature size') }}
+          </label>
+        </div>
+        <select class="mcrz-select h-8"
+                id="bb-signature-4up" v-model="bookbuilder.collection_data.signature_4up">
+          <option value="0">{{ $gettext('The whole book in as single signature') }}</option>
+          <option value="40-80">{{ $gettext('Use optimized signatures with 40-80 pages each') }}</option>
+          <option v-for="signature in [ 8, 16, 24, 32, 40, 48, 56, 64, 72, 80 ]"
+                  :value="signature">
+            {{ signature }}
+          </option>
+        </select>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '2x4x1'" class="m-2">
+        <p>
+          {{ $gettext('Blocks of 8 pages to be folded twice and then bound together.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '2x4x2'" class="m-2">
+        <p>
+          {{ $gettext('Blocks of 16 pages to be folded twice and then bound together.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '1x4x2cutfoldbind'" class="m-2">
+        <p>
+          {{ $gettext('Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together.') }}
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '1x8x2'" class="m-2">
+        <p>
+          {{ $gettext('Fixed 16 pages signatures on a single sheet, with triple folding.') }}
+          <a target="_blank" href="https://metacpan.org/pod/PDF::Imposition::Schema1x8x2">
+            {{ $gettext('See here for more details') }}
+          </a>
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == 'ea4x4'" class="m-2">
+        <p>
+          {{ $gettext('Fixed 16 pages signatures on 2 sheets, with double individual folding.') }}
+          <a target="_blank" href="https://metacpan.org/pod/PDF::Imposition::Schemaea4x4">
+            {{ $gettext('See here for more details') }}
+          </a>
+        </p>
+      </div>
+      <div v-if="bookbuilder.collection_data.imposition_schema == '1x1'" class="m-2">
+        <p>
+          {{ $gettext('One page per sheet. This is useful only if you want to add the cropmarks') }}
+        </p>
       </div>
     </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">
