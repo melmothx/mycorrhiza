@@ -115,8 +115,9 @@ sub compile {
                                        file => $outfile,
                                        suffix => '_imp',
                                        schema => $imposition_schema,
+                                       $bbargs->{signature} ? (signature => $bbargs->{signature}) : (),
                                       );
-                $self->logger->("Imposing $outfile with $imposition_schema");
+                $self->logger->("Imposing $outfile with " . Dumper(\%imposer_options));
                 my $imposer = PDF::Imposition->new(%imposer_options);
                 $imposer->impose;
                 my $imposed_file = $imposer->outfile;

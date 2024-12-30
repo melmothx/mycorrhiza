@@ -140,14 +140,24 @@ export const bookbuilder = reactive({
         }
     },
     needs_signature_2up() {
-        const imposition_schema = this.collection_data.imposition_schema;
-        const schemas = [ '2up', 'duplex2up', '2down' ];
-        return schemas.includes(imposition_schema);
+        if (this.collection_data) {
+            const imposition_schema = this.collection_data.imposition_schema;
+            const schemas = [ '2up', 'duplex2up', '2down' ];
+            return schemas.includes(imposition_schema);
+        }
+        else {
+            return false;
+        }
     },
     needs_signature_4up() {
-        const imposition_schema = this.collection_data.imposition_schema;
-        const schemas = [ '4up' ];
-        return schemas.includes(imposition_schema);
+        if (this.collection_data) {
+            const imposition_schema = this.collection_data.imposition_schema;
+            const schemas = [ '4up' ];
+            return schemas.includes(imposition_schema);
+        }
+        else {
+            return false;
+        }
     },
     api_collection_data() {
         const bbargs = { ...this.collection_data };
@@ -208,6 +218,14 @@ export const bookbuilder = reactive({
         if (bbargs.linespacing <= 1) {
             delete bbargs.linespacing;
         }
+        if (this.needs_signature_4up()) {
+            bbargs.signature = this.collection_data.signature_4up;
+        }
+        else if (this.needs_signature_2up()) {
+            bbargs.signature = this.collection_data.signature_2up;
+        }
+        delete bbargs.signature_2up;
+        delete bbargs.signature_4up;
         return bbargs;
     },
 
