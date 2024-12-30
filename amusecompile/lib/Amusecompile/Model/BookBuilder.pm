@@ -115,6 +115,7 @@ sub compile {
                                        file => $outfile,
                                        suffix => '_imp',
                                        schema => $imposition_schema,
+                                       cover => $bbargs->{fill_signature} || 0,
                                        $bbargs->{signature} ? (signature => $bbargs->{signature}) : (),
                                       );
                 $self->logger->("Imposing $outfile with " . Dumper(\%imposer_options));

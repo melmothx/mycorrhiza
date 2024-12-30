@@ -734,6 +734,15 @@
           {{ $gettext('One page per sheet. This is useful only if you want to add the cropmarks') }}
         </p>
       </div>
+      <div v-if="bookbuilder.needs_signature_2up() || bookbuilder.needs_signature_4up()">
+        <label>
+          <input type="checkbox" value="1" class="mcrz-checkbox"
+                 v-model="bookbuilder.collection_data.fill_signature" />
+          <span class="ml-2">
+            {{ $gettext('Fill with blank pages before the last page if the signature is not full.') }}
+          </span>
+        </label>
+      </div>
     </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">
       <div class="my-4" v-if="bookbuilder.needs_virtual_header()">

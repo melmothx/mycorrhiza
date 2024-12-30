@@ -27,6 +27,7 @@ export const bookbuilder = reactive({
             headings: '0',
             signature_2up: '0',
             signature_4up: '0',
+            fill_signature: true,
         };
     },
     save() {
@@ -207,6 +208,7 @@ export const bookbuilder = reactive({
                                  'continuefootnotes',
                                  'centerchapter',
                                  'centersection',
+                                 'fill_signature',
                                 ]) {
             if (bbargs[boolfield]) {
                 bbargs[boolfield] = 1;
@@ -224,9 +226,11 @@ export const bookbuilder = reactive({
         else if (this.needs_signature_2up()) {
             bbargs.signature = this.collection_data.signature_2up;
         }
+        else {
+            delete bbargs.fill_signature;
+        }
         delete bbargs.signature_2up;
         delete bbargs.signature_4up;
         return bbargs;
     },
-
 })
