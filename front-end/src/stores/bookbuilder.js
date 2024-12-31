@@ -81,7 +81,9 @@ export const bookbuilder = reactive({
         }
     },
     needs_sans_font() {
-        return this.collection_data.sansfontsections;
+        if (this.collection_data) {
+            return this.collection_data.sansfontsections;
+        }
     },
     needs_virtual_header() {
         if (this.text_list.length > 1) {
@@ -111,7 +113,7 @@ export const bookbuilder = reactive({
         this.save();
     },
     needs_areaset_height() {
-        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_height) {
+        if (this.collection_data && this.collection_data.division_factor == 0 && !this.collection_data.areaset_height) {
             return true;
         }
         else {
@@ -119,7 +121,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_areaset_width() {
-        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_width) {
+        if (this.collection_data && this.collection_data.division_factor == 0 && !this.collection_data.areaset_width) {
             return true;
         }
         else {
@@ -127,7 +129,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_geometry_top_margin() {
-        if (!this.collection_data.geometry_top_margin && this.collection_data.geometry_outer_margin) {
+        if (this.collection_data && !this.collection_data.geometry_top_margin && this.collection_data.geometry_outer_margin) {
             return true;
         }
         else {
