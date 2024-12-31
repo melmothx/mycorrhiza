@@ -1,5 +1,29 @@
 import { reactive } from 'vue'
 
+function amc_default_collection_data() {
+    return {
+        papersize: "a4",
+        mainfont: "DejaVu Serif",
+        sansfont: "DejaVu Sans",
+        monofont: "DejaVu Sans Mono",
+        imposition_schema: "",
+        fontsize: "12",
+        division_factor: "12",
+        binding_correction: "0",
+        opening: 'any',
+        parindent: 15,
+        linespacing: 1,
+        tex_tolerance: 200,
+        tex_emergencystretch: 30,
+        headings: '0',
+        signature_2up: '0',
+        signature_4up: '0',
+        fill_signature: true,
+        crop_paper_thickness: 0.10,
+        crop_papersize: "a4",
+    };
+}
+
 export const bookbuilder = reactive({
     session_id: null,
     job_id: null,
@@ -8,30 +32,10 @@ export const bookbuilder = reactive({
     error: null,
     status: null,
     loaded: false,
-    collection_data: null,
     default_collection_data() {
-        return {
-            papersize: "a4",
-            mainfont: "DejaVu Serif",
-            sansfont: "DejaVu Sans",
-            monofont: "DejaVu Sans Mono",
-            imposition_schema: "",
-            fontsize: "12",
-            division_factor: "12",
-            binding_correction: "0",
-            opening: 'any',
-            parindent: 15,
-            linespacing: 1,
-            tex_tolerance: 200,
-            tex_emergencystretch: 30,
-            headings: '0',
-            signature_2up: '0',
-            signature_4up: '0',
-            fill_signature: true,
-            crop_paper_thickness: 0.10,
-            crop_papersize: "a4",
-        };
+        return amc_default_collection_data();
     },
+    collection_data: amc_default_collection_data(),
     save() {
         console.log("Saving the state");
         localStorage.setItem('bookbuilder', JSON.stringify({
@@ -81,9 +85,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_sans_font() {
-        if (this.collection_data) {
-            return this.collection_data.sansfontsections;
-        }
+        return this.collection_data.sansfontsections;
     },
     needs_virtual_header() {
         if (this.text_list.length > 1) {
@@ -113,7 +115,7 @@ export const bookbuilder = reactive({
         this.save();
     },
     needs_areaset_height() {
-        if (this.collection_data && this.collection_data.division_factor == 0 && !this.collection_data.areaset_height) {
+        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_height) {
             return true;
         }
         else {
@@ -121,7 +123,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_areaset_width() {
-        if (this.collection_data && this.collection_data.division_factor == 0 && !this.collection_data.areaset_width) {
+        if (this.collection_data.division_factor == 0 && !this.collection_data.areaset_width) {
             return true;
         }
         else {
@@ -129,7 +131,7 @@ export const bookbuilder = reactive({
         }
     },
     needs_geometry_top_margin() {
-        if (this.collection_data && !this.collection_data.geometry_top_margin && this.collection_data.geometry_outer_margin) {
+        if (!this.collection_data.geometry_top_margin && this.collection_data.geometry_outer_margin) {
             return true;
         }
         else {
