@@ -15,6 +15,16 @@ sub cleanup ($self) {
     $self->render(json => { status => 'OK', job_id => $jid });
 }
 
+sub check_session ($self) {
+    my $sid = $self->param('sid');
+    if (my $check = $self->pg->db->query('SELECT sid FROM amc_sessions WHERE sid = ?', $sid)->hash) {
+        if ($self->wd->child($check->{sid})->exists) {
+            return $self->render(json => { session_id => $sid });
+        }
+    }
+    $self->render(json => { error => "Invalid session" });
+}
+
 sub create_session ($self) {
     my $wd = $self->wd;
     $wd->mkdir;

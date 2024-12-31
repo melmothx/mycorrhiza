@@ -236,6 +236,12 @@ export const bookbuilder = reactive({
             if (!bbargs.crop_papersize && bbargs.crop_papersize_width && bbargs.crop_papersize_height) {
                 bbargs.crop_papersize = `${bbargs.crop_papersize_width}mm:${bbargs.crop_papersize_height}mm`;
             }
+            if (bbargs.crop_paper_thickness) {
+                bbargs.crop_paper_thickness = `${bbargs.crop_paper_thickness}mm`;
+            }
+            else {
+                delete bbargs.crop_paper_thickness;
+            }
         }
         else {
             for (const cleanup of ['crop_papersize', 'crop_paper_thickness']) {

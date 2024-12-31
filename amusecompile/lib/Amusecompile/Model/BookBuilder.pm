@@ -86,7 +86,7 @@ sub compile {
                                              headings
                                             /);
         $self->logger->("Options are " . Dumper(\%extra));
-        my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra);
+        my $c = Text::Amuse::Compile->new(pdf => 1, extra => \%extra, logger => $self->logger);
         my $outfile;
         if (@muse_files == 1) {
             my $file = $muse_files[0]{path}->stringify;
@@ -120,7 +120,9 @@ sub compile {
                                       );
                 if ($bbargs->{crop_papersize}) {
                     $imposer_options{paper} = $bbargs->{crop_papersize};
-                    $imposer_options{paper_thickness} = $bbargs->{crop_paper_thickness} || 0;
+                    if ($bbargs->{crop_paper_thickness}) {
+                        $imposer_options{paper_thickness} = $bbargs->{crop_paper_thickness};
+                    }
                 }
                 $self->logger->("Imposing $outfile with " . Dumper(\%imposer_options));
                 my $imposer = PDF::Imposition->new(%imposer_options);

@@ -81,6 +81,7 @@ sub startup ($self) {
     $api->post('/cleanup')->to('API#cleanup')->name('api_cleanup');
     $api->get('/headings')->to('API#headings')->name('api_headings');
     $api->post('/create-session')->to('API#create_session')->name('api_create_session');
+    $api->get('/check-session/:sid')->to('API#check_session')->name('api_check_session');
     $api->post('/add/:sid')->to('API#add_file')->name('api_add_file');
     $api->get('/list/:sid')->to('API#list_texts')->name('api_list_texts');
     $api->post('/compile/:sid')->to('API#compile')->name('api_compile');

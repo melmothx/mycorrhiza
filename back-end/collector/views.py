@@ -1032,7 +1032,11 @@ def api_bookbuilder(request):
     amc_sid = params.get('session_id')
     if amc_sid:
         logger.debug("AMC session is " + amc_sid)
-    else:
+        r = requests.get("{}/check-session/{}".format(base_url, amc_sid), headers=api_auth)
+        if r.json().get('error'):
+            amc_sid = None
+
+    if not amc_sid:
         r = requests.post(base_url + '/create-session', headers=api_auth)
         request.session['amc_sid'] = amc_sid
         amc_sid = r.json()['session_id']
