@@ -897,7 +897,7 @@
       </button>
     </div>
   </div>
-  <div class="mt-10">
+  <div v-if="false" class="mt-10">
     <pre class="text-sm">
 {{ bookbuilder.api_collection_data() }}
     </pre>
