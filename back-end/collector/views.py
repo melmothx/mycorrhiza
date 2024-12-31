@@ -1050,6 +1050,8 @@ def api_bookbuilder(request):
         r = requests.get("{}/job-status/{}".format(base_url, params.get('check_job_id')), headers=api_auth)
         out['status'] = r.json()['status']
     elif action == 'add':
+        # fire and forget
+        requests.post(base_url + '/cleanup', headers=api_auth)
         try:
             ds = DataSource.objects.get(pk=params.get('add'))
         except DataSource.DoesNotExist:

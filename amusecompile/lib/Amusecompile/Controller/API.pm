@@ -7,8 +7,12 @@ use JSON::MaybeXS qw/decode_json/;
 use Text::Amuse::Compile::TemplateOptions;
 
 sub check ($self) {
-    # Render template "example/welcome.html.ep" with message
     $self->render(json => { status => 'OK' });
+}
+
+sub cleanup ($self) {
+    my $jid = $self->minion->enqueue(cleanup => []);
+    $self->render(json => { status => 'OK', job_id => $jid });
 }
 
 sub create_session ($self) {

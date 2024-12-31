@@ -30,6 +30,35 @@ sub register {
                                $logger->info("Updating record: " . Dumper($update));
                                $db->update(amc_sessions => $update, { sid => $sid });
                            });
+    $app->minion->add_task(cleanup => sub {
+                               my ($job) = @_;
+                               my $db = $job->app->pg->db;
+                               my $wd = $job->app->wd;
+                               my $logger = $job->app->log;
+                               my @stale = map { $_->{sid} }
+                                 $db->delete(amc_sessions => { last_modified => { '<',  \"(NOW() - INTERVAL '1 week')" } },
+                                             { returning => 'sid' })->hashes->each;
+                               my $removed = 0;
+                               foreach my $sid (@stale) {
+                                   my $stale_tree = $wd->child($sid);
+                                   if ($stale_tree->exists) {
+                                       $logger->info("Removing $stale_tree");
+                                       $stale_tree->remove_tree;
+                                       $removed++;
+                                   }
+                               }
+                               my %valid = map { $_->{sid} => 1 } $db->select(amc_sessions => [qw/sid/])->hashes->each;
+                               foreach my $tree ($wd->children) {
+                                   if (-d $tree) {
+                                       unless ($valid{$tree->basename}) {
+                                           $logger->info("Removing $tree, not found in the DB");
+                                           $tree->remove_tree;
+                                           $removed++;
+                                       }
+                                   }
+                               }
+                               $logger->info("Removed $removed trees");
+                           });
 }
 
 1;
