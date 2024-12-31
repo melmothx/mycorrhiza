@@ -1,0 +1,34 @@
+API requests are done by the collector to the Compiler.
+
+Authorization by header token.
+
+** POST /compiler/api/v1/create-session
+
+Compiler creates a directory with a unique name and returns it.
+
+** POST /compiler/api/v1/add/:sid
+
+Send a zip file and store it in the new directory. Write the name in a
+file in the root of that directory.
+
+** GET /compiler/api/v1/list/:sid
+
+List the available texts.
+
+** POST /compiler/api/v1/compile/:sid
+
+Receive the set of parameters, save them as JSON. Create a job.
+
+ - load the parameters and validate them
+ - put files in a dir
+ - compile and produce the output
+
+** GET /compiler/api/v1/job-status/:jid
+
+Get the job status.
+
+** GET /compiler/api/v1/compile/:sid
+
+Get the file, if ready.
+
+

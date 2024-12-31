@@ -84,6 +84,20 @@
     @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
 }
 
+.mcrz-tab-common {
+    @apply inline-block p-4 border-b-2 rounded-t-lg font-bold;
+}
+
+.mcrz-tab-normal {
+    @apply mcrz-tab-common border-perl-bush-300 hover:text-spectra-600 hover:border-spectra-600;
+}
+
+.mcrz-tab-active {
+    @apply mcrz-tab-common text-spectra-700 border-b-2 border-spectra-700;
+}
+
+
+
 @layer components {
     .btn-primary {
         @apply bg-gradient-to-tr from-spectra-700 to-spectra-900
@@ -104,20 +118,20 @@
         @apply text-spectra-800 hover:text-spectra-600 font-semibold;
     }
     .mcrz-radio {
-        @apply text-old-copper-800 focus:ring-old-copper-800 focus:ring-0 active:ring-0;
+        @apply text-old-copper-800 focus:ring-old-copper-200 focus:ring-old-copper-200 active:ring-old-copper-200;
     }
     .mcrz-checkbox {
-        @apply rounded-tl-lg focus:border-old-copper-800 text-old-copper-800 focus:ring-0;
+        @apply rounded-tl-lg focus:border-old-copper-800 text-old-copper-800 focus:ring-old-copper-200;
     }
     .mcrz-select {
-        @apply outline outline-0 border border-0 focus:ring-0 active:ring-0 py-0;
+        @apply outline outline-0 border border-0 focus:ring-old-copper-200 active:ring-old-copper-200 py-0;
     }
     .mcrz-textarea {
         @apply outline
                outline-0
                border
                border-0
-               focus:ring-0 active:ring-0
+               focus:ring-old-copper-200 active:ring-old-copper-200
                px-2
                text-old-copper-700
                bg-perl-bush-50
@@ -129,7 +143,7 @@
                outline-0
                border
                border-0
-               focus:ring-0 active:ring-0
+               focus:ring-old-copper-200 active:ring-old-copper-200
                px-2
                text-old-copper-700
                bg-perl-bush-50
@@ -142,7 +156,7 @@
                border-perl-bush-100
                active:border active:border-perl-bush-100
                focus:border focus:border-perl-bush-100
-               focus:ring-0 active:ring-0
+               focus:ring-old-copper-200 active:ring-old-copper-200
                px-2
                text-old-copper-900
                bg-perl-bush-50

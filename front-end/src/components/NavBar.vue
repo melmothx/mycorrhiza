@@ -3,6 +3,7 @@
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import SiteLogo from './SiteLogo.vue';
+ import { bookbuilder } from '../stores/bookbuilder.js'
  import {
      Listbox,
      ListboxButton,
@@ -10,7 +11,11 @@
      ListboxOption,
      Menu, MenuButton, MenuItems, MenuItem,
  } from '@headlessui/vue'
- import { ChevronUpDownIcon, UserIcon } from '@heroicons/vue/24/solid'
+ import {
+     ChevronUpDownIcon,
+     UserIcon,
+     BookOpenIcon,
+ } from '@heroicons/vue/24/solid'
 
  export default {
      emits: [
@@ -24,6 +29,7 @@
          ListboxOption,
          Menu, MenuButton, MenuItems, MenuItem,
          ChevronUpDownIcon, UserIcon,
+         BookOpenIcon,
      },
      data() {
          return {
@@ -35,6 +41,7 @@
              reset_message: null,
              current_language: null,
              show_login: false,
+             bookbuilder,
          }
      },
      methods: {
@@ -96,12 +103,13 @@
      mounted() {
          this.check();
          this.current_language = this.$getlanguage();
+         this.bookbuilder.restore();
      },
  }
 </script>
 <template>
   <header>
-  <div class="flex flex-wrap m-3">
+  <div class="flex flex-wrap m-3 items-center">
     <div class="flex-grow">
       <SiteLogo />
     </div>
@@ -140,7 +148,12 @@
       <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
     </div>
     <div v-else>
-      <UserIcon class="h-5 w-5 m-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
+      <UserIcon class="h-5 w-5 mx-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
+    </div>
+    <div v-if="bookbuilder.session_id">
+      <router-link :to="{ name: 'bookbuilder' }">
+        <BookOpenIcon class="h-5 w-5 text-cab-sav-800 cursor-pointer" />
+      </router-link>
     </div>
     <div v-if="authenticated">
       <Menu as="div" class="relative z-10">

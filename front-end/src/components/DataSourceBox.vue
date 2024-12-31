@@ -1,5 +1,8 @@
 <script>
  import axios from 'axios'
+ import { bookbuilder } from '../stores/bookbuilder.js'
+ axios.defaults.xsrfCookieName = "csrftoken";
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'source', 'short' ],
      data() {
@@ -8,7 +11,13 @@
              show_html: false,
              show_pdf_reader: false,
              working: false,
+             added_to_the_bookbuilder: false,
+             bookbuilder,
          }
+     },
+     mounted() {
+         console.log("Restoring the bookbuilder");
+         this.bookbuilder.restore();
      },
      methods: {
          toggle_full_text() {
@@ -76,8 +85,33 @@
                      return '/pdfjs/web/viewer.html?file=' + this.get_binary_file(src.data_source_id, '.pdf');
                  }
              }
-             return;
+             return false;
          },
+         add_to_bookbuilder() {
+             let args = {
+                 action: "add",
+                 add: this.source.data_source_id,
+                 session_id: this.bookbuilder.session_id,
+             };
+             axios.post('/collector/api/bookbuilder', args)
+                  .then(res => {
+                      console.log(res.data)
+                      if (res.data.session_id) {
+                          this.bookbuilder.session_id = res.data.session_id;
+                          this.added_to_the_bookbuilder = true;
+                      }
+                  });
+             console.log(this.source);
+         },
+         can_have_the_bookbuilder() {
+             const src = this.source;
+             if (src.downloads) {
+                 if (src.downloads.find((e) => e.ext == '.muse') && src.downloads.find((e) => e.ext == '.zip')) {
+                     return true;
+                 }
+             }
+             return false;
+         }
      }
  }
 </script>
@@ -172,6 +206,15 @@
         </div>
         <div v-if="pdf_reader()">
           <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
+        </div>
+        <div v-if="can_have_the_bookbuilder() && !added_to_the_bookbuilder">
+          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="add_to_bookbuilder">
+            {{ $gettext('Add to the Book Builder') }}
+          </button>
+        </div>
+        <div v-if="added_to_the_bookbuilder"
+             class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
+          {{ $gettext('Added to the Book Builder!') }}
         </div>
         <div class="grow"></div>
       </div>

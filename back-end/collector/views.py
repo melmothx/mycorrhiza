@@ -1002,3 +1002,97 @@ def confirm_existence(request, library_id, token):
         else:
             reply = "Wrong token"
     return HttpResponse(reply, content_type="text/plain")
+
+def download_compiled_book(request, session_id):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    r = requests.get(base_url + '/compile/' + session_id, headers=api_auth)
+    if r.status_code == 200:
+        return HttpResponse(r.content,
+                            content_type=r.headers['content-type'],
+                            headers={
+                                'Content-Disposition': r.headers['Content-Disposition']
+                            })
+    else:
+        raise Http404("File not found!")
+
+def api_bookbuilder(request):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    params = json.loads(request.body)
+    action = params.get('action', '')
+    # no session id needed
+    if action == 'get_fonts':
+        r = requests.get(base_url + '/fonts', headers=api_auth)
+        return JsonResponse(r.json())
+    if action == 'get_headings':
+        r = requests.get(base_url + '/headings', headers=api_auth)
+        return JsonResponse(r.json())
+    logger.debug(params)
+    amc_sid = params.get('session_id')
+    if amc_sid:
+        logger.debug("AMC session is " + amc_sid)
+        r = requests.get("{}/check-session/{}".format(base_url, amc_sid), headers=api_auth)
+        if r.json().get('error'):
+            amc_sid = None
+
+    if not amc_sid:
+        r = requests.post(base_url + '/create-session', headers=api_auth)
+        request.session['amc_sid'] = amc_sid
+        amc_sid = r.json()['session_id']
+    out = { "session_id": amc_sid }
+
+    logger.debug("Action is " + action)
+    if action == 'list':
+        r = requests.get(base_url + '/list/' + amc_sid, headers=api_auth)
+        out['texts'] = r.json()['texts']
+    elif action == 'build':
+        bbargs = params.get('collection_data')
+        r = requests.post(base_url + '/compile/' + amc_sid, headers=api_auth, data=bbargs)
+        out['job_id'] = r.json()['job_id']
+    elif action == 'check_job':
+        r = requests.get("{}/job-status/{}".format(base_url, params.get('check_job_id')), headers=api_auth)
+        out['status'] = r.json()['status']
+    elif action == 'add':
+        # fire and forget
+        requests.post(base_url + '/cleanup', headers=api_auth)
+        try:
+            ds = DataSource.objects.get(pk=params.get('add'))
+        except DataSource.DoesNotExist:
+            out['error'] = "Not found"
+            return JsonResponse(out)
+        site = ds.site
+        if site.library_id in _active_libraries(request.user):
+            if site.site_type == 'amusewiki':
+                r = ds.get_remote_file('.zip')
+                filename = ds.amusewiki_uri()
+                logger.debug("Filename is {}".format(filename))
+                files = {
+                    'muse': ("{}.zip".format(filename), r.content, 'application/zip')
+                }
+                # logger.debug(files)
+                rc = requests.post(base_url + '/add/' + amc_sid,
+                                   files=files,
+                                   data={'title': ds.entry.title, "entry_id": ds.entry_id, "ds_id": ds.id },
+                                   headers=api_auth)
+                # logger.debug(rc.request.headers)
+                res = rc.json()
+                logger.debug(res)
+                out['status'] = res.get('status')
+                out['file_id'] = res.get('file_id')
+    elif action == 'remove':
+        r = requests.post("{}/list/{}/remove/{}".format(base_url, amc_sid, params.get('remove_id')), headers=api_auth)
+        rj = r.json()
+        out['status'] = rj['status']
+        out['texts'] = rj['texts']
+    elif action == 'reorder':
+        r = requests.post("{}/list/{}/reorder/{}/{}".format(base_url,
+                                                            amc_sid,
+                                                            params.get('move_id'),
+                                                            params.get('to_id')),
+                          headers=api_auth)
+        rj = r.json()
+        out['status'] = rj['status']
+        out['texts'] = rj['texts']
+    logger.debug(out)
+    return JsonResponse(out)
