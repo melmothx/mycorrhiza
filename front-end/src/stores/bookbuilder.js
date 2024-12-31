@@ -28,6 +28,8 @@ export const bookbuilder = reactive({
             signature_2up: '0',
             signature_4up: '0',
             fill_signature: true,
+            crop_paper_thickness: 0.10,
+            crop_papersize: "a4",
         };
     },
     save() {
@@ -209,6 +211,7 @@ export const bookbuilder = reactive({
                                  'centerchapter',
                                  'centersection',
                                  'fill_signature',
+                                 'cropmarks',
                                 ]) {
             if (bbargs[boolfield]) {
                 bbargs[boolfield] = 1;
@@ -229,8 +232,21 @@ export const bookbuilder = reactive({
         else {
             delete bbargs.fill_signature;
         }
-        delete bbargs.signature_2up;
-        delete bbargs.signature_4up;
+        if (bbargs.cropmarks) {
+            if (!bbargs.crop_papersize && bbargs.crop_papersize_width && bbargs.crop_papersize_height) {
+                bbargs.crop_papersize = `${bbargs.crop_papersize_width}mm:${bbargs.crop_papersize_height}mm`;
+            }
+        }
+        else {
+            for (const cleanup of ['crop_papersize', 'crop_paper_thickness']) {
+                delete bbargs[cleanup];
+            }
+        }
+        for (const cleanup of ['cropmarks', 'signature_2up', 'signature_4up',
+                               'crop_papersize_width', 'crop_papersize_height',
+                              ]) {
+            delete bbargs[cleanup];
+        }
         return bbargs;
     },
 })

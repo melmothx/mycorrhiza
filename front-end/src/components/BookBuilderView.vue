@@ -34,6 +34,22 @@
                  "1x8x2",
                  "1x1",
              ],
+             papersizes: [
+                 { name: "210mm:11in", desc: "Generic (fits in A4 and Letter)" },
+                 { name: "a3", desc: "A3" },
+                 { name: "a4", desc: "A4" },
+                 { name: "a5", desc: "A5" },
+                 { name: "a6", desc: "A6" },
+                 { name: "88mm:115mm", desc: '6" E-reader' },
+                 { name: "b3", desc: "B3" },
+                 { name: "b4", desc: "B4" },
+                 { name: "b5", desc: "B5" },
+                 { name: "b6", desc: "B6" },
+                 { name: "letter", desc: "Letter paper" },
+                 { name: "5.5in:8.5in", desc: "Half Letter paper" },
+                 { name: "4.25in:5.5in", desc: "Quarter Letter paper" },
+                 { name: "", desc: "Custom" },
+             ],
              schema_images: [
                  'schema-1x1-1.png',
                  'schema-1x1-2.png',
@@ -237,20 +253,7 @@
           <label for="bb-papersize">{{ $gettext('Please choose a paper size') }}</label>
         </div>
         <select id="bb-papersize" class="mcrz-select h-8 w-96" v-model="bookbuilder.collection_data.papersize">
-          <option value="generic">Generic (fits in A4 and Letter)</option>
-          <option value="a3">A3</option>
-          <option value="a4">A4</option>
-          <option value="a5">A5</option>
-          <option value="a6">A6</option>
-          <option value="88mm:115mm">6" E-reader</option>
-          <option value="b3">B3</option>
-          <option value="b4">B4</option>
-          <option value="b5">B5</option>
-          <option value="b6">B6</option>
-          <option value="letter">Letter paper</option>
-          <option value="5.5in:8.5in">Half Letter paper</option>
-          <option value="4.25in:5.5in">Quarter Letter paper</option>
-          <option value="">Custom</option>
+          <option v-for="paper in papersizes" :key="paper.name" :value="paper.name">{{ $gettext(paper.desc) }}</option>
         </select>
       </div>
       <div v-if="!bookbuilder.collection_data.papersize" class="my-2">
@@ -661,7 +664,7 @@
           {{ $gettext('Pairs of consecutives pages are put on the same sheet side by side.') }}
         </p>
       </div>
-      <div v-if="bookbuilder.needs_signature_2up()" class="m-2 flex items-center">
+      <div v-if="bookbuilder.needs_signature_2up()" class="flex items-center">
         <div class="mr-2 w-32">
           <label for="bb-signature-2up">
             {{ $gettext('Please select the signature size') }}
@@ -682,7 +685,7 @@
           {{ $gettext('Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4.') }}
         </p>
       </div>
-      <div v-if="bookbuilder.needs_signature_4up()" class="m-2 flex items-center">
+      <div v-if="bookbuilder.needs_signature_4up()" class="flex items-center">
         <div class="mr-2 w-32">
           <label for="bb-signature-4up">
             {{ $gettext('Please select the signature size') }}
@@ -742,6 +745,75 @@
             {{ $gettext('Fill with blank pages before the last page if the signature is not full.') }}
           </span>
         </label>
+      </div>
+      <div>
+        <label>
+          <input type="checkbox" value="1" class="mcrz-checkbox"
+                 v-model="bookbuilder.collection_data.cropmarks" />
+          <span class="ml-2">
+            {{ $gettext('Add crop marks to PDF') }}
+          </span>
+        </label>
+      </div>
+      <div class="mt-2" v-if="bookbuilder.collection_data.cropmarks">
+        <div>
+          <label for="bb-crop_papersize">
+            {{ $gettext('Please select the size of each page including the crop marks, before the imposing.') }}
+            <br>
+            {{ $gettext('(Original size is %1)', bookbuilder.api_collection_data().papersize) }}
+          </label>
+        </div>
+        <div>
+          <div class="my-2">
+          </div>
+          <select id="bb-crop_papersize" class="mcrz-select h-8 w-96 my-2" v-model="bookbuilder.collection_data.crop_papersize">
+            <option v-for="paper in papersizes" :key="paper.name" :value="paper.name">
+              {{ $gettext(paper.desc) }}
+            </option>
+          </select>
+        </div>
+        <div v-if="!bookbuilder.collection_data.crop_papersize" class="my-2">
+          <div class="flex items-center">
+            <div class="mr-2 w-32">
+              <label for="bb-crop-ppw">
+                {{ $gettext('Width in mm') }}:
+              </label>
+            </div>
+            <div>
+              <input type="number"
+                     id="bb-crop-ppw"
+                     step="1" min="80" max="500"
+                     class="mcrz-input h-8 w-32"
+                     v-model="bookbuilder.collection_data.crop_papersize_width">
+            </div>
+            <div class="w-4"></div>
+            <div class="mr-2 w-32">
+              <label for="bb-crop-pph">
+                {{ $gettext('Height in mm') }}:
+              </label>
+            </div>
+            <div>
+              <input type="number" id="bb-crop-pph" class="mcrz-input h-8 w-32"
+                     step="1" min="80" max="500"
+                     v-model="bookbuilder.collection_data.crop_papersize_height">
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center my-4">
+          <div class="w-96 mr-2">
+            <label for="crop_paper_thickness">
+              {{ $gettext('Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)') }}
+            </label>
+          </div>
+          <div>
+            <input class="mcrz-input h-8 w-32" type="number"
+                   id="crop_paper_thickness"
+                   v-model="bookbuilder.collection_data.crop_paper_thickness"
+                   min="0" max="0.3" step="0.01" />
+          </div>
+        </div>
+
+
       </div>
     </div>
     <div v-if="current_tab == 'overview'" id="bb-overview">

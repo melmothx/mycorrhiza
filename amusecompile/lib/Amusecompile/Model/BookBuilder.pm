@@ -112,12 +112,16 @@ sub compile {
             $self->logger->("Created $outfile");
             if (my $imposition_schema = $bbargs->{imposition_schema}) {
                 my %imposer_options = (
-                                       file => $outfile,
+                                       file => "$outfile",
                                        suffix => '_imp',
                                        schema => $imposition_schema,
                                        cover => $bbargs->{fill_signature} || 0,
                                        $bbargs->{signature} ? (signature => $bbargs->{signature}) : (),
                                       );
+                if ($bbargs->{crop_papersize}) {
+                    $imposer_options{paper} = $bbargs->{crop_papersize};
+                    $imposer_options{paper_thickness} = $bbargs->{crop_paper_thickness} || 0;
+                }
                 $self->logger->("Imposing $outfile with " . Dumper(\%imposer_options));
                 my $imposer = PDF::Imposition->new(%imposer_options);
                 $imposer->impose;
