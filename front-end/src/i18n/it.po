@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 14:42:03 14:42+0000\n"
-"PO-Revision-Date: 2024-10-31 15:08+0100\n"
+"POT-Creation-Date: 07:43:22 07:43+0000\n"
+"PO-Revision-Date: 2025-01-01 08:47+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -17,6 +17,11 @@ msgstr ""
 msgid "%1 logo"
 msgstr ""
 
+#. $gettext('(Original size is %1)', bookbuilder.api_collection_data()
+#: src/components/BookBuilderView.vue:763
+msgid "(Original size is %1)"
+msgstr ""
+
 #. $gettext('Add')
 #: src/components/UserCreation.vue:134
 msgid "Add"
@@ -26,6 +31,21 @@ msgstr "Aggiungi"
 #: src/components/UserCreation.vue:84
 msgid "Add User"
 msgstr "Aggiungi utente"
+
+#. $gettext('Add crop marks to PDF')
+#: src/components/BookBuilderView.vue:754
+msgid "Add crop marks to PDF"
+msgstr ""
+
+#. $gettext('Add to the Book Builder')
+#: src/components/DataSourceBox.vue:212
+msgid "Add to the Book Builder"
+msgstr ""
+
+#. $gettext('Added to the Book Builder!')
+#: src/components/DataSourceBox.vue:217
+msgid "Added to the Book Builder!"
+msgstr ""
 
 #. $gettext('Additional Address Line')
 #: src/components/LibraryEdit.vue:166
@@ -43,32 +63,42 @@ msgid "Address Line"
 msgstr "Parti dell'indirizzo"
 
 #. $gettext('Admin') $gettext('Admin')
-#: src/components/NavBar.vue:163 src/components/MergeBox.vue:162
+#: src/components/NavBar.vue:176 src/components/MergeBox.vue:162
 msgid "Admin"
 msgstr "Amministrazione"
 
+#. $gettext('Advanced')
+#: src/components/BookBuilderView.vue:244
+msgid "Advanced"
+msgstr ""
+
 #. $gettext('Aggregated')
-#: src/components/SearchPage.vue:250
+#: src/components/SearchPage.vue:238
 msgid "Aggregated"
 msgstr "Aggregati"
 
 #. $gettext('Aggregation') $gettext('Aggregation')
-#: src/components/SearchPage.vue:251 src/components/SearchPage.vue:252
+#: src/components/SearchPage.vue:239 src/components/SearchPage.vue:240
 msgid "Aggregation"
 msgstr "Aggregazione"
 
 #. $gettext('Aggregations')
-#: src/components/SearchPage.vue:426
+#: src/components/SearchPage.vue:387
 msgid "Aggregations"
 msgstr ""
 
 #. $gettext('All entries (%1)', total_entries)
-#: src/components/SearchPage.vue:266
+#: src/components/SearchPage.vue:254
 msgid "All entries (%1)"
 msgstr "Tutti i risultati (%1)"
 
+#. $gettext('Author')
+#: src/components/BookBuilderView.vue:831
+msgid "Author"
+msgstr ""
+
 #. $gettext('Authors') $gettext('Authors') $gettext('Authors')
-#: src/components/SearchPage.vue:381 src/components/SearchPage.vue:385
+#: src/components/SearchPage.vue:342 src/components/SearchPage.vue:346
 #: src/components/AgentOverView.vue:62
 msgid "Authors"
 msgstr "Autori"
@@ -80,28 +110,65 @@ msgid_plural "Authors matching “%1” (%2 entries)"
 msgstr[0] "Autore che corrisponde a “%1” (%2 entry)"
 msgstr[1] "Autori che corrispondono a “%1” (%2 entry)"
 
+#. $gettext('Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest')
+#: src/components/BookBuilderView.vue:291
+msgid ""
+"Automatic margins: choose a factor. 9 has the widest margins, 15 the "
+"narrowest"
+msgstr ""
+
 #. $gettext('Back')
 #: src/components/BackButton.vue:19
 msgid "Back"
 msgstr "Indietro"
 
 #. $gettext('Bibliographical entry only')
-#: src/components/SearchPage.vue:249
+#: src/components/SearchPage.vue:237
 msgid "Bibliographical entry only"
 msgstr "Solo riferimento bibliografico"
 
+#. $gettext('Binding correction in mm (additional inner margin)')
+#: src/components/BookBuilderView.vue:378
+msgid "Binding correction in mm (additional inner margin)"
+msgstr ""
+
+#. $gettext('Blocks of 16 pages to be folded twice and then bound together.')
+#: src/components/BookBuilderView.vue:711
+msgid "Blocks of 16 pages to be folded twice and then bound together."
+msgstr ""
+
+#. $gettext('Blocks of 8 pages to be folded twice and then bound together.')
+#: src/components/BookBuilderView.vue:706
+msgid "Blocks of 8 pages to be folded twice and then bound together."
+msgstr ""
+
+#. $gettext('Build')
+#: src/components/BookBuilderView.vue:865
+msgid "Build"
+msgstr ""
+
 #. $gettext('Cancel') $gettext('Cancel')
-#: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:220
+#: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:221
 msgid "Cancel"
 msgstr "Cancella"
 
+#. $gettext('Center all section titles')
+#: src/components/BookBuilderView.vue:589
+msgid "Center all section titles"
+msgstr ""
+
+#. $gettext('Center chapter titles')
+#: src/components/BookBuilderView.vue:580
+msgid "Center chapter titles"
+msgstr ""
+
 #. $gettext('Choose another file')
-#: src/components/CsvUpload.vue:122
+#: src/components/CsvUpload.vue:123
 msgid "Choose another file"
 msgstr "Scegli un altro file"
 
 #. $gettext('Choose file')
-#: src/components/CsvUpload.vue:125
+#: src/components/CsvUpload.vue:126
 msgid "Choose file"
 msgstr "Scegli un file"
 
@@ -110,13 +177,18 @@ msgstr "Scegli un file"
 msgid "City"
 msgstr "Città"
 
+#. $gettext('Clear')
+#: src/components/SearchPage.vue:311
+msgid "Clear"
+msgstr "Pulisci"
+
 #. $gettext('Clear list')
 #: src/components/MergeBox.vue:183
 msgid "Clear list"
 msgstr "Pulisci elenco"
 
 #. $gettext('Click to remove the filter')
-#: src/components/SearchPage.vue:276
+#: src/components/SearchPage.vue:264
 msgid "Click to remove the filter"
 msgstr "Premi per rimuovere il filtro"
 
@@ -131,12 +203,12 @@ msgid "Close"
 msgstr "Chiudi"
 
 #. $gettext('Codice ISBN')
-#: src/components/DataSourceBox.vue:129
+#: src/components/DataSourceBox.vue:178
 msgid "Codice ISBN"
 msgstr "Codice ISBN"
 
 #. $gettext('Column Name')
-#: src/components/CsvUpload.vue:192
+#: src/components/CsvUpload.vue:193
 msgid "Column Name"
 msgstr "Nome della colonna"
 
@@ -144,6 +216,11 @@ msgstr "Nome della colonna"
 #: src/components/EntryPage.vue:101
 msgid "Contains:"
 msgstr "Contiene:"
+
+#. $gettext('Continuous footnote numbering across the whole document')
+#: src/components/BookBuilderView.vue:571
+msgid "Continuous footnote numbering across the whole document"
+msgstr ""
 
 #. $gettext('Country')
 #: src/components/LibraryEdit.vue:199
@@ -155,8 +232,9 @@ msgstr "Nazione"
 msgid "Create"
 msgstr "Crea"
 
-#. $gettext('Date') $gettext('Date')
-#: src/components/ExclusionTable.vue:37 src/components/SearchPage.vue:407
+#. $gettext('Date') $gettext('Date') $gettext('Date')
+#: src/components/ExclusionTable.vue:37 src/components/BookBuilderView.vue:835
+#: src/components/SearchPage.vue:368
 msgid "Date"
 msgstr "Data"
 
@@ -170,13 +248,28 @@ msgstr "Data di fondazione"
 msgid "Description"
 msgstr "Descrizione"
 
+#. $gettext('Do not create a cover page and start the text on the first page')
+#: src/components/BookBuilderView.vue:508
+msgid "Do not create a cover page and start the text on the first page"
+msgstr ""
+
+#. $gettext('Do not use bold fonts')
+#: src/components/BookBuilderView.vue:544
+msgid "Do not use bold fonts"
+msgstr ""
+
+#. $gettext('Download')
+#: src/components/BookBuilderView.vue:875
+msgid "Download"
+msgstr ""
+
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:417
+#: src/components/SearchPage.vue:378
 msgid "Download Types"
 msgstr "Tipi di download"
 
 #. $gettext('Editable and printable text')
-#: src/components/SearchPage.vue:248
+#: src/components/SearchPage.vue:236
 msgid "Editable and printable text"
 msgstr "Testo editabile e stampabile"
 
@@ -195,10 +288,29 @@ msgstr "Email:"
 msgid "Enabled for merging"
 msgstr "Autorizzato al merging"
 
+#. $gettext('Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4.')
+#: src/components/BookBuilderView.vue:685
+msgid ""
+"Exactly like 2up, but the sheets are meant to be cut horizontally first and "
+"then stacked on each other. This way you can print, for example, A6 booklets "
+"on A4."
+msgstr ""
+
 #. $gettext('Exclusions')
-#: src/components/NavBar.vue:169
+#: src/components/NavBar.vue:182
 msgid "Exclusions"
 msgstr "Esclusioni"
+
+#. $gettext('Failed')
+#: src/components/BookBuilderView.vue:880
+msgid "Failed"
+msgstr ""
+
+#. $gettext('Fill with blank pages before the last page if the signature is not full.')
+#: src/components/BookBuilderView.vue:745
+msgid ""
+"Fill with blank pages before the last page if the signature is not full."
+msgstr ""
 
 #. $gettext('First')
 #: src/components/PaginationBox.vue:9
@@ -210,13 +322,46 @@ msgstr "Prima"
 msgid "First Name"
 msgstr "Nome proprio"
 
+#. $gettext('Fixed 16 pages signatures on 2 sheets, with double individual folding.')
+#: src/components/BookBuilderView.vue:729
+msgid "Fixed 16 pages signatures on 2 sheets, with double individual folding."
+msgstr ""
+
+#. $gettext('Fixed 16 pages signatures on a single sheet, with triple folding.')
+#: src/components/BookBuilderView.vue:721
+msgid "Fixed 16 pages signatures on a single sheet, with triple folding."
+msgstr ""
+
+#. $gettext('Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together.')
+#: src/components/BookBuilderView.vue:716
+msgid ""
+"Fixed signatures of 8 pages, to be cut horizontally, folded individually, "
+"and bound together."
+msgstr ""
+
+#. $gettext('Font Size')
+#: src/components/BookBuilderView.vue:621
+msgid "Font Size"
+msgstr ""
+
+#. $gettext('Fonts')
+#: src/components/BookBuilderView.vue:234
+msgid "Fonts"
+msgstr ""
+
 #. $gettext('Full text')
-#: src/components/DataSourceBox.vue:154
+#: src/components/DataSourceBox.vue:205
 msgid "Full text"
 msgstr "Testo integrale"
 
+#. $gettext('Height in mm') $gettext('Height in mm')
+#: src/components/BookBuilderView.vue:276
+#: src/components/BookBuilderView.vue:792
+msgid "Height in mm"
+msgstr ""
+
 #. $gettext('Hello, %1!', authenticated)
-#: src/components/NavBar.vue:140
+#: src/components/NavBar.vue:148
 msgid "Hello, %1!"
 msgstr "Ciao, %1!"
 
@@ -229,6 +374,16 @@ msgstr "Aiuto"
 #: src/components/DashboardTable.vue:118
 msgid "ID"
 msgstr "ID"
+
+#. $gettext('Imposition')
+#: src/components/BookBuilderView.vue:239
+msgid "Imposition"
+msgstr ""
+
+#. $gettext('Imposition Schema')
+#: src/components/BookBuilderView.vue:632
+msgid "Imposition Schema"
+msgstr ""
 
 #. $gettext('Internal email')
 #: src/components/LibraryEdit.vue:98
@@ -246,12 +401,12 @@ msgid "Justification"
 msgstr "Giustificazione"
 
 #. $gettext('Landing page')
-#: src/components/DataSourceBox.vue:170
+#: src/components/DataSourceBox.vue:235
 msgid "Landing page"
 msgstr "Pagina sorgente"
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:371
+#: src/components/SearchPage.vue:332
 msgid "Language"
 msgstr "Lingua"
 
@@ -275,9 +430,14 @@ msgstr "Cognome"
 msgid "Latitude"
 msgstr "Latitudine"
 
+#. $gettext('Layout')
+#: src/components/BookBuilderView.vue:229
+msgid "Layout"
+msgstr ""
+
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
 #: src/components/LibraryOverView.vue:38 src/components/LibraryView.vue:42
-#: src/components/SearchPage.vue:395 src/components/SearchPage.vue:399
+#: src/components/SearchPage.vue:356 src/components/SearchPage.vue:360
 msgid "Libraries"
 msgstr "Biblioteche"
 
@@ -291,8 +451,13 @@ msgstr "Utenti della biblioteca"
 msgid "Library details"
 msgstr "Dettagli sulla biblioteca"
 
+#. $gettext('Line spacing')
+#: src/components/BookBuilderView.vue:434
+msgid "Line spacing"
+msgstr ""
+
 #. $gettext('Login')
-#: src/components/NavBar.vue:203
+#: src/components/NavBar.vue:216
 msgid "Login"
 msgstr "Accedi"
 
@@ -307,7 +472,7 @@ msgid "Logo address, e.g. https://mydomain.org/path/to/image"
 msgstr "Indirizzo del logo, a.e. https://mydomain.org/path/to/image"
 
 #. $gettext('Logout')
-#: src/components/NavBar.vue:186
+#: src/components/NavBar.vue:199
 msgid "Logout"
 msgstr "Esci"
 
@@ -316,22 +481,13 @@ msgstr "Esci"
 msgid "Longitude"
 msgstr "Longitudine"
 
-#. $gettext('MERGE_AUTHOR')
-#: src/components/SearchPage.vue:253
-msgid "MERGE_AUTHOR"
+#. $gettext('Main Font')
+#: src/components/BookBuilderView.vue:597
+msgid "Main Font"
 msgstr ""
-"Con questa funzione puoi unificare le forme alternative del nome di chi ha "
-"scritto il testo\n"
-"Bakunin e Bakunin -> Bakunin"
-
-#. $gettext('MERGE_ENTRY')
-#: src/components/SearchPage.vue:254
-msgid "MERGE_ENTRY"
-msgstr ""
-"Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
 
 #. $gettext('Material Description')
-#: src/components/DataSourceBox.vue:121
+#: src/components/DataSourceBox.vue:170
 msgid "Material Description"
 msgstr ""
 
@@ -342,12 +498,12 @@ msgid "Merge"
 msgstr "Unisci"
 
 #. $gettext('Merge authors here') $gettext('Merge authors here')
-#: src/components/SearchPage.vue:459 src/components/AgentOverView.vue:94
+#: src/components/SearchPage.vue:420 src/components/AgentOverView.vue:94
 msgid "Merge authors here"
 msgstr "Unisci gli autori qui"
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:467
+#: src/components/SearchPage.vue:428
 msgid "Merge entries here"
 msgstr "Unisci le voci qui"
 
@@ -361,10 +517,30 @@ msgstr "Ulteriori nomi"
 msgid "Missing help, sorry..."
 msgstr "Aiuto mancante, ci scusiamo..."
 
+#. $gettext('Mono Font')
+#: src/components/BookBuilderView.vue:605
+msgid "Mono Font"
+msgstr ""
+
 #. $gettext('My Exclusions')
 #: src/views/ExclusionView.vue:9
 msgid "My Exclusions"
 msgstr "Le mie esclusioni"
+
+#. $gettext('Never display the cover image')
+#: src/components/BookBuilderView.vue:562
+msgid "Never display the cover image"
+msgstr ""
+
+#. $gettext('Never generate a table of content')
+#: src/components/BookBuilderView.vue:490
+msgid "Never generate a table of content"
+msgstr ""
+
+#. $gettext('Never generate the final page with text details')
+#: src/components/BookBuilderView.vue:499
+msgid "Never generate the final page with text details"
+msgstr ""
 
 #. $gettext('Next')
 #: src/components/PaginationBox.vue:7
@@ -377,9 +553,19 @@ msgid "No records"
 msgstr "Nessun dato"
 
 #. $gettext('No result found!')
-#: src/components/SearchPage.vue:442
+#: src/components/SearchPage.vue:403
 msgid "No result found!"
 msgstr "Non è stato trovato nessun risultato!"
+
+#. $gettext('None')
+#: src/components/BookBuilderView.vue:637
+msgid "None"
+msgstr ""
+
+#. $gettext('Notes')
+#: src/components/BookBuilderView.vue:839
+msgid "Notes"
+msgstr ""
 
 #. $gettext('Nothing to show!')
 #: src/components/ExclusionTable.vue:49
@@ -392,7 +578,7 @@ msgid "Omit"
 msgstr "Ometti"
 
 #. $gettext('Omit Library')
-#: src/components/FacetBox.vue:100
+#: src/components/FacetBox.vue:98
 msgid "Omit Library"
 msgstr "Ometti biblioteca"
 
@@ -405,6 +591,12 @@ msgstr "Ometti autore"
 #: src/components/EntryBox.vue:127
 msgid "Omit single entry"
 msgstr "Ometti singola voce"
+
+#. $gettext('One page per sheet. This is useful only if you want to add the cropmarks')
+#: src/components/BookBuilderView.vue:737
+msgid ""
+"One page per sheet. This is useful only if you want to add the cropmarks"
+msgstr ""
 
 #. $gettext('Opening Hours') $gettext('Opening Hours')
 #: src/components/LibraryBox.vue:44 src/components/LibraryEdit.vue:105
@@ -421,6 +613,16 @@ msgstr "Originale"
 msgid "Other languages:"
 msgstr "Altre lingue:"
 
+#. $gettext('Outer margin in mm')
+#: src/components/BookBuilderView.vue:339
+msgid "Outer margin in mm"
+msgstr ""
+
+#. $gettext('Overview')
+#: src/components/BookBuilderView.vue:224
+msgid "Overview"
+msgstr ""
+
 #. $gettext('PGP Public Key')
 #: src/components/LibraryBox.vue:70
 msgid "PGP Public Key"
@@ -431,13 +633,44 @@ msgstr "PGP Public Key"
 msgid "PGP public key, if any"
 msgstr "PGP Public Key, se esiste"
 
+#. $gettext('Page where to start a chapter')
+#: src/components/BookBuilderView.vue:405
+msgid "Page where to start a chapter"
+msgstr ""
+
+#. $gettext('Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages.')
+#: src/components/BookBuilderView.vue:649
+msgid ""
+"Pages are reordered, in one or more groups (signatures), then folded in "
+"half. If you have more signatures, you will have to bound them together like "
+"a book. With this option, you may want to decide the size of the signatures. "
+"This can be a fixed value (4,8,16, etc.), the whole book in a single "
+"signature, or an optimized size to reduce the number of blank pages."
+msgstr ""
+
+#. $gettext('Pairs of consecutives pages are put on the same sheet side by side.')
+#: src/components/BookBuilderView.vue:664
+msgid "Pairs of consecutives pages are put on the same sheet side by side."
+msgstr ""
+
+#. $gettext('Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)')
+#: src/components/BookBuilderView.vue:805
+msgid ""
+"Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)"
+msgstr ""
+
+#. $gettext('Paragraph indentation in points (pt)')
+#: src/components/BookBuilderView.vue:447
+msgid "Paragraph indentation in points (pt)"
+msgstr ""
+
 #. $gettext('Part of:')
 #: src/components/EntryPage.vue:108
 msgid "Part of:"
 msgstr "Parte di:"
 
 #. $gettext('Password') $gettext('Password')
-#: src/components/NavBar.vue:200 src/components/PasswordReset.vue:65
+#: src/components/NavBar.vue:213 src/components/PasswordReset.vue:65
 msgid "Password"
 msgstr "Password"
 
@@ -451,11 +684,42 @@ msgstr "Luogo di nascita"
 msgid "Place of Death"
 msgstr "Luogo di morte"
 
+#. $gettext('Place the notes on the back of the first page, impressum-style')
+#: src/components/BookBuilderView.vue:526
+msgid "Place the notes on the back of the first page, impressum-style"
+msgstr ""
+
+#. $gettext('Please choose a paper size')
+#: src/components/BookBuilderView.vue:253
+msgid "Please choose a paper size"
+msgstr ""
+
 #. $gettext('Please describe the project. Just a few words, for the preview')
 #: src/components/LibraryEdit.vue:115
 msgid "Please describe the project. Just a few words, for the preview"
 msgstr ""
 "Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
+
+#. $gettext('Please select the signature size') $gettext('Please select the signature size')
+#: src/components/BookBuilderView.vue:670
+#: src/components/BookBuilderView.vue:691
+msgid "Please select the signature size"
+msgstr ""
+
+#. $gettext('Please select the size of each page including the crop marks, before the imposing.')
+#: src/components/BookBuilderView.vue:761
+msgid ""
+"Please select the size of each page including the crop marks, before the "
+"imposing."
+msgstr ""
+
+#. $gettext('Please set') $gettext('Please set') $gettext('Please set') $gettext('Please set')
+#: src/components/BookBuilderView.vue:310
+#: src/components/BookBuilderView.vue:326
+#: src/components/BookBuilderView.vue:344
+#: src/components/BookBuilderView.vue:362
+msgid "Please set"
+msgstr ""
 
 #. $gettext('Please type your new password in both fields')
 #: src/components/PasswordReset.vue:84
@@ -468,7 +732,7 @@ msgid "Previous"
 msgstr "Precedente"
 
 #. $gettext('Process File')
-#: src/components/CsvUpload.vue:214
+#: src/components/CsvUpload.vue:215
 msgid "Process File"
 msgstr "Elaborazione del file"
 
@@ -483,19 +747,19 @@ msgid "Public email"
 msgstr "Email pubblica"
 
 #. $gettext('Publisher')
-#: src/components/DataSourceBox.vue:137
+#: src/components/DataSourceBox.vue:186
 msgid "Publisher"
 msgstr "Editore"
+
+#. $gettext('Queued')
+#: src/components/BookBuilderView.vue:887
+msgid "Queued"
+msgstr ""
 
 #. $gettext('Reason') $gettext('Reason')
 #: src/components/ExclusionButton.vue:70 src/components/ExclusionTable.vue:36
 msgid "Reason"
 msgstr "Ragione"
-
-#. $gettext('Refine')
-#: src/components/SearchPage.vue:350
-msgid "Refine"
-msgstr "Rifinisci"
 
 #. $gettext('Repeat Password')
 #: src/components/PasswordReset.vue:69
@@ -503,12 +767,17 @@ msgid "Repeat Password"
 msgstr "Ripeti la Password"
 
 #. $gettext('Replace all records')
-#: src/components/CsvUpload.vue:175
+#: src/components/CsvUpload.vue:176
 msgid "Replace all records"
 msgstr "Sostituisci tutti i dati"
 
+#. $gettext('Reset')
+#: src/components/BookBuilderView.vue:870
+msgid "Reset"
+msgstr ""
+
 #. $gettext('Reset Password for %1?', username)
-#: src/components/NavBar.vue:212
+#: src/components/NavBar.vue:225
 msgid "Reset Password for %1?"
 msgstr "Reset Password per %1?"
 
@@ -522,28 +791,36 @@ msgstr "Reset Password per %1?"
 msgid "Restore"
 msgstr "Rigenera"
 
-#. $gettext('SET_AGGREGATION')
-#: src/components/SearchPage.vue:256
-msgid "SET_AGGREGATION"
+#. $gettext('Running headings')
+#: src/components/BookBuilderView.vue:417
+msgid "Running headings"
 msgstr ""
-"Con questa funzione puoi unire più riferimenti all'interno di una stessa "
-"aggregazione, ovvero i diversi articoli che compongono una rivista oppure i "
-"diversi testi che compongono un'antologia"
 
-#. $gettext('SET_TRANSLATION')
-#: src/components/SearchPage.vue:255
-msgid "SET_TRANSLATION"
+#. $gettext('Same as 2UP, but for duplex printers')
+#: src/components/BookBuilderView.vue:654
+msgid "Same as 2UP, but for duplex printers"
 msgstr ""
-"Con questa funzione puoi collegare due traduzioni in lingue diverse dello "
-"stesso testo"
 
-#. $gettext('Search') $gettext('Search')
-#: src/components/SearchPage.vue:354 src/components/AgentOverView.vue:76
+#. $gettext('Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, binding on the top edge.')
+#: src/components/BookBuilderView.vue:659
+msgid ""
+"Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, "
+"binding on the top edge."
+msgstr ""
+
+#. $gettext('Sans Font')
+#: src/components/BookBuilderView.vue:613
+msgid "Sans Font"
+msgstr ""
+
+#. $gettext('Search') $gettext('Search') $gettext('Search')
+#: src/components/SearchPage.vue:278 src/components/SearchPage.vue:315
+#: src/components/AgentOverView.vue:76
 msgid "Search"
 msgstr "Cerca"
 
 #. $ngettext("Search results for “%1”: found %2 entry", "Search results for “%1”: found %2 entries", total_entries, searched_query, total_entries)
-#: src/components/SearchPage.vue:263
+#: src/components/SearchPage.vue:251
 msgid "Search results for “%1”: found %2 entry"
 msgid_plural "Search results for “%1”: found %2 entries"
 msgstr[0] "Ricerca di “%1”: trovato %2 risultato"
@@ -553,6 +830,12 @@ msgstr[1] "Ricerca di “%1”: trovati %2 risultati"
 #: src/components/EntryBox.vue:64
 msgid "See all entries"
 msgstr "Guarda tutti gli inserimenti"
+
+#. $gettext('See here for more details') $gettext('See here for more details')
+#: src/components/BookBuilderView.vue:723
+#: src/components/BookBuilderView.vue:731
+msgid "See here for more details"
+msgstr ""
 
 #. $gettext('See the library entries')
 #: src/components/LibraryBox.vue:89
@@ -565,22 +848,22 @@ msgid "See “%1”"
 msgstr "Guarda “%1”"
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:484
+#: src/components/SearchPage.vue:445
 msgid "Set aggregations here"
 msgstr "Imposta le aggregazioni qui"
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:475
+#: src/components/SearchPage.vue:436
 msgid "Set translations here"
 msgstr "Imposta le traduzioni qui"
 
 #. $gettext('Sheet Preview, Total %1 Records', number_of_records)
-#: src/components/CsvUpload.vue:187
+#: src/components/CsvUpload.vue:188
 msgid "Sheet Preview, Total %1 Records"
 msgstr "Anteprima del foglio, in totale ci sono %1 dati"
 
 #. $gettext('Shelf Location Code')
-#: src/components/DataSourceBox.vue:113
+#: src/components/DataSourceBox.vue:162
 msgid "Shelf Location Code"
 msgstr "Codice di Localizzazione a Scaffale"
 
@@ -590,14 +873,24 @@ msgid "Short Description"
 msgstr "Descrizione breve"
 
 #. $gettext('Sort')
-#: src/components/FacetBox.vue:55
+#: src/components/FacetBox.vue:53
 msgid "Sort"
 msgstr "Disponi"
 
+#. $gettext('Source')
+#: src/components/BookBuilderView.vue:843
+msgid "Source"
+msgstr ""
+
 #. $gettext('Source:')
-#: src/components/CsvUpload.vue:141
+#: src/components/CsvUpload.vue:142
 msgid "Source:"
 msgstr "Origine:"
+
+#. $gettext('Start the document with an empty page')
+#: src/components/BookBuilderView.vue:553
+msgid "Start the document with an empty page"
+msgstr ""
 
 #. $gettext('State or Province')
 #: src/components/LibraryEdit.vue:191
@@ -609,8 +902,8 @@ msgstr "Stato o provincia"
 msgid "Submit"
 msgstr ""
 
-#. $gettext('Subtitle')
-#: src/components/DashboardTable.vue:120
+#. $gettext('Subtitle') $gettext('Subtitle')
+#: src/components/DashboardTable.vue:120 src/components/BookBuilderView.vue:827
 msgid "Subtitle"
 msgstr "Sottotitolo"
 
@@ -619,10 +912,41 @@ msgstr "Sottotitolo"
 msgid "Target"
 msgstr "Bersaglio"
 
+#. $gettext('TeX emergency stretch in pt')
+#: src/components/BookBuilderView.vue:473
+msgid "TeX emergency stretch in pt"
+msgstr ""
+
+#. $gettext('TeX tolerance')
+#: src/components/BookBuilderView.vue:460
+msgid "TeX tolerance"
+msgstr ""
+
+#. $gettext('Text block height in mm')
+#: src/components/BookBuilderView.vue:322
+msgid "Text block height in mm"
+msgstr ""
+
+#. $gettext('Text block width in mm')
+#: src/components/BookBuilderView.vue:306
+msgid "Text block width in mm"
+msgstr ""
+
+#. $gettext('Text body only (no title, no final pages)')
+#: src/components/BookBuilderView.vue:517
+msgid "Text body only (no title, no final pages)"
+msgstr ""
+
 #. $gettext('The passwords do not match')
 #: src/components/PasswordReset.vue:71
 msgid "The passwords do not match"
 msgstr "La password non corrisponde"
+
+#. $gettext('The whole book in as single signature') $gettext('The whole book in as single signature')
+#: src/components/BookBuilderView.vue:675
+#: src/components/BookBuilderView.vue:696
+msgid "The whole book in as single signature"
+msgstr ""
 
 #. $gettext('This is a free-text field. Please describe the project')
 #: src/components/LibraryEdit.vue:127
@@ -653,15 +977,25 @@ msgstr ""
 msgid "This username already exist. You are going to add it to this library."
 msgstr "Questo username esiste già. Lo stai per aggiungere a questa biblioteca"
 
-#. $gettext('Title')
-#: src/components/DashboardTable.vue:119
+#. $gettext('Title') $gettext('Title')
+#: src/components/DashboardTable.vue:119 src/components/BookBuilderView.vue:823
 msgid "Title"
 msgstr "Titolo"
+
+#. $gettext('Top margin in mm')
+#: src/components/BookBuilderView.vue:357
+msgid "Top margin in mm"
+msgstr ""
 
 #. $gettext('Translation')
 #: src/components/EntryPage.vue:88
 msgid "Translation"
 msgstr "Traduzione"
+
+#. $gettext('Two side layout')
+#: src/components/BookBuilderView.vue:394
+msgid "Two side layout"
+msgstr ""
 
 #. $gettext('Type')
 #: src/components/ExclusionTable.vue:35
@@ -674,7 +1008,7 @@ msgid "Type here to search authors"
 msgstr "Digita qui per cercare tra gli autori"
 
 #. $gettext('UI language')
-#: src/components/NavBar.vue:108
+#: src/components/NavBar.vue:116
 msgid "UI language"
 msgstr "Lingua dell'interfaccia utente"
 
@@ -684,17 +1018,28 @@ msgid "Update"
 msgstr "Aggiorna"
 
 #. $gettext('Upload File')
-#: src/components/CsvUpload.vue:180
+#: src/components/CsvUpload.vue:181
 msgid "Upload File"
 msgstr "Carica file"
 
 #. $gettext('Upload a CSV')
-#: src/components/CsvUpload.vue:108
+#: src/components/CsvUpload.vue:109
 msgid "Upload a CSV"
 msgstr "Carica un CSV"
 
+#. $gettext('Use optimized signatures with 40-80 pages each') $gettext('Use optimized signatures with 40-80 pages each')
+#: src/components/BookBuilderView.vue:676
+#: src/components/BookBuilderView.vue:697
+msgid "Use optimized signatures with 40-80 pages each"
+msgstr ""
+
+#. $gettext('Use sans fonts for section titles')
+#: src/components/BookBuilderView.vue:535
+msgid "Use sans fonts for section titles"
+msgstr ""
+
 #. $gettext('User Menu')
-#: src/components/NavBar.vue:149
+#: src/components/NavBar.vue:162
 msgid "User Menu"
 msgstr "Menu utente"
 
@@ -704,7 +1049,7 @@ msgid "User expiration (optional)"
 msgstr "Scadenza dell'utenza (opzionale)"
 
 #. $gettext('Username') $gettext('Username')
-#: src/components/NavBar.vue:197 src/components/UserCreation.vue:94
+#: src/components/NavBar.vue:210 src/components/UserCreation.vue:94
 msgid "Username"
 msgstr "username"
 
@@ -719,18 +1064,30 @@ msgid "VIAF: %1"
 msgstr "VIAF: %1"
 
 #. $gettext('Value')
-#: src/components/CsvUpload.vue:194
+#: src/components/CsvUpload.vue:195
 msgid "Value"
 msgstr "Valore"
+
+#. $gettext('View PDF')
+#: src/components/DataSourceBox.vue:208
+msgid "View PDF"
+msgstr ""
 
 #. $gettext('Visit Library Homepage')
 #: src/components/LibraryBox.vue:26
 msgid "Visit Library Homepage"
 msgstr "Visita il sito della biblioteca"
 
-#. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
-#: src/components/DashboardTable.vue:129 src/components/MergeBox.vue:229
-#: src/components/DataSourceBox.vue:180 src/components/CsvUpload.vue:115
+#. $gettext('Width in mm') $gettext('Width in mm')
+#: src/components/BookBuilderView.vue:263
+#: src/components/BookBuilderView.vue:779
+msgid "Width in mm"
+msgstr ""
+
+#. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
+#: src/components/DashboardTable.vue:129 src/components/BookBuilderView.vue:895
+#: src/components/MergeBox.vue:229 src/components/DataSourceBox.vue:245
+#: src/components/CsvUpload.vue:116
 msgid "Working"
 msgstr "Elaborazione"
 
@@ -749,13 +1106,35 @@ msgstr "Anno di morte"
 msgid "ZIP code"
 msgstr "CAP"
 
+#. $gettext('__MERGE_AUTHOR__')
+#: src/components/SearchPage.vue:241
+msgid "__MERGE_AUTHOR__"
+msgstr ""
+"Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\n"
+"Bakunin e Bakunin -> Bakunin"
+
+#. $gettext('__MERGE_ENTRY__')
+#: src/components/SearchPage.vue:242
+msgid "__MERGE_ENTRY__"
+msgstr "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
+
+#. $gettext('__SET_AGGREGATION__')
+#: src/components/SearchPage.vue:244
+msgid "__SET_AGGREGATION__"
+msgstr "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
+
+#. $gettext('__SET_TRANSLATION__')
+#: src/components/SearchPage.vue:243
+msgid "__SET_TRANSLATION__"
+msgstr "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
+
 #. $gettext('by count')
-#: src/components/FacetBox.vue:68
+#: src/components/FacetBox.vue:66
 msgid "by count"
 msgstr "per numero"
 
 #. $gettext('by term')
-#: src/components/FacetBox.vue:61
+#: src/components/FacetBox.vue:59
 msgid "by term"
 msgstr "ordine alfabetico"
 
@@ -764,8 +1143,31 @@ msgstr "ordine alfabetico"
 msgid "dashboard for "
 msgstr "pannello di gestione per "
 
-#~ msgid "Clear"
-#~ msgstr "Pulisci"
+#. $gettext('leave blank for default') $gettext('leave blank for default')
+#: src/components/BookBuilderView.vue:340
+#: src/components/BookBuilderView.vue:358
+msgid "leave blank for default"
+msgstr ""
+
+#~ msgid "MERGE_AUTHOR"
+#~ msgstr ""
+#~ "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\n"
+#~ "Bakunin e Bakunin -> Bakunin"
+
+#~ msgid "MERGE_ENTRY"
+#~ msgstr "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
+
+#~ msgid "Refine"
+#~ msgstr "Rifinisci"
+
+#~ msgid "SET_AGGREGATION"
+#~ msgstr ""
+#~ "Con questa funzione puoi unire più riferimenti all'interno di una stessa "
+#~ "aggregazione, ovvero i diversi articoli che compongono una rivista oppure "
+#~ "i diversi testi che compongono un'antologia"
+
+#~ msgid "SET_TRANSLATION"
+#~ msgstr "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
 
 #~ msgid "Search results for %1: found %2 entry"
 #~ msgid_plural "Search results for %1: found %2 entries"
