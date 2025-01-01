@@ -89,7 +89,7 @@
                       create_item="agent"
                       dashboard="merged-agents"
                       remove_merged_filter="creator"
-                      help_text="MERGE_AUTHOR"
+                      help_text="__MERGE_AUTHOR__"
                       @refetch-results="get_agents">
               {{ $gettext('Merge authors here') }}
             </MergeBox>

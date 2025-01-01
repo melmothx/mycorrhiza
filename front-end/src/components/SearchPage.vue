@@ -238,10 +238,10 @@
     $gettext('Aggregated')
     $gettext('Aggregation')
     $gettext('Aggregation')
-    $gettext('MERGE_AUTHOR')
-    $gettext('MERGE_ENTRY')
-    $gettext('SET_TRANSLATION')
-    $gettext('SET_AGGREGATION')
+    $gettext('__MERGE_AUTHOR__')
+    $gettext('__MERGE_ENTRY__')
+    $gettext('__SET_TRANSLATION__')
+    $gettext('__SET_AGGREGATION__')
   */
 </script>
 <template>
@@ -414,7 +414,7 @@
                       create_item="agent"
                       dashboard="merged-agents"
                       remove_merged_filter="creator"
-                      help_text="MERGE_AUTHOR"
+                      help_text="__MERGE_AUTHOR__"
                       @remove-merged-filter="remove_merged_filter"
                       @refetch-results="no_op">
               {{ $gettext('Merge authors here') }}
@@ -422,7 +422,7 @@
           </div>
           <div id="title-cards" class="mb-2">
             <MergeBox merge_type="entry"
-                      help_text="MERGE_ENTRY"
+                      help_text="__MERGE_ENTRY__"
                       dashboard="merged-entries"
                       @refetch-results="getResults()">
               {{ $gettext('Merge entries here') }}
@@ -430,7 +430,7 @@
           </div>
           <div id="translation-cards" class="mb-2">
             <MergeBox merge_type="entry"
-                      help_text="SET_TRANSLATION"
+                      help_text="__SET_TRANSLATION__"
                       dashboard="translations"
                       api_call="set-translations" @refetch-results="getResults({ update_facets: 1 })">
               {{ $gettext('Set translations here') }}
@@ -439,7 +439,7 @@
           <div id="aggregations-cards" class="mb-2">
             <MergeBox merge_type="entry"
                       api_call="set-aggregated"
-                      help_text="SET_AGGREGATION"
+                      help_text="__SET_AGGREGATION__"
                       create_item="aggregation"
                       @refetch-results="getResults()">
               {{ $gettext('Set aggregations here') }}
