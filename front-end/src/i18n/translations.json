@@ -520,6 +520,18 @@
       "ZIP code" : {
          "msgstr" : "CAP"
       },
+      "__MERGE_AUTHOR__" : {
+         "msgstr" : "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\nBakunin e Bakunin -> Bakunin"
+      },
+      "__MERGE_ENTRY__" : {
+         "msgstr" : "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
+      },
+      "__SET_AGGREGATION__" : {
+         "msgstr" : "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
+      },
+      "__SET_TRANSLATION__" : {
+         "msgstr" : "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
+      },
       "by count" : {
          "msgstr" : "per numero"
       },
