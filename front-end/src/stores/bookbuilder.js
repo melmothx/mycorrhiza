@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 
 function amc_default_collection_data() {
     return {
-        papersize: "a4",
+        papersize: "a5",
         mainfont: "DejaVu Serif",
         sansfont: "DejaVu Sans",
         monofont: "DejaVu Sans Mono",

@@ -426,8 +426,9 @@
     </div>
 
     <div v-if="current_tab == 'advanced'" id="bb-layout"
-         class="grid sm:grid-cols-[300px_auto] gap-2">
-      <div>
+         class="grid sm:grid-cols-[300px_auto] gap-4">
+      <div class="p-2 bg-perl-bush-50 shadow-md rounded">
+        <h2 class="font-bold mb-2">{{ $gettext('Paragraph settings') }}</h2>
         <div class="flex items-center my-4">
           <div class="mr-2 w-32">
             <label for="bb-linespacing">
@@ -481,7 +482,8 @@
           </div>
         </div>
       </div>
-      <div class="my-4">
+      <div class="p-2 bg-perl-bush-50 shadow-md rounded">
+        <h2 class="mb-2 font-bold">{{ $gettext('Advanced settings') }}</h2>
         <div>
           <label>
             <input type="checkbox" value="1" class="mcrz-checkbox"
@@ -691,7 +693,7 @@
         </p>
       </div>
       <div v-if="bookbuilder.needs_signature_2up()" class="flex items-center">
-        <div class="mr-2 w-32">
+        <div class="mx-2 my-4 w-32">
           <label for="bb-signature-2up">
             {{ $gettext('Please select the signature size') }}
           </label>
@@ -712,7 +714,7 @@
         </p>
       </div>
       <div v-if="bookbuilder.needs_signature_4up()" class="flex items-center">
-        <div class="mr-2 w-32">
+        <div class="mx-2 my-4 w-32">
           <label for="bb-signature-4up">
             {{ $gettext('Please select the signature size') }}
           </label>
@@ -772,7 +774,7 @@
           </span>
         </label>
       </div>
-      <div>
+      <div v-if="bookbuilder.collection_data.imposition_schema">
         <label>
           <input type="checkbox" value="1" class="mcrz-checkbox"
                  v-model="bookbuilder.collection_data.cropmarks" />
@@ -781,7 +783,7 @@
           </span>
         </label>
       </div>
-      <div class="mt-2" v-if="bookbuilder.collection_data.cropmarks">
+      <div class="mt-2" v-if="bookbuilder.collection_data.imposition_schema && bookbuilder.collection_data.cropmarks">
         <div>
           <label for="bb-crop_papersize">
             {{ $gettext('Please select the size of each page including the crop marks, before the imposing.') }}
@@ -871,16 +873,21 @@
           </div>
         </div>
       </div>
-      <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
-        <div class="flex my-3">
-          <router-link :to="{name: 'entry', params: { id: text.attributes.entry_id } }">
-            <BookOpenIcon class="h-6 w-6 mr-3 text-spectra-700" />
-          </router-link>
-          <div @drop="drop_element($event, text.id)"
+      <div v-if="bookbuilder.text_list.length" class="bg-perl-bush-50 p-2 shadow-md rounded">
+        <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
+          <div class="flex my-3">
+            <router-link :to="{name: 'entry', params: { id: text.attributes.entry_id } }">
+              <BookOpenIcon class="h-6 w-6 mr-3 text-spectra-700" />
+            </router-link>
+            <div @drop="drop_element($event, text.id)"
          @dragover.prevent @dragenter.prevent
          @dragstart="drag_element($event, text.id)"
          draggable="true" class="font-bold cursor-grab">{{ text.attributes.title }}</div>
-          <TrashIcon class="ml-3 h-6 w-6 text-cab-sav-800 cursor-pointer" @click="remove_element(text.id)" />
+            <TrashIcon class="ml-3 h-6 w-6 text-cab-sav-800 cursor-pointer" @click="remove_element(text.id)" />
+          </div>
+        </div>
+        <div class="mx-8" v-if="bookbuilder.needs_virtual_header()">
+          <small class="text-perl-bush-800">{{ $gettext('Drag the titles to reorder') }}</small>
         </div>
       </div>
     </div>

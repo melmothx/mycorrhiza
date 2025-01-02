@@ -212,10 +212,9 @@
             {{ $gettext('Add to the Book Builder') }}
           </button>
         </div>
-        <div v-if="added_to_the_bookbuilder"
-             class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
+        <router-link v-if="added_to_the_bookbuilder" :to="{ name: 'bookbuilder' }" class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
           {{ $gettext('Added to the Book Builder!') }}
-        </div>
+        </router-link>
         <div class="grow"></div>
       </div>
       <div v-if="show_html">
