@@ -8,6 +8,7 @@ use Mojo::Util 'secure_compare';
 use Path::Tiny;
 use Data::Dumper::Concise;
 use Text::Amuse::Compile::Fonts::Import;
+use JSON::MaybeXS qw/decode_json encode_json/;
 
 BEGIN {
     $ENV{PATH} = "$ENV{PATH}:/opt/amusewiki-texlive/current/bin/arch";
@@ -35,6 +36,25 @@ sub startup ($self) {
     unless ($fontspec->exists) {
         $self->log->info("Generating $fontspec");
         Text::Amuse::Compile::Fonts::Import->new(output => "$fontspec")->import_and_save;
+    }
+    {
+        my $fonts = decode_json($fontspec->slurp_raw);
+        my @good;
+        my $font_preview_root = Path::Tiny->cwd->parent->child('front-end')->child('public')->child('fontpreview');
+        foreach my $f (@$fonts) {
+            my $name = $f->{name};
+            $name =~ s/ /-/g;
+            if ($font_preview_root->child("$name.pdf")->exists and
+                $font_preview_root->child("$name.png")->exists) {
+                $f->{preview_pdf} = "/fontpreview/$name.pdf";
+                $f->{preview_png} = "/fontpreview/$name.png";
+                push @good, $f;
+            }
+            else {
+                $self->log->info("Missing $name font preview, ignoring");
+            }
+        }
+        $fontspec->spew_raw(encode_json(\@good));
     }
     $self->helper(fontspec_file => sub { state $fontspec = $fontspec; });
     $self->pg->migrations->from_file('migrations.sql')->migrate;
