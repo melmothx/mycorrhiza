@@ -56,7 +56,9 @@ def sheet_definitions():
             "mapping": [
                 ('title', 'Title'),
                 ('date', 'Publisher Year'),
-                ('publisher', 'publisher'),
+                ('publisher', 'Publisher'),
+                ('edition_statement', 'Edition'),
+                ('edition_statement', 'Printing'),
                 ('description', 'Description'),
                 ('description', 'Synopsis'),
                 ('place_date_of_publication_distribution', 'Publisher Place'),
@@ -65,6 +67,7 @@ def sheet_definitions():
                 ('creator', 'Author', re.compile(r'\s*/\s*')),
                 ('subject', 'Keywords'),
                 ('identifier', 'Book ID'),
+                ('material_description', 'Binding Type'),
             ],
         },
         "disordine": {
@@ -85,7 +88,7 @@ def sheet_definitions():
                 ('country_of_publishing', 'Paese pubblicaz.'),
                 ('description', 'Curatore', None, (add_name,)),
                 ('description', 'Traduzione', None, (add_name,)),
-                ('physical_description', 'Npag', None, (round_to_int, add_name)),
+                ('material_description', 'Npag', None, (round_to_int, add_name)),
             ],
         },
     }

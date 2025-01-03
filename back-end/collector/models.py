@@ -498,6 +498,8 @@ class Site(models.Model):
             'description',
             'isbn',
             'publisher',
+            'edition_statement',
+            'place_date_of_publication_distribution',
         ]
         ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
 
@@ -1094,6 +1096,8 @@ class DataSource(models.Model):
     # if this is the real book, if it exists: phisical description and call number
     material_description = models.TextField(null=True)
     shelf_location_code = models.CharField(max_length=255, null=True)
+    edition_statement = models.TextField(null=True)
+    place_date_of_publication_distribution = models.TextField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     is_aggregation = models.BooleanField(default=False)
@@ -1256,6 +1260,8 @@ class DataSource(models.Model):
             "year_edition": self.year_edition,
             "year_first_edition": self.year_first_edition,
             "material_description": self.material_description,
+            "edition_statement": self.edition_statement,
+            "place_date_of_publication_distribution": self.place_date_of_publication_distribution,
             "isbn": self.isbn,
             "publisher": self.publisher,
             "downloads": self.download_options(),

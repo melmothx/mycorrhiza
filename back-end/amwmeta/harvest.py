@@ -408,7 +408,8 @@ def extract_fields(record, hostname):
 
 
     # collapse these fields
-    for f in ('material_description', 'shelf_location_code', 'isbn', 'publisher'):
+    for f in ('material_description', 'shelf_location_code', 'isbn', 'publisher',
+              'edition_statement', 'place_date_of_publication_distribution'):
         if record.get(f):
             out[f] = ' '.join(record.get(f))
 

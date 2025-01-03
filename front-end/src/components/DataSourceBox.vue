@@ -170,7 +170,7 @@
             {{ $gettext('Material Description') }}
           </td>
           <td>
-            <code>{{ source.material_description }}</code>
+            {{ source.material_description }}
           </td>
         </tr>
         <tr class="border-b border-t p-2" v-if="source.isbn">
@@ -187,6 +187,22 @@
           </td>
           <td>
             {{ source.publisher }}
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.edition_statement">
+          <td class="p-1 pr-2">
+            {{ $gettext('Edition') }}
+          </td>
+          <td>
+            {{ source.edition_statement }}
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.place_date_of_publication_distribution">
+          <td class="p-1 pr-2">
+            {{ $gettext('Edition Place') }}
+          </td>
+          <td>
+            {{ source.place_date_of_publication_distribution }}
           </td>
         </tr>
       </table>
