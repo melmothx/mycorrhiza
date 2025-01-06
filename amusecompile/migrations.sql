@@ -24,3 +24,11 @@ CREATE TABLE amc_session_files (
 -- 1 down
 DROP TABLE amc_sessions;
 DROP TABLE amc_session_files;
+
+-- 2 up
+
+ALTER TABLE amc_sessions ADD COLUMN session_type VARCHAR(32) DEFAULT 'bookbuilder';
+
+-- 2 down
+
+ALTER TABLE amc_sessions DROP COLUMN session_type;

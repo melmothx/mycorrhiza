@@ -17,7 +17,8 @@ sub cleanup ($self) {
 
 sub check_session ($self) {
     my $sid = $self->param('sid');
-    if (my $check = $self->pg->db->query('SELECT sid FROM amc_sessions WHERE sid = ?', $sid)->hash) {
+    if (my $check = $self->pg->db->select(amc_sessions => ['sid'], { sid => $sid,
+                                                                     session_type => 'bookbuilder' })->hash) {
         if ($self->wd->child($check->{sid})->exists) {
             return $self->render(json => { session_id => $sid });
         }
@@ -31,7 +32,12 @@ sub create_session ($self) {
     my $sessiondir = $self->wd->tempdir(CLEANUP => 0);
     $self->log->debug("Creating session");
     my $sid = $sessiondir->basename;
-    $self->pg->db->query('INSERT INTO amc_sessions (sid, created, last_modified) VALUES(?, NOW(), NOW())', $sid);
+    $self->pg->db->insert(amc_sessions => {
+                                           sid => $sid,
+                                           session_type => 'bookbuilder',
+                                           created => \'NOW()',
+                                           last_modified => \'NOW()',
+                                          });
     $self->render(json => { session_id => $sid });
 }
 
@@ -43,7 +49,11 @@ sub add_file ($self) {
     my $out = {};
     if ($sid) {
         my $db = $self->pg->db;
-        if (my $check = $db->query('SELECT sid FROM amc_sessions WHERE sid = ?', $sid)->hash) {
+        if (my $check = $db->select(amc_sessions => ['sid'],
+                                    {
+                                     sid => $sid,
+                                     session_type => 'bookbuilder'
+                                    })->hash) {
             if ($check and $check->{sid}) {
                 my $stack_sql = 'SELECT MAX(sorting_index) AS idx, SUM(file_size) AS total_size FROM amc_session_files WHERE sid = ?';
                 my $stack = $db->query($stack_sql, $sid)->hash;
@@ -142,7 +152,7 @@ sub reorder_list ($self) {
 sub compile ($self) {
     my $db = $self->pg->db;
     if (my $sid = $self->param('sid')) {
-        if (my $check = $db->select(amc_sessions => undef, { sid => $sid })) {
+        if (my $check = $db->select(amc_sessions => undef, { sid => $sid, session_type => 'bookbuilder' })) {
             my $bbargs = $self->req->body_params->to_hash;
             $self->log->debug(Dumper($bbargs));
             my $jid = $self->minion->enqueue(compile => [ $sid, $bbargs ]);
@@ -167,7 +177,11 @@ sub job_status ($self) {
 
 sub get_compiled_file ($self) {
     my $sid = $self->param('sid');
-    if (my $session = $self->pg->db->query('SELECT * FROM amc_sessions WHERE sid = ?', $sid)->hash) {
+    if (my $session = $self->pg->db->select(amc_sessions => undef,
+                                            {
+                                             sid => $sid,
+                                             session_type => 'bookbuilder',
+                                            })->hash) {
         $self->log->info(Dumper($session));
         if ($session->{compiled_file} and -f $session->{compiled_file}) {
             my $data = Path::Tiny::path($session->{compiled_file})->slurp_raw;
