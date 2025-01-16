@@ -10,6 +10,7 @@ import LibraryOverView from '../views/LibraryOverView.vue'
 import AgentOverView from '../views/AgentOverView.vue'
 import PageView from '../views/PageView.vue'
 import BookBuilderView from '../views/BookBuilderView.vue'
+import CoverBuilderView from '../views/CoverBuilderView.vue'
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     scrollBehavior(to, from, savedPosition) {
@@ -106,6 +107,12 @@ const router = createRouter({
             name: 'bookbuilder',
             component: BookBuilderView,
         },
+        {
+            path: '/coverbuilder',
+            name: 'coverbuilder',
+            component: CoverBuilderView,
+        },
+
     ]
 })
 

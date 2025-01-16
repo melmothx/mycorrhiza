@@ -5,6 +5,7 @@ use Path::Tiny ();
 use DateTime;
 use JSON::MaybeXS qw/decode_json/;
 use Text::Amuse::Compile::TemplateOptions;
+use Amusecompile::Model::BookCover;
 
 sub check ($self) {
     $self->render(json => { status => 'OK' });
@@ -206,6 +207,34 @@ sub fonts ($self) {
 sub headings ($self) {
     my @options = grep { $_->{desc} } Text::Amuse::Compile::TemplateOptions->all_headings;
     $self->render(json => { headings => \@options });
+}
+
+sub cover_tokens ($self) {
+    # we can throw the working dir away
+    my $bc = Amusecompile::Model::BookCover->new(fontspec_file => $self->fontspec_file,
+                                                 working_dir => $self->wd->tempdir);
+    my @out;
+    foreach my $dim (@{ $bc->main_dimensions }) {
+        my $label = $dim;
+        $label =~ s/(.*)(width|height|length)$/$1 $2/;
+        $label = join(' ', map { ucfirst $_ } split(/ /, $label));
+        push @out, {
+                    name => $dim,
+                    type => 'int',
+                    desc => $label,
+                    value => $bc->$dim,
+                   };
+    }
+    push @out, {
+                name => 'foldingmargin',
+                type => 'bool',
+                desc => "Folding Margin",
+                value => $bc->foldingmargin,
+               };
+    foreach my $token (@{ $bc->tokens }) {
+        push @out, { map { $_ => $token->$_ } (qw/name type desc value/) };
+    }
+    $self->render(json => { tokens => \@out });
 }
 
 1;

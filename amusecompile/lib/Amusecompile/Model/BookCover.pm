@@ -67,9 +67,8 @@ sub _build_tokens {
         my ($whole, $name, $type) = ($1, $2, $3);
         unless ($tokens{$whole}) {
             my $desc = join(' ', map { ucfirst $_ } split(/_/, $name));
-            push @out, Amusecompile::Model::BookCover::Token->new(name => $name,
+            push @out, Amusecompile::Model::BookCover::Token->new(name => $whole,
                                                                   type => $type,
-                                                                  full_name => $whole,
                                                                   desc => $desc);
             $tokens{$whole}++;
         }
@@ -307,7 +306,7 @@ sub serialize_object {
         $out{$m} = $self->$m;
     }
     foreach my $token (@{ $self->tokens }) {
-        $out{$token->full_name} = $token->value;
+        $out{$token->name} = $token->value;
     }
     return \%out;
 }
@@ -352,7 +351,7 @@ sub new_from_params {
     }
     my $bc = $class->new(%new);
     foreach my $token (@{$bc->tokens}) {
-        my $v = $params->{$token->full_name};
+        my $v = $params->{$token->name};
         $token->value($v) if defined $v;
     }
     return $bc;

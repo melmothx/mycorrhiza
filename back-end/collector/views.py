@@ -1096,3 +1096,13 @@ def api_bookbuilder(request):
         out['texts'] = rj['texts']
     logger.debug(out)
     return JsonResponse(out)
+
+def api_bookcover(request):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    params = json.loads(request.body)
+    logger.debug(params)
+    action = params.get('action', '')
+    if action == 'get_tokens':
+        r = requests.get(base_url + '/covers/tokens', headers=api_auth)
+        return JsonResponse(r.json())

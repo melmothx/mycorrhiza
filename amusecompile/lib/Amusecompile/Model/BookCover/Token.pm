@@ -7,7 +7,6 @@ use Types::Standard qw/Str/;
 use Moo;
 use Text::Amuse::Functions qw/muse_to_object muse_format_line/;
 
-has full_name => (is => 'ro', isa => Str, required => 1);
 has name => (is => 'ro', isa => Str, required => 1);
 has type => (is => 'ro', isa => Str, required => 1);
 has desc => (is => 'ro', isa => Str, required => 1);

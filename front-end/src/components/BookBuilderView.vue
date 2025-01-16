@@ -244,6 +244,12 @@
           {{ $gettext('Advanced') }}
         </a>
       </li>
+      <li>
+        <router-link :to="{name: 'coverbuilder'}" class="mcrz-tab-normal">
+          {{ $gettext('Do you need a cover?') }}
+        </router-link>
+      </li>
+
     </ul>
   </div>
   <div id="bb-tabs">
