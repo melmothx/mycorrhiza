@@ -106,7 +106,9 @@ sub _build_tokens {
             my $desc = join(' ', map { ucfirst $_ } split(/_/, $name));
             push @out, Amusecompile::Model::BookCover::Token->new(name => $whole,
                                                                   type => $type,
-                                                                  desc => $desc);
+                                                                  desc => $desc,
+                                                                  wd => $self->working_dir,
+                                                                 );
             $tokens{$whole}++;
         }
     }
@@ -391,7 +393,10 @@ sub new_from_params {
     my $bc = $class->new(%new);
     foreach my $token (@{$bc->tokens}) {
         my $v = $params->{$token->name};
-        $token->value($v) if defined $v;
+        if (defined $v) {
+            $bc->logger->("Setting " . $token->name . " to $v");
+            $token->value($v);
+        }
     }
     return $bc;
 }
