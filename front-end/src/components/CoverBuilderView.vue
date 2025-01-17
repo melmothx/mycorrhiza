@@ -71,13 +71,13 @@
 <template>
   <div class="font-medium text-center text-gray-500 mb-8">
     <ul class="flex flex-wrap">
-      <li class="mcrz-tab-active">
-        {{ $gettext('Covers') }}
-      </li>
       <li class="mcrz-tab-normal">
         <router-link :to="{ name: 'bookbuilder' }">
-          {{ $gettext('Book Builder') }} {{ this.session_id }}
+          {{ $gettext('Book Builder') }}
         </router-link>
+      </li>
+      <li class="mcrz-tab-active">
+        {{ $gettext('Covers') }}
       </li>
     </ul>
   </div>
@@ -175,6 +175,6 @@
     <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build_cover">
       {{ $gettext('Build') }}
     </button>
-    <JobChecker :session_id="session_id" :job_id="job_id" :key="job_id" />
   </div>
+  <JobChecker :session_id="session_id" :job_id="job_id" :key="job_id" />
 </template>

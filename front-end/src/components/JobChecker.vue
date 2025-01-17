@@ -49,6 +49,9 @@
          download_url() {
              return '/collector/api/bookbuilder/' + this.session_id;
          },
+         pdf_reader() {
+             return '/pdfjs/web/viewer.html?file=' + this.download_url();
+         },
      },
      mounted() {
          console.log(`Mounted job checker with ${this.job_id} ${this.session_id}`);
@@ -57,30 +60,30 @@
  }
 </script>
 <template>
-  <a v-if="status == 'finished'" :href="download_url()">
-    <div class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-      {{ $gettext('Download') }}
+  <div class="my-4">
+    <div v-if="status == 'failed'">
+      <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+        {{ $gettext('Failed') }}
+      </button>
     </div>
-  </a>
-  <div v-if="status == 'failed'">
-    <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
-      {{ $gettext('Failed') }}
-    </button>
+    <div v-if="status == 'inactive'">
+      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+        <span class="flex items-center">
+          <ArrowPathIcon class="h-4 w-4 mr-1 animate-spin" />
+          {{ $gettext('Queued') }}
+        </span>
+      </button>
+    </div>
+    <div v-if="status == 'active'">
+      <button type="button" class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+        <span class="flex items-center">
+          <Cog8ToothIcon class="h-4 w-4 mr-1 animate-spin" />
+          {{ $gettext('Working') }}
+        </span>
+      </button>
+    </div>
   </div>
-  <div v-if="status == 'inactive'">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-      <span class="flex items-center">
-        <ArrowPathIcon class="h-4 w-4 mr-1 animate-spin" />
-        {{ $gettext('Queued') }}
-      </span>
-    </button>
-  </div>
-  <div v-if="status == 'active'">
-    <button type="button" class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-      <span class="flex items-center">
-        <Cog8ToothIcon class="h-4 w-4 mr-1 animate-spin" />
-        {{ $gettext('Working') }}
-      </span>
-    </button>
+  <div class="my-4" v-if="status == 'finished'">
+    <iframe :src="pdf_reader()" class="w-full h-96"></iframe>
   </div>
 </template>

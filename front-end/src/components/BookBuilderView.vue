@@ -879,8 +879,8 @@
         {{ $gettext('Reset') }}
       </button>
     </div>
-    <JobChecker :session_id="bookbuilder.session_id" :job_id="bookbuilder.job_id" :key="bookbuilder.job_id" />
   </div>
+  <JobChecker :session_id="bookbuilder.session_id" :job_id="bookbuilder.job_id" :key="bookbuilder.job_id" />
   <div v-if="false" class="mt-10">
     <pre class="text-sm">
 {{ bookbuilder.api_collection_data() }}
