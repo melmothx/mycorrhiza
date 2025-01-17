@@ -390,6 +390,21 @@ sub new_from_params {
     foreach my $k (%$internal) {
         $new{$k} = $internal->{$k};
     }
+    foreach my $dimension (qw/
+                                 coverheight
+                                 coverwidth
+                                 spinewidth
+                                 flapwidth
+                                 wrapwidth
+                                 bleedwidth
+                                 marklength
+                                 foldingmargin
+                             /) {
+        my $dim = $params->{$dimension};
+        if (defined $dim and $dim =~ m/\A([0-9]+)\z/) {
+            $new{$dimension} = $1;
+        }
+    }
     my $bc = $class->new(%new);
     foreach my $token (@{$bc->tokens}) {
         my $v = $params->{$token->name};
