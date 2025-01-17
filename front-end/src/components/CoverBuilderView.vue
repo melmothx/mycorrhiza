@@ -63,8 +63,11 @@
          },
      },
      mounted() {
-         this.get_tokens();
-         this.get_fonts();
+         // so it sees the CSRF token
+         axios.get('/collector/api/auth/user').then(res => {
+             this.get_tokens();
+             this.get_fonts();
+         });
      }
  }
 </script>

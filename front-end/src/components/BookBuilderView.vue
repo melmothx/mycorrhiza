@@ -179,10 +179,12 @@
          },
      },
      mounted() {
-         this.get_fonts();
-         this.get_headings();
-         this.bookbuilder.restore();
-         this.refresh_list();
+         axios.get('/collector/api/auth/user').then(res => {
+             this.get_fonts();
+             this.get_headings();
+             this.bookbuilder.restore();
+             this.refresh_list();
+         });
      },
  }
 </script>
@@ -865,6 +867,9 @@
         <div class="mx-8" v-if="bookbuilder.needs_virtual_header()">
           <small class="text-perl-bush-800">{{ $gettext('Drag the titles to reorder') }}</small>
         </div>
+      </div>
+      <div v-else>
+        <div class="font-bold">{{ $gettext('No text added, so far!') }}</div>
       </div>
     </div>
   </div>
