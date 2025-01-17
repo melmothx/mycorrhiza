@@ -24,10 +24,12 @@ from http import HTTPStatus
 from urllib.parse import urlparse
 from datetime import datetime, timedelta, timezone
 import re
+from pathlib import Path
 import requests
 # from django.db import connection
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
+
 
 
 logger = logging.getLogger(__name__)
@@ -1096,3 +1098,40 @@ def api_bookbuilder(request):
         out['texts'] = rj['texts']
     logger.debug(out)
     return JsonResponse(out)
+
+def api_bookcover(request):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    params = json.loads(request.body)
+    logger.debug(params)
+    action = params.get('action', '')
+    if action == 'get_tokens':
+        r = requests.get(base_url + '/covers/tokens', headers=api_auth)
+        return JsonResponse(r.json())
+    elif action == 'build':
+        r = requests.post(base_url + '/covers/build', headers=api_auth, json=params['args'])
+        return JsonResponse(r.json())
+
+# @login_required
+def api_bookcover_upload_file(request):
+    api_auth = { "X-AMC-API-Key": settings.AMUSECOMPILE_API_KEY }
+    base_url = settings.AMUSECOMPILE_URL
+    out = {}
+    if request.method == 'POST':
+        sid = request.POST.get('session_id')
+        r = requests.get(base_url + '/covers/session/' + sid, headers=api_auth)
+        res = r.json()
+        upload_dir = res['upload_dir']
+        for param_name, uploaded_file in request.FILES.items():
+            filename = uploaded_file.name
+            if re.fullmatch(r'[A-Za-z0-9].+\.(jpe?g|png)', filename):
+                clean_filename = re.sub(r'[^a-zA-Z0-9\.]+', '-', filename)
+                target = Path(upload_dir, clean_filename)
+                logger.info("Writing {}".format(target))
+                with target.open("wb+") as f:
+                    for chunk in uploaded_file.chunks():
+                        f.write(chunk)
+                out[param_name] = clean_filename
+            else:
+                logger.info("Refusing to handle filename, illegal name {}".format(filename))
+    return JsonResponse({ "tokens": out })

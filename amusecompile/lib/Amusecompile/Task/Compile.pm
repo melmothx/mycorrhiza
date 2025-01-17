@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Mojo::Base 'Mojolicious::Plugin';
 use Amusecompile::Model::BookBuilder;
+use Amusecompile::Model::BookCover;
 use Data::Dumper::Concise;
 
 sub register {
@@ -29,6 +30,36 @@ sub register {
                                }
                                $logger->info("Updating record: " . Dumper($update));
                                $db->update(amc_sessions => $update, { sid => $sid });
+                           });
+    $app->minion->add_task(coverbuild => sub {
+                               my ($job, $args) = @_;
+                               my $logger = $job->app->log;
+                               if (my $sid = $args->{session_id}) {
+                                   my $wd = $job->app->wd->child($sid);
+                                   if ($wd->exists) {
+                                       my @logs;
+                                       $logger->info("Compiling $sid" . Dumper($args));
+                                       my $c = Amusecompile::Model::BookCover
+                                         ->new_from_params({
+                                                            fontspec_file => $job->app->fontspec_file,
+                                                            working_dir => $wd,
+                                                            logger => sub { $logger->info(@_); push @logs, @_; }
+                                                           },
+                                                           $args);
+                                       my $res = $c->compile;
+                                       my $update = {
+                                                     last_modified => \'NOW()',
+                                                     logs => { -json => \@logs },
+                                                    };
+                                       if ($res->{pdf_path}) {
+                                           $update->{compiled_file} = $res->{pdf_path};
+                                       }
+                                       $job->app->pg->db->update(amc_sessions => $update, { sid => $sid });
+                                       # $logger->info("Updated $sid with " . Dumper($update));
+                                       return;
+                                   }
+                               }
+                               $logger->info("Invalid session");
                            });
     $app->minion->add_task(cleanup => sub {
                                my ($job) = @_;

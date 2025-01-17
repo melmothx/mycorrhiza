@@ -4,16 +4,14 @@
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import { TrashIcon,
-          Cog8ToothIcon,
-          ArrowPathIcon,
           BookOpenIcon,
  } from '@heroicons/vue/24/solid'
+ import JobChecker from './JobChecker.vue'
  export default {
      components: {
          TrashIcon,
-         Cog8ToothIcon,
-         ArrowPathIcon,
          BookOpenIcon,
+         JobChecker,
       },
      data() {
          return {
@@ -176,37 +174,9 @@
                       console.log(res.data)
                       if (res.data.job_id) {
                           this.bookbuilder.job_id = res.data.job_id;
-                          this.check_job_status();
                       }
                   });
          },
-         check_job_status() {
-             let jid = this.bookbuilder.job_id;
-             if (jid) {
-                 const args = {
-                     session_id: this.bookbuilder.session_id,
-                     action: "check_job",
-                     check_job_id: jid,
-                 };
-                 axios.post('/collector/api/bookbuilder', args)
-                      .then(res => {
-                          console.log(res.data)
-                          status = this.bookbuilder.status = res.data.status
-                          console.log("Status is " + status)
-                          if (status == 'finished') {
-                              console.log("Finished");
-                              this.bookbuilder.finish();
-                          }
-                          else if (status == 'failed') {
-                              this.bookbuilder.fail("Job failed");
-                          }
-                          else {
-                              console.log("Repeating it and checking " + jid),
-                              setTimeout(() => { this.check_job_status() }, 1000);
-                          }
-                      });
-             }
-         }
      },
      mounted() {
          this.get_fonts();
@@ -244,6 +214,12 @@
           {{ $gettext('Advanced') }}
         </a>
       </li>
+      <li>
+        <router-link :to="{name: 'coverbuilder'}" class="mcrz-tab-normal">
+          {{ $gettext('Do you need a cover?') }}
+        </router-link>
+      </li>
+
     </ul>
   </div>
   <div id="bb-tabs">
@@ -903,33 +879,8 @@
         {{ $gettext('Reset') }}
       </button>
     </div>
-    <a v-if="bookbuilder.status == 'finished'" :href="download_url()">
-      <div class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-        {{ $gettext('Download') }}
-      </div>
-    </a>
-    <div v-if="bookbuilder.status == 'failed'">
-      <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
-        {{ $gettext('Failed') }}
-      </button>
-    </div>
-    <div v-if="bookbuilder.status == 'inactive'">
-      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-        <span class="flex items-center">
-          <ArrowPathIcon class="h-4 w-4 mr-1 animate-spin" />
-          {{ $gettext('Queued') }}
-        </span>
-      </button>
-    </div>
-    <div v-if="bookbuilder.status == 'active'">
-      <button type="button" class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
-        <span class="flex items-center">
-          <Cog8ToothIcon class="h-4 w-4 mr-1 animate-spin" />
-          {{ $gettext('Working') }}
-        </span>
-      </button>
-    </div>
   </div>
+  <JobChecker :session_id="bookbuilder.session_id" :job_id="bookbuilder.job_id" :key="bookbuilder.job_id" />
   <div v-if="false" class="mt-10">
     <pre class="text-sm">
 {{ bookbuilder.api_collection_data() }}
