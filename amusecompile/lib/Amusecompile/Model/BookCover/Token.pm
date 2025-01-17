@@ -69,7 +69,7 @@ sub token_value_for_template {
                  },
                  file => sub {
                      my $fname = $_[0];
-                     if ($fname =~ m/\A(f[0-9]+\.(pdf|png|jpe?g))\z/) {
+                     if ($fname =~ m/\A([A-Za-z0-9-]+\.(png|jpe?g))\z/) {
                          return $1;
                      }
                      return '';

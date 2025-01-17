@@ -1124,7 +1124,7 @@ def api_bookcover_upload_file(request):
         upload_dir = res['upload_dir']
         for param_name, uploaded_file in request.FILES.items():
             filename = uploaded_file.name
-            if re.fullmatch(r'[A-Za-z0-9].+\.(pdf|jpe?g|png)', filename):
+            if re.fullmatch(r'[A-Za-z0-9].+\.(jpe?g|png)', filename):
                 clean_filename = re.sub(r'[^a-zA-Z0-9\.]+', '-', filename)
                 target = Path(upload_dir, clean_filename)
                 logger.info("Writing {}".format(target))

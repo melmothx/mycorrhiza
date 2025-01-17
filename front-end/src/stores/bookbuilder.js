@@ -77,7 +77,7 @@ export const bookbuilder = reactive({
         this.save();
     },
     can_be_compiled() {
-        if (this.text_list.length > 0 && !this.job_id) {
+        if (this.text_list.length > 0) {
             return true;
         }
         else {

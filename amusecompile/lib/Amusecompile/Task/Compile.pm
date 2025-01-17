@@ -43,7 +43,7 @@ sub register {
                                          ->new_from_params({
                                                             fontspec_file => $job->app->fontspec_file,
                                                             working_dir => $wd,
-                                                            logger => sub { push @logs, @_ }
+                                                            logger => sub { $logger->info(@_); push @logs, @_; }
                                                            },
                                                            $args);
                                        my $res = $c->compile;
@@ -55,7 +55,7 @@ sub register {
                                            $update->{compiled_file} = $res->{pdf_path};
                                        }
                                        $job->app->pg->db->update(amc_sessions => $update, { sid => $sid });
-                                       $logger->info("Updated $sid with " . Dumper($update));
+                                       # $logger->info("Updated $sid with " . Dumper($update));
                                        return;
                                    }
                                }

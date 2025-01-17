@@ -186,13 +186,13 @@ sub get_compiled_file ($self) {
     if (my $session = $self->pg->db->select(amc_sessions => undef,
                                             {
                                              sid => $sid,
-                                             session_type => 'bookbuilder',
                                             })->hash) {
         $self->log->info(Dumper($session));
         if ($session->{compiled_file} and -f $session->{compiled_file}) {
+            my $type = $session->{session_type} || 'bc';
             my $data = Path::Tiny::path($session->{compiled_file})->slurp_raw;
             my $now = DateTime->now->strftime('%Y-%m-%d--%H-%M-%S');
-            $self->res->headers->content_disposition(qq{attachment; filename="bookbuilder-$now.pdf"});
+            $self->res->headers->content_disposition(qq{attachment; filename="$type-$now.pdf"});
             return $self->render(data => $data, format => 'pdf');
         }
     }

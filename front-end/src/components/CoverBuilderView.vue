@@ -2,13 +2,18 @@
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import JobChecker from './JobChecker.vue'
  export default {
+     components: {
+         JobChecker,
+     },
      data() {
          return {
              tokens: [],
              fonts: [],
              bookcover: {},
              session_id: null,
+             job_id: null,
          }
      },
      methods: {
@@ -53,6 +58,7 @@
              axios.post('/collector/api/bookcover', params)
                   .then(res => {
                       console.log(res.data)
+                      this.job_id = res.data.job_id;
                   });
          },
      },
@@ -165,9 +171,10 @@
       </div>
     </div>
   </div>
-  <div>
+  <div class="mt-8 flex">
     <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build_cover">
       {{ $gettext('Build') }}
     </button>
+    <JobChecker :session_id="session_id" :job_id="job_id" :key="job_id" />
   </div>
 </template>
