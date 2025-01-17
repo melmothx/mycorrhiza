@@ -28,18 +28,23 @@ sub check_session ($self) {
 }
 
 sub create_session ($self) {
+    my $sid = $self->_create_session_for('bookbuilder');
+    $self->render(json => { session_id => $sid });
+}
+
+sub _create_session_for ($self, $type) {
     my $wd = $self->wd;
-    $wd->mkdir;
+    $wd->mkpath;
     my $sessiondir = $self->wd->tempdir(CLEANUP => 0);
-    $self->log->debug("Creating session");
+    $self->log->debug("Creating session for $type");
     my $sid = $sessiondir->basename;
     $self->pg->db->insert(amc_sessions => {
                                            sid => $sid,
-                                           session_type => 'bookbuilder',
+                                           session_type => $type,
                                            created => \'NOW()',
                                            last_modified => \'NOW()',
                                           });
-    $self->render(json => { session_id => $sid });
+    return $sid;
 }
 
 sub add_file ($self) {
@@ -209,10 +214,11 @@ sub headings ($self) {
     $self->render(json => { headings => \@options });
 }
 
-sub cover_tokens ($self) {
+sub bookcover_tokens ($self) {
     # we can throw the working dir away
+    my $sid = $self->_create_session_for('bookcover');
     my $bc = Amusecompile::Model::BookCover->new(fontspec_file => $self->fontspec_file,
-                                                 working_dir => $self->wd->tempdir);
+                                                 working_dir => $self->wd->child($sid));
     my @out;
     foreach my $dim (@{ $bc->main_dimensions }) {
         my $label = $dim;
@@ -225,16 +231,67 @@ sub cover_tokens ($self) {
                     value => $bc->$dim,
                    };
     }
+    my @all_fonts = map { +{ value => $_->name, label => $_->desc } } $bc->all_fonts;
+    push @out, {
+                name => "font_name",
+                type => "select",
+                desc => "Fonts",
+                value => $bc->font_name,
+                options => \@all_fonts,
+               };
+    my %lang_hash = %{ $bc->known_langs };
+    my @all_langs = sort { $a->{label} cmp $b->{label} } map { +{ value => $_, label => $lang_hash{$_} } } keys %lang_hash;
     push @out, {
                 name => 'foldingmargin',
                 type => 'bool',
                 desc => "Folding Margin",
                 value => $bc->foldingmargin,
                };
+    push @out, {
+                name => "language_code",
+                type => "select",
+                desc => "Language",
+                value => $bc->language_code,
+                options => \@all_langs,
+               };
     foreach my $token (@{ $bc->tokens }) {
         push @out, { map { $_ => $token->$_ } (qw/name type desc value/) };
     }
-    $self->render(json => { tokens => \@out });
+    $self->render(json => {
+                           tokens => \@out,
+                           session_id => $sid,
+                          });
+}
+
+sub bookcover_session ($self) {
+    my $sid = $self->param('sid');
+    if (my $check = $self->pg->db->select(amc_sessions => ['sid'], { sid => $sid,
+                                                                     session_type => 'bookcover' })->hash) {
+        my $swd = $self->wd->child($check->{sid});
+        if ($swd->exists) {
+            return $self->render(json => {
+                                          session_id => $sid,
+                                          upload_dir => $swd->stringify,
+                                         });
+        }
+    }
+    $self->render(json => { error => "Invalid session" });
+}
+
+sub bookcover_build ($self) {
+    my $args = $self->req->json;
+    $self->log->debug(Dumper($args));
+    my $sid = $args->{session_id};
+    if (my $check = $self->pg->db->select(amc_sessions => ['sid'], {
+                                                                    sid => $sid,
+                                                                    session_type => 'bookcover'
+                                                                   })->hash) {
+        my $jid = $self->minion->enqueue(coverbuild => [ $args ]);
+        $self->pg->db->update(amc_sessions => { job_id => $jid, last_modified => \'NOW()' }, { sid => $sid });
+        return $self->render(json => { job_id => $jid });
+    }
+    $self->log->info("Invalid session $sid");
+    $self->render(json => { error => "Invalid session" });
 }
 
 1;

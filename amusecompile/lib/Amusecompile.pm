@@ -109,7 +109,9 @@ sub startup ($self) {
     $api->post('/list/:sid/reorder/:move_id/:to_id')->to('API#reorder_list')->name('api_reorder_list');
     $api->get('/job-status/:jid')->to('API#job_status')->name('api_job_status');
     $api->get('/compile/:sid')->to('API#get_compiled_file')->name('api_get_compiled_file');
-    $api->get('/covers/tokens')->to('API#cover_tokens')->name('api_cover_tokens');
+    $api->get('/covers/tokens')->to('API#bookcover_tokens')->name('api_cover_tokens');
+    $api->get('/covers/session/:sid')->to('API#bookcover_session')->name('api_cover_session');
+    $api->post('/covers/build')->to('API#bookcover_build')->name('api_cover_build');
     $self->plugin('Minion::Admin' => { route => $admin });
 }
 

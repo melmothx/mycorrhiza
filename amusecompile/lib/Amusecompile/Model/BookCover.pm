@@ -37,7 +37,44 @@ has fonts => (is => 'lazy',
 
 sub _build_fonts {
     my $self = shift;
-    return Text::Amuse::Compile::Fonts->new($self->fontspec_file);
+    return Text::Amuse::Compile::Fonts->new($self->fontspec_file->stringify);
+}
+
+sub known_langs {
+    return {
+            ru => 'Русский',
+            uk => 'Українська',
+            sr => 'Srpski',
+            hr => 'Hrvatski',
+            mk => 'Македонски',
+            el => 'Ελληνικά',
+            fi => 'Suomi',
+            id => 'Bahasa Indonesia',
+            it => 'Italiano',
+            es => 'Español',
+            en => 'English',
+            fr => 'Français',
+            nl => 'Nederlands',
+            de => 'Deutsch',
+            sq => 'Shqip',
+            sv => 'Svenska',
+            pl => 'Polski',
+            pt => 'Português',
+            da => 'Dansk',
+            cs => 'Čeština',
+            tr => 'Türkçe',
+            bg => 'Български',
+            eo => 'Esperanto',
+            zh => '中文',
+            ja => '日本語',
+            tl => 'Tagalog',
+            ceb => 'Cebuano',
+            kmr => 'Kurmancî',
+            ro => 'Română',
+            fa => 'فارسی',
+            eu => 'Euskara',
+            hu => 'Magyar',
+           };
 }
 
 has tokens => (is => 'lazy', isa => ArrayRef[Object]);
@@ -220,7 +257,7 @@ sub convert_images_to_cmyk {
                         $logger->("Examining $basename\n");
                         my ($in, $out, $err);
                         my @cmd = (identify => -format => '%r', "$path");
-                        log_info { "Running " . join(" ", @cmd) };
+                        $self->logger->("Running " . join(" ", @cmd));
                         if (run(\@cmd, \$in, \$out, \$err)) {
                             $logger->("Colorspace is $out\n");
                             if ($out =~ m/sRGB/) {
@@ -230,9 +267,9 @@ sub convert_images_to_cmyk {
                                         -profile => "$rgb",
                                         -profile => "$cmyk",
                                         "$path");
-                                log_info { "Running " . join(" ", @cmd) };
+                                $logger->("Running " . join(" ", @cmd));
                                 run(\@cmd, \$in, \$out, \$err);
-                                log_info { "Output: $out $err" };
+                                $self->logger->( "Output: $out $err" );
                             }
                             else {
                                 $logger->("Skipping convertion for image with colorspace $out\n");
@@ -255,7 +292,7 @@ sub compile {
     my $pdf = "$tex";
     $pdf =~ s/\.tex/.pdf/;
     if (-f $pdf) {
-        log_info { "Removing $pdf" };
+        $self->logger->("Removing $pdf");
         unlink $pdf or die $!;
     }
     $self->convert_images_to_cmyk;
@@ -269,31 +306,33 @@ sub compile {
     my @run = ("xelatex", '-interaction=nonstopmode', $tex->basename);
     my $ok = run \@run, \$in, \$out, \$err;
     chdir $cwd or die "Cannot chdir back into $cwd";
-    # log_info { "Compilation: $out $err" };
-    my %res;
+    # $self->logger->( "Compilation: $out $err" );
+    # if ($ok and -f $pdf) {
+    #     my $zipdir = Archive::Zip->new;
+    #     if ($zipdir->addTree("$wd", "bookcover-" . $wd->basename) == Archive::Zip::AZ_OK) {
+    #         my $zipfile = $wd->parent->child("bookcover-" . $wd->basename . ".zip");
+    #         if ($zipdir->writeToFileNamed("$zipfile") == Archive::Zip::AZ_OK) {
+    #             %res = (
+    #                     zip_path => "$zipfile",
+    #                     pdf_path => "$pdf"
+    #                    );
+    #         }
+    #         else {
+    #             $logger->("Failed to write zip $zipfile");
+    #         }
+    #     }
+    #     else {
+    #         $logger->("Failed to create zip");
+    #     }
+    # }
+    my $res = {
+               stdout => $out,
+               stderr => $err,
+              };
     if ($ok and -f $pdf) {
-        my $zipdir = Archive::Zip->new;
-        if ($zipdir->addTree("$wd", "bookcover-" . $wd->basename) == Archive::Zip::AZ_OK) {
-            my $zipfile = $wd->parent->child("bookcover-" . $wd->basename . ".zip");
-            if ($zipdir->writeToFileNamed("$zipfile") == Archive::Zip::AZ_OK) {
-                %res = (
-                        zip_path => "$zipfile",
-                        pdf_path => "$pdf"
-                       );
-            }
-            else {
-                $logger->("Failed to write zip $zipfile");
-            }
-        }
-        else {
-            $logger->("Failed to create zip");
-        }
+        $res->{pdf_path} = $pdf;
     }
-    return {
-            stdout => $out,
-            stderr => $err,
-            %res,
-           };
+    return $res;
 }
 
 sub serialize_object {
