@@ -39,7 +39,10 @@
                           else if (status == 'failed') {
                               this.error = "Job failed";
                           }
-                          else {
+                          else if (status == 'not found') {
+                              this.error = "Job not found. Stale session?";
+                          }
+                          else if (status == 'active' || status == 'inactive') {
                               console.log("Repeating it and checking " + jid),
                               setTimeout(() => { this.check_job_status() }, 1000);
                           }
