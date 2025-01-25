@@ -775,7 +775,10 @@ class Entry(models.Model):
                 except Library.DoesNotExist:
                     pass
 
-        out['data_sources'] = sorted(data_sources, key=lambda i: i.get('year_edition') or 0, reverse=True)
+        out['data_sources'] = sorted(data_sources,
+                                     key=lambda i: (30000 if len(i.get('downloads', [])) else 0,
+                                                    i.get('year_edition', 0)),
+                                     reverse=True)
         return out
 
     def display_data(self, library_ids=[]):
