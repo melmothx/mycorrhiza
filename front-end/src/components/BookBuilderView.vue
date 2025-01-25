@@ -605,28 +605,25 @@
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-4 text-center bg-perl-bush-50 p-2 shadow-md rounded">
+      <div class="grid grid-cols-3 gap-8 text-center bg-perl-bush-50 p-2 shadow-md rounded">
         <div>
           <div v-for="font in fonts.filter(f => f.name == bookbuilder.collection_data.mainfont)">
             <a :href="font.preview_pdf" target="_blank">
-              <img class="mx-auto my-4 max-h-96" :src="font.preview_png">
-              {{ font.name }}
+              <img class="mx-auto my-4 max-h-96" :src="font.preview_png" :alt="font.name">
             </a>
           </div>
         </div>
         <div>
           <div v-for="font in fonts.filter(f => f.name == bookbuilder.collection_data.monofont)">
             <a :href="font.preview_pdf" target="_blank">
-              <img class="mx-auto my-4 max-h-96" :src="font.preview_png">
-              {{ font.name }}
+              <img class="mx-auto my-4 max-h-96" :src="font.preview_png" :alt="font.name">
             </a>
           </div>
         </div>
         <div v-if="bookbuilder.needs_sans_font()">
           <div v-for="font in fonts.filter(f => f.name == bookbuilder.collection_data.sansfont)">
             <a :href="font.preview_pdf" target="_blank">
-              <img class="mx-auto my-4 max-h-96" :src="font.preview_png">
-              {{ font.name }}
+              <img class="mx-auto my-4 max-h-96" :src="font.preview_png" :alt="font.name">
             </a>
           </div>
         </div>

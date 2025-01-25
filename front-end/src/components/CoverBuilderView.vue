@@ -167,8 +167,7 @@
       <div class="bg-perl-bush-50 p-2 shadow-md rounded">
         <div v-for="font in fonts.filter(f => f.name == bookcover.font_name)">
           <a :href="font.preview_pdf" target="_blank">
-            <img class="mx-auto my-4 max-h-96" :src="font.preview_png">
-            {{ font.name }}
+            <img class="mx-auto my-4 max-h-96" :src="font.preview_png" :alt="font.name">
           </a>
         </div>
       </div>
