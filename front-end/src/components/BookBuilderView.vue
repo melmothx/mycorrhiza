@@ -7,11 +7,13 @@
           BookOpenIcon,
  } from '@heroicons/vue/24/solid'
  import JobChecker from './JobChecker.vue'
+ import BookBuilderBar from './BookBuilderBar.vue'
  export default {
      components: {
          TrashIcon,
          BookOpenIcon,
          JobChecker,
+         BookBuilderBar,
       },
      data() {
          return {
@@ -189,7 +191,8 @@
  }
 </script>
 <template>
-  <div class="font-medium text-center text-gray-500 mb-8">
+  <BookBuilderBar active="bookbuilder" />
+  <div class="text-sm text-center text-gray-500 mb-8">
     <ul class="flex flex-wrap">
       <li>
         <a href="#" @click="set_tab('overview')" :class="current_tab == 'overview' ? 'mcrz-tab-active' : 'mcrz-tab-normal'">
@@ -216,12 +219,6 @@
           {{ $gettext('Advanced') }}
         </a>
       </li>
-      <li>
-        <router-link :to="{name: 'coverbuilder'}" class="mcrz-tab-normal">
-          {{ $gettext('Do you need a cover?') }}
-        </router-link>
-      </li>
-
     </ul>
   </div>
   <div id="bb-tabs">

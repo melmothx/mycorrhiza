@@ -3,9 +3,11 @@
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import JobChecker from './JobChecker.vue'
+ import BookBuilderBar from './BookBuilderBar.vue'
  export default {
      components: {
          JobChecker,
+         BookBuilderBar,
      },
      data() {
          return {
@@ -72,18 +74,7 @@
  }
 </script>
 <template>
-  <div class="font-medium text-center text-gray-500 mb-8">
-    <ul class="flex flex-wrap">
-      <li class="mcrz-tab-normal">
-        <router-link :to="{ name: 'bookbuilder' }">
-          {{ $gettext('Book Builder') }}
-        </router-link>
-      </li>
-      <li class="mcrz-tab-active">
-        {{ $gettext('Covers') }}
-      </li>
-    </ul>
-  </div>
+  <BookBuilderBar active="coverbuilder" />
   <div class="grid sm:grid-cols-[auto_300px] gap-6">
     <div>
       <div v-for="token in tokens">
