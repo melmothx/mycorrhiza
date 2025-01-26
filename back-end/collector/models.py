@@ -756,6 +756,16 @@ class Entry(models.Model):
     def display_name(self):
         return self.title
 
+    def sort_display_datasources(self, ds):
+        download_key = 0
+        muse_download = [ i for i in ds.get('downloads', []) if i.get('code') == 'muse' ]
+        pdf_download = [ i for i in ds.get('downloads', []) if i.get('code') == 'pdf' ]
+        if len(muse_download):
+            download_key = 10000
+        elif len(pdf_download):
+            download_key = 9000
+        return(download_key, ds.get('year_edition', 0))
+
     def display_dict(self, library_ids):
         out = {}
         indexed = self.indexed_data
@@ -776,8 +786,7 @@ class Entry(models.Model):
                     pass
 
         out['data_sources'] = sorted(data_sources,
-                                     key=lambda i: (30000 if len(i.get('downloads', [])) else 0,
-                                                    i.get('year_edition', 0)),
+                                     key=self.sort_display_datasources,
                                      reverse=True)
         return out
 
