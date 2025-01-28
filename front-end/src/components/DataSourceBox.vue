@@ -1,10 +1,14 @@
 <script>
  import axios from 'axios'
  import { bookbuilder } from '../stores/bookbuilder.js'
+ import ReportErrorPopUp from './ReportErrorPopUp.vue'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'source', 'short' ],
+     components: {
+         ReportErrorPopUp
+     },
      data() {
          return {
              html: "",
@@ -231,6 +235,9 @@
         <router-link v-if="added_to_the_bookbuilder" :to="{ name: 'bookbuilder' }" class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
           {{ $gettext('Added to the Book Builder!') }}
         </router-link>
+        <div v-if="source.report_error">
+          <ReportErrorPopUp :data_source_id="source.data_source_id" :library_name="source.library_name" />
+        </div>
         <div class="grow"></div>
       </div>
       <div v-if="show_html">
