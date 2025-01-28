@@ -764,7 +764,10 @@ class Entry(models.Model):
             download_key = 10000
         elif len(pdf_download):
             download_key = 9000
-        return(download_key, ds.get('year_edition', 0))
+        year = 0
+        if ds.get('year_edition'):
+            year = ds.get('year_edition')
+        return(download_key, year)
 
     def display_dict(self, library_ids):
         out = {}
