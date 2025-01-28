@@ -14,11 +14,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
-from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, manipulate, log_user_operation
+from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport, manipulate, log_user_operation
 from amwmeta.xapian import MycorrhizaIndexer
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from secrets import token_urlsafe
 from http import HTTPStatus
 from urllib.parse import urlparse
@@ -168,6 +168,7 @@ def _user_data(user):
         out["logged_in"] = user.username
         out["is_superuser"] = user.is_superuser
         out["is_library_admin"] = user.library_admin
+        out["email"] = user.email
         out["libraries"] = [ { "id": l.id, "name": l.name } for l in user.libraries.filter(active=True).all() ]
 
     return out
@@ -1135,3 +1136,71 @@ def api_bookcover_upload_file(request):
             else:
                 logger.info("Refusing to handle filename, illegal name {}".format(filename))
     return JsonResponse({ "tokens": out })
+
+
+@login_required
+def api_report_ds_error(request, data_source_id):
+    ds = get_object_or_404(DataSource, pk=data_source_id)
+    out = {}
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!"
+    user = request.user
+    if data and data.get('message'):
+        if ds.entry:
+            if ds.site.library_id in _active_libraries(request.user):
+                library = ds.site.library
+                if library.email_internal and user.email:
+                    our_name = General.settings().get('site_name')
+                    original_url = "{}/entry/{}".format(settings.CANONICAL_ADDRESS,
+                                                        ds.entry_id)
+                    entry_title = ds.entry.title
+                    subject = "[{} Error Report] {}".format(
+                        our_name,
+                        re.sub(r'\s+', ' ', ds.entry.title)
+                    )
+                    body = """
+Greetings,
+
+{} reported the following about your bibliographical entry listed at
+{}
+
+{}
+
+Thanks
+-- 
+{}
+{}
+"""
+                    report = LibraryErrorReport.objects.create(
+                        user=request.user,
+                        library=library,
+                        message=body.format(
+                            user.email, original_url, data.get('message'),
+                            our_name,
+                            settings.CANONICAL_ADDRESS,
+                        ),
+                        sender=user.email,
+                        recipient=library.email_internal,
+                    )
+                    logger.info("Reporting {} from {} to {}".format(data.get('message'),
+                                                                    report.sender,
+                                                                    report.recipient))
+                    email = EmailMessage(
+                        subject,
+                        report.message,
+                        settings.MYCORRHIZA_EMAIL_FROM,
+                        [report.recipient],
+                        reply_to=[report.sender],
+                    )
+                    if email.send():
+                        report.sent =  datetime.now(timezone.utc)
+                        report.save()
+                        out['success'] = "OK"
+                    else:
+                        out['error'] = "Failure sending email"
+
+    if not out.get('success') and not out.get('error'):
+        out['error'] = "Could not contact the library"
+    return JsonResponse(out)

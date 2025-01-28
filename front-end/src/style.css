@@ -135,8 +135,7 @@
                px-2
                text-old-copper-700
                bg-perl-bush-50
-               placeholder:italic
-               flex-grow;
+               placeholder:italic;
     }
     .mcrz-date {
         @apply outline

@@ -778,9 +778,12 @@ class Entry(models.Model):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
                 try:
-                    library = Library.objects.values('id', 'name').get(pk=ds['library_id'])
+                    library = Library.objects.values('id',
+                                                     'name',
+                                                     'email_internal').get(pk=ds['library_id'])
                     # make sure to use the current names
                     ds['library_name'] = library.get('name', ds['library_name'])
+                    ds['report_error'] = True if library.get('email_internal') else False
                     data_sources.append(ds)
                 except Library.DoesNotExist:
                     pass
@@ -1467,6 +1470,14 @@ class SpreadsheetUpload(models.Model):
         self.processed = now
         self.save()
 
+class LibraryErrorReport(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    library = models.ForeignKey(Library, on_delete=models.CASCADE)
+    message = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    sender = models.EmailField()
+    recipient = models.EmailField()
+    sent = models.DateTimeField(null=True)
 
 class ChangeLog(models.Model):
     user = models.ForeignKey(
