@@ -15,6 +15,7 @@ import re
 import pprint
 import hashlib
 from pathlib import Path
+import subprocess
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
@@ -575,8 +576,8 @@ class Site(models.Model):
             # we need to reindex all the entries
             xapian_records = [ i.entry_id for i in self.datasource_set.all() ]
             self.datasource_set.all().delete()
+            # logger.debug("Reindexing: {}".format(xapian_records))
 
-        logger.debug("Reindexing: {}".format(xapian_records))
         site_type_ids = {
             "calibretree": "ct",
             "csv": "csv",
@@ -597,6 +598,7 @@ class Site(models.Model):
         self.index_harvested_records(xapian_records, force=replace_all, now=now)
 
     def process_calibre_tree(self):
+        # print("Calling process calibre tree")
         if self.site_type == 'calibretree' and self.tree_path:
             records = scan_calibre_tree(self.tree_path)
             logger.debug(pp.pprint(records))
@@ -1202,6 +1204,7 @@ class DataSource(models.Model):
 
         elif site_type == 'calibretree':
             tree = self.calibre_base_dir()
+            texts = []
             if tree:
                 for f in tree.iterdir():
                     if f.suffix == '.txt':
@@ -1216,7 +1219,16 @@ class DataSource(models.Model):
                         )
                         for replace in replacements:
                             text = text.replace(replace[0], replace[1],)
-                        return text
+                        texts.append(text)
+                    if f.suffix == '.pdf':
+                        extracted = subprocess.run(['pdftotext', str(f.absolute()), '-'],
+                                                   capture_output=True,
+                                                   timeout=30)
+                        if extracted.stdout:
+                            texts.append(extracted.stdout.decode("UTF-8"))
+            if texts:
+                return "\n".join(texts)
+
         return None
 
     def download_options(self):

@@ -47,6 +47,7 @@ def parse_opf(opf_file):
 
 def scan_calibre_tree(tree):
     records = []
+    # print("Calling scan_calibre_tree against " + tree)
     for root, dirs, files in os.walk(tree):
         for hidden in [ d for d in dirs if d.startswith('.') ]:
             # print("Removing {}".format(hidden))

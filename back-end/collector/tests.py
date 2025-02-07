@@ -310,3 +310,24 @@ class AggregationProcessingTestCase(TestCase):
         self.assertEqual(DataSource.objects.filter(is_aggregation=True).count(), 2)
         # for entry in Entry.objects.filter(is_aggregation=True).all():
             # pp.pprint(entry.indexing_data())
+
+
+@override_settings(XAPIAN_DB=str(xapian_test_db))
+class PdfEextractionTestCase(TestCase):
+    def setUp(self):
+        library = Library.objects.create(name="Test", public=True, active=True)
+        site = Site.objects.create(
+            library=library,
+            site_type="calibretree",
+            tree_path="testfiles/calibre-test",
+        )
+    def test_pdf_extraction(self):
+        # print("Testing PDF extraction")
+        site = Site.objects.first()
+        self.assertEqual(site.site_type, "calibretree")
+        self.assertEqual(site.tree_path, "testfiles/calibre-test")
+        site.harvest()
+        ds = DataSource.objects.first()
+        self.assertEqual(ds.site_id, site.id)
+        self.assertIsNotNone(ds.site)
+        self.assertIn("backcompatibility issues", site.datasource_set.first().full_text())
