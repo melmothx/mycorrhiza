@@ -149,3 +149,43 @@ def get_paged_url(base_url, common, num):
     query = common.copy()
     query.append(("page_number", num))
     return base_url + '?' + urlencode(query)
+
+def log_user_operation(user, op, canonical, alias):
+    if user and op and canonical:
+        canonical_title = "canonical"
+        alias_title = "alias"
+        canonical_data = None
+        if "translation" in op:
+            canonical_title = "original"
+            alias_title = "translation"
+        elif "aggregation" in op:
+            canonical_title = "aggregation"
+            alias_title = "aggregated"
+        elif "exclusion" in op:
+            canonical_title = "excluded"
+            alias_title = "excluded"
+        elif op.startswith("before-update-") or op.startswith("after-update-"):
+            canonical_title = op
+            canonical_data = canonical.as_api_dict()
+            if alias:
+                raise Exception("Alias argument should be None for {}".format(op))
+
+        if alias:
+            comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
+                                                        alias_title, alias.display_name(), alias.id)
+            alias.changelogs.create(
+                user=user,
+                username=user.username,
+                operation=op,
+                comment=comment,
+            )
+        else:
+            comment = "{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id)
+
+        canonical.changelogs.create(
+            user=user,
+            username=user.username,
+            operation=op,
+            comment=comment,
+            object_data=canonical_data,
+        )
