@@ -16,7 +16,7 @@ from django.contrib.auth.password_validation import validate_password, password_
 from django.db.models import Q
 from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport
 from amwmeta.xapian import MycorrhizaIndexer
-from .tasks import manipulate
+from .tasks import manipulate, process_spreadsheet_upload
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail, EmailMessage
@@ -899,8 +899,8 @@ def api_process_spreadsheet(request, spreadsheet_id):
 
     if request.method == "POST" and ss:
         if ss.validate_csv()['sample']:
-            ss.process_csv()
-            out['success'] = "Sheet processed"
+            process_spreadsheet_upload.delay(spreadsheet_id)
+            out['success'] = "Reindex started"
         else:
             out['error'] = "Invalid CSV"
 
