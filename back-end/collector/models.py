@@ -604,6 +604,14 @@ class Site(models.Model):
             logger.debug(pp.pprint(records))
             self.process_generic_records(records)
 
+    def koha_ds_url(self, identifier):
+        if self.site_type == 'generic':
+            url_match = re.fullmatch(r'(.*?/cgi-bin/koha)/oai\.pl', self.url)
+            id_match = re.fullmatch(r'KOHA-.*:([0-9]+)', identifier)
+            if url_match and id_match:
+                return "{}/opac-detail.pl?biblionumber={}".format(url_match.group(1), id_match.group(1))
+        return None
+
 # these are a level up from the oai pmh records
 
 class Agent(models.Model):
@@ -789,6 +797,13 @@ class Entry(models.Model):
                     # make sure to use the current names
                     ds['library_name'] = library.get('name', ds['library_name'])
                     ds['report_error'] = True if library.get('email_internal') else False
+                    ds['koha_url'] = None
+                    if ds.get('site_type') == 'generic':
+                        try:
+                            site = Site.objects.get(pk=ds.get('site_id', 0))
+                            ds['koha_url'] = site.koha_ds_url(ds['identifier'])
+                        except Site.DoesNotExist:
+                            pass
                     data_sources.append(ds)
                 except Library.DoesNotExist:
                     pass

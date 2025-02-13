@@ -209,6 +209,22 @@
             {{ source.place_date_of_publication_distribution }}
           </td>
         </tr>
+        <tr class="border-b border-t p-2" v-if="source.site_type == 'generic' && source.uri && source.uri_label">
+          <td class="p-1 pr-2">
+            {{ source.uri_label }}
+          </td>
+          <td>
+            <a :href="source.uri">{{ source.uri }}</a>
+          </td>
+        </tr>
+        <tr class="border-b border-t p-2" v-if="source.koha_url">
+          <td class="p-1 pr-2">
+            {{ $gettext('OPAC page') }}
+          </td>
+          <td>
+            <a :href="source.koha_url">{{ source.koha_url }}</a>
+          </td>
+        </tr>
       </table>
       <div v-if="has_pdf_only()">
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
