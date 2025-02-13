@@ -15,8 +15,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
 from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport
-from amwmeta.xapian import MycorrhizaIndexer
-from .tasks import manipulate, process_spreadsheet_upload
+from .tasks import process_spreadsheet_upload, xapian_index_records
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail, EmailMessage
@@ -32,6 +31,140 @@ import pprint
 pp = pprint.PrettyPrinter(indent=2)
 
 logger = logging.getLogger(__name__)
+
+def manipulate(op, user, main_id, *ids, create=None):
+    out = {
+        "op": op,
+        "main_id": main_id,
+        "other_ids": ids,
+        "error": None,
+        "msg": None,
+    }
+    if not user:
+        out['error']: "Missing User"
+        return out
+
+    out['username'] = user.username
+
+    if op == "revert-exclusions" or op == "add-exclusion":
+        # we just need the login
+        pass
+    elif user.is_superuser:
+        pass
+    elif user.can_merge_entries():
+        # needs the can_merge_entries logic
+        pass
+    else:
+        out['error'] = "Cannot do that"
+        return out
+
+    logger.info("Calling manipulate " + pp.pformat(out))
+    reindex = []
+    classes = {
+        'merge-agents': Agent,
+        'revert-merged-agents': Agent,
+
+        'add-translations': Entry,
+        'revert-translations': Entry,
+
+        'merge-entries': Entry,
+        'revert-merged-entries': Entry,
+
+        'add-exclusion': Exclusion,
+        'revert-exclusions': Exclusion,
+
+        'add-aggregations': Entry,
+        # no revert at the moment
+
+    }
+    if not main_id and not create:
+        out['error']: "Missing ID"
+        return out
+    if not op:
+        out['error']: "Missing operation"
+        return out
+
+    cls = classes.get(op)
+    if not cls:
+        out['error']: "Invalid operation"
+        return out
+
+    if main_id and main_id in ids:
+        out['error']: "Recursive merging"
+        return out
+
+    if main_id:
+        try:
+            main_object = cls.objects.get(pk=main_id)
+        except cls.DoesNotExist:
+            out['error'] = "{} does not exist".format(main_id)
+            return out
+    elif create:
+        # TODO: need to catch the exceptions
+        main_object = cls.objects.create(**create)
+        log_user_operation(user, op, main_object, None)
+        out['success'] = "{} created".format(main_object.display_name())
+        return out
+
+    other_objects = []
+    for oid in ids:
+        try:
+            obj = cls.objects.get(pk=oid)
+            other_objects.append(obj)
+        except cls.DoesNotExist:
+            out['error'] = "{} does not exist".format(oid)
+            return out
+
+    reindex = []
+    if op == 'merge-agents' or op == 'merge-entries':
+        reindex = cls.merge_records(main_object, other_objects, user=user)
+        out['success'] = "Merged"
+
+    elif op == 'add-aggregations':
+        if main_object.is_aggregation:
+            reindex = cls.aggregate_entries(main_object, other_objects, user=user)
+            if reindex:
+                out['success'] = "Added"
+        else:
+            out['error'] = "First item must be an aggregation"
+
+    elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
+        reindex = main_object.unmerge(user=user)
+        if reindex:
+            out['success'] = "Removed merge"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'add-translations':
+        reindex = cls.translate_records(main_object, other_objects, user=user)
+        if reindex:
+            out['success'] = "Translations set!"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'revert-translations':
+        reindex = main_object.untranslate(user=user)
+        if reindex:
+            out['success'] = "Removed translations"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'add-exclusion':
+        raise Exception('Not reached')
+
+    elif op == 'revert-exclusions':
+        if main_object.user.username == user.username:
+            log_user_operation(user, op, main_object, None)
+            main_object.delete()
+            out['success'] = "Removed"
+        else:
+            out['error'] = "Cannot do that"
+
+    else:
+        raise Exception("Bug! Missing handler for " + op)
+    if reindex:
+        xapian_index_records.delay_on_commit([ e.id for e in reindex ])
+    return out
 
 def user_is_library_admin(user):
     if not user.username:
@@ -601,11 +734,11 @@ def exclusions(request):
                     creation = {
                         "comment": comment,
                         "exclude_{}_id".format(what): object_id,
-                        "user_id": user.id,
+                        "user": user,
                     }
-                    out = manipulate('add-exclusion', user.id, None, create=creation)
+                    out = manipulate('add-exclusion', user, None, create=creation)
             elif op == 'delete':
-                out = manipulate('revert-exclusion', user.id, object_id)
+                out = manipulate('revert-exclusion', user, object_id)
             else:
                 out['error'] = "Invalid operation {}".format(op)
         else:
@@ -625,8 +758,7 @@ def api_set_aggregated(request):
 
     if data and user:
         ids = [ x['id'] for x in data ]
-        manipulate.delay('add-aggregations', user.id, *ids)
-        out['success'] = "Change scheduled"
+        out = manipulate('add-aggregations', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -643,8 +775,7 @@ def api_set_translations(request):
     if data and user:
         logger.debug(data)
         ids = [ x['id'] for x in data ]
-        manipulate.delay('add-translations', user.id, *ids)
-        out['success'] = "Change scheduled"
+        out = manipulate('add-translations', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -667,8 +798,7 @@ def api_merge(request, target):
             "author" : "merge-agents",
         }
         ids = [ x['id'] for x in data ]
-        manipulate.delay(method.get(target, 'invalid-method'), user.id, *ids)
-        out['success'] = "Change scheduled"
+        out = manipulate(method.get(target, 'invalid-method'), user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
@@ -827,8 +957,7 @@ def api_revert(request, target):
     if data and user:
         object_id = data.get('id')
         if object_id:
-            manipulate.delay("revert-" + target, user.id, object_id)
-            out['success'] = "Change scheduled"
+            out = manipulate("revert-" + target, user, object_id)
         else:
             out['error'] = "Missing target ID"
     else:

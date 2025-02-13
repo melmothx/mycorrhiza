@@ -240,14 +240,9 @@ def search(db_path, query_params,
 class MycorrhizaIndexer:
     # kw only argument
     def __init__(self, *, db_path):
-        logger.debug("Initializing MycorrhizaIndexer with " + db_path)
+        logger.info("Initializing MycorrhizaIndexer with " + db_path)
         self.db = xapian.WritableDatabase(db_path, xapian.DB_CREATE_OR_OPEN)
         self.logs = []
-
-    def index_entries(self, entries):
-        for e in entries:
-            logger.debug("Xapian indexing {}".format(e.id))
-            self.index_record(e.indexing_data())
 
     def index_record(self, record):
         is_deleted = True
@@ -359,8 +354,10 @@ class MycorrhizaIndexer:
         idterm = "Q{}".format(identifier)
         doc.add_boolean_term(idterm)
         if is_deleted:
+            logger.info("Removing document " + idterm)
             self.logs.append("Removing document " + idterm)
             self.db.delete_document(idterm)
         else:
+            logger.info("Indexing document " + idterm)
             self.logs.append("Indexing " + idterm)
             self.db.replace_document(idterm, doc)
