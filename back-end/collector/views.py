@@ -8,14 +8,15 @@ from amwmeta.xapian import search
 import logging
 from django.urls import reverse
 from django.conf import settings
-from amwmeta.utils import paginator, page_list
+from amwmeta.utils import paginator, page_list, log_user_operation
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
-from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport, manipulate, log_user_operation
+from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport
 from amwmeta.xapian import MycorrhizaIndexer
+from .tasks import manipulate
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail, EmailMessage
@@ -29,8 +30,6 @@ import requests
 # from django.db import connection
 import pprint
 pp = pprint.PrettyPrinter(indent=2)
-
-
 
 logger = logging.getLogger(__name__)
 
@@ -602,11 +601,11 @@ def exclusions(request):
                     creation = {
                         "comment": comment,
                         "exclude_{}_id".format(what): object_id,
-                        "user": user,
+                        "user_id": user.id,
                     }
-                    out = manipulate('add-exclusion', user, None, create=creation)
+                    out = manipulate('add-exclusion', user.id, None, create=creation)
             elif op == 'delete':
-                out = manipulate('revert-exclusion', user, object_id)
+                out = manipulate('revert-exclusion', user.id, object_id)
             else:
                 out['error'] = "Invalid operation {}".format(op)
         else:
@@ -626,7 +625,8 @@ def api_set_aggregated(request):
 
     if data and user:
         ids = [ x['id'] for x in data ]
-        out = manipulate('add-aggregations', user, *ids)
+        manipulate.delay('add-aggregations', user.id, *ids)
+        out['success'] = "Change scheduled"
     logger.debug(out)
     return JsonResponse(out)
 
@@ -643,7 +643,8 @@ def api_set_translations(request):
     if data and user:
         logger.debug(data)
         ids = [ x['id'] for x in data ]
-        out = manipulate('add-translations', user, *ids)
+        manipulate.delay('add-translations', user.id, *ids)
+        out['success'] = "Change scheduled"
     logger.debug(out)
     return JsonResponse(out)
 
@@ -666,7 +667,8 @@ def api_merge(request, target):
             "author" : "merge-agents",
         }
         ids = [ x['id'] for x in data ]
-        out = manipulate(method.get(target, 'invalid-method'), user, *ids)
+        manipulate.delay(method.get(target, 'invalid-method'), user.id, *ids)
+        out['success'] = "Change scheduled"
     logger.debug(out)
     return JsonResponse(out)
 
@@ -825,7 +827,8 @@ def api_revert(request, target):
     if data and user:
         object_id = data.get('id')
         if object_id:
-            out = manipulate("revert-" + target, user, object_id)
+            manipulate.delay("revert-" + target, user.id, object_id)
+            out['success'] = "Change scheduled"
         else:
             out['error'] = "Missing target ID"
     else:
