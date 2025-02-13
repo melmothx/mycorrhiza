@@ -5,6 +5,7 @@ from .models import User, Entry, Agent, Site, DataSource, Library, Language, Agg
 from datetime import datetime, timezone
 from amwmeta.harvest import extract_fields
 from amwmeta.xapian import search
+from .tasks import xapian_index_records
 import copy
 import pprint
 import shutil
@@ -98,6 +99,8 @@ class ViewsTestCase(TestCase):
             # pp.pprint(res.json())
             found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = eid)
             self.assertTrue(found_rel)
+            xapian_index_records([agg.id, entry.id])
+
             res = self.client.get(reverse('api_search'), { "query": "Pizzosa" })
             # pp.pprint(res.json())
             self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
