@@ -1,4 +1,4 @@
-from .models import Site, Entry, Exclusion, Agent, User
+from .models import Site, Entry, Exclusion, Agent, User, SpreadsheetUpload
 from celery import shared_task
 from amwmeta.utils import log_user_operation
 from django.conf import settings
@@ -151,3 +151,8 @@ def manipulate(op, user_id, main_id, *ids, create=None):
         logger.info(indexer.logs)
 
     return out
+
+@shared_task
+def process_spreadsheet_upload(spreadsheet_id):
+    ss = SpreadsheetUpload.objects.get(pk=spreadsheet_id)
+    ss.process_csv()
