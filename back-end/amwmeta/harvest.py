@@ -8,9 +8,47 @@ import hashlib
 
 logger = logging.getLogger(__name__)
 
-class MarcXMLRecord(Record):
+class GenericMarcXMLRecord(Record):
+    def metadata_mapping(self):
+        return ([], {})
     def get_metadata(self):
+        specs, structured = self.metadata_mapping()
+        if not specs:
+            raise Exception("metadata mapping not properly implemented")
         ns = { None: 'http://www.loc.gov/MARC21/slim' }
+        out = {}
+        # expecting just one though
+        for node in self.xml.findall('.//' + self._oai_namespace + 'metadata'):
+            for spec in specs:
+                target, tag, codes = spec
+                if not target in out:
+                    out[target] = []
+                # https://docs.python.org/3/library/xml.etree.elementtree.html#elementtree-xpath
+
+                for el in node.findall('.//datafield[@tag="{0}"]'.format(tag), namespaces=ns):
+                    # here we're inside each tag.
+                    values = []
+                    composed = None
+                    structured_data = {}
+                    if target in structured:
+                        composed = dict(zip(codes, structured[target]))
+
+                    for code in codes:
+                        # print("Searching " + code + " in " + tag)
+                        for sf in el.findall('.//subfield[@code="{0}"]'.format(code), namespaces=ns):
+                            values.append(sf.text)
+                            if composed:
+                                structured_data[composed[code]] = sf.text
+                    # print(values)
+                    if len(values):
+                        if composed:
+                            out[target].append(structured_data)
+                        else:
+                            out[target].append(' '.join(values))
+        return out
+
+class MarcXMLRecord(GenericMarcXMLRecord):
+    def metadata_mapping(self):
         specs = [
             # for now consider 720a the authors, including contributors
             # ('contributor', '720',  'a'),
@@ -73,36 +111,7 @@ class MarcXMLRecord(Record):
             # https://www.loc.gov/marc/bibliographic/bd773.html
             'aggregation': ('name', 'issue', 'isbn', 'order', 'place_date_publisher', 'item_identifier', 'linkage'),
         }
-        out = {}
-        # expecting just one though
-        for node in self.xml.findall('.//' + self._oai_namespace + 'metadata'):
-            for spec in specs:
-                target, tag, codes = spec
-                if not target in out:
-                    out[target] = []
-                # https://docs.python.org/3/library/xml.etree.elementtree.html#elementtree-xpath
-
-                for el in node.findall('.//datafield[@tag="{0}"]'.format(tag), namespaces=ns):
-                    # here we're inside each tag.
-                    values = []
-                    composed = None
-                    structured_data = {}
-                    if target in structured:
-                        composed = dict(zip(codes, structured[target]))
-
-                    for code in codes:
-                        # print("Searching " + code + " in " + tag)
-                        for sf in el.findall('.//subfield[@code="{0}"]'.format(code), namespaces=ns):
-                            values.append(sf.text)
-                            if composed:
-                                structured_data[composed[code]] = sf.text
-                    # print(values)
-                    if len(values):
-                        if composed:
-                            out[target].append(structured_data)
-                        else:
-                            out[target].append(' '.join(values))
-        return out
+        return (specs, structured)
 
 def iso_lang_code(code):
     if not code:
