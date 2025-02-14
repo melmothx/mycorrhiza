@@ -1325,6 +1325,7 @@ Thanks
                         settings.MYCORRHIZA_EMAIL_FROM,
                         [report.recipient],
                         reply_to=[report.sender],
+                        cc=[settings.MYCORRHIZA_NOTIFICATIONS_EMAIL],
                     )
                     if email.send():
                         report.sent =  datetime.now(timezone.utc)
