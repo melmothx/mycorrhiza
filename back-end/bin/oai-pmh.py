@@ -5,18 +5,26 @@ import xml.dom.minidom
 import pprint
 import sys
 sys.path.append('.')
-from amwmeta.harvest import MarcXMLRecord, extract_fields
+from amwmeta.harvest import UniMarcXMLRecord, MarcXMLRecord, extract_fields
 import argparse
 from urllib.parse import urlparse
 parser = argparse.ArgumentParser()
 parser.add_argument("endpoint", help="OAI-PMH endpoint URL")
 parser.add_argument("--identifier", help="OAI-PMH identifier")
+parser.add_argument("--unimarc", action="store_true")
 args = parser.parse_args()
 
 mapping = {
     "ListRecords": MarcXMLRecord,
     "GetRecord": MarcXMLRecord,
 }
+
+if args.unimarc:
+    mapping = {
+        "ListRecords": UniMarcXMLRecord,
+        "GetRecord": UniMarcXMLRecord,
+    }
+
 pp = pprint.PrettyPrinter(compact=True)
 sickle = Sickle(args.endpoint, class_mapping=mapping);
 

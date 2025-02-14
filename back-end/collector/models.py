@@ -256,6 +256,8 @@ class Site(models.Model):
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),
         ('generic', "Generic OAI-PMH"),
+        ('koha-marc21', "KOHA MARC21"),
+        ('koha-unimarc', "KOHA UNIMARC"),
         ('csv', "CSV Upload"),
         ('calibretree', "Calibre File Tree"),
     ]
@@ -326,18 +328,15 @@ class Site(models.Model):
             r = requests.get(endpoint)
             if r.status_code == 200:
                 self.amusewiki_formats = r.json()
-                # for amusewikis, enforce the web set
-                self.oai_set = 'web'
-                self.oai_metadata_format = self.MARC21
                 self.save()
             else:
                 logger.debug("GET {0} returned {1}".format(r.url, r.status_code))
-        else:
+        elif self.amusewiki_formats:
             self.amusewiki_formats = None
             self.save()
 
     def harvest(self, force=False):
-        if self.site_type in ['amusewiki', 'generic']:
+        if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
             self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
             self.process_calibre_tree()
@@ -352,6 +351,15 @@ class Site(models.Model):
         opts = {
             "metadataPrefix": self.oai_metadata_format,
         }
+        if self.site_type in ['koha-marc21', 'koha-unimarc', 'amusewiki']:
+            opts['metadataPrefix'] = self.MARC21
+
+        record_types = {
+            'amusewiki': 'marc21',
+            'koha-marc21': 'marc21',
+            'koha-unimarc': 'unimarc',
+        }
+
         last_harvested = self.last_harvested_zulu()
         logger.debug([ force, last_harvested ])
         set_last_harvested = True
@@ -359,6 +367,9 @@ class Site(models.Model):
             opts['from'] = last_harvested
         if self.oai_set:
             opts['set'] = self.oai_set
+
+        if self.site_type == 'amusewiki':
+            opts['set'] = 'web'
 
         xapian_records = []
         if force:
@@ -368,7 +379,7 @@ class Site(models.Model):
             xapian_records = [ i.entry_id for i in self.datasource_set.all() ]
             self.datasource_set.all().delete()
 
-        records = harvest_oai_pmh(url, opts)
+        records = harvest_oai_pmh(url, record_types.get(self.site_type, 'dc'), opts)
 
         aliases = self.record_aliases()
         counter = 0
@@ -582,6 +593,8 @@ class Site(models.Model):
             "calibretree": "ct",
             "csv": "csv",
             "generic": "pmh",
+            "koha-unimarc": "pmh",
+            "koha-marc21": "pmh",
             "amusewiki": "amw",
         }
         for full in records:
@@ -605,7 +618,7 @@ class Site(models.Model):
             self.process_generic_records(records)
 
     def koha_ds_url(self, identifier):
-        if self.site_type == 'generic':
+        if self.site_type in ('koha-marc21', 'koha-unimarc', 'generic'):
             url_match = re.fullmatch(r'(.*?/cgi-bin/koha)/oai\.pl', self.url)
             id_match = re.fullmatch(r'KOHA-.*:([0-9]+)', identifier)
             if url_match and id_match:
@@ -798,7 +811,7 @@ class Entry(models.Model):
                     ds['library_name'] = library.get('name', ds['library_name'])
                     ds['report_error'] = True if library.get('email_internal') else False
                     ds['koha_url'] = None
-                    if ds.get('site_type') == 'generic':
+                    if ds.get('site_type') in ('generic', 'koha-unimarc', 'koha-marc21'):
                         try:
                             site = Site.objects.get(pk=ds.get('site_id', 0))
                             ds['koha_url'] = site.koha_ds_url(ds['identifier'])

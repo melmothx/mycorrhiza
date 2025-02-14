@@ -47,6 +47,34 @@ class GenericMarcXMLRecord(Record):
                             out[target].append(' '.join(values))
         return out
 
+class UniMarcXMLRecord(GenericMarcXMLRecord):
+    def metadata_mapping(self):
+        specs = [
+            ('isbn', '010',  ('a')),
+            ('issn', '011',  ('a')),
+            ('national_bibliography_number', '020',  ('a', 'b')),
+            ('identifier', '090',  ('a')),
+            ('language', '101', ('a')),
+            ('country_of_publishing', '102',  ('a')),
+            ('title', '200',  ('a', 'e')),
+            ('creator', '200', ('f')),
+            ('place_date_of_publication_distribution', '210', ('a', 'd')),
+            ('publisher', '210', ('c')),
+            ('date', '210', ('d')),
+            ('material_description', '215', ('a', 'c', 'd', 'e')),
+            ('description', '300', ('a')),
+            ('description', '330', ('a')),
+            ('shelf_location_code', '950', ('a')),
+            # dewey
+            ('shelf_location_code', '676', ('a')),
+            ('edition_statement', '225', ('a', 'v')),
+            # aggregations is a todo
+        ]
+        structured = {
+        }
+        return (specs, structured)
+
+
 class MarcXMLRecord(GenericMarcXMLRecord):
     def metadata_mapping(self):
         specs = [
@@ -343,13 +371,20 @@ def iso_lang_code(code):
     else:
         return full_names.get(code.lower())
 
-def harvest_oai_pmh(url, opts):
+def harvest_oai_pmh(url, records_type, opts):
     logger.debug([url, opts])
-    if opts['metadataPrefix'] == 'marc21':
-        sickle = Sickle(url, class_mapping={
+    class_mappings = {
+        "marc21": {
             "ListRecords": MarcXMLRecord,
             "GetRecord": MarcXMLRecord,
-        })
+        },
+        "unimarc": {
+            "ListRecords": UniMarcXMLRecord,
+            "GetRecord": UniMarcXMLRecord,
+        }
+    }
+    if records_type and class_mappings.get(records_type):
+        sickle = Sickle(url, class_mapping=class_mappings[records_type])
     else:
         sickle = Sickle(url)
 
