@@ -1269,6 +1269,28 @@ def api_bookcover_upload_file(request):
                 logger.info("Refusing to handle filename, illegal name {}".format(filename))
     return JsonResponse({ "tokens": out })
 
+def api_report_bug(request):
+    out = {}
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!"
+    if data and data.get('message') and data.get('email_from'):
+        our_name = General.settings().get('site_name')
+        email = EmailMessage(
+            subject="[{}] Bug Report".format(our_name),
+            body=data['message'],
+            from_email=settings.MYCORRHIZA_EMAIL_FROM,
+            to=[settings.MYCORRHIZA_NOTIFICATIONS_EMAIL],
+            reply_to=[data['email_from']],
+        )
+        if email.send():
+            out['success'] = "OK"
+        else:
+            out['error'] = "Failure sending email"
+    else:
+        out['error'] = "Missing data"
+    return JsonResponse(out)
 
 @login_required
 def api_report_ds_error(request, data_source_id):

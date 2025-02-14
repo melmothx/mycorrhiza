@@ -22,6 +22,7 @@ urlpatterns = [
     path("api/create/<target>", views.api_create, name="api_create"),
     path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
     path("api/report/data-source-error/<int:data_source_id>", views.api_report_ds_error, name="api_report_ds_error"),
+    path("api/report/bug", views.api_report_bug, name="api_report_bug"),
     path("api/libraries", views.api_list_libraries, name="api_list_libraries"),
     path("api/libraries/<int:library_id>", views.api_show_library, name="api_show_library"),
     path("api/agents", views.api_list_agents, name="api_list_agents"),
