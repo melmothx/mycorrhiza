@@ -149,6 +149,7 @@ LOGGING = {
 XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
 FULL_TEXT_CACHE = str(Path(__file__).resolve().parent.parent.joinpath('cache'))
 MYCORRHIZA_EMAIL_FROM = "root@localhost"
+MYCORRHIZA_NOTIFICATIONS_EMAIL = "root@localhost"
 
 AUTH_PASSWORD_VALIDATORS = [
     {

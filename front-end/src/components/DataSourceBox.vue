@@ -252,7 +252,9 @@
           {{ $gettext('Added to the Book Builder!') }}
         </router-link>
         <div v-if="source.report_error">
-          <ReportErrorPopUp :data_source_id="source.data_source_id" :library_name="source.library_name" />
+          <ReportErrorPopUp :data_source_id="source.data_source_id"
+                            :data_source_title="source.title"
+                            :library_name="source.library_name" />
         </div>
         <div class="grow"></div>
       </div>
