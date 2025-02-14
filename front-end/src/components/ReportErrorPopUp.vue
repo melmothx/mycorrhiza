@@ -73,7 +73,7 @@
       <div class="flex items-center justify-center p-4">
         <div class="mx-8 mt-16 p-8 w-1/2 border border-perl-bush-200 text-black shadow-lg bg-perl-bush-100 shadow-lg">
           <h2 class="font-bold text-lg text-center">
-            {{ $gettext('Notify an error for “%1” (%2)', data_source_title, library_name) }}
+            {{ $gettext('Report an error for “%1” (%2)', data_source_title, library_name) }}
           </h2>
           <div class="px-4 pb-4 pt-5">
             <textarea class="mcrz-textarea w-full h-64" v-model="message"></textarea>
