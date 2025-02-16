@@ -14,51 +14,13 @@ import requests
 import re
 import pprint
 import hashlib
+from amwmeta.utils import log_user_operation
 from pathlib import Path
 import subprocess
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
 
-def log_user_operation(user, op, canonical, alias):
-    if user and op and canonical:
-        canonical_title = "canonical"
-        alias_title = "alias"
-        canonical_data = None
-        if "translation" in op:
-            canonical_title = "original"
-            alias_title = "translation"
-        elif "aggregation" in op:
-            canonical_title = "aggregation"
-            alias_title = "aggregated"
-        elif "exclusion" in op:
-            canonical_title = "excluded"
-            alias_title = "excluded"
-        elif op.startswith("before-update-") or op.startswith("after-update-"):
-            canonical_title = op
-            canonical_data = canonical.as_api_dict()
-            if alias:
-                raise Exception("Alias argument should be None for {}".format(op))
-
-        if alias:
-            comment = "{}: {} ({})\n{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id,
-                                                        alias_title, alias.display_name(), alias.id)
-            alias.changelogs.create(
-                user=user,
-                username=user.username,
-                operation=op,
-                comment=comment,
-            )
-        else:
-            comment = "{}: {} ({})".format(canonical_title, canonical.display_name(), canonical.id)
-
-        canonical.changelogs.create(
-            user=user,
-            username=user.username,
-            operation=op,
-            comment=comment,
-            object_data=canonical_data,
-        )
 
 class Library(models.Model):
     LIBRARY_TYPES = [
@@ -339,7 +301,7 @@ class Site(models.Model):
         if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
             self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
-            self.process_calibre_tree()
+            self.process_calibre_tree(force=force)
         else:
             pass
 
@@ -525,6 +487,7 @@ class Site(models.Model):
                 setattr(ds, attr, value)
             ds.save()
         except DataSource.DoesNotExist:
+            # logger.info(pp.pprint([ds_identifiers, ds_attrs]))
             ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
 
         # if not provided, use the current time if the datestamp is null
@@ -600,6 +563,7 @@ class Site(models.Model):
         for full in records:
             # logger.debug(full)
             record = extract_fields(full, hostname)
+            record['datestamp'] = full.pop('datestamp', now)
             if full.get('identifier'):
                 record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
                                                          hostname,
@@ -610,12 +574,15 @@ class Site(models.Model):
                 xapian_records.append(entry.id)
         self.index_harvested_records(xapian_records, force=replace_all, now=now)
 
-    def process_calibre_tree(self):
+    def process_calibre_tree(self, force):
         # print("Calling process calibre tree")
         if self.site_type == 'calibretree' and self.tree_path:
-            records = scan_calibre_tree(self.tree_path)
+            since = None
+            if not force:
+                since = self.last_harvested
+            records = scan_calibre_tree(self.tree_path, since=since)
             logger.debug(pp.pprint(records))
-            self.process_generic_records(records)
+            self.process_generic_records(records, replace_all=force)
 
     def koha_ds_url(self, identifier):
         if self.site_type in ('koha-marc21', 'koha-unimarc', 'generic'):
@@ -1198,30 +1165,40 @@ class DataSource(models.Model):
                     return f
         return None
 
+    def get_cached_full_text(self):
+        cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
+        if self.datestamp:
+            if cache.exists():
+                if cache.stat().st_mtime >= self.datestamp.timestamp():
+                    logger.info("Reusing cached content in {}".format(cache))
+                    return cache.read_text(encoding='UTF-8')
+                else:
+                    logger.debug("Cache {} is stale".format(cache))
+            else:
+                logger.debug("Cache {} does not exist".format(cache))
+        else:
+            logger.debug("{} has no datestamp")
+        return None
+
+    def set_cached_full_text(self, text):
+        cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
+        logger.info("Writing cache in {}".format(cache))
+        cache.write_text(text, encoding='UTF-8')
+
     def full_text(self):
         site_type = self.site.site_type
         if site_type == 'amusewiki':
+            cached = self.get_cached_full_text()
+            if cached:
+                return cached
             amusewiki_url = self.amusewiki_base_url()
             if amusewiki_url:
-                cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
-                if self.datestamp:
-                    if cache.exists():
-                        if cache.stat().st_mtime >= self.datestamp.timestamp():
-                            logger.info("Reusing cached content in {}".format(cache))
-                            return cache.read_text(encoding='UTF-8')
-                        else:
-                            logger.debug("Cache {} is stale".format(cache))
-                    else:
-                        logger.debug("Cache {} does not exist".format(cache))
-                else:
-                    logger.debug("{} has no datestamp")
                 try:
                     r = requests.get(amusewiki_url + '.bare.html')
                     if r.status_code == 200:
                         r.encoding = 'UTF-8'
                         out = r.text
-                        logger.info("Writing cache in {}".format(cache))
-                        cache.write_text(out, encoding='UTF-8')
+                        self.set_cached_full_text(out)
                         return out
                 except ConnectionError:
                     logger.info("GET {0} had a connection error".format(endpoint))
@@ -1231,6 +1208,9 @@ class DataSource(models.Model):
                     logger.info("GET {0} had too many redirections".format(endpoint))
 
         elif site_type == 'calibretree':
+            cached = self.get_cached_full_text()
+            if cached:
+                return cached
             tree = self.calibre_base_dir()
             texts = []
             if tree:
@@ -1255,7 +1235,9 @@ class DataSource(models.Model):
                         if extracted.stdout:
                             texts.append(extracted.stdout.decode("UTF-8"))
             if texts:
-                return "\n".join(texts)
+                full_texts = "\n".join(texts)
+                self.set_cached_full_text(full_texts)
+                return full_texts
 
         return None
 
@@ -1546,142 +1528,3 @@ class ChangeLog(models.Model):
     def __str__(self):
         return "{} {} {}".format(self.username, self.operation, self.comment)
 
-# main router for user operations which need logging.
-def manipulate(op, user, main_id, *ids, create=None):
-    out = {
-        "op": op,
-        "main_id": main_id,
-        "other_ids": ids,
-        "error": None,
-        "msg": None,
-    }
-    if not user:
-        out['error']: "Missing User"
-        return out
-
-    out['username'] = user.username
-
-    if op == "revert-exclusions" or op == "add-exclusion":
-        # we just need the login
-        pass
-    elif user.is_superuser:
-        pass
-    elif user.can_merge_entries():
-        # needs the can_merge_entries logic
-        pass
-    else:
-        out['error'] = "Cannot do that"
-        return out
-
-    logger.info("Calling manipulate " + pp.pformat(out))
-    reindex = []
-    classes = {
-        'merge-agents': Agent,
-        'revert-merged-agents': Agent,
-
-        'add-translations': Entry,
-        'revert-translations': Entry,
-
-        'merge-entries': Entry,
-        'revert-merged-entries': Entry,
-
-        'add-exclusion': Exclusion,
-        'revert-exclusions': Exclusion,
-
-        'add-aggregations': Entry,
-        # no revert at the moment
-
-    }
-    if not main_id and not create:
-        out['error']: "Missing ID"
-        return out
-    if not op:
-        out['error']: "Missing operation"
-        return out
-
-    cls = classes.get(op)
-    if not cls:
-        out['error']: "Invalid operation"
-        return out
-
-    if main_id and main_id in ids:
-        out['error']: "Recursive merging"
-        return out
-
-    if main_id:
-        try:
-            main_object = cls.objects.get(pk=main_id)
-        except cls.DoesNotExist:
-            out['error'] = "{} does not exist".format(main_id)
-            return out
-    elif create:
-        # TODO: need to catch the exceptions
-        main_object = cls.objects.create(**create)
-        log_user_operation(user, op, main_object, None)
-        out['success'] = "{} created".format(main_object.display_name())
-        return out
-
-    other_objects = []
-    for oid in ids:
-        try:
-            obj = cls.objects.get(pk=oid)
-            other_objects.append(obj)
-        except cls.DoesNotExist:
-            out['error'] = "{} does not exist".format(oid)
-            return out
-
-    reindex = []
-    if op == 'merge-agents' or op == 'merge-entries':
-        reindex = cls.merge_records(main_object, other_objects, user=user)
-        out['success'] = "Merged"
-
-    elif op == 'add-aggregations':
-        if main_object.is_aggregation:
-            reindex = cls.aggregate_entries(main_object, other_objects, user=user)
-            if reindex:
-                out['success'] = "Added"
-        else:
-            out['error'] = "First item must be an aggregation"
-
-    elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
-        reindex = main_object.unmerge(user=user)
-        if reindex:
-            out['success'] = "Removed merge"
-        else:
-            out['error'] = "Nothing to do"
-
-    elif op == 'add-translations':
-        reindex = cls.translate_records(main_object, other_objects, user=user)
-        if reindex:
-            out['success'] = "Translations set!"
-        else:
-            out['error'] = "Nothing to do"
-
-    elif op == 'revert-translations':
-        reindex = main_object.untranslate(user=user)
-        if reindex:
-            out['success'] = "Removed translations"
-        else:
-            out['error'] = "Nothing to do"
-
-    elif op == 'add-exclusion':
-        raise Exception('Not reached')
-
-    elif op == 'revert-exclusions':
-        if main_object.user.username == user.username:
-            log_user_operation(user, op, main_object, None)
-            main_object.delete()
-            out['success'] = "Removed"
-        else:
-            out['error'] = "Cannot do that"
-
-    else:
-        raise Exception("Bug! Missing handler for " + op)
-
-    if reindex:
-        logger.info("Reindexing")
-        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
-        indexer.index_entries(reindex)
-        logger.info(indexer.logs)
-
-    return out

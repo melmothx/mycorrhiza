@@ -128,8 +128,7 @@
                           vm.clear_list();
                           // emit a refetch
                           // vm.getResults();
-                          vm.flash_success = "Done!";
-                          vm.$emit('refetchResults');
+                          vm.flash_success = "Done. The changes will be visible soon.";
                       }
                       else if (res.data)  {
                           vm.flash_error = res.data.error || "Failed!"
