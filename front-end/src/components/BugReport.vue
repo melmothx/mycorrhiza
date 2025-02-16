@@ -28,7 +28,7 @@
              this.message_failure = null;
              axios.post('/collector/api/report/bug',
                         {
-                            message: "From " + this.email_from + "\n\n" + this.message,
+                            message: "On " + window.location.href + "\n\nFrom " + this.email_from + "\n\n" + this.message,
                             email_from: this.email_from,
                         })
                   .then(res => {

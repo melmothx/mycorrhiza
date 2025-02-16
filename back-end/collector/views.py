@@ -1281,7 +1281,7 @@ def api_report_bug(request):
             subject="[{}] Bug Report".format(our_name),
             body=data['message'],
             from_email=settings.MYCORRHIZA_EMAIL_FROM,
-            to=[settings.MYCORRHIZA_NOTIFICATIONS_EMAIL],
+            to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
             reply_to=[data['email_from']],
         )
         if email.send():
@@ -1347,7 +1347,7 @@ Thanks
                         settings.MYCORRHIZA_EMAIL_FROM,
                         [report.recipient],
                         reply_to=[report.sender],
-                        cc=[settings.MYCORRHIZA_NOTIFICATIONS_EMAIL],
+                        cc=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
                     )
                     if email.send():
                         report.sent =  datetime.now(timezone.utc)
