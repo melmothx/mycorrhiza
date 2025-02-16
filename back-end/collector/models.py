@@ -1165,30 +1165,40 @@ class DataSource(models.Model):
                     return f
         return None
 
+    def get_cached_full_text(self):
+        cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
+        if self.datestamp:
+            if cache.exists():
+                if cache.stat().st_mtime >= self.datestamp.timestamp():
+                    logger.info("Reusing cached content in {}".format(cache))
+                    return cache.read_text(encoding='UTF-8')
+                else:
+                    logger.debug("Cache {} is stale".format(cache))
+            else:
+                logger.debug("Cache {} does not exist".format(cache))
+        else:
+            logger.debug("{} has no datestamp")
+        return None
+
+    def set_cached_full_text(self, text):
+        cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
+        logger.info("Writing cache in {}".format(cache))
+        cache.write_text(text, encoding='UTF-8')
+
     def full_text(self):
         site_type = self.site.site_type
         if site_type == 'amusewiki':
+            cached = self.get_cached_full_text()
+            if cached:
+                return cached
             amusewiki_url = self.amusewiki_base_url()
             if amusewiki_url:
-                cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
-                if self.datestamp:
-                    if cache.exists():
-                        if cache.stat().st_mtime >= self.datestamp.timestamp():
-                            logger.info("Reusing cached content in {}".format(cache))
-                            return cache.read_text(encoding='UTF-8')
-                        else:
-                            logger.debug("Cache {} is stale".format(cache))
-                    else:
-                        logger.debug("Cache {} does not exist".format(cache))
-                else:
-                    logger.debug("{} has no datestamp")
                 try:
                     r = requests.get(amusewiki_url + '.bare.html')
                     if r.status_code == 200:
                         r.encoding = 'UTF-8'
                         out = r.text
-                        logger.info("Writing cache in {}".format(cache))
-                        cache.write_text(out, encoding='UTF-8')
+                        self.set_cached_full_text(out)
                         return out
                 except ConnectionError:
                     logger.info("GET {0} had a connection error".format(endpoint))
@@ -1198,6 +1208,9 @@ class DataSource(models.Model):
                     logger.info("GET {0} had too many redirections".format(endpoint))
 
         elif site_type == 'calibretree':
+            cached = self.get_cached_full_text()
+            if cached:
+                return cached
             tree = self.calibre_base_dir()
             texts = []
             if tree:
@@ -1222,7 +1235,9 @@ class DataSource(models.Model):
                         if extracted.stdout:
                             texts.append(extracted.stdout.decode("UTF-8"))
             if texts:
-                return "\n".join(texts)
+                full_texts = "\n".join(texts)
+                self.set_cached_full_text(full_texts)
+                return full_texts
 
         return None
 
