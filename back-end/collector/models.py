@@ -301,7 +301,7 @@ class Site(models.Model):
         if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
             self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
-            self.process_calibre_tree()
+            self.process_calibre_tree(force=force)
         else:
             pass
 
@@ -487,6 +487,7 @@ class Site(models.Model):
                 setattr(ds, attr, value)
             ds.save()
         except DataSource.DoesNotExist:
+            # logger.info(pp.pprint([ds_identifiers, ds_attrs]))
             ds = self.datasource_set.create(**ds_identifiers, **ds_attrs)
 
         # if not provided, use the current time if the datestamp is null
@@ -562,6 +563,7 @@ class Site(models.Model):
         for full in records:
             # logger.debug(full)
             record = extract_fields(full, hostname)
+            record['datestamp'] = full.pop('datestamp', now)
             if full.get('identifier'):
                 record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
                                                          hostname,
@@ -572,12 +574,15 @@ class Site(models.Model):
                 xapian_records.append(entry.id)
         self.index_harvested_records(xapian_records, force=replace_all, now=now)
 
-    def process_calibre_tree(self):
+    def process_calibre_tree(self, force):
         # print("Calling process calibre tree")
         if self.site_type == 'calibretree' and self.tree_path:
-            records = scan_calibre_tree(self.tree_path)
+            since = None
+            if not force:
+                since = self.last_harvested
+            records = scan_calibre_tree(self.tree_path, since=since)
             logger.debug(pp.pprint(records))
-            self.process_generic_records(records)
+            self.process_generic_records(records, replace_all=force)
 
     def koha_ds_url(self, identifier):
         if self.site_type in ('koha-marc21', 'koha-unimarc', 'generic'):

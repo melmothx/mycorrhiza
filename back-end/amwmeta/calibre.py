@@ -2,6 +2,8 @@ from lxml import etree
 import os
 import sys
 import pprint
+from pathlib import Path
+from datetime import datetime, timezone
 
 pp = pprint.PrettyPrinter(indent=2)
 
@@ -45,21 +47,40 @@ def parse_opf(opf_file):
         #     out['aggregation'] = [ aggregation ]
     return out
 
-def scan_calibre_tree(tree):
+def scan_calibre_tree(tree, since=None):
     records = []
+    since_epoch = 0
+    if since:
+        since_epoch = since.timestamp()
+    # print("Reference time is {}".format(since_epoch))
     # print("Calling scan_calibre_tree against " + tree)
     for root, dirs, files in os.walk(tree):
         for hidden in [ d for d in dirs if d.startswith('.') ]:
             # print("Removing {}".format(hidden))
             dirs.remove(hidden)
         if 'metadata.opf' in files:
-            metadata = parse_opf(os.path.join(root, 'metadata.opf'))
+            metadata_file = os.path.join(root, 'metadata.opf')
+            file_epoch = Path(metadata_file).stat().st_mtime
+            datestamp = datetime.fromtimestamp(file_epoch, tz=timezone.utc)
+            if since_epoch:
+                if file_epoch < since_epoch:
+                    continue
+            metadata = parse_opf(metadata_file)
             metadata['file_uri'] = [ root ]
+            metadata['datestamp'] = datestamp
             if metadata.get('identifier'):
                 records.append(metadata)
     return records;
 
 if __name__ == "__main__":
     # scan_calibre_tree(sys.argv[1])
-    pp.pprint(scan_calibre_tree(sys.argv[1]))
+    since = None
+    try:
+        if sys.argv[2]:
+            since = datetime.fromisoformat(sys.argv[2])
+    except IndexError:
+        pass
+    for rec in scan_calibre_tree(sys.argv[1], since=since):
+        pp.pprint(rec)
+        print("{}".format(rec['datestamp']))
     

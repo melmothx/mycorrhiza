@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from amwmeta.xapian import MycorrhizaIndexer
 from collector.models import Site, Entry, Agent
+from django.db.models import Q
 import shutil
 import logging
 from django.db import connection
@@ -69,9 +70,10 @@ class Command(BaseCommand):
 
         rs = Site.objects.filter(active=True)
         if options['site']:
-            rs = rs.filter(url__contains=options['site'])
+            rs = rs.filter(Q(url__contains=options['site']) | Q(title__contains=options['site']))
 
         for site in rs.all():
+            print("Harvesting {}".format(site.title))
             try:
                 site.harvest(force=options['force'])
             except requests.exceptions.HTTPError:
