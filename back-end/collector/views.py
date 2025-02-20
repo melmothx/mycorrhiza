@@ -8,7 +8,7 @@ from amwmeta.xapian import search
 import logging
 from django.urls import reverse
 from django.conf import settings
-from amwmeta.utils import paginator, page_list, log_user_operation
+from amwmeta.utils import paginator, page_list, log_user_operation, strip_diacritics
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -1055,12 +1055,18 @@ def api_list_agents(request):
         "warning": "",
         "matches": 0
     }
+    for agent in Agent.objects.filter(normalized_name__isnull=True):
+        logger.debug("Normalizing {}".format(agent.name))
+        agent.normalized_name = strip_diacritics(agent.name).strip().lower()
+        agent.save()
+
+
     if term:
-        words = [ w for w in re.split(r'\W+', term) if w ]
+        words = [ strip_diacritics(w).lower() for w in re.split(r'\W+', term) if w ]
         if words:
-            query = Q(name__icontains=words.pop())
+            query = Q(normalized_name__contains=words.pop())
             while words:
-                query = query & Q(name__icontains=words.pop())
+                query = query & Q(normalized_name__contains=words.pop())
             # logger.debug(query)
             rs = Agent.objects.prefetch_related('canonical_agent').order_by('name').filter(query)
             out['matches'] = rs.count()

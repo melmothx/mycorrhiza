@@ -612,6 +612,7 @@ class Agent(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    normalized_name = models.CharField(max_length=255, null=True)
 
     def display_name(self):
         return self.name
