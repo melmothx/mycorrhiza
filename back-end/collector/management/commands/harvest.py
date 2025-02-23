@@ -26,9 +26,6 @@ class Command(BaseCommand):
         parser.add_argument("--reindex",
                             action="store_true", # boolean
                             help="Do not fetch from OAI-PMH, just rebuild the Xapian index")
-        parser.add_argument("--nuke-aliases",
-                            action="store_true",
-                            help="Remove all the aliases and variant relationships (only if --force without --site)")
         parser.add_argument("--entry",
                             help="Reindex a single entry")
 
@@ -40,16 +37,6 @@ class Command(BaseCommand):
 
         db_path = settings.XAPIAN_DB
         db_path_object = Path(settings.XAPIAN_DB)
-        if options['force'] and not options['site']:
-            if db_path and db_path_object.is_dir() and db_path_object.name == 'db':
-                shutil.rmtree(db_path)
-
-            if options['nuke_aliases']:
-                print("Cleaning aliases")
-                Agent.objects.filter(canonical_agent_id__isnull=False).update(canonical_agent=None)
-                Entry.objects.filter(canonical_entry_id__isnull=False).update(canonical_entry=None)
-                print(connection.queries)
-
         if options['entry']:
             indexer = MycorrhizaIndexer(db_path=db_path)
             entry = Entry.objects.get(pk=options['entry'])
