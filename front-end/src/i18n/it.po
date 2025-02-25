@@ -20,7 +20,7 @@ msgstr ""
 #. $gettext('(Original size is %1)', bookbuilder.api_collection_data()
 #: src/components/BookBuilderView.vue:791
 msgid "(Original size is %1)"
-msgstr ""
+msgstr "(La dimensione originale è %1)"
 
 #. $gettext('Add')
 #: src/components/UserCreation.vue:134
@@ -35,17 +35,17 @@ msgstr "Aggiungi utente"
 #. $gettext('Add crop marks to PDF')
 #: src/components/BookBuilderView.vue:782
 msgid "Add crop marks to PDF"
-msgstr ""
+msgstr "Aggiungi segni di taglio al PDF"
 
 #. $gettext('Add to the Book Builder')
 #: src/components/DataSourceBox.vue:212
 msgid "Add to the Book Builder"
-msgstr ""
+msgstr "Aggiungi al Book Builder"
 
 #. $gettext('Added to the Book Builder!')
 #: src/components/DataSourceBox.vue:216
 msgid "Added to the Book Builder!"
-msgstr ""
+msgstr "Aggiunto al Book Builder!"
 
 #. $gettext('Additional Address Line')
 #: src/components/LibraryEdit.vue:166
@@ -70,12 +70,12 @@ msgstr "Amministrazione"
 #. $gettext('Advanced')
 #: src/components/BookBuilderView.vue:244
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzate"
 
 #. $gettext('Advanced settings')
 #: src/components/BookBuilderView.vue:486
 msgid "Advanced settings"
-msgstr ""
+msgstr "Impostazioni avanzate"
 
 #. $gettext('Aggregated')
 #: src/components/SearchPage.vue:238
@@ -90,7 +90,7 @@ msgstr "Aggregazione"
 #. $gettext('Aggregations')
 #: src/components/SearchPage.vue:387
 msgid "Aggregations"
-msgstr ""
+msgstr "Aggregazioni"
 
 #. $gettext('All entries (%1)', total_entries)
 #: src/components/SearchPage.vue:254
@@ -100,7 +100,7 @@ msgstr "Tutti i risultati (%1)"
 #. $gettext('Author')
 #: src/components/BookBuilderView.vue:859
 msgid "Author"
-msgstr ""
+msgstr "Autore"
 
 #. $gettext('Authors') $gettext('Authors') $gettext('Authors')
 #: src/components/SearchPage.vue:342 src/components/SearchPage.vue:346
@@ -121,6 +121,8 @@ msgid ""
 "Automatic margins: choose a factor. 9 has the widest margins, 15 the "
 "narrowest"
 msgstr ""
+"Margini automatici: scegli un fattore. 9 ha i margini più larghi, 15 i "
+"più stretti"
 
 #. $gettext('Back')
 #: src/components/BackButton.vue:19
@@ -135,22 +137,22 @@ msgstr "Solo riferimento bibliografico"
 #. $gettext('Binding correction in mm (additional inner margin)')
 #: src/components/BookBuilderView.vue:378
 msgid "Binding correction in mm (additional inner margin)"
-msgstr ""
+msgstr "Correzione per la rilegatura in mm (margine interno addizionale)"
 
 #. $gettext('Blocks of 16 pages to be folded twice and then bound together.')
 #: src/components/BookBuilderView.vue:739
 msgid "Blocks of 16 pages to be folded twice and then bound together."
-msgstr ""
+msgstr "Fascicolo di 16 pagine da piegare due volte e legare assieme"
 
 #. $gettext('Blocks of 8 pages to be folded twice and then bound together.')
 #: src/components/BookBuilderView.vue:734
 msgid "Blocks of 8 pages to be folded twice and then bound together."
-msgstr ""
+msgstr "Fascicolo di 8 pagine da piegare due volte e legare assieme"
 
 #. $gettext('Build')
 #: src/components/BookBuilderView.vue:898
 msgid "Build"
-msgstr ""
+msgstr "Costruisci"
 
 #. $gettext('Cancel') $gettext('Cancel')
 #: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:221
@@ -160,12 +162,12 @@ msgstr "Cancella"
 #. $gettext('Center all section titles')
 #: src/components/BookBuilderView.vue:591
 msgid "Center all section titles"
-msgstr ""
+msgstr "Centra tutti i titoli di sezione"
 
 #. $gettext('Center chapter titles')
 #: src/components/BookBuilderView.vue:582
 msgid "Center chapter titles"
-msgstr ""
+msgstr "Centra i titoli dei capitoli"
 
 #. $gettext('Choose another file')
 #: src/components/CsvUpload.vue:123
@@ -225,7 +227,7 @@ msgstr "Contiene:"
 #. $gettext('Continuous footnote numbering across the whole document')
 #: src/components/BookBuilderView.vue:573
 msgid "Continuous footnote numbering across the whole document"
-msgstr ""
+msgstr "Numerazione continua delle note a pié di pagina attraverso tutto il documento"
 
 #. $gettext('Country')
 #: src/components/LibraryEdit.vue:199
@@ -256,17 +258,17 @@ msgstr "Descrizione"
 #. $gettext('Do not create a cover page and start the text on the first page')
 #: src/components/BookBuilderView.vue:510
 msgid "Do not create a cover page and start the text on the first page"
-msgstr ""
+msgstr "Non creare una copertina e comincia direttamente dalla prima pagina"
 
 #. $gettext('Do not use bold fonts')
 #: src/components/BookBuilderView.vue:546
 msgid "Do not use bold fonts"
-msgstr ""
+msgstr "Non usare caratteri in grassetto"
 
 #. $gettext('Download')
 #: src/components/BookBuilderView.vue:908
 msgid "Download"
-msgstr ""
+msgstr "Scarica"
 
 #. $gettext('Download Types')
 #: src/components/SearchPage.vue:378
@@ -276,7 +278,7 @@ msgstr "Tipi di download"
 #. $gettext('Drag the titles to reorder')
 #: src/components/BookBuilderView.vue:890
 msgid "Drag the titles to reorder"
-msgstr ""
+msgstr "Trascina i titoli per riordinare"
 
 #. $gettext('Editable and printable text')
 #: src/components/SearchPage.vue:236
@@ -305,6 +307,9 @@ msgid ""
 "then stacked on each other. This way you can print, for example, A6 booklets "
 "on A4."
 msgstr ""
+"Esattamente come 2up, ma i fogli sono fatti per essere prima tagliati orizzontalmente e poi "
+"piegati su sé stessi. in questo modo puoi stampare, per esempio, fascicoli A6 "
+"su un A4."
 
 #. $gettext('Exclusions')
 #: src/components/NavBar.vue:182
@@ -314,13 +319,14 @@ msgstr "Esclusioni"
 #. $gettext('Failed')
 #: src/components/BookBuilderView.vue:913
 msgid "Failed"
-msgstr ""
+msgstr "Fallito"
 
 #. $gettext('Fill with blank pages before the last page if the signature is not full.')
 #: src/components/BookBuilderView.vue:773
 msgid ""
 "Fill with blank pages before the last page if the signature is not full."
 msgstr ""
+"Riempi con pagine bianche prima dell'ultima se il fascicolo non è completo."
 
 #. $gettext('First')
 #: src/components/PaginationBox.vue:9
@@ -335,12 +341,12 @@ msgstr "Nome proprio"
 #. $gettext('Fixed 16 pages signatures on 2 sheets, with double individual folding.')
 #: src/components/BookBuilderView.vue:757
 msgid "Fixed 16 pages signatures on 2 sheets, with double individual folding."
-msgstr ""
+msgstr "Fascicoli fissi di 16 pagine su due fogli, con una doppia piega su ognuno"
 
 #. $gettext('Fixed 16 pages signatures on a single sheet, with triple folding.')
 #: src/components/BookBuilderView.vue:749
 msgid "Fixed 16 pages signatures on a single sheet, with triple folding."
-msgstr ""
+msgstr "Fascicoli fissi di 16 pagine su un singolo foglio, con tripla piegatura"
 
 #. $gettext('Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together.')
 #: src/components/BookBuilderView.vue:744
@@ -348,16 +354,18 @@ msgid ""
 "Fixed signatures of 8 pages, to be cut horizontally, folded individually, "
 "and bound together."
 msgstr ""
+"Fascicoli fissi di 8 pagine, da tagliare orizzontalmente, piegati singolarmente, "
+"e quindi legati assieme."
 
 #. $gettext('Font Size')
 #: src/components/BookBuilderView.vue:623
 msgid "Font Size"
-msgstr ""
+msgstr "Dimensione del carattere"
 
 #. $gettext('Fonts')
 #: src/components/BookBuilderView.vue:234
 msgid "Fonts"
-msgstr ""
+msgstr "Caratteri"
 
 #. $gettext('Full text')
 #: src/components/DataSourceBox.vue:205
@@ -368,7 +376,7 @@ msgstr "Testo integrale"
 #: src/components/BookBuilderView.vue:276
 #: src/components/BookBuilderView.vue:820
 msgid "Height in mm"
-msgstr ""
+msgstr "Altezza in mm"
 
 #. $gettext('Hello, %1!', authenticated)
 #: src/components/NavBar.vue:148
@@ -388,12 +396,12 @@ msgstr "ID"
 #. $gettext('Imposition')
 #: src/components/BookBuilderView.vue:239
 msgid "Imposition"
-msgstr ""
+msgstr "Imposizione"
 
 #. $gettext('Imposition Schema')
 #: src/components/BookBuilderView.vue:660
 msgid "Imposition Schema"
-msgstr ""
+msgstr "Schema di imposizione"
 
 #. $gettext('Internal email')
 #: src/components/LibraryEdit.vue:98
@@ -443,7 +451,7 @@ msgstr "Latitudine"
 #. $gettext('Layout')
 #: src/components/BookBuilderView.vue:229
 msgid "Layout"
-msgstr ""
+msgstr "Layout"
 
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
 #: src/components/LibraryOverView.vue:38 src/components/LibraryView.vue:42
@@ -464,7 +472,7 @@ msgstr "Dettagli sulla biblioteca"
 #. $gettext('Line spacing')
 #: src/components/BookBuilderView.vue:435
 msgid "Line spacing"
-msgstr ""
+msgstr "Interlinea"
 
 #. $gettext('Login')
 #: src/components/NavBar.vue:216
@@ -494,12 +502,12 @@ msgstr "Longitudine"
 #. $gettext('Main Font')
 #: src/components/BookBuilderView.vue:599
 msgid "Main Font"
-msgstr ""
+msgstr "Carattere principale"
 
 #. $gettext('Material Description')
 #: src/components/DataSourceBox.vue:170
 msgid "Material Description"
-msgstr ""
+msgstr "Descrizione fisica"
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge') $gettext('Merge')
 #: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118
@@ -530,7 +538,7 @@ msgstr "Aiuto mancante, ci scusiamo..."
 #. $gettext('Mono Font')
 #: src/components/BookBuilderView.vue:607
 msgid "Mono Font"
-msgstr ""
+msgstr "Carattere Mono"
 
 #. $gettext('My Exclusions')
 #: src/views/ExclusionView.vue:9
@@ -540,17 +548,17 @@ msgstr "Le mie esclusioni"
 #. $gettext('Never display the cover image')
 #: src/components/BookBuilderView.vue:564
 msgid "Never display the cover image"
-msgstr ""
+msgstr "Non mostrare mai l'immagine di copertina"
 
 #. $gettext('Never generate a table of content')
 #: src/components/BookBuilderView.vue:492
 msgid "Never generate a table of content"
-msgstr ""
+msgstr "Non generare mai un indice"
 
 #. $gettext('Never generate the final page with text details')
 #: src/components/BookBuilderView.vue:501
 msgid "Never generate the final page with text details"
-msgstr ""
+msgstr "Non generare mai la pagina finale con i dettagli del testo"
 
 #. $gettext('Next')
 #: src/components/PaginationBox.vue:7
@@ -570,12 +578,12 @@ msgstr "Non è stato trovato nessun risultato!"
 #. $gettext('None')
 #: src/components/BookBuilderView.vue:665
 msgid "None"
-msgstr ""
+msgstr "Nessuno"
 
 #. $gettext('Notes')
 #: src/components/BookBuilderView.vue:867
 msgid "Notes"
-msgstr ""
+msgstr "Note"
 
 #. $gettext('Nothing to show!')
 #: src/components/ExclusionTable.vue:49
@@ -607,6 +615,7 @@ msgstr "Ometti singola voce"
 msgid ""
 "One page per sheet. This is useful only if you want to add the cropmarks"
 msgstr ""
+"Una pagina per foglio. Questo è utile solo se vuoi aggiungere i segni di taglio"
 
 #. $gettext('Opening Hours') $gettext('Opening Hours')
 #: src/components/LibraryBox.vue:44 src/components/LibraryEdit.vue:105
@@ -626,12 +635,12 @@ msgstr "Altre lingue:"
 #. $gettext('Outer margin in mm')
 #: src/components/BookBuilderView.vue:339
 msgid "Outer margin in mm"
-msgstr ""
+msgstr "Margini esterni in mm"
 
 #. $gettext('Overview')
 #: src/components/BookBuilderView.vue:224
 msgid "Overview"
-msgstr ""
+msgstr "Panoramica"
 
 #. $gettext('PGP Public Key')
 #: src/components/LibraryBox.vue:70
@@ -646,7 +655,7 @@ msgstr "PGP Public Key, se esiste"
 #. $gettext('Page where to start a chapter')
 #: src/components/BookBuilderView.vue:405
 msgid "Page where to start a chapter"
-msgstr ""
+msgstr "Pagina dalla quale cominciare un capitolo"
 
 #. $gettext('Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages.')
 #: src/components/BookBuilderView.vue:677
@@ -657,27 +666,33 @@ msgid ""
 "This can be a fixed value (4,8,16, etc.), the whole book in a single "
 "signature, or an optimized size to reduce the number of blank pages."
 msgstr ""
+"Le pagine sono riordinate, in uno o più gruppi (fascicoli), quindi piegate "
+"a metà. Se hai più fascicoli, dovrai rilegarli assieme per far sì che diventino "
+"un libro. Con questa opzione, potresti voler decidere la dimensione dei fascicoli. "
+"Questa può essere un valore fisso (4,8,16, etc.), l'intero libro in un singolo "
+"fascicolo, o una dimensione ottimizzate per ridurre il numero di pagine vuote."
 
 #. $gettext('Pairs of consecutives pages are put on the same sheet side by side.')
 #: src/components/BookBuilderView.vue:692
 msgid "Pairs of consecutives pages are put on the same sheet side by side."
-msgstr ""
+msgstr "Le coppie di pagine consecutive sono messe sullo stesso foglio una accanto all'altra"
 
 #. $gettext('Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)')
 #: src/components/BookBuilderView.vue:833
 msgid ""
 "Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)"
 msgstr ""
+"Lo spessore della carta in mm (0.10 dovrebbe essere appropriato per comune carta da 80g/m2)"
 
 #. $gettext('Paragraph indentation in points (pt)')
 #: src/components/BookBuilderView.vue:448
 msgid "Paragraph indentation in points (pt)"
-msgstr ""
+msgstr "Identazione dei paragrafi in punti (pt)"
 
 #. $gettext('Paragraph settings')
 #: src/components/BookBuilderView.vue:431
 msgid "Paragraph settings"
-msgstr ""
+msgstr "Impostazioni del paragrafo"
 
 #. $gettext('Part of:')
 #: src/components/EntryPage.vue:108
@@ -702,24 +717,24 @@ msgstr "Luogo di morte"
 #. $gettext('Place the notes on the back of the first page, impressum-style')
 #: src/components/BookBuilderView.vue:528
 msgid "Place the notes on the back of the first page, impressum-style"
-msgstr ""
+msgstr "Metti le note sul retro della prima pagina, come se fosse un impressum"
 
 #. $gettext('Please choose a paper size')
 #: src/components/BookBuilderView.vue:253
 msgid "Please choose a paper size"
-msgstr ""
+msgstr "Per favore, scegli la dimensione della carta"
 
 #. $gettext('Please describe the project. Just a few words, for the preview')
 #: src/components/LibraryEdit.vue:115
 msgid "Please describe the project. Just a few words, for the preview"
 msgstr ""
-"Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
+"Per favore, descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
 
 #. $gettext('Please select the signature size') $gettext('Please select the signature size')
 #: src/components/BookBuilderView.vue:698
 #: src/components/BookBuilderView.vue:719
 msgid "Please select the signature size"
-msgstr ""
+msgstr "Per favore, seleziona la dimensione dei fascicoli"
 
 #. $gettext('Please select the size of each page including the crop marks, before the imposing.')
 #: src/components/BookBuilderView.vue:789
@@ -727,6 +742,8 @@ msgid ""
 "Please select the size of each page including the crop marks, before the "
 "imposing."
 msgstr ""
+"Per favore, selezione la dimensione di ogni pagina includendo i segni di taglio, prima"
+"di imporla."
 
 #. $gettext('Please set') $gettext('Please set') $gettext('Please set') $gettext('Please set')
 #: src/components/BookBuilderView.vue:310
@@ -734,7 +751,7 @@ msgstr ""
 #: src/components/BookBuilderView.vue:344
 #: src/components/BookBuilderView.vue:362
 msgid "Please set"
-msgstr ""
+msgstr "Per favore imposta"
 
 #. $gettext('Please type your new password in both fields')
 #: src/components/PasswordReset.vue:84
@@ -769,7 +786,7 @@ msgstr "Editore"
 #. $gettext('Queued')
 #: src/components/BookBuilderView.vue:920
 msgid "Queued"
-msgstr ""
+msgstr "In coda"
 
 #. $gettext('Reason') $gettext('Reason')
 #: src/components/ExclusionButton.vue:70 src/components/ExclusionTable.vue:36
@@ -789,7 +806,7 @@ msgstr "Sostituisci tutti i dati"
 #. $gettext('Reset')
 #: src/components/BookBuilderView.vue:903
 msgid "Reset"
-msgstr ""
+msgstr "Azzera"
 
 #. $gettext('Reset Password for %1?', username)
 #: src/components/NavBar.vue:225
@@ -809,12 +826,12 @@ msgstr "Rigenera"
 #. $gettext('Running headings')
 #: src/components/BookBuilderView.vue:417
 msgid "Running headings"
-msgstr ""
+msgstr "Testatine"
 
 #. $gettext('Same as 2UP, but for duplex printers')
 #: src/components/BookBuilderView.vue:682
 msgid "Same as 2UP, but for duplex printers"
-msgstr ""
+msgstr "Come 2UP, ma per stampanti duplex"
 
 #. $gettext('Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, binding on the top edge.')
 #: src/components/BookBuilderView.vue:687
@@ -822,11 +839,13 @@ msgid ""
 "Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, "
 "binding on the top edge."
 msgstr ""
+"Lo stesso che 2UP, ma le pagine sono ruotate di 90° in senso antiorario"
+"e andranno rilegate sul margine superiore."
 
 #. $gettext('Sans Font')
 #: src/components/BookBuilderView.vue:615
 msgid "Sans Font"
-msgstr ""
+msgstr "Carattere Sans"
 
 #. $gettext('Search') $gettext('Search') $gettext('Search')
 #: src/components/SearchPage.vue:278 src/components/SearchPage.vue:315
@@ -850,7 +869,7 @@ msgstr "Guarda tutti gli inserimenti"
 #: src/components/BookBuilderView.vue:751
 #: src/components/BookBuilderView.vue:759
 msgid "See here for more details"
-msgstr ""
+msgstr "Guarda qui per maggiori dettagli"
 
 #. $gettext('See the library entries')
 #: src/components/LibraryBox.vue:89
@@ -895,7 +914,7 @@ msgstr "Disponi"
 #. $gettext('Source')
 #: src/components/BookBuilderView.vue:871
 msgid "Source"
-msgstr ""
+msgstr "Fonte"
 
 #. $gettext('Source:')
 #: src/components/CsvUpload.vue:142
@@ -905,7 +924,7 @@ msgstr "Origine:"
 #. $gettext('Start the document with an empty page')
 #: src/components/BookBuilderView.vue:555
 msgid "Start the document with an empty page"
-msgstr ""
+msgstr "Comincia il documento con una pagina bianca"
 
 #. $gettext('State or Province')
 #: src/components/LibraryEdit.vue:191
@@ -915,7 +934,7 @@ msgstr "Stato o provincia"
 #. $gettext('Submit')
 #: src/components/AgentBox.vue:236
 msgid "Submit"
-msgstr ""
+msgstr "Invia"
 
 #. $gettext('Subtitle') $gettext('Subtitle')
 #: src/components/DashboardTable.vue:120 src/components/BookBuilderView.vue:855
@@ -930,27 +949,27 @@ msgstr "Bersaglio"
 #. $gettext('TeX emergency stretch in pt')
 #: src/components/BookBuilderView.vue:474
 msgid "TeX emergency stretch in pt"
-msgstr ""
+msgstr "fFlessibilità TeX di emergenza in pt"
 
 #. $gettext('TeX tolerance')
 #: src/components/BookBuilderView.vue:461
 msgid "TeX tolerance"
-msgstr ""
+msgstr "Tolleranza TeX"
 
 #. $gettext('Text block height in mm')
 #: src/components/BookBuilderView.vue:322
 msgid "Text block height in mm"
-msgstr ""
+msgstr "Altezza del blocco di testo in mm"
 
 #. $gettext('Text block width in mm')
 #: src/components/BookBuilderView.vue:306
 msgid "Text block width in mm"
-msgstr ""
+msgstr "Larghezza del blocco di testo in mm"
 
 #. $gettext('Text body only (no title, no final pages)')
 #: src/components/BookBuilderView.vue:519
 msgid "Text body only (no title, no final pages)"
-msgstr ""
+msgstr "Solo corpo del testo (nessun titolo, nessuna pagina finale)"
 
 #. $gettext('The passwords do not match')
 #: src/components/PasswordReset.vue:71
@@ -961,7 +980,7 @@ msgstr "La password non corrisponde"
 #: src/components/BookBuilderView.vue:703
 #: src/components/BookBuilderView.vue:724
 msgid "The whole book in as single signature"
-msgstr ""
+msgstr "L'intero libro in un singolo fascicolo"
 
 #. $gettext('This is a free-text field. Please describe the project')
 #: src/components/LibraryEdit.vue:127
@@ -980,12 +999,12 @@ msgstr ""
 #. $gettext('This text is a translation')
 #: src/components/EntryBox.vue:100
 msgid "This text is a translation"
-msgstr ""
+msgstr "Questo testo è una traduzione"
 
 #. $gettext('This text is translated')
 #: src/components/EntryBox.vue:104
 msgid "This text is translated"
-msgstr ""
+msgstr "Questo testo è tradotto"
 
 #. $gettext('This username already exist. You are going to add it to this library.')
 #: src/components/UserCreation.vue:95
@@ -1000,7 +1019,7 @@ msgstr "Titolo"
 #. $gettext('Top margin in mm')
 #: src/components/BookBuilderView.vue:357
 msgid "Top margin in mm"
-msgstr ""
+msgstr "Margine superiore in mm"
 
 #. $gettext('Translation')
 #: src/components/EntryPage.vue:88
@@ -1010,7 +1029,7 @@ msgstr "Traduzione"
 #. $gettext('Two side layout')
 #: src/components/BookBuilderView.vue:394
 msgid "Two side layout"
-msgstr ""
+msgstr "Schema a doppio lato"
 
 #. $gettext('Type')
 #: src/components/ExclusionTable.vue:35
@@ -1046,12 +1065,12 @@ msgstr "Carica un CSV"
 #: src/components/BookBuilderView.vue:704
 #: src/components/BookBuilderView.vue:725
 msgid "Use optimized signatures with 40-80 pages each"
-msgstr ""
+msgstr "Usa fascicolo ottimizzati con 40-80 pagine ognuno"
 
 #. $gettext('Use sans fonts for section titles')
 #: src/components/BookBuilderView.vue:537
 msgid "Use sans fonts for section titles"
-msgstr ""
+msgstr "Usa un carattere sans per i titoli di sezione"
 
 #. $gettext('User Menu')
 #: src/components/NavBar.vue:162
@@ -1086,7 +1105,7 @@ msgstr "Valore"
 #. $gettext('View PDF')
 #: src/components/DataSourceBox.vue:208
 msgid "View PDF"
-msgstr ""
+msgstr Visualizza PDF"
 
 #. $gettext('Visit Library Homepage')
 #: src/components/LibraryBox.vue:26
@@ -1097,7 +1116,7 @@ msgstr "Visita il sito della biblioteca"
 #: src/components/BookBuilderView.vue:263
 #: src/components/BookBuilderView.vue:807
 msgid "Width in mm"
-msgstr ""
+msgstr "Larghezza in mm"
 
 #. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
 #: src/components/DashboardTable.vue:129 src/components/BookBuilderView.vue:928
@@ -1169,7 +1188,7 @@ msgstr "pannello di gestione per "
 #: src/components/BookBuilderView.vue:340
 #: src/components/BookBuilderView.vue:358
 msgid "leave blank for default"
-msgstr ""
+msgstr "lascia bianco come predefinito"
 
 #~ msgid "MERGE_AUTHOR"
 #~ msgstr ""
