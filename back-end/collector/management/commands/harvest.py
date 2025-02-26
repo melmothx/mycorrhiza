@@ -11,6 +11,8 @@ import requests.exceptions
 import pprint
 import fcntl
 import os
+import re
+from datetime import datetime, timezone
 
 pp = pprint.PrettyPrinter(indent=4)
 logger = logging.getLogger(__name__)
@@ -36,7 +38,7 @@ class Command(BaseCommand):
         logger.debug(options)
 
         db_path = settings.XAPIAN_DB
-        db_path_object = Path(settings.XAPIAN_DB)
+        db_path_object = Path(db_path)
         if options['entry']:
             indexer = MycorrhizaIndexer(db_path=db_path)
             entry = Entry.objects.get(pk=options['entry'])
@@ -46,13 +48,45 @@ class Command(BaseCommand):
             return
 
         if options['reindex']:
-            indexer = MycorrhizaIndexer(db_path=db_path)
+            now = datetime.now(timezone.utc)
+            stub_content = db_path_object.read_text()
+            # see settings.py initialize_xapian_db
+            stub_match = re.match(r'auto\s+([a-zA-Z0-9_/-]+/)(db|db1|db2)\s*$', stub_content)
+            target_db = None
+            if stub_match:
+                db_path_dir = stub_match.group(1)
+                current_db_name = stub_match.group(2)
+                current_db_path = "{}{}".format(db_path_dir, current_db_name)
+                switch_db = {
+                    "db": "db1",
+                    "db1": "db2",
+                    "db2": "db1",
+                }
+                target_db = "{}{}".format(db_path_dir, switch_db[current_db_name])
+            else:
+                raise Exception("stub.db content looks invalid: {}".format(stub_content))
+
+            logger.info("Current db is {}, target is {}".format(current_db_path, target_db))
+            if Path(target_db).is_dir():
+                logger.info("Removing {}".format(target_db))
+                shutil.rmtree(target_db)
+
+            indexer = MycorrhizaIndexer(db_path=target_db)
             counter = 0
             for entry in Entry.objects.iterator():
                 indexer.index_record(entry.indexing_data())
                 counter += 1
                 if counter % 1000 == 0:
+                    break
                     logger.debug(str(counter) + " records done")
+            # when this is done, switch the db_path in the stub
+            tmp = Path(db_path + '.tmp')
+            tmp.write_text("auto {}\n".format(target_db))
+            tmp.rename(db_path_object)
+            # and index the new reindexed from the site
+            for entry in Entry.objects.filter(last_indexed__date__gte=now):
+                indexer.index_record(entry.indexing_data())
+                logger.info("Reindexing {}, it was indexed before the reindex started".format(entry.id) )
             return
 
         rs = Site.objects.filter(active=True)
