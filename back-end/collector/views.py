@@ -163,8 +163,9 @@ def manipulate(op, user, main_id, *ids, create=None):
     else:
         raise Exception("Bug! Missing handler for " + op)
     if reindex:
+        now = datetime.now(timezone.utc)
         for entry in reindex:
-            entry.last_indexed = datetime.now(timezone.utc)
+            entry.last_indexed = now
             entry.save()
         xapian_index_records.delay_on_commit([ e.id for e in reindex ])
     return out
