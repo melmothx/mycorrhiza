@@ -77,7 +77,6 @@ class Command(BaseCommand):
                 indexer.index_record(entry.indexing_data())
                 counter += 1
                 if counter % 1000 == 0:
-                    break
                     logger.debug(str(counter) + " records done")
             # when this is done, switch the db_path in the stub
             tmp = Path(db_path + '.tmp')
@@ -86,7 +85,7 @@ class Command(BaseCommand):
             # and index the new reindexed from the site
             for entry in Entry.objects.filter(last_indexed__date__gte=now):
                 indexer.index_record(entry.indexing_data())
-                logger.info("Reindexing {}, it was indexed before the reindex started".format(entry.id) )
+                logger.info("Reindexing {}, it was indexed before the reindex started".format(entry.id))
             return
 
         rs = Site.objects.filter(active=True)
