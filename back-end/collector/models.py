@@ -709,6 +709,7 @@ class Entry(models.Model):
         related_name="translations",
     )
     datestamp = models.DateTimeField(null=True)
+    last_indexed = models.DateTimeField(null=True)
 
     class Meta:
         verbose_name_plural = "Entries"
