@@ -612,6 +612,7 @@ class Agent(models.Model):
     )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    normalized_name = models.CharField(max_length=255, null=True)
 
     def display_name(self):
         return self.name
@@ -708,6 +709,7 @@ class Entry(models.Model):
         related_name="translations",
     )
     datestamp = models.DateTimeField(null=True)
+    last_indexed = models.DateTimeField(null=True)
 
     class Meta:
         verbose_name_plural = "Entries"
@@ -1200,11 +1202,11 @@ class DataSource(models.Model):
                         out = r.text
                         self.set_cached_full_text(out)
                         return out
-                except ConnectionError:
+                except requests.ConnectionError:
                     logger.info("GET {0} had a connection error".format(endpoint))
-                except Timeout:
+                except requests.Timeout:
                     logger.info("GET {0} timed out".format(endpoint))
-                except TooManyRedirects:
+                except requests.TooManyRedirects:
                     logger.info("GET {0} had too many redirections".format(endpoint))
 
         elif site_type == 'calibretree':

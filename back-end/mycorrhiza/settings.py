@@ -146,7 +146,15 @@ LOGGING = {
     },
 }
 
-XAPIAN_DB = str(Path(__file__).resolve().parent.parent.joinpath('xapian', 'db'))
+def initialize_xapian_db():
+    xapian_db_base = Path(__file__).resolve().parent.parent.joinpath('xapian')
+    xapian_db_stub = xapian_db_base.joinpath('db.stub')
+    if not xapian_db_stub.exists():
+        print("Initializing the db.stub")
+        xapian_db_stub.write_text("auto {}\n".format(xapian_db_base.joinpath('db')))
+    return str(xapian_db_stub)
+
+XAPIAN_DB = initialize_xapian_db()
 FULL_TEXT_CACHE = str(Path(__file__).resolve().parent.parent.joinpath('cache'))
 MYCORRHIZA_EMAIL_FROM = "root@localhost"
 MYCORRHIZA_NOTIFICATIONS_EMAIL = [ "root@localhost" ]

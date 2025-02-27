@@ -1,6 +1,7 @@
 # port of https://metacpan.org/pod/Data::Page
 from dataclasses import dataclass
 from urllib.parse import urlencode
+import unicodedata
 
 @dataclass
 class DataPage:
@@ -189,3 +190,11 @@ def log_user_operation(user, op, canonical, alias):
             comment=comment,
             object_data=canonical_data,
         )
+
+def strip_diacritics(s):
+    if isinstance(s, str):
+        return ''.join(c for c in unicodedata.normalize('NFKD', s) if unicodedata.category(c) != 'Mn')
+    elif s:
+        return str(s)
+    else:
+        return ''
