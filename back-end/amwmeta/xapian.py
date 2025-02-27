@@ -5,7 +5,7 @@ from sickle import Sickle
 from sickle.oaiexceptions import *
 from urllib.parse import urlparse
 import logging
-from amwmeta.utils import DataPage
+from amwmeta.utils import DataPage, strip_diacritics
 from sickle.models import Record
 import re
 from unidecode import unidecode
@@ -54,7 +54,7 @@ def search(db_path, query_params,
            facets_only=False,
            matches_only=False):
     db = xapian.Database(db_path)
-    querystring = query_params.get("query")
+    querystring = strip_diacritics(query_params.get("query"))
 
     # todo setup validation in the views.py
     page_size = int(query_params.get("page_size", 10))
@@ -276,7 +276,7 @@ class MycorrhizaIndexer:
                             # logger.debug("Adding boolean {}".format(prefix + str(v['id'])))
                             doc.add_boolean_term(prefix + str(v['id']))
                         else:
-                            termgenerator.index_text(str(v['value']), 1, prefix)
+                            termgenerator.index_text(strip_diacritics(str(v['value'])), 1, prefix)
                         value_list.append(v)
 
                 doc.add_value(slot, json.dumps(value_list))
@@ -303,7 +303,7 @@ class MycorrhizaIndexer:
             values = record.get(field)
             for v in values:
                 # logger.debug("Indexing {} {}".format(field, v['value']))
-                termgenerator.index_text(v['value'], 20)
+                termgenerator.index_text(strip_diacritics(v['value']), 20)
 
         # This can be used to prevent phrase searches from spanning
         # two unconnected blocks of text (e.g. the title and body
@@ -316,11 +316,11 @@ class MycorrhizaIndexer:
         for dsd in record['data_sources']:
             # index the original author as a string
             for value in dsd.get('authors'):
-                termgenerator.index_text(value, 20)
+                termgenerator.index_text(strip_diacritics(value), 20)
             for field in [ 'title', 'subtitle' ]:
                 value = dsd.get(field)
                 if value:
-                    termgenerator.index_text(value, 20)
+                    termgenerator.index_text(strip_diacritics(value), 20)
 
         for field in ['description', 'material_description', 'publisher', 'isbn']:
             termgenerator.increase_termpos()
@@ -328,7 +328,7 @@ class MycorrhizaIndexer:
                 value = dsd.get(field)
                 if value:
                     # logger.debug("Indexing {} {}".format(field, value))
-                    termgenerator.index_text(value, 10)
+                    termgenerator.index_text(strip_diacritics(value), 10)
 
         # if aggregation or aggregated, index titles and authors of
         # the related one as well.
@@ -338,17 +338,17 @@ class MycorrhizaIndexer:
                 for agg in dsd[aggfield]:
                     termgenerator.increase_termpos()
                     for author in agg.get('authors', []):
-                        termgenerator.index_text(author, 20)
+                        termgenerator.index_text(strip_diacritics(author), 20)
                     for field in ['title', 'description']:
                         value = agg.get(field)
                         if value:
-                            termgenerator.index_text(value, 20)
+                            termgenerator.index_text(strip_diacritics(value), 20)
 
         for ft in record.pop('full_texts'):
             if ft:
                 logger.debug("Indexing full text with {} chars".format(len(ft)))
                 termgenerator.increase_termpos()
-                termgenerator.index_text(ft)
+                termgenerator.index_text(strip_diacritics(ft))
 
         doc.set_data(json.dumps(record))
         idterm = "Q{}".format(identifier)
