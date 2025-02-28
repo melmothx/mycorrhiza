@@ -201,9 +201,10 @@
             {{ source.edition_statement }}
           </td>
         </tr>
-        <tr class="border-b border-t p-2" v-if="source.place_date_of_publication_distribution">
+        <tr class="border-b border-t p-2"
+            v-if="source.place_date_of_publication_distribution && source.place_date_of_publication_distribution != source.year_edition">
           <td class="p-1 pr-2">
-            {{ $gettext('Edition Place') }}
+            {{ $gettext('Edition Place and Date') }}
           </td>
           <td>
             {{ source.place_date_of_publication_distribution }}
