@@ -61,11 +61,23 @@
       }
    },
    "it" : {
+      "(Original size is %1)" : {
+         "msgstr" : "(La dimensione originale è %1)"
+      },
       "Add" : {
          "msgstr" : "Aggiungi"
       },
       "Add User" : {
          "msgstr" : "Aggiungi utente"
+      },
+      "Add crop marks to PDF" : {
+         "msgstr" : "Aggiungi segni di taglio al PDF"
+      },
+      "Add to the Book Builder" : {
+         "msgstr" : "Aggiungi al Book Builder"
+      },
+      "Added to the Book Builder!" : {
+         "msgstr" : "Aggiunto al Book Builder!"
       },
       "Additional Address Line" : {
          "msgstr" : "Parti aggiuntive dell'indirizzo"
@@ -79,17 +91,29 @@
       "Admin" : {
          "msgstr" : "Amministrazione"
       },
+      "Advanced" : {
+         "msgstr" : "Avanzate"
+      },
+      "Advanced settings" : {
+         "msgstr" : "Impostazioni avanzate"
+      },
       "Aggregated" : {
          "msgstr" : "Aggregati"
       },
       "Aggregation" : {
          "msgstr" : "Aggregazione"
       },
+      "Aggregations" : {
+         "msgstr" : "Aggregazioni"
+      },
       "All entries (%1)" : {
          "msgstr" : "Tutti i risultati (%1)"
       },
       "Ascending" : {
          "msgstr" : "Ascendente"
+      },
+      "Author" : {
+         "msgstr" : "Autore"
       },
       "Authors" : {
          "msgstr" : "Autori"
@@ -100,14 +124,35 @@
             "1" : "Autori che corrispondono a “%1” (%2 entry)"
          }
       },
+      "Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest" : {
+         "msgstr" : "Margini automatici: scegli un fattore. 9 ha i margini più larghi, 15 i più stretti"
+      },
       "Back" : {
          "msgstr" : "Indietro"
       },
       "Bibliographical entry only" : {
          "msgstr" : "Solo riferimento bibliografico"
       },
+      "Binding correction in mm (additional inner margin)" : {
+         "msgstr" : "Correzione per la rilegatura in mm (margine interno addizionale)"
+      },
+      "Blocks of 16 pages to be folded twice and then bound together." : {
+         "msgstr" : "Fascicolo di 16 pagine da piegare due volte e legare assieme"
+      },
+      "Blocks of 8 pages to be folded twice and then bound together." : {
+         "msgstr" : "Fascicolo di 8 pagine da piegare due volte e legare assieme"
+      },
+      "Build" : {
+         "msgstr" : "Costruisci"
+      },
       "Cancel" : {
          "msgstr" : "Cancella"
+      },
+      "Center all section titles" : {
+         "msgstr" : "Centra tutti i titoli di sezione"
+      },
+      "Center chapter titles" : {
+         "msgstr" : "Centra i titoli dei capitoli"
       },
       "Choose another file" : {
          "msgstr" : "Scegli un altro file"
@@ -142,6 +187,9 @@
       "Contains:" : {
          "msgstr" : "Contiene:"
       },
+      "Continuous footnote numbering across the whole document" : {
+         "msgstr" : "Numerazione continua delle note a pié di pagina attraverso tutto il documento"
+      },
       "Country" : {
          "msgstr" : "Nazione"
       },
@@ -160,8 +208,20 @@
       "Description" : {
          "msgstr" : "Descrizione"
       },
+      "Do not create a cover page and start the text on the first page" : {
+         "msgstr" : "Non creare una copertina e comincia direttamente dalla prima pagina"
+      },
+      "Do not use bold fonts" : {
+         "msgstr" : "Non usare caratteri in grassetto"
+      },
+      "Download" : {
+         "msgstr" : "Scarica"
+      },
       "Download Types" : {
          "msgstr" : "Tipi di download"
+      },
+      "Drag the titles to reorder" : {
+         "msgstr" : "Trascina i titoli per riordinare"
       },
       "Editable and printable text" : {
          "msgstr" : "Testo editabile e stampabile"
@@ -175,8 +235,17 @@
       "Enabled for merging" : {
          "msgstr" : "Autorizzato al merging"
       },
+      "Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4." : {
+         "msgstr" : "Esattamente come 2up, ma i fogli sono fatti per essere prima tagliati orizzontalmente e poi piegati su sé stessi. in questo modo puoi stampare, per esempio, fascicoli A6 su un A4."
+      },
       "Exclusions" : {
          "msgstr" : "Esclusioni"
+      },
+      "Failed" : {
+         "msgstr" : "Fallito"
+      },
+      "Fill with blank pages before the last page if the signature is not full." : {
+         "msgstr" : "Riempi con pagine bianche prima dell'ultima se il fascicolo non è completo."
       },
       "First" : {
          "msgstr" : "Prima"
@@ -184,8 +253,26 @@
       "First Name" : {
          "msgstr" : "Nome proprio"
       },
+      "Fixed 16 pages signatures on 2 sheets, with double individual folding." : {
+         "msgstr" : "Fascicoli fissi di 16 pagine su due fogli, con una doppia piega su ognuno"
+      },
+      "Fixed 16 pages signatures on a single sheet, with triple folding." : {
+         "msgstr" : "Fascicoli fissi di 16 pagine su un singolo foglio, con tripla piegatura"
+      },
+      "Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together." : {
+         "msgstr" : "Fascicoli fissi di 8 pagine, da tagliare orizzontalmente, piegati singolarmente, e quindi legati assieme."
+      },
+      "Font Size" : {
+         "msgstr" : "Dimensione del carattere"
+      },
+      "Fonts" : {
+         "msgstr" : "Caratteri"
+      },
       "Full text" : {
          "msgstr" : "Testo integrale"
+      },
+      "Height in mm" : {
+         "msgstr" : "Altezza in mm"
       },
       "Hello, %1!" : {
          "msgstr" : "Ciao, %1!"
@@ -198,6 +285,12 @@
       },
       "ID:" : {
          "msgstr" : "ID:"
+      },
+      "Imposition" : {
+         "msgstr" : "Imposizione"
+      },
+      "Imposition Schema" : {
+         "msgstr" : "Schema di imposizione"
       },
       "Internal email" : {
          "msgstr" : "Email interna"
@@ -226,6 +319,9 @@
       "Latitude" : {
          "msgstr" : "Latitudine"
       },
+      "Layout" : {
+         "msgstr" : "Layout"
+      },
       "Libraries" : {
          "msgstr" : "Biblioteche"
       },
@@ -234,6 +330,9 @@
       },
       "Library details" : {
          "msgstr" : "Dettagli sulla biblioteca"
+      },
+      "Line spacing" : {
+         "msgstr" : "Interlinea"
       },
       "Login" : {
          "msgstr" : "Accedi"
@@ -256,6 +355,12 @@
       "MERGE_ENTRY" : {
          "msgstr" : "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
       },
+      "Main Font" : {
+         "msgstr" : "Carattere principale"
+      },
+      "Material Description" : {
+         "msgstr" : "Descrizione fisica"
+      },
       "Merge" : {
          "msgstr" : "Unisci"
       },
@@ -271,8 +376,20 @@
       "Missing help, sorry..." : {
          "msgstr" : "Aiuto mancante, ci scusiamo..."
       },
+      "Mono Font" : {
+         "msgstr" : "Carattere Mono"
+      },
       "My Exclusions" : {
          "msgstr" : "Le mie esclusioni"
+      },
+      "Never display the cover image" : {
+         "msgstr" : "Non mostrare mai l'immagine di copertina"
+      },
+      "Never generate a table of content" : {
+         "msgstr" : "Non generare mai un indice"
+      },
+      "Never generate the final page with text details" : {
+         "msgstr" : "Non generare mai la pagina finale con i dettagli del testo"
       },
       "Next" : {
          "msgstr" : "Prossima"
@@ -282,6 +399,12 @@
       },
       "No result found!" : {
          "msgstr" : "Non è stato trovato nessun risultato!"
+      },
+      "None" : {
+         "msgstr" : "Nessuno"
+      },
+      "Notes" : {
+         "msgstr" : "Note"
       },
       "Nothing to show!" : {
          "msgstr" : "Niente da mostrare!"
@@ -298,6 +421,9 @@
       "Omit single entry" : {
          "msgstr" : "Ometti singola voce"
       },
+      "One page per sheet. This is useful only if you want to add the cropmarks" : {
+         "msgstr" : "Una pagina per foglio. Questo è utile solo se vuoi aggiungere i segni di taglio"
+      },
       "Opening Hours" : {
          "msgstr" : "Orari di apertura"
       },
@@ -310,11 +436,35 @@
       "Other languages:" : {
          "msgstr" : "Altre lingue:"
       },
+      "Outer margin in mm" : {
+         "msgstr" : "Margini esterni in mm"
+      },
+      "Overview" : {
+         "msgstr" : "Panoramica"
+      },
       "PGP Public Key" : {
          "msgstr" : "PGP Public Key"
       },
       "PGP public key, if any" : {
          "msgstr" : "PGP Public Key, se esiste"
+      },
+      "Page where to start a chapter" : {
+         "msgstr" : "Pagina dalla quale cominciare un capitolo"
+      },
+      "Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages." : {
+         "msgstr" : "Le pagine sono riordinate, in uno o più gruppi (fascicoli), quindi piegate a metà. Se hai più fascicoli, dovrai rilegarli assieme per far sì che diventino un libro. Con questa opzione, potresti voler decidere la dimensione dei fascicoli. Questa può essere un valore fisso (4,8,16, etc.), l'intero libro in un singolo fascicolo, o una dimensione ottimizzate per ridurre il numero di pagine vuote."
+      },
+      "Pairs of consecutives pages are put on the same sheet side by side." : {
+         "msgstr" : "Le coppie di pagine consecutive sono messe sullo stesso foglio una accanto all'altra"
+      },
+      "Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)" : {
+         "msgstr" : "Lo spessore della carta in mm (0.10 dovrebbe essere appropriato per comune carta da 80g/m2)"
+      },
+      "Paragraph indentation in points (pt)" : {
+         "msgstr" : "Identazione dei paragrafi in punti (pt)"
+      },
+      "Paragraph settings" : {
+         "msgstr" : "Impostazioni del paragrafo"
       },
       "Part of:" : {
          "msgstr" : "Parte di:"
@@ -328,8 +478,23 @@
       "Place of Death" : {
          "msgstr" : "Luogo di morte"
       },
+      "Place the notes on the back of the first page, impressum-style" : {
+         "msgstr" : "Metti le note sul retro della prima pagina, come se fosse un impressum"
+      },
+      "Please choose a paper size" : {
+         "msgstr" : "Per favore, scegli la dimensione della carta"
+      },
       "Please describe the project. Just a few words, for the preview" : {
-         "msgstr" : "Per favore descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
+         "msgstr" : "Per favore, descrivi il progetto. Bastano poche parole, giusto per l'anteprima"
+      },
+      "Please select the signature size" : {
+         "msgstr" : "Per favore, seleziona la dimensione dei fascicoli"
+      },
+      "Please select the size of each page including the crop marks, before the imposing." : {
+         "msgstr" : "Per favore, selezione la dimensione di ogni pagina includendo i segni di taglio, primadi imporla."
+      },
+      "Please set" : {
+         "msgstr" : "Per favore imposta"
       },
       "Please type your new password in both fields" : {
          "msgstr" : "Per favore, digita la tua nuova password in entrambi i campi"
@@ -349,6 +514,9 @@
       "Publisher" : {
          "msgstr" : "Editore"
       },
+      "Queued" : {
+         "msgstr" : "In coda"
+      },
       "Reason" : {
          "msgstr" : "Ragione"
       },
@@ -361,6 +529,9 @@
       "Replace all records" : {
          "msgstr" : "Sostituisci tutti i dati"
       },
+      "Reset" : {
+         "msgstr" : "Azzera"
+      },
       "Reset Password for %1?" : {
          "msgstr" : "Reset Password per %1?"
       },
@@ -370,11 +541,23 @@
       "Restore" : {
          "msgstr" : "Rigenera"
       },
+      "Running headings" : {
+         "msgstr" : "Testatine"
+      },
       "SET_AGGREGATION" : {
          "msgstr" : "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
       },
       "SET_TRANSLATION" : {
          "msgstr" : "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
+      },
+      "Same as 2UP, but for duplex printers" : {
+         "msgstr" : "Come 2UP, ma per stampanti duplex"
+      },
+      "Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, binding on the top edge." : {
+         "msgstr" : "Lo stesso che 2UP, ma le pagine sono ruotate di 90° in senso antiorarioe andranno rilegate sul margine superiore."
+      },
+      "Sans Font" : {
+         "msgstr" : "Carattere Sans"
       },
       "Search" : {
          "msgstr" : "Cerca"
@@ -393,6 +576,9 @@
       },
       "See all entries" : {
          "msgstr" : "Guarda tutti gli inserimenti"
+      },
+      "See here for more details" : {
+         "msgstr" : "Guarda qui per maggiori dettagli"
       },
       "See the library entries" : {
          "msgstr" : "Guarda gli inserimenti della biblioteca"
@@ -430,11 +616,20 @@
       "Sort by Title" : {
          "msgstr" : "Disponi per titolo"
       },
+      "Source" : {
+         "msgstr" : "Fonte"
+      },
       "Source:" : {
          "msgstr" : "Origine:"
       },
+      "Start the document with an empty page" : {
+         "msgstr" : "Comincia il documento con una pagina bianca"
+      },
       "State or Province" : {
          "msgstr" : "Stato o provincia"
+      },
+      "Submit" : {
+         "msgstr" : "Invia"
       },
       "Subtitle" : {
          "msgstr" : "Sottotitolo"
@@ -442,8 +637,26 @@
       "Target" : {
          "msgstr" : "Bersaglio"
       },
+      "TeX emergency stretch in pt" : {
+         "msgstr" : "fFlessibilità TeX di emergenza in pt"
+      },
+      "TeX tolerance" : {
+         "msgstr" : "Tolleranza TeX"
+      },
+      "Text block height in mm" : {
+         "msgstr" : "Altezza del blocco di testo in mm"
+      },
+      "Text block width in mm" : {
+         "msgstr" : "Larghezza del blocco di testo in mm"
+      },
+      "Text body only (no title, no final pages)" : {
+         "msgstr" : "Solo corpo del testo (nessun titolo, nessuna pagina finale)"
+      },
       "The passwords do not match" : {
          "msgstr" : "La password non corrisponde"
+      },
+      "The whole book in as single signature" : {
+         "msgstr" : "L'intero libro in un singolo fascicolo"
       },
       "This is a free-text field. Please describe the project" : {
          "msgstr" : "Questo è un campo di testo libero. Per favore descrivi il progetto"
@@ -451,11 +664,20 @@
       "This is a free-text field. Please explain briefly which are the project languages" : {
          "msgstr" : "Questo è un campo di testo libero. Per favore descrivi brevemente quali sono le lingue del progetto"
       },
+      "This text is a translation" : {
+         "msgstr" : "Questo testo è una traduzione"
+      },
+      "This text is translated" : {
+         "msgstr" : "Questo testo è tradotto"
+      },
       "This username already exist. You are going to add it to this library." : {
          "msgstr" : "Questo username esiste già. Lo stai per aggiungere a questa biblioteca"
       },
       "Title" : {
          "msgstr" : "Titolo"
+      },
+      "Top margin in mm" : {
+         "msgstr" : "Margine superiore in mm"
       },
       "Translation" : {
          "msgstr" : "Traduzione"
@@ -465,6 +687,9 @@
       },
       "Translations" : {
          "msgstr" : "Traduzioni"
+      },
+      "Two side layout" : {
+         "msgstr" : "Schema a doppio lato"
       },
       "Type" : {
          "msgstr" : "Digita"
@@ -484,6 +709,12 @@
       "Upload a CSV" : {
          "msgstr" : "Carica un CSV"
       },
+      "Use optimized signatures with 40-80 pages each" : {
+         "msgstr" : "Usa fascicolo ottimizzati con 40-80 pagine ognuno"
+      },
+      "Use sans fonts for section titles" : {
+         "msgstr" : "Usa un carattere sans per i titoli di sezione"
+      },
       "User Menu" : {
          "msgstr" : "Menu utente"
       },
@@ -502,11 +733,17 @@
       "Value" : {
          "msgstr" : "Valore"
       },
+      "View PDF" : {
+         "msgstr" : "Visualizza PDF"
+      },
       "View full text" : {
          "msgstr" : "Guarda il testo integrale"
       },
       "Visit Library Homepage" : {
          "msgstr" : "Visita il sito della biblioteca"
+      },
+      "Width in mm" : {
+         "msgstr" : "Larghezza in mm"
       },
       "Working" : {
          "msgstr" : "Elaborazione"
@@ -540,6 +777,9 @@
       },
       "dashboard for " : {
          "msgstr" : "pannello di gestione per "
+      },
+      "leave blank for default" : {
+         "msgstr" : "lascia bianco come predefinito"
       }
    }
 }
