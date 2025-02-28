@@ -179,7 +179,7 @@
         </tr>
         <tr class="border-b border-t p-2" v-if="source.isbn">
           <td class="p-1 pr-2">
-            {{ $gettext('Codice ISBN') }}
+            {{ $gettext('ISBN') }}
           </td>
           <td>
             <code>{{ source.isbn }}</code>
