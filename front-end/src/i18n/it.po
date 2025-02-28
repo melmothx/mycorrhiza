@@ -1105,7 +1105,7 @@ msgstr "Valore"
 #. $gettext('View PDF')
 #: src/components/DataSourceBox.vue:208
 msgid "View PDF"
-msgstr Visualizza PDF"
+msgstr "Visualizza PDF"
 
 #. $gettext('Visit Library Homepage')
 #: src/components/LibraryBox.vue:26
