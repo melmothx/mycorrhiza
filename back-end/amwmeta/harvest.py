@@ -92,7 +92,7 @@ class MarcXMLRecord(GenericMarcXMLRecord):
             ('agent_details', '100',  ('a', 'd', '4', 'e')),
             ('title_for_search', '222',  ('a')),
             ('title', '245',  ('a', 'b', 'c')),
-            ('subtitle', '246',  ('a')),
+            ('subtitle', '246',  ('a', 'b')),
             ('former_title', '247',  ('a', 'f')),
             ('edition_statement', '250',  ('a')),
             ('publisher', '260',  ('b')),
