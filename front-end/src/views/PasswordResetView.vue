@@ -5,7 +5,7 @@
 </script>
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <PasswordReset :username="$route.params.username" :token="$route.params.token" />
   </main>
   <NavFooter />

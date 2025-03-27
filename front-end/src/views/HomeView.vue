@@ -22,7 +22,7 @@
 
 <template>
   <NavBar @refetch-results="refetch_results" />
-  <main class="flex-grow">
+  <main class="grow">
     <SearchPage ref="search_page" />
   </main>
   <NavFooter />

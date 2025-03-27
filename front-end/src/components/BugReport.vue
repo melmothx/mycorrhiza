@@ -51,7 +51,7 @@
  }
 </script>
 <template>
-  <button class="btn-accent m-1 text-sm px-4 py-1 rounded shadow-lg" @click="toggle_dialog">
+  <button class="btn-accent m-1 text-sm px-4 py-1 rounded-sm shadow-lg" @click="toggle_dialog">
     <template v-if="message_sent">
       {{ $gettext('Report Sent') }}
     </template>
@@ -86,10 +86,10 @@
           </div>
 
           <div class="text-center">
-            <button v-if="message && email_from" class="btn-accent p-2 mx-2 rounded" @click="send_message">
+            <button v-if="message && email_from" class="btn-accent p-2 mx-2 rounded-sm" @click="send_message">
               {{ $gettext('Send') }}
             </button>
-            <button class="btn-primary p-2 mx-2 rounded" @click="close_dialog">
+            <button class="btn-primary p-2 mx-2 rounded-sm" @click="close_dialog">
               {{ $gettext('Cancel') }}
             </button>
           </div>

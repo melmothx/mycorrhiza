@@ -155,7 +155,7 @@
          href="http://mirrors.ctan.org/macros/latex/contrib/bookcover/bookcover.pdf">
         {{ $gettext('See the bookcover class for all the details')  }}
       </a>
-      <div class="bg-perl-bush-50 p-2 shadow-md rounded">
+      <div class="bg-perl-bush-50 p-2 shadow-md rounded-sm">
         <div v-for="font in fonts.filter(f => f.name == bookcover.font_name)">
           <a :href="font.preview_pdf" target="_blank">
             <img class="mx-auto my-4 max-h-96" :src="font.preview_png" :alt="font.name">
@@ -165,7 +165,7 @@
     </div>
   </div>
   <div class="mt-8 flex">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build_cover">
+    <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="build_cover">
       {{ $gettext('Build') }}
     </button>
   </div>

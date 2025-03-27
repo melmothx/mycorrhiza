@@ -65,12 +65,12 @@
 <template>
   <div class="my-4">
     <div v-if="status == 'failed'">
-      <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+      <button class="btn-primary m-1 px-4 py-1 rounded-sm shadow-lg">
         {{ $gettext('Failed') }}
       </button>
     </div>
     <div v-if="status == 'inactive'">
-      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+      <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg">
         <span class="flex items-center">
           <ArrowPathIcon class="h-4 w-4 mr-1 animate-spin" />
           {{ $gettext('Queued') }}
@@ -78,7 +78,7 @@
       </button>
     </div>
     <div v-if="status == 'active'">
-      <button type="button" class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+      <button type="button" class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg">
         <span class="flex items-center">
           <Cog8ToothIcon class="h-4 w-4 mr-1 animate-spin" />
           {{ $gettext('Working') }}

@@ -260,7 +260,7 @@
 
     <div v-if="active_filters" class="mb-4 flex flex-wrap place-content-center">
       <template v-for="af in active_filters">
-        <div class="btn-primary mr-2 my-1 p-1 rounded flex cursor-pointer text-sm"
+        <div class="btn-primary mr-2 my-1 p-1 rounded-sm flex cursor-pointer text-sm"
              :title="$gettext('Click to remove the filter')"
              @click="remove_filter_and_reload_facets(af.name, af.id)">
           <div>
@@ -274,7 +274,7 @@
     </div>
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
-        <input class="mcrz-input shadow w-full my-1 sm:my-0"
+        <input class="mcrz-input shadow-sm w-full my-1 sm:my-0"
                type="text" :placeholder="$gettext('Search')" v-model="query"/>
         <Listbox v-model="sort_by" @click="refine()">
           <div class="relative m-0">

@@ -33,7 +33,7 @@
 </script>
 <template>
   <td>
-    <button class="rounded bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2 m-3"
+    <button class="rounded-sm bg-pink-500 hover:bg-pink-700 text-white font-semibold px-2 m-3"
             @click="remove">{{ $gettext('Restore') }}</button>
   </td>
   <td class="p-1 border">

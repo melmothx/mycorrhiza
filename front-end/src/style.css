@@ -1,66 +1,328 @@
-@tailwind base;
-@tailwind components;
+@import 'tailwindcss';
 
-/* static, always compiled, for full text and django app */
-
-.table-of-contents {
-    @apply p-2 sticky top-5 overflow-auto h-[90vh] text-sm mb-2 bg-perl-bush-50 rounded shadow-md;
+@plugin '@tailwindcss/forms' {
+  strategy: 'base';
 }
-#thework h6 { @apply text-base mt-2 mb-1 }
-#thework h5 { @apply text-base mt-2 mb-1 font-bold }
-#thework h4 { @apply text-lg   mt-3 mb-2 font-bold }
-#thework h3 { @apply text-xl   mt-4 mb-3 font-bold }
-#thework h2 { @apply text-2xl  mt-5 mb-4 font-bold }
-#thework h1 { @apply text-3xl  mt-6 mb-5 font-bold }
-#thework p { @apply indent-4 }
-#thework em { @apply italic }
-#thework a { @apply text-spectra-700 hover:text-spectra-500 }
-#thework blockquote { @apply p-4 }
-#thework blockquote p { @apply indent-0 }
-#thework ul { @apply list-disc px-8 py-4 }
-#thework ul li p,
-#thework ol li p { @apply indent-0 }
-#thework ol { @apply list-decimal p-4 }
-#thework .center { @apply text-center p-2 }
-#thework .right { @apply text-right p-2 }
-#thework pre.example { @apply my-4 }
-#thework dt { @apply font-bold }
-#thework table, #thework tr, #thework td, #thework th { @apply border border-2 border-gray-500 m-1 }
-#thework td, #thework th { @apply p-1 }
-#thework .image { @apply m-2 }
-#thework .float_image_r { @apply m-2 float-right }
-#thework .float_image_l { @apply m-2 float-left }
-#thework .float_image_f { @apply m-4  }
 
-/* apparently not needed
+@theme {
+  --color-perl-bush-50: #f9f7f3;
+  --color-perl-bush-100: #eae5d9;
+  --color-perl-bush-200: #e0d8c8;
+  --color-perl-bush-300: #ccbea5;
+  --color-perl-bush-400: #b7a080;
+  --color-perl-bush-500: #a88b67;
+  --color-perl-bush-600: #9b7a5b;
+  --color-perl-bush-700: #81634d;
+  --color-perl-bush-800: #6a5142;
+  --color-perl-bush-900: #564438;
+  --color-perl-bush-950: #2e221c;
+
+  --color-old-copper-50: #f7f4ef;
+  --color-old-copper-100: #ebe6d6;
+  --color-old-copper-200: #d9ccaf;
+  --color-old-copper-300: #c3ad81;
+  --color-old-copper-400: #b2915d;
+  --color-old-copper-500: #a37e4f;
+  --color-old-copper-600: #8b6643;
+  --color-old-copper-700: #7b563d;
+  --color-old-copper-800: #5f4334;
+  --color-old-copper-900: #533a30;
+  --color-old-copper-950: #2f1f19;
+
+  --color-cedar-50: #fbf6f1;
+  --color-cedar-100: #f6eade;
+  --color-cedar-200: #ebd2bd;
+  --color-cedar-300: #dfb292;
+  --color-cedar-400: #d18c66;
+  --color-cedar-500: #c77048;
+  --color-cedar-600: #b95c3d;
+  --color-cedar-700: #9a4834;
+  --color-cedar-800: #7c3c30;
+  --color-cedar-900: #64342a;
+  --color-cedar-950: #421e19;
+
+  --color-claret-50: #fef2f2;
+  --color-claret-100: #fee5e5;
+  --color-claret-200: #fccfd1;
+  --color-claret-300: #f9a8ab;
+  --color-claret-400: #f5777e;
+  --color-claret-500: #ec4754;
+  --color-claret-600: #d8263d;
+  --color-claret-700: #b61a32;
+  --color-claret-800: #991831;
+  --color-claret-900: #76162b;
+  --color-claret-950: #490814;
+
+  --color-cab-sav-50: #fef2f2;
+  --color-cab-sav-100: #fce8e7;
+  --color-cab-sav-200: #f9d2d4;
+  --color-cab-sav-300: #f4adb0;
+  --color-cab-sav-400: #ed7f86;
+  --color-cab-sav-500: #e1525f;
+  --color-cab-sav-600: #cd3147;
+  --color-cab-sav-700: #ac243a;
+  --color-cab-sav-800: #912036;
+  --color-cab-sav-900: #7c1f35;
+  --color-cab-sav-950: #540f1d;
+
+  --color-spectra-50: #f3f8f7;
+  --color-spectra-100: #e0edec;
+  --color-spectra-200: #c4dddc;
+  --color-spectra-300: #9ac6c5;
+  --color-spectra-400: #6aa6a6;
+  --color-spectra-500: #4f8b8b;
+  --color-spectra-600: #447376;
+  --color-spectra-700: #3c5f62;
+  --color-spectra-800: #3a5558;
+  --color-spectra-900: #314548;
+  --color-spectra-950: #1d2d2f;
+
+  --color-vanilla-ice-50: #faf6f7;
+  --color-vanilla-ice-100: #f5eeef;
+  --color-vanilla-ice-200: #ecdfe2;
+  --color-vanilla-ice-300: #e4d0d5;
+  --color-vanilla-ice-400: #c9a3ad;
+  --color-vanilla-ice-500: #b3808f;
+  --color-vanilla-ice-600: #9b6376;
+  --color-vanilla-ice-700: #805062;
+  --color-vanilla-ice-800: #6c4555;
+  --color-vanilla-ice-900: #5e3d4b;
+  --color-vanilla-ice-950: #331e27;
+
+  --color-asphalt-50: #f5f3f1;
+  --color-asphalt-100: #e7dfda;
+  --color-asphalt-200: #d0bfb8;
+  --color-asphalt-300: #b5998f;
+  --color-asphalt-400: #9f7b70;
+  --color-asphalt-500: #906a62;
+  --color-asphalt-600: #7b5753;
+  --color-asphalt-700: #644544;
+  --color-asphalt-800: #563d3e;
+  --color-asphalt-900: #4b383a;
+  --color-asphalt-950: #181112;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@utility btn-primary {
+  @apply bg-linear-to-tr from-spectra-700 to-spectra-900
+        hover:bg-linear-to-tr hover:from-spectra-600 hover:to-spectra-700
+              font-semibold text-white;
+}
+
+@utility btn-secondary {
+  @apply bg-linear-to-tr from-spectra-500 to-spectra-600
+        hover:bg-linear-to-tr hover:from-spectra-700 hover:to-spectra-600
+              font-semibold text-white;
+}
+
+@utility btn-accent {
+  @apply bg-linear-to-tr from-cab-sav-800 to-cab-sav-950
+        hover:bg-linear-to-tr hover:from-cab-sav-800 hover:to-cab-sav-700
+              font-semibold text-white;
+}
+
+@utility mcrz-href-primary {
+  @apply text-spectra-800 hover:text-spectra-600 font-semibold;
+}
+
+@utility mcrz-radio {
+  @apply text-old-copper-800 focus:ring-old-copper-200 focus:ring-old-copper-200 active:ring-old-copper-200;
+}
+
+@utility mcrz-checkbox {
+  @apply rounded-tl-lg focus:border-old-copper-800 text-old-copper-800 focus:ring-old-copper-200;
+}
+
+@utility mcrz-select {
+  @apply outline outline-0 border border-0 focus:ring-old-copper-200 active:ring-old-copper-200 py-0;
+}
+
+@utility mcrz-textarea {
+  @apply outline
+               outline-0
+               border
+               border-0
+               focus:ring-old-copper-200 active:ring-old-copper-200
+               px-2
+               text-old-copper-700
+               bg-perl-bush-50
+               placeholder:italic;
+}
+
+@utility mcrz-date {
+  @apply outline
+               outline-0
+               border
+               border-0
+               focus:ring-old-copper-200 active:ring-old-copper-200
+               px-2
+               text-old-copper-700
+               bg-perl-bush-50
+               placeholder:italic;
+}
+
+@utility mcrz-input {
+  @apply outline
+               outline-0
+               border
+               border-perl-bush-100
+               active:border active:border-perl-bush-100
+               focus:border focus:border-perl-bush-100
+               focus:ring-old-copper-200 active:ring-old-copper-200
+               px-2
+               text-old-copper-900
+               bg-perl-bush-50
+               placeholder:italic grow;
+}
+
+@utility mcrz-label {
+  @apply text-old-copper-900 font-bold;
+}
+
+@utility mcrz-listbox-button {
+  @apply relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50;
+}
+
+@utility mcrz-select-chevron-container {
+  @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2;
+}
+
+@utility mcrz-listbox-options {
+  @apply absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-sm shadow-lg z-40;
+}
+
+@utility mcrz-text-box {
+  @apply border border-perl-bush-200 bg-perl-bush-50 shadow-sm max-w-prose mx-auto rounded-sm p-4;
+}
+
+@layer components {
+  /* static, always compiled, for full text and django app */
+
+  .table-of-contents {
+    @apply p-2 sticky top-5 overflow-auto h-[90vh] text-sm mb-2 bg-perl-bush-50 rounded-sm shadow-md;
+  }
+  #thework h6 {
+    @apply text-base mt-2 mb-1;
+  }
+  #thework h5 {
+    @apply text-base mt-2 mb-1 font-bold;
+  }
+  #thework h4 {
+    @apply text-lg   mt-3 mb-2 font-bold;
+  }
+  #thework h3 {
+    @apply text-xl   mt-4 mb-3 font-bold;
+  }
+  #thework h2 {
+    @apply text-2xl  mt-5 mb-4 font-bold;
+  }
+  #thework h1 {
+    @apply text-3xl  mt-6 mb-5 font-bold;
+  }
+  #thework p {
+    @apply indent-4;
+  }
+  #thework em {
+    @apply italic;
+  }
+  #thework a {
+    @apply text-spectra-700 hover:text-spectra-500;
+  }
+  #thework blockquote {
+    @apply p-4;
+  }
+  #thework blockquote p {
+    @apply indent-0;
+  }
+  #thework ul {
+    @apply list-disc px-8 py-4;
+  }
+  #thework ul li p,
+  #thework ol li p {
+    @apply indent-0;
+  }
+  #thework ol {
+    @apply list-decimal p-4;
+  }
+  #thework .center {
+    @apply text-center p-2;
+  }
+  #thework .right {
+    @apply text-right p-2;
+  }
+  #thework pre.example {
+    @apply my-4;
+  }
+  #thework dt {
+    @apply font-bold;
+  }
+  #thework table,
+  #thework tr,
+  #thework td,
+  #thework th {
+    @apply border border-2 border-gray-500 m-1;
+  }
+  #thework td,
+  #thework th {
+    @apply p-1;
+  }
+  #thework .image {
+    @apply m-2;
+  }
+  #thework .float_image_r {
+    @apply m-2 float-right;
+  }
+  #thework .float_image_l {
+    @apply m-2 float-left;
+  }
+  #thework .float_image_f {
+    @apply m-4;
+  }
+
+  /* apparently not needed
 #thework sup { @apply align-super }
 #thework sub { @apply align-sub }
 */
 
-#thework a.footnote,
-#thework a.footnotebody {
+  #thework a.footnote,
+  #thework a.footnotebody {
     @apply text-xs align-super;
-}
+  }
 
-#thework * + p.fnline,
-#thework * + p.secondary-fnline {
+  #thework * + p.fnline,
+  #thework * + p.secondary-fnline {
     @apply border-t border-black pt-2 mt-2;
-}
+  }
 
-#thework p.fnline + p.fnline,
-#thework p.secondary-fnline + p.secondary-fnline {
+  #thework p.fnline + p.fnline,
+  #thework p.secondary-fnline + p.secondary-fnline {
     @apply border-0 pt-0 mt-1;
-}
+  }
 
-#thework p.fnline,
-#thework p.secondary-fnline {
+  #thework p.fnline,
+  #thework p.secondary-fnline {
     @apply text-xs indent-0;
+  }
+
+  /* #thework div.caption { @apply text-center } */
 }
-
-/* #thework div.caption { @apply text-center } */
-
-
-@tailwind utilities;
 
 @layer base {
     html, body {
@@ -71,110 +333,30 @@
     }
 }
 
-.mcrz-micro-badge {
-    @apply border whitespace-nowrap text-[12px] py-px px-1 m-1 leading-8 rounded;
-}
-.mcrz-library-physical {
+@layer utilities {
+  .mcrz-micro-badge {
+    @apply border whitespace-nowrap text-[12px] py-px px-1 m-1 leading-8 rounded-sm;
+  }
+  .mcrz-library-physical {
     @apply border-claret-600 text-claret-600 hover:text-claret-900 hover:border-claret-900;
-}
-.mcrz-library-closed {
+  }
+  .mcrz-library-closed {
     @apply border-old-copper-600 text-old-copper-600 hover:text-old-copper-900 hover:border-old-copper-900;
-}
-.mcrz-library-digital {
+  }
+  .mcrz-library-digital {
     @apply border-spectra-600 text-spectra-600 hover:text-spectra-900 hover:border-spectra-900;
-}
+  }
 
-.mcrz-tab-common {
+  .mcrz-tab-common {
     @apply inline-block p-4 border-b-2 rounded-t-lg font-bold;
-}
+  }
 
-.mcrz-tab-normal {
+  .mcrz-tab-normal {
     @apply mcrz-tab-common border-perl-bush-300 hover:text-spectra-600 hover:border-spectra-600;
-}
+  }
 
-.mcrz-tab-active {
+  .mcrz-tab-active {
     @apply mcrz-tab-common text-spectra-700 border-b-2 border-spectra-700;
-}
-
-
-
-@layer components {
-    .btn-primary {
-        @apply bg-gradient-to-tr from-spectra-700 to-spectra-900
-        hover:bg-gradient-to-tr hover:from-spectra-600 hover:to-spectra-700
-              font-semibold text-white;
-    }
-    .btn-secondary {
-        @apply bg-gradient-to-tr from-spectra-500 to-spectra-600
-        hover:bg-gradient-to-tr hover:from-spectra-700 hover:to-spectra-600
-              font-semibold text-white;
-    }
-    .btn-accent {
-        @apply bg-gradient-to-tr from-cab-sav-800 to-cab-sav-950
-        hover:bg-gradient-to-tr hover:from-cab-sav-800 hover:to-cab-sav-700
-              font-semibold text-white;
-    }
-    .mcrz-href-primary {
-        @apply text-spectra-800 hover:text-spectra-600 font-semibold;
-    }
-    .mcrz-radio {
-        @apply text-old-copper-800 focus:ring-old-copper-200 focus:ring-old-copper-200 active:ring-old-copper-200;
-    }
-    .mcrz-checkbox {
-        @apply rounded-tl-lg focus:border-old-copper-800 text-old-copper-800 focus:ring-old-copper-200;
-    }
-    .mcrz-select {
-        @apply outline outline-0 border border-0 focus:ring-old-copper-200 active:ring-old-copper-200 py-0;
-    }
-    .mcrz-textarea {
-        @apply outline
-               outline-0
-               border
-               border-0
-               focus:ring-old-copper-200 active:ring-old-copper-200
-               px-2
-               text-old-copper-700
-               bg-perl-bush-50
-               placeholder:italic;
-    }
-    .mcrz-date {
-        @apply outline
-               outline-0
-               border
-               border-0
-               focus:ring-old-copper-200 active:ring-old-copper-200
-               px-2
-               text-old-copper-700
-               bg-perl-bush-50
-               placeholder:italic
-    }
-    .mcrz-input {
-        @apply outline
-               outline-0
-               border
-               border-perl-bush-100
-               active:border active:border-perl-bush-100
-               focus:border focus:border-perl-bush-100
-               focus:ring-old-copper-200 active:ring-old-copper-200
-               px-2
-               text-old-copper-900
-               bg-perl-bush-50
-               placeholder:italic flex-grow;
-    }
-    .mcrz-label {
-        @apply text-old-copper-900 font-bold;
-    }
-    .mcrz-listbox-button {
-        @apply relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50;
-    }
-    .mcrz-select-chevron-container {
-        @apply pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2;
-    }
-    .mcrz-listbox-options {
-        @apply absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-sm shadow-lg z-40;
-    }
-    .mcrz-text-box {
-        @apply border border-perl-bush-200 bg-perl-bush-50 shadow max-w-prose mx-auto rounded p-4
-    }
+  }
 }
 

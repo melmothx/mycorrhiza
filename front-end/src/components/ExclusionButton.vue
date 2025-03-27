@@ -59,7 +59,7 @@
   <div v-if="open">
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto font-normal font-serif">
       <div class="flex min-h-full items-center justify-center text-center p-4">
-        <div class="border rounded-lg bg-white text-left shadow">
+        <div class="border rounded-lg bg-white text-left shadow-sm">
           <div class="bg-white px-4 pb-4 pt-5">
             <div class="mt-3 text-center">
               <h3 class="text-base font-semibold leading-6 text-gray-900">
@@ -68,7 +68,7 @@
               <div class="mt-2">
                 <textarea v-model="comment"
                           :placeholder="$gettext('Reason')"
-                          class="rounded border-gray-300 focus:ring-0 active:ring-0 active:border-gray-300  focus:border-gray-300">
+                          class="rounded-sm border-gray-300 focus:ring-0 active:ring-0 active:border-gray-300  focus:border-gray-300">
                 </textarea>
               </div>
             </div>

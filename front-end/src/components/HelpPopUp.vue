@@ -38,7 +38,7 @@
             <slot></slot>
           </div>
           <div class="text-center">
-            <button class="btn-primary p-2 rounded" @click="close_dialog">
+            <button class="btn-primary p-2 rounded-sm" @click="close_dialog">
               {{ $gettext('Close') }}
             </button>
           </div>

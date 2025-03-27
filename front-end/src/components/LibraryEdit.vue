@@ -77,7 +77,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="library-logo-url">{{ $gettext('Logo URL') }}</label>
+              <label class="grow" for="library-logo-url">{{ $gettext('Logo URL') }}</label>
               <HelpPopUp container_class="cursor-pointer"
                          icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
                 {{ $gettext('Logo address, e.g. https://mydomain.org/path/to/image') }}
@@ -109,7 +109,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="short_desc">{{ $gettext('Short Description') }}</label>
+              <label class="grow" for="short_desc">{{ $gettext('Short Description') }}</label>
               <HelpPopUp container_class="cursor-pointer"
                          icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
                 {{ $gettext('Please describe the project. Just a few words, for the preview') }}
@@ -121,7 +121,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="description">{{ $gettext('Description') }}</label>
+              <label class="grow" for="description">{{ $gettext('Description') }}</label>
               <HelpPopUp container_class="cursor-pointer"
                          icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
                 {{ $gettext('This is a free-text field. Please describe the project') }}
@@ -133,7 +133,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="languages">{{ $gettext('Languages') }}</label>
+              <label class="grow" for="languages">{{ $gettext('Languages') }}</label>
               <HelpPopUp container_class="cursor-pointer"
                          icon_class="w-4 h-4 m-1 text-spectra-900 hover:text-spectra-700">
                 {{ $gettext('This is a free-text field. Please explain briefly which are the project languages') }}
@@ -145,7 +145,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="pgp_public_key">{{ $gettext('PGP public key, if any') }}</label>
+              <label class="grow" for="pgp_public_key">{{ $gettext('PGP public key, if any') }}</label>
             </div>
             <div class="flex">
               <textarea class="mcrz-input font-mono text-sm" id="pgp_public_key"
@@ -155,7 +155,7 @@
 
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_line_1">{{ $gettext('Address Line') }}</label>
+              <label class="grow" for="address_line_1">{{ $gettext('Address Line') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_line_1" v-model="library.address_line_1" />
@@ -163,7 +163,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_line_2">{{ $gettext('Additional Address Line') }}</label>
+              <label class="grow" for="address_line_2">{{ $gettext('Additional Address Line') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_line_2" v-model="library.address_line_2" />
@@ -172,7 +172,7 @@
 
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_zip">{{ $gettext('ZIP code') }}</label>
+              <label class="grow" for="address_zip">{{ $gettext('ZIP code') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_zip" v-model="library.address_zip" />
@@ -180,7 +180,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_city">{{ $gettext('City') }}</label>
+              <label class="grow" for="address_city">{{ $gettext('City') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_city" v-model="library.address_city" />
@@ -188,7 +188,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_state">{{ $gettext('State or Province') }}</label>
+              <label class="grow" for="address_state">{{ $gettext('State or Province') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_state" v-model="library.address_state" />
@@ -196,7 +196,7 @@
           </div>
           <div>
             <div class="flex">
-              <label class="flex-grow" for="address_country">{{ $gettext('Country') }}</label>
+              <label class="grow" for="address_country">{{ $gettext('Country') }}</label>
             </div>
             <div class="flex">
               <input class="mcrz-input" id="address_country" v-model="library.address_country" />

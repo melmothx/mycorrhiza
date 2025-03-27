@@ -6,7 +6,7 @@
 
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <EntryPage :entry_id="$route.params.id" />
   </main>
   <NavFooter />

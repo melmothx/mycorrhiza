@@ -54,17 +54,17 @@
 </script>
 <template>
   <div v-if="user_data.logged_in && user_data.email && !message_sent">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_dialog">
+    <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_dialog">
       {{ $gettext('Report Error') }}
     </button>
   </div>
   <div v-if="message_sent">
-    <button class="btn-primary m-1 px-4 py-1 rounded shadow-lg">
+    <button class="btn-primary m-1 px-4 py-1 rounded-sm shadow-lg">
       {{ $gettext('Report Sent!') }}
     </button>
   </div>
   <div v-if="message_failure">
-    <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg">
+    <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg">
       {{ $gettext('Failure sending the report. Please contact us by email!') }}
     </button>
   </div>
@@ -79,10 +79,10 @@
             <textarea class="mcrz-textarea w-full h-64" v-model="message"></textarea>
           </div>
           <div class="text-center">
-            <button v-if="message" class="btn-accent p-2 mx-2 rounded" @click="send_message">
+            <button v-if="message" class="btn-accent p-2 mx-2 rounded-sm" @click="send_message">
               {{ $gettext('Send') }}
             </button>
-            <button class="btn-primary p-2 mx-2 rounded" @click="close_dialog">
+            <button class="btn-primary p-2 mx-2 rounded-sm" @click="close_dialog">
               {{ $gettext('Cancel') }}
             </button>
           </div>

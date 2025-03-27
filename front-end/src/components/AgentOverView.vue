@@ -66,7 +66,7 @@
         {{ warning }}
       </div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8 my-8">
-        <input class="mcrz-input shadow w-full my-1 sm:my-0"
+        <input class="mcrz-input shadow-sm w-full my-1 sm:my-0"
                v-model="search_string"
                @input="get_agents"
                :placeholder="$gettext('Type here to search authors')">
