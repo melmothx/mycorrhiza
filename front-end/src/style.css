@@ -352,11 +352,11 @@
   }
 
   .mcrz-tab-normal {
-    @apply mcrz-tab-common border-perl-bush-300 hover:text-spectra-600 hover:border-spectra-600;
+    @apply inline-block p-4 border-b-2 rounded-t-lg font-bold border-perl-bush-300 hover:text-spectra-600 hover:border-spectra-600;
   }
 
   .mcrz-tab-active {
-    @apply mcrz-tab-common text-spectra-700 border-b-2 border-spectra-700;
+    @apply inline-block p-4 border-b-2 rounded-t-lg font-bold text-spectra-700 border-b-2 border-spectra-700;
   }
 }
 
