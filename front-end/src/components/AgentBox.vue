@@ -232,6 +232,15 @@
                    :id="`agent-first-name-${agent.id}`" />
           </div>
         </div>
+        <div class="mt-1">
+          <label class="mcrz-label" :for="`agent-wikidata-id-${agent.id}`">{{ $gettext('WikiData ID') }}</label>
+          <div class="flex">
+            <input type="text"
+                   class="mcrz-input" v-model="agent_editable_data.wikidata_id"
+                   :id="`agent-wikidata-id-${agent.id}`" />
+          </div>
+        </div>
+
         <button class="btn-primary my-2 p-1" type="submit">
           {{ $gettext('Submit') }}
         </button>

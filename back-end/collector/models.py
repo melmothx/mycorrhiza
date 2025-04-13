@@ -604,6 +604,7 @@ class Agent(models.Model):
     place_of_birth = models.CharField(max_length=255, blank=True, null=True)
     place_of_death = models.CharField(max_length=255, blank=True, null=True)
     viaf_identifier = models.BigIntegerField(null=True)
+    wikidata_id = models.CharField(max_length=255, blank=True, null=True)
     canonical_agent = models.ForeignKey(
         'self',
         null=True,
@@ -623,7 +624,8 @@ class Agent(models.Model):
             "id", "name", "first_name", "middle_name", "last_name",
             "date_of_birth", "place_of_birth",
             "date_of_death", "place_of_death",
-            "canonical_agent_id", "viaf_identifier"
+            "canonical_agent_id", "viaf_identifier",
+            "wikidata_id",
         ]
         for f in public_columns:
             out[f] = getattr(self, f)

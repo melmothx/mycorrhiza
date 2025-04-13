@@ -1103,6 +1103,7 @@ def api_agent(request, agent_id):
                         "last_name",
                         "date_of_birth", "place_of_birth",
                         "date_of_death", "place_of_death",
+                        "wikidata_id",
                         "viaf_identifier")
                 for c in cols:
                     setattr(agent, c, data.get(c))
