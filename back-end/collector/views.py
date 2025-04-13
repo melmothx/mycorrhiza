@@ -1320,10 +1320,6 @@ def api_report_ds_error(request, data_source_id):
                     original_url = "{}/entry/{}".format(settings.CANONICAL_ADDRESS,
                                                         ds.entry_id)
                     entry_title = ds.entry.title
-                    subject = "[{} Error Report] {}".format(
-                        our_name,
-                        re.sub(r'\s+', ' ', ds.entry.title)
-                    )
                     body = """
 Greetings,
 
@@ -1351,6 +1347,11 @@ Thanks
                     logger.info("Reporting {} from {} to {}".format(data.get('message'),
                                                                     report.sender,
                                                                     report.recipient))
+                    subject = "[{} Error Report #{}] {}".format(
+                        our_name,
+                        report.id,
+                        re.sub(r'\s+', ' ', ds.entry.title)
+                    )
                     email = EmailMessage(
                         subject,
                         report.message,
