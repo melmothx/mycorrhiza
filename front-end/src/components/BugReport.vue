@@ -10,6 +10,7 @@
              message_sent: false,
              message_failure: null,
              email_from: null,
+             current_page: window.location.href,
          }
      },
      mounted() {
@@ -20,6 +21,7 @@
      methods: {
          toggle_dialog() {
              this.open = !this.open;
+             this.current_page = window.location.href;
          },
          close_dialog() {
              this.open = false;
@@ -28,7 +30,7 @@
              this.message_failure = null;
              axios.post('/collector/api/report/bug',
                         {
-                            message: "On " + window.location.href + "\n\nFrom " + this.email_from + "\n\n" + this.message,
+                            message: "On " + this.current_page + "\n\nFrom " + this.email_from + "\n\n" + this.message,
                             email_from: this.email_from,
                         })
                   .then(res => {
@@ -72,6 +74,10 @@
                    type="text"
                    placeholder="my-email@example.com"
                    v-model="email_from" />
+          </div>
+          <div class="px-4 pb-2 pt-2 flex items-center">
+            <span class="font-bold mr-2">{{ $gettext('Page:') }}</span>
+            <span> {{ current_page }}</span>
           </div>
           <div class="px-4 pb-4 pt-5">
             <textarea class="mcrz-textarea w-full h-64" v-model="message"></textarea>
