@@ -1499,7 +1499,7 @@ class SpreadsheetUpload(models.Model):
 
 class LibraryErrorReport(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    library = models.ForeignKey(Library, on_delete=models.CASCADE)
+    library = models.ForeignKey(Library, null=True, on_delete=models.SET_NULL)
     message = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     sender = models.EmailField()

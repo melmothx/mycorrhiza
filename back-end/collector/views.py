@@ -1287,14 +1287,21 @@ def api_report_bug(request):
         out['error'] = "Invalid JSON!"
     if data and data.get('message') and data.get('email_from'):
         our_name = General.settings().get('site_name')
+        report = LibraryErrorReport.objects.create(
+            message=data['message'],
+            sender=data['email_from'],
+            recipient=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
+        )
         email = EmailMessage(
-            subject="[{}] Bug Report".format(our_name),
+            subject="[{}] Bug Report #{}".format(our_name, report.id),
             body=data['message'],
             from_email=settings.MYCORRHIZA_EMAIL_FROM,
             to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
             reply_to=[data['email_from']],
         )
         if email.send():
+            report.sent = datetime.now(timezone.utc)
+            report.save()
             out['success'] = "OK"
         else:
             out['error'] = "Failure sending email"
@@ -1361,7 +1368,7 @@ Thanks
                         cc=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
                     )
                     if email.send():
-                        report.sent =  datetime.now(timezone.utc)
+                        report.sent = datetime.now(timezone.utc)
                         report.save()
                         out['success'] = "OK"
                     else:
