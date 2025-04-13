@@ -32,7 +32,7 @@
 </script>
 <template>
   <div>
-    <router-link :to="{ name: 'home' }">
+    <a href="/search">
       <template v-if="settings.site_logo">
         <img class="w-64" :src="settings.site_logo"
              :alt="settings.site_name || 'Home'"
@@ -42,6 +42,6 @@
       <template v-else>
         <span>{{ settings.site_name || 'Home' }}</span>
       </template>
-    </router-link>
+    </a>
   </div>
 </template>
