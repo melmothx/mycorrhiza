@@ -5,7 +5,7 @@
 </script>
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <ExclusionTable>{{ $gettext('My Exclusions') }}</ExclusionTable>
   </main>
   <NavFooter />

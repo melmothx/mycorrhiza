@@ -71,20 +71,20 @@
   <div>
     <div class="m-5 p-2">
       <div class="mb-2 flex">
-        <div class="flex-grow">
+        <div class="grow">
           <EntryDetails :record="record" />
         </div>
         <div class="ml-4" >
           <BackButton />
         </div>
       </div>
-      <div class="my-2 border rounded text-sm bg-perl-bush-50 shadow-md p-2" v-if="languages && languages.length > 0">
+      <div class="my-2 border rounded-sm text-sm bg-perl-bush-50 shadow-md p-2" v-if="languages && languages.length > 0">
         <div class="flex">
           <h5 class="font-bold mr-2">
             {{ $gettext('Other languages:') }}
           </h5>
           <span v-for="lang in languages" :key="lang.id">
-            <router-link class="cursor-pointer mr-2 p-1 rounded shadow-md"
+            <router-link class="cursor-pointer mr-2 p-1 rounded-sm shadow-md"
                   :title="lang.original ? $gettext('Original') : $gettext('Translation')"
                   :class="lang.original ? 'btn-accent' : 'btn-primary'"
                   :to="{ name: 'entry', params: { id: lang.entry_id } }">

@@ -48,7 +48,7 @@
   <div class="shadow-lg">
     <slot>{{ name }}</slot>
     <div v-if="use_sorting"
-         class="grid gap-2 grid-cols-1 lg:grid-cols-3 bg-gradient-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2">
+         class="grid gap-2 grid-cols-1 lg:grid-cols-3 bg-linear-to-tr from-old-copper-300 to-old-copper-200 text-sm px-2 py-2">
       <div>
         {{ $gettext('Sort') }}
       </div>
@@ -70,7 +70,7 @@
     <div class="max-h-48 overflow-y-auto p-2 bg-perl-bush-50">
       <template v-for="facet in facet_list" :key="facet.key">
         <div class="flex">
-          <div class="flex-grow">
+          <div class="grow">
             <FacetButton
                 :key="facet.key"
                 :id="facet.id"

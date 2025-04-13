@@ -122,11 +122,11 @@
 <template>
   <div>
     <div v-if="short"
-         class="bg-gradient-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+         class="bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
       <h3 class="font-semibold"><slot></slot></h3>
     </div>
     <div v-else
-         class="bg-gradient-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
+         class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
       <h3 class="font-semibold text-white"><slot></slot></h3>
       <h4 class="font-semibold text-white" :id="`library-${source.library_id}`" v-if="!short">
         <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
@@ -141,14 +141,14 @@
     </div>
     <div class="bg-perl-bush-50 p-2">
       <div class="flex">
-        <h3 class="font-semibold mr-1 flex-grow" v-if="source.title">
+        <h3 class="font-semibold mr-1 grow" v-if="source.title">
           {{ source.title }}
         </h3>
         <div class="px-2 font-bold" v-if="source.year_edition">
           {{ source.year_edition }}
         </div>
         <div class="font-bold" v-if="source.languages">
-          <span class="bg-gradient-to-tr from-spectra-700 to-spectra-900 rounded p-1 shadow-md ml-2 text-white"
+          <span class="bg-linear-to-tr from-spectra-700 to-spectra-900 rounded-sm p-1 shadow-md ml-2 text-white"
                 v-for="lang in source.languages" :key="lang">
             {{ lang }}
           </span>
@@ -229,7 +229,7 @@
       </table>
       <div v-if="has_pdf_only()">
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
-          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
+          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded-sm">
             <a :href="get_binary_file(source.data_source_id, dl.ext)">
               {{ dl.desc }}
             </a>
@@ -239,17 +239,17 @@
       <div class="flex mb-8">
         <div class="grow"></div>
         <div v-if="can_have_full_text()">
-          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
+          <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
         </div>
         <div v-if="pdf_reader()">
-          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
+          <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
         </div>
         <div v-if="can_have_the_bookbuilder() && !added_to_the_bookbuilder">
-          <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="add_to_bookbuilder">
+          <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="add_to_bookbuilder">
             {{ $gettext('Add to the Book Builder') }}
           </button>
         </div>
-        <router-link v-if="added_to_the_bookbuilder" :to="{ name: 'bookbuilder' }" class="bg-gradient-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded shadow-lg text-white font-bold">
+        <router-link v-if="added_to_the_bookbuilder" :to="{ name: 'bookbuilder' }" class="bg-linear-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded-sm shadow-lg text-white font-bold">
           {{ $gettext('Added to the Book Builder!') }}
         </router-link>
         <div v-if="source.report_error">
@@ -262,12 +262,12 @@
       <div v-if="show_html">
         <!-- mettere sotto full text -->
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
-          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded">
+          <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded-sm">
             <a :href="get_binary_file(source.data_source_id, dl.ext)">
               {{ dl.desc }}
             </a>
           </div>
-          <div class="btn-primary m-1 p-1 rounded" v-if="source.uri && source.public">
+          <div class="btn-primary m-1 p-1 rounded-sm" v-if="source.uri && source.public">
             <a :href="source.uri" target="_blank">
               <span class="text-white" v-if="source.uri_label">
                 {{ source.uri_label }}
@@ -281,7 +281,7 @@
             </a>
           </div>
         </div>
-        <div class="text-base border m-1 p-3 rounded bg-gradient-to-t from-perl-bush-100 to-perl-bush-200">
+        <div class="text-base border m-1 p-3 rounded-sm bg-linear-to-t from-perl-bush-100 to-perl-bush-200">
           <div v-if="working" class="m-2 text-center">
             <span class="animate-ping text-claret-900">{{ $gettext('Working') }}</span>
           </div>
@@ -289,7 +289,7 @@
                v-html="html"></div>
         </div>
       </div>
-      <div class="my-4 p-1 shadow" v-if="show_pdf_reader && pdf_reader()">
+      <div class="my-4 p-1 shadow-sm" v-if="show_pdf_reader && pdf_reader()">
         <iframe :src="pdf_reader()" width="100%" height="500px"></iframe>
       </div>
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">

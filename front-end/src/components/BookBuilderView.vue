@@ -402,7 +402,7 @@
 
     <div v-if="current_tab == 'advanced'" id="bb-layout"
          class="grid sm:grid-cols-[300px_auto] gap-4">
-      <div class="p-2 bg-perl-bush-50 shadow-md rounded">
+      <div class="p-2 bg-perl-bush-50 shadow-md rounded-sm">
         <h2 class="font-bold mb-2">{{ $gettext('Paragraph settings') }}</h2>
         <div class="flex items-center my-4">
           <div class="mr-2 w-32">
@@ -457,7 +457,7 @@
           </div>
         </div>
       </div>
-      <div class="p-2 bg-perl-bush-50 shadow-md rounded">
+      <div class="p-2 bg-perl-bush-50 shadow-md rounded-sm">
         <h2 class="mb-2 font-bold">{{ $gettext('Advanced settings') }}</h2>
         <div>
           <label>
@@ -572,7 +572,7 @@
     <div v-if="current_tab == 'fonts'" id ="bb-fonts">
       <div class="flex items-center my-4">
         <label class="w-32" for="mainfont">{{ $gettext('Main Font')  }}</label>
-        <div class="flex-grow">
+        <div class="grow">
           <select id="mainfont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.mainfont">
             <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
           </select>
@@ -580,7 +580,7 @@
       </div>
       <div class="flex items-center my-4">
         <label class="w-32" for="monofont">{{ $gettext('Mono Font')  }}</label>
-        <div class="flex-grow">
+        <div class="grow">
           <select id="monofont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.monofont">
             <option v-for="font in fonts.filter(f => f.type == 'mono')" :value="font.name">{{ font.desc }}</option>
           </select>
@@ -588,7 +588,7 @@
       </div>
       <div class="flex items-center my-4" v-if="bookbuilder.needs_sans_font()">
         <label class="w-32" for="sansfont">{{ $gettext('Sans Font') }}</label>
-        <div class="flex-grow">
+        <div class="grow">
           <select id="sansfont" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.sansfont">
             <option v-for="font in fonts" :value="font.name">{{ font.desc }}</option>
           </select>
@@ -596,13 +596,13 @@
       </div>
       <div class="flex items-center my-4">
         <label class="w-32" for="fontsize">{{ $gettext('Font Size') }}</label>
-        <div class="flex-grow">
+        <div class="grow">
           <select id="fontsize" class="mcrz-select h-8 w-full" v-model="bookbuilder.collection_data.fontsize">
             <option v-for="fs in [9, 10, 11, 12, 13, 14]" :value="fs">{{ fs }}pt</option>
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-8 text-center bg-perl-bush-50 p-2 shadow-md rounded">
+      <div class="grid grid-cols-3 gap-8 text-center bg-perl-bush-50 p-2 shadow-md rounded-sm">
         <div>
           <div v-for="font in fonts.filter(f => f.name == bookbuilder.collection_data.mainfont)">
             <a :href="font.preview_pdf" target="_blank">
@@ -845,7 +845,7 @@
           </div>
         </div>
       </div>
-      <div v-if="bookbuilder.text_list.length" class="bg-perl-bush-50 p-2 shadow-md rounded">
+      <div v-if="bookbuilder.text_list.length" class="bg-perl-bush-50 p-2 shadow-md rounded-sm">
         <div v-for="text in bookbuilder.text_list" :key="text.sid + text.id">
           <div class="flex my-3">
             <router-link :to="{name: 'entry', params: { id: text.attributes.entry_id } }">
@@ -869,12 +869,12 @@
   </div>
   <div id="bb-action" class="mt-8 flex">
     <div v-if="bookbuilder.can_be_compiled()">
-      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="build">
+      <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="build">
         {{ $gettext('Build') }}
       </button>
     </div>
     <div v-if="bookbuilder.session_id && !bookbuilder.status">
-      <button class="btn-accent m-1 px-4 py-1 rounded shadow-lg" @click="bookbuilder.reset">
+      <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="bookbuilder.reset">
         {{ $gettext('Reset') }}
       </button>
     </div>

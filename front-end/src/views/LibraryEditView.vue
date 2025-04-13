@@ -30,7 +30,7 @@
 </script>
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <div class="m-8">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 ">
         <div class="mb-6">

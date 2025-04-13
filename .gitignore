@@ -1,3 +1,5 @@
 /bin/*
 /pgsql/*
-front-end/src/i18n/*~
+/front-end/src/i18n/*~
+/amusecompile/fontspec.json
+/back-end/spreadsheets/

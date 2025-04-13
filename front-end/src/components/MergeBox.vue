@@ -149,7 +149,7 @@
 <template>
   <div>
     <div @drop="drop_element($event)" @dragover.prevent @dragenter.prevent
-        class="bg-gradient-to-tr from-old-copper-700 to-old-copper-600 font-semibold rounded-tr-3xl p-2">
+        class="bg-linear-to-tr from-old-copper-700 to-old-copper-600 font-semibold rounded-tr-3xl p-2">
       <h2 class="text-white pl-2 text-sm">
         <span class="flex">
           <span class="grow text-white">

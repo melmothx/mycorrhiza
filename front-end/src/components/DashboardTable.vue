@@ -140,7 +140,7 @@
                 :title="$gettext('Click to sort')"
                 @click="sort_rows(f.name)">
               <div class="flex whitespace-nowrap">
-                <span class="flex-grow">
+                <span class="grow">
                   {{ $gettext(f.label) }}
                 </span>
                 <span>

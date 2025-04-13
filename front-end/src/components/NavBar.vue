@@ -110,13 +110,13 @@
 <template>
   <header>
   <div class="flex flex-wrap m-3 items-center">
-    <div class="flex-grow">
+    <div class="grow">
       <SiteLogo />
     </div>
     <div :title="$gettext('UI language')">
       <Listbox v-model="current_language">
         <div class="relative m-0">
-          <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50 rounded"
+          <ListboxButton class="relative w-full cursor-pointer py-1 h-8 pl-3 pr-10 text-left shadow-md text-sm bg-perl-bush-50 rounded-sm"
                          v-slot="{ open }">
             <span class="block truncate font-bold">{{ current_language }}</span>
             <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -133,7 +133,7 @@
               leave-active-class="transition duration-75 ease-in"
               leave-from-class="transform scale-100 opacity-100"
               leave-to-class="transform scale-95 opacity-0">
-            <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg rounded">
+            <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg rounded-sm">
               <ListboxOption v-for="lang in ['en', 'it']"
                              :value="lang" :key="lang"
                              @click="set_language"

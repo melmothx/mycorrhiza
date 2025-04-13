@@ -6,10 +6,10 @@
 </script>
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <div class="m-5 p-2">
       <div class="flex">
-        <div class="flex-grow">
+        <div class="grow">
           <h1 class="capitalize bold text-lg text-center font-bold mb-8">
             {{ $gettext('dashboard for ' + $route.params.type) }}
           </h1>

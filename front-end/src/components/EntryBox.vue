@@ -57,7 +57,7 @@
       <div v-if="record.creator"
            class="py-1">
         <div v-for="author in record.creator" :key="author.id" class="flex flex-wrap border-b border-old-copper-100">
-          <div class="flex-grow px-3">
+          <div class="grow px-3">
             {{ author.value }}
           </div>
           <div>
@@ -88,7 +88,7 @@
       </div>
       <div>
         <div class="flex py-2">
-          <router-link class="font-semibold flex-grow cursor-pointer px-3"
+          <router-link class="font-semibold grow cursor-pointer px-3"
                        :to="{name: 'entry', params: { id: record.entry_id } }">
             {{ title }}
           </router-link>
@@ -96,13 +96,13 @@
             <router-link :to="{name: 'entry', params: { id: record.entry_id } }">
               <small class="px-2" v-for="l in record.language" :key="l.id">
                 <span v-if="is_translation"
-                      class="btn-primary p-1 rounded shadow-md"
+                      class="btn-primary p-1 rounded-sm shadow-md"
                       :title="$gettext('This text is a translation')">
                   {{ l.value }}
                 </span>
                 <span v-else-if="is_translated"
                       :title="$gettext('This text is translated')"
-                      class="btn-accent p-1 rounded shadow-md">
+                      class="btn-accent p-1 rounded-sm shadow-md">
                   {{ l.value }}
                 </span>
                 <span v-else>

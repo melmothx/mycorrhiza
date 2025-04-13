@@ -88,7 +88,7 @@
  }
 </script>
 <template>
-  <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow rounded">
+  <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow-sm rounded-sm">
     <div v-if="short">
       <h2 class="font-bold">{{ agent.name }}</h2>
     </div>

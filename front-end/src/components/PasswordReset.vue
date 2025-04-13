@@ -60,12 +60,12 @@
   </h1>
   <form @submit.prevent="reset_password">
   <div class="text-center p-2">
-    <input class="mcrz-input shadow w-64"
+    <input class="mcrz-input shadow-sm w-64"
            @input="error = ''"
            type="password" :placeholder="$gettext('Password')" v-model="password"/>
   </div>
   <div class="text-center p-2">
-    <input class="mcrz-input shadow w-64"
+    <input class="mcrz-input shadow-sm w-64"
            type="password" :placeholder="$gettext('Repeat Password')" v-model="password_repeat"/>
     <p v-if="has_mismatch" class="text-claret-900 font-bold">
       {{ $gettext('The passwords do not match') }}

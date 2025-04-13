@@ -5,7 +5,7 @@
 </script>
 <template>
   <NavBar />
-  <main class="flex-grow">
+  <main class="grow">
     <div class="m-1 md:m-5">
       <LibraryView :library_id="$route.params.id" />
     </div>
