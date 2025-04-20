@@ -92,6 +92,21 @@ def sheet_definitions():
                 ('material_description', 'Npag', None, (round_to_int, add_name)),
             ],
         },
+        "belladonna": {
+            "type": "csv",
+            "csv": {
+                "delimiter": ",",
+                "doublequote": True,
+            },
+            "encoding": 'cp1252',
+            "mapping": [
+                ('identifier', 'Nr.'),
+                ('title', 'Titolo'),
+                ('creator', 'Autore'),
+                ('publisher', 'Casa editrice'),
+                ('date', 'Anno'),
+            ],
+        },
     }
     return definitions
 
