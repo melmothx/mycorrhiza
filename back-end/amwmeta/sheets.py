@@ -5,6 +5,7 @@ import pprint
 import sys
 import xlrd
 import openpyxl
+import hashlib
 
 logger = logging.getLogger(__name__)
 
@@ -188,7 +189,16 @@ def normalize_records(records, mapping):
                     normal[dest].extend(split.split(str(value)))
                 else:
                     normal[dest].append(value)
-        out.append(normal)
+        if normal.get('title'):
+            if not normal['identifier']:
+                sha = hashlib.sha1()
+                for field in ('creator', 'title', 'date'):
+                    if normal[field]:
+                        for f in normal[field]:
+                            sha.update(f.encode())
+                normal['identifier'] = [ sha.hexdigest() ]
+            out.append(normal)
+
     return out
 
 if __name__ == "__main__":
