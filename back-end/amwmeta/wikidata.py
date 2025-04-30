@@ -88,6 +88,7 @@ class WikidataRetriever:
                             "name": label,
                             "values": contents,
                             "property": prop,
+                            "data_type": data_type,
                         })
         return out
     def get_property_value(self, prop):
@@ -122,7 +123,7 @@ class WikidataRetriever:
             if value.startswith('File:'):
                 value = value[5:]
             value = value.replace(' ', '_')
-            value = "https://commons.wikimedia.org/wiki/Special:FilePath/{}".format(urllib.parse.quote(value))
+            value = "https://commons.wikimedia.org/w/thumb.php?width=300&f={}".format(urllib.parse.quote(value))
             return (value, data_type)
         try:
             v = prop['value']['content']
