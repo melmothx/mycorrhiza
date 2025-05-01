@@ -49,7 +49,7 @@
 <template>
   <div class="my-2">
     <div v-if="agent">
-      <AgentBox :agent="agent" :short="true" :can_edit="editable" />
+      <AgentBox :agent="agent" :short="true" :can_edit="editable" :get_wikidata="true" />
     </div>
     <div v-if="library">
       <LibraryBox :library="library" :short="true" />

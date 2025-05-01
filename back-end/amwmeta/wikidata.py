@@ -70,8 +70,12 @@ class WikidataRetriever:
         out['statements'] = []
         statements = data.get('statements')
         supported = [
-            'P214', 'P18', 'P19', 'P20', 'P244', 'P25', 'P26', 'P569', 'P570',
-            'P735', 'P734', 'P5056'
+            'P18', 'P735', 'P5056', 'P734',
+            'P19', 'P569',
+            'P20', 'P570',
+            # 'P244',
+            # 'P25', 'P26',
+            'P214',
         ]
         if statements:
             for prop in supported:
