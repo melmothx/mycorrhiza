@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/libraries/<int:library_id>", views.api_show_library, name="api_show_library"),
     path("api/agents", views.api_list_agents, name="api_list_agents"),
     path("api/agents/<int:agent_id>", views.api_agent, name="api_agent"),
+    path("api/agents/<int:agent_id>/wikidata/<lang>", views.api_agent_wikidata, name="api_agent_wikidata"),
     path("api/pages/<location>/<language>", views.api_list_pages, name="api_list_pages"),
     path("api/pages/<int:page_id>", views.api_view_page, name="api_view_page"),
     path("api/general", views.api_general, name="api_general"),

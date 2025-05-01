@@ -9,6 +9,7 @@ import logging
 from django.urls import reverse
 from django.conf import settings
 from amwmeta.utils import paginator, page_list, log_user_operation, strip_diacritics
+from amwmeta.wikidata import WikidataRetriever
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -1098,13 +1099,7 @@ def api_agent(request, agent_id):
 
             if data:
                 log_user_operation(request.user, 'before-update-agent', agent, None)
-                cols = ("first_name",
-                        "middle_name",
-                        "last_name",
-                        "date_of_birth", "place_of_birth",
-                        "date_of_death", "place_of_death",
-                        "wikidata_id",
-                        "viaf_identifier")
+                cols = ("wikidata_id",)
                 for c in cols:
                     setattr(agent, c, data.get(c))
                 agent.save()
@@ -1114,6 +1109,15 @@ def api_agent(request, agent_id):
     else:
         out['error'] = "No such ID"
 
+    return JsonResponse(out)
+
+def api_agent_wikidata(request, agent_id, lang):
+    out = {}
+    if settings.WIKIDATA_TOKEN:
+        agent = get_object_or_404(Agent, pk=agent_id)
+        if agent and agent.wikidata_id:
+            out = WikidataRetriever(access_token=settings.WIKIDATA_TOKEN,
+                                    language=lang).show_item(agent.wikidata_id)
     return JsonResponse(out)
 
 def api_list_pages(request, location, language):

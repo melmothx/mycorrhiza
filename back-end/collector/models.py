@@ -621,14 +621,7 @@ class Agent(models.Model):
 
     def as_api_dict(self, get_canonical=False):
         out = {}
-        public_columns = [
-            "id", "name", "first_name", "middle_name", "last_name",
-            "date_of_birth", "place_of_birth",
-            "date_of_death", "place_of_death",
-            "canonical_agent_id", "viaf_identifier",
-            "wikidata_id",
-        ]
-        for f in public_columns:
+        for f in ("id", "name", "wikidata_id"):
             out[f] = getattr(self, f)
 
         out['created'] = self.created.strftime('%Y-%m-%dT%H:%M')

@@ -7,7 +7,7 @@
      HandRaisedIcon,
  } from '@heroicons/vue/24/solid'
  export default {
-     props: [ "agent", "can_edit", "short" ],
+     props: [ "agent", "can_edit", "short", "get_wikidata" ],
      data() {
          return {
              error: null,
@@ -15,6 +15,7 @@
              show_editing: false,
              agent_editable_data: {},
              display_details: {},
+             wikidata: null,
          }
      },
      components: {
@@ -68,62 +69,51 @@
                  e.dataTransfer.setData('Merge', merge_type);
              }
          },
+         get_api_wikidata() {
+             if (this.get_wikidata) {
+                 axios.get('/collector/api/agents/' + this.agent.id + '/wikidata/' + this.$getlanguage())
+                      .then((res) => {
+                          if (res.data.link) {
+                              this.wikidata = res.data;
+                          }
+                      })
+                      .catch(error => {
+                          this.error = error;
+                      });
+             }
+         },
      },
      mounted() {
          this.display_details = { ...this.agent };
-     },
-     computed: {
-         full_name() {
-             const details = this.display_details;
-             const full_name_pieces = [ details.first_name, details.middle_name, details.last_name ];
-             const full_name = full_name_pieces.filter((w) => w).join(" ");
-             if (full_name != this.agent.name) {
-                 return full_name;
-             }
-             else {
-                 return "";
-             }
-         }
+         this.get_api_wikidata()
      },
  }
 </script>
 <template>
   <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow-sm rounded-sm">
     <div v-if="short">
-      <h2 class="font-bold">{{ agent.name }}</h2>
+      <div v-if="wikidata">
+        <a :href="wikidata.link">
+          <h2 class="font-bold">{{ wikidata.name }}</h2>
+        </a>
+        <div v-for="ws in wikidata.statements" :key="ws.property">
+          <div v-if="ws.data_type == 'commonsMedia'">
+            <a :href="wikidata.link">
+              <img :src="ws.values[0]" />
+            </a>
+          </div>
+          <div v-else>
+            <span class="font-bold">{{ ws.name }}</span> <span>{{ ws.values[0] }} </span>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <h2 class="font-bold">{{ agent.name }}</h2>
+      </div>
     </div>
     <div v-else>
       <a :href="`/library/author/${agent.search_link_id}`" target="_blank">
         <h2 class="font-bold">{{ agent.name }}</h2>
-      </a>
-    </div>
-    <div v-if="full_name">
-      <span class="pr-1" v-if="display_details.first_name">
-        {{ display_details.first_name }}
-      </span>
-      <span class="pr-1" v-if="display_details.middle_name">
-        {{ display_details.middle_name }}
-      </span>
-      <span class="pr-1" v-if="display_details.last_name">
-        {{ display_details.last_name }}
-      </span>
-    </div>
-    <div v-if="display_details.date_of_birth || display_details.date_of_death">
-      (<span v-if="display_details.date_of_birth">
-      <span v-if="display_details.place_of_birth">{{ display_details.place_of_birth }}&nbsp;</span>
-      <span>{{ display_details.date_of_birth }}</span>
-      </span>
-      <span>&nbsp;—&nbsp;</span>
-     <span v-if="display_details.date_of_death">
-      <span v-if="display_details.place_of_death">{{ display_details.place_of_death }}&nbsp;</span>
-      <span>{{ display_details.date_of_death }}</span>
-      </span>)
-    </div>
-    <div v-if="display_details.viaf_identifier">
-      <a class="mcrz-href-primary"
-         target="_blank"
-         :href="`https://viaf.org/viaf/${display_details.viaf_identifier}/`">
-        {{ $gettext('VIAF: %1', display_details.viaf_identifier) }}
       </a>
     </div>
     <div v-if="display_details.canonical" class="font-bold text-gray-500">
@@ -146,92 +136,6 @@
     </div>
     <div v-if="show_editing">
       <form @submit.prevent="update_agent">
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_first_name_${agent.id}`">
-            {{ $gettext('First Name') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   v-model="agent_editable_data.first_name"
-                   :id="`agent_first_name_${agent.id}`" />
-          </div>
-        </div>
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_middle_name_${agent.id}`">
-            {{ $gettext('Middle Name') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   v-model="agent_editable_data.middle_name"
-                   :id="`agent_middle_name_${agent.id}`" />
-          </div>
-        </div>
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_last_name_${agent.id}`">
-            {{ $gettext('Last Name') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   v-model="agent_editable_data.last_name"
-                   :id="`agent_last_name_${agent.id}`" />
-          </div>
-        </div>
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_place_of_birth_${agent.id}`">
-            {{ $gettext('Place of Birth') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   v-model="agent_editable_data.place_of_birth"
-                   :id="`agent_place_of_birth_${agent.id}`" />
-          </div>
-        </div>
-
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_date_of_birth_${agent.id}`">
-            {{ $gettext('Year of Birth') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   type="number" :max="new Date().getFullYear()" step="1"
-                   v-model="agent_editable_data.date_of_birth"
-                   :id="`agent_date_of_birth_${agent.id}`" />
-          </div>
-        </div>
-
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_place_of_death_${agent.id}`">
-            {{ $gettext('Place of Death') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   v-model="agent_editable_data.place_of_death"
-                   :id="`agent_place_of_death_${agent.id}`" />
-          </div>
-        </div>
-
-        <div class="mt-1">
-          <label class="mcrz-label"
-                 :for="`agent_date_of_death_${agent.id}`">
-            {{ $gettext('Year of Death') }}</label>
-          <div class="flex">
-            <input class="mcrz-input"
-                   type="number" :max="new Date().getFullYear()" step="1"
-                   v-model="agent_editable_data.date_of_death"
-                   :id="`agent_date_of_death_${agent.id}`" />
-          </div>
-        </div>
-
-
-        <div class="mt-1">
-          <label class="mcrz-label" :for="`agent-first-name-${agent.id}`">{{ $gettext('VIAF Identifier') }}</label>
-          <div class="flex">
-            <input type="number"
-                   step="1"
-                   class="mcrz-input" v-model="agent_editable_data.viaf_identifier"
-                   :id="`agent-first-name-${agent.id}`" />
-          </div>
-        </div>
         <div class="mt-1">
           <label class="mcrz-label" :for="`agent-wikidata-id-${agent.id}`">{{ $gettext('WikiData ID') }}</label>
           <div class="flex">
