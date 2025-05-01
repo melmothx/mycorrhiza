@@ -69,14 +69,19 @@ class WikidataRetriever:
                 pass
         out['statements'] = []
         statements = data.get('statements')
-        supported = [
+        supported = (
             'P18', 'P735', 'P5056', 'P734',
             'P19', 'P569',
             'P20', 'P570',
             # 'P244',
             # 'P25', 'P26',
             'P214',
-        ]
+            # magazines
+            'P571',
+            'P495',
+            'P236',
+            'P268',
+        )
         if statements:
             for prop in supported:
                 plables = self.get_property(prop).get('labels', {})
