@@ -1112,13 +1112,13 @@ def api_agent(request, agent_id):
     return JsonResponse(out)
 
 def api_agent_wikidata(request, agent_id, lang):
-    agent = get_object_or_404(Agent, pk=agent_id)
     out = {}
-    if agent and agent.wikidata_id:
-        out = WikidataRetriever(access_token=settings.WIKIDATA_TOKEN,
-                                language=lang).show_item(agent.wikidata_id)
+    if settings.WIKIDATA_TOKEN:
+        agent = get_object_or_404(Agent, pk=agent_id)
+        if agent and agent.wikidata_id:
+            out = WikidataRetriever(access_token=settings.WIKIDATA_TOKEN,
+                                    language=lang).show_item(agent.wikidata_id)
     return JsonResponse(out)
-
 
 def api_list_pages(request, location, language):
     pages = Page.objects.filter(published=True,
