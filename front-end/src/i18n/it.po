@@ -245,7 +245,7 @@ msgstr "Nazione"
 #. $gettext('Covers')
 #: src/components/BookBuilderBar.vue:16
 msgid "Covers"
-msgstr ""
+msgstr "Copertine"
 
 #. $gettext('Create')
 #: src/components/CreateEntityBox.vue:57
@@ -296,12 +296,12 @@ msgstr "Testo editabile e stampabile"
 #. $gettext('Edition')
 #: src/components/DataSourceBox.vue:198
 msgid "Edition"
-msgstr ""
+msgstr "Edizione"
 
 #. $gettext('Edition Place and Date')
 #: src/components/DataSourceBox.vue:207
 msgid "Edition Place and Date"
-msgstr ""
+msgstr "Luogo di stampa e anno dell'edizione"
 
 #. $gettext('Email')
 #: src/components/UserCreation.vue:102
@@ -342,7 +342,7 @@ msgstr "Fallito"
 #. $gettext('Failure sending the report. Please contact us by email!') $gettext('Failure sending the report. Please contact us by email!')
 #: src/components/ReportErrorPopUp.vue:68 src/components/BugReport.vue:81
 msgid "Failure sending the report. Please contact us by email!"
-msgstr ""
+msgstr "Fallimento nell'invio del Report. Per favore contattaci via email!"
 
 #. $gettext('Fill with blank pages before the last page if the signature is not full.')
 #: src/components/BookBuilderView.vue:745
@@ -395,7 +395,7 @@ msgstr "Caratteri"
 #. $gettext('From:')
 #: src/components/BugReport.vue:70
 msgid "From:"
-msgstr ""
+msgstr "Da:"
 
 #. $gettext('Full text')
 #: src/components/DataSourceBox.vue:242
@@ -613,7 +613,7 @@ msgstr "Non è stato trovato nessun risultato!"
 #. $gettext('No text added, so far!')
 #: src/components/BookBuilderView.vue:866
 msgid "No text added, so far!"
-msgstr ""
+msgstr "Nessun testo ancora aggiunto!"
 
 #. $gettext('None')
 #: src/components/BookBuilderView.vue:637
@@ -633,7 +633,7 @@ msgstr "Niente da mostrare!"
 #. $gettext('OPAC page')
 #: src/components/DataSourceBox.vue:223
 msgid "OPAC page"
-msgstr ""
+msgstr "Pagina OPAC"
 
 #. $gettext('Omit') $gettext('Omit')
 #: src/components/ExclusionButton.vue:54 src/components/ExclusionButton.vue:86
@@ -857,27 +857,27 @@ msgstr "Sostituisci tutti i dati"
 #. $gettext('Report Error')
 #: src/components/ReportErrorPopUp.vue:58
 msgid "Report Error"
-msgstr ""
+msgstr "Segnala errore"
 
 #. $gettext('Report Sent')
 #: src/components/BugReport.vue:56
 msgid "Report Sent"
-msgstr ""
+msgstr "Report inviato"
 
 #. $gettext('Report Sent!')
 #: src/components/ReportErrorPopUp.vue:63
 msgid "Report Sent!"
-msgstr ""
+msgstr "Report inviato!"
 
 #. $gettext('Report a bug to the site administrators')
 #: src/components/BugReport.vue:67
 msgid "Report a bug to the site administrators"
-msgstr ""
+msgstr "Segnala un errore a chi amministra il sito"
 
 #. $gettext('Report an error for “%1” (%2)', data_source_title, library_name)
 #: src/components/ReportErrorPopUp.vue:76
 msgid "Report an error for “%1” (%2)"
-msgstr ""
+msgstr "Segnala un errore per “%1” (%2)"
 
 #. $gettext('Reset')
 #: src/components/BookBuilderView.vue:878
@@ -950,7 +950,7 @@ msgstr "Guarda qui per maggiori dettagli"
 #. $gettext('See the bookcover class for all the details')
 #: src/components/CoverBuilderView.vue:156
 msgid "See the bookcover class for all the details"
-msgstr ""
+msgstr "Guarda la classe della copertina per tutti i dettagli"
 
 #. $gettext('See the library entries')
 #: src/components/LibraryBox.vue:89
@@ -965,7 +965,7 @@ msgstr "Guarda “%1”"
 #. $gettext('Send') $gettext('Send')
 #: src/components/ReportErrorPopUp.vue:83 src/components/BugReport.vue:90
 msgid "Send"
-msgstr ""
+msgstr "Invia"
 
 #. $gettext('Set aggregations here')
 #: src/components/SearchPage.vue:445
