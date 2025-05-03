@@ -344,6 +344,10 @@
   .mcrz-library-physical {
     @apply border-claret-600 text-claret-600 hover:text-claret-900 hover:border-claret-900;
   }
+  .mcrz-wikidata-badge {
+      @apply border whitespace-nowrap text-[12px] py-px px-1 leading-8 rounded-sm
+      border-claret-600 text-claret-600 hover:text-claret-900 hover:border-claret-900;
+  }
   .mcrz-library-closed {
     @apply border-old-copper-600 text-old-copper-600 hover:text-old-copper-900 hover:border-old-copper-900;
   }

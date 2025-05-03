@@ -113,7 +113,7 @@
             <div v-for="wsv in ws.values">
               <div v-if="wikidata.link">
                 <a :href="wikidata.link">
-                  <img :src="wsv" />
+                  <img class="py-1" :src="wsv" />
                 </a>
               </div>
               <div v-else>
@@ -163,6 +163,12 @@
             draggable="true" @dragstart="drag_element($event, 'author', agent.id, agent.name)">
         <HandRaisedIcon class="h-4 w-4 my-1" />
       </span>
+    </div>
+    <div v-if="agent.wikidata_id">
+      <a :href="`https://www.wikidata.org/wiki/${agent.wikidata_id}`"
+            class="mcrz-wikidata-badge">
+        {{ agent.wikidata_id }}
+      </a>
     </div>
     <div v-if="show_editing">
       <form @submit.prevent="update_agent">
