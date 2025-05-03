@@ -69,18 +69,35 @@ class WikidataRetriever:
                 pass
         out['statements'] = []
         statements = data.get('statements')
+
         supported = (
-            'P18', 'P735', 'P5056', 'P734',
+            'P18',
+            'P109',
+            'P154',
+            'P1476',
+            'P735', 'P5056', 'P734',
             'P19', 'P569',
             'P20', 'P570',
             # 'P244',
             # 'P25', 'P26',
+            # viaf
             'P214',
             # magazines
             'P571',
             'P495',
-            'P236',
-            'P268',
+            'P1559',
+            'P1196',
+            'P509',
+            'P800',
+            'P485',
+            'P112',
+            'P407',
+            'P1412',
+            'P856',
+            'P159',
+            'P577',
+            'P3999',
+            'P576',
         )
         if statements:
             for prop in supported:
@@ -102,6 +119,7 @@ class WikidataRetriever:
         return out
     def get_property_value(self, prop):
         data_type = prop['property']['data_type']
+        wikipid = prop['property']['id']
         if data_type == 'time':
             precision = prop['value']['content']['precision']
             date = None
@@ -124,8 +142,12 @@ class WikidataRetriever:
                 value = labels.get(self.language) or labels.get('en')
                 if value:
                     return (value, data_type)
+                else:
+                    return (None, data_type)
         elif data_type == 'external-id':
             value = prop['value']['content']
+            if value and wikipid == 'P214':
+                value = "https://viaf.org/viaf/{}".format(value)
             return (value, data_type)
         elif data_type == 'commonsMedia':
             value = prop['value']['content']
@@ -133,6 +155,9 @@ class WikidataRetriever:
                 value = value[5:]
             value = value.replace(' ', '_')
             value = "https://commons.wikimedia.org/w/thumb.php?width=300&f={}".format(urllib.parse.quote(value))
+            return (value, data_type)
+        elif data_type == 'monolingualtext':
+            value = prop['value']['content']['text']
             return (value, data_type)
         try:
             v = prop['value']['content']

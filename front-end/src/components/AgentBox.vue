@@ -54,6 +54,7 @@
                           this.show_editing = false;
                           this.display_details = { ...this.agent_editable_data };
                       }
+                      this.get_api_wikidata();
                   })
                   .catch(error => {
                       this.error = error;
@@ -73,7 +74,7 @@
              if (this.get_wikidata) {
                  axios.get('/collector/api/agents/' + this.agent.id + '/wikidata/' + this.$getlanguage())
                       .then((res) => {
-                          if (res.data.link) {
+                          if (res.data) {
                               this.wikidata = res.data;
                           }
                       })
@@ -82,6 +83,10 @@
                       });
              }
          },
+         check_if_url(string) {
+             const regex = /^https?:\/\/[^ ]+$/;
+             return regex.test(string)
+         }
      },
      mounted() {
          this.display_details = { ...this.agent };
@@ -94,21 +99,45 @@
     <div v-if="short">
       <div v-if="wikidata">
         <a :href="wikidata.link">
-          <h2 class="font-bold">{{ wikidata.name }}</h2>
+          <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ wikidata.name }}</h2>
         </a>
-        <div v-for="ws in wikidata.statements" :key="ws.property">
-          <div v-if="ws.data_type == 'commonsMedia'">
-            <a :href="wikidata.link">
-              <img :src="ws.values[0]" />
-            </a>
-          </div>
-          <div v-else>
-            <span class="font-bold">{{ ws.name }}</span> <span>{{ ws.values[0] }} </span>
-          </div>
-        </div>
       </div>
       <div v-else>
-        <h2 class="font-bold">{{ agent.name }}</h2>
+        <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ agent.name }}</h2>
+      </div>
+      <div v-if="wikidata && wikidata.statements">
+        <div v-for="ws in wikidata.statements" :key="ws.property">
+
+          <div v-if="ws.data_type == 'commonsMedia'">
+            <div v-for="wsv in ws.values">
+              <div v-if="wikidata.link">
+                <a :href="wikidata.link">
+                  <img :src="wsv" />
+                </a>
+              </div>
+              <div v-else>
+                <img :src="wsw" />
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <h3 class="font-bold">{{ ws.name }}</h3>
+            <div v-for="wsv in ws.values">
+              <p v-if="check_if_url(wsv)">
+                <a class="mcrz-href-normal" :href="wsv">{{ wsv }}</a>
+              </p>
+              <p v-else>
+                {{ wsv }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="my-3 text-sm">
+          <a :href="`https://www.wikidata.org/wiki/${agent.wikidata_id}`"
+            class="mcrz-href-normal">
+            {{ $gettext('Source: Wikidata') }}
+          </a>
+        </div>
       </div>
     </div>
     <div v-else>

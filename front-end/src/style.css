@@ -142,6 +142,10 @@
   @apply text-spectra-800 hover:text-spectra-600 font-semibold;
 }
 
+@utility mcrz-href-normal {
+  @apply text-spectra-900 hover:text-spectra-700;
+}
+
 @utility mcrz-radio {
   @apply text-old-copper-800 focus:ring-old-copper-200 focus:ring-old-copper-200 active:ring-old-copper-200;
 }
