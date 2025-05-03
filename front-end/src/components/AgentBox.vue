@@ -164,7 +164,7 @@
         <HandRaisedIcon class="h-4 w-4 my-1" />
       </span>
     </div>
-    <div v-if="agent.wikidata_id">
+    <div v-if="!short && agent.wikidata_id">
       <a :href="`https://www.wikidata.org/wiki/${agent.wikidata_id}`"
             class="mcrz-wikidata-badge">
         {{ agent.wikidata_id }}
