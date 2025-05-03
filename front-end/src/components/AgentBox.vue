@@ -6,6 +6,7 @@
      PencilSquareIcon,
      HandRaisedIcon,
  } from '@heroicons/vue/24/solid'
+ import HelpPopUp from './HelpPopUp.vue'
  export default {
      props: [ "agent", "can_edit", "short", "get_wikidata" ],
      data() {
@@ -21,6 +22,7 @@
      components: {
          PencilSquareIcon,
          HandRaisedIcon,
+         HelpPopUp,
      },
      methods: {
          edit_agent() {
@@ -97,7 +99,7 @@
 <template>
   <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow-sm rounded-sm">
     <div v-if="short">
-      <div v-if="wikidata">
+      <div v-if="wikidata && wikidata.link">
         <a :href="wikidata.link">
           <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ wikidata.name }}</h2>
         </a>
@@ -107,7 +109,6 @@
       </div>
       <div v-if="wikidata && wikidata.statements">
         <div v-for="ws in wikidata.statements" :key="ws.property">
-
           <div v-if="ws.data_type == 'commonsMedia'">
             <div v-for="wsv in ws.values">
               <div v-if="wikidata.link">
@@ -167,10 +168,15 @@
       <form @submit.prevent="update_agent">
         <div class="mt-1">
           <label class="mcrz-label" :for="`agent-wikidata-id-${agent.id}`">{{ $gettext('WikiData ID') }}</label>
-          <div class="flex">
+          <div class="flex items-center">
             <input type="text"
-                   class="mcrz-input" v-model="agent_editable_data.wikidata_id"
+                   placeholder="QXXXXXX"
+                   class="mcrz-input w-full" v-model="agent_editable_data.wikidata_id"
                    :id="`agent-wikidata-id-${agent.id}`" />
+            <HelpPopUp container_class="cursor-pointer hover:text-spectra-200 text-lg text-spectra-800"
+                       icon_class="w-5 h-5 m-1 hover:text-spectra-600">
+              {{ $gettext('__WIKIDATA_HELP__') || $gettext('On any Wikipedia page, check Tools menu, Wikidata item') }}
+            </HelpPopUp>
           </div>
         </div>
 

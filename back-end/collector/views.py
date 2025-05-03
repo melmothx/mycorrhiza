@@ -1099,9 +1099,12 @@ def api_agent(request, agent_id):
 
             if data:
                 log_user_operation(request.user, 'before-update-agent', agent, None)
-                cols = ("wikidata_id",)
-                for c in cols:
-                    setattr(agent, c, data.get(c))
+                # the only thing done here is the wikidata_id
+                m = re.fullmatch(r'\s*(Q[0-9]+)\s*', data.get("wikidata_id", ""))
+                if m:
+                    agent.wikidata_id = m.group(1)
+                else:
+                    agent.wikidata_id = None
                 agent.save()
                 log_user_operation(request.user, 'after-update-agent', agent, None)
 
