@@ -1108,7 +1108,7 @@ def api_agent(request, agent_id):
                 agent.save()
                 log_user_operation(request.user, 'after-update-agent', agent, None)
 
-        out['agent'] = agent.as_api_dict(get_canonical=False)
+        out['agent'] = agent.as_api_dict(get_canonical=True)
     else:
         out['error'] = "No such ID"
 

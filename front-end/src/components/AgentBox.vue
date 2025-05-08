@@ -147,7 +147,9 @@
       </a>
     </div>
     <div v-if="display_details.canonical" class="font-bold text-gray-500">
-      {{ $gettext('See “%1”', display_details.canonical.name) }}
+      <a :href="`/library/author/${agent.search_link_id}`">
+        {{ $gettext('See “%1”', display_details.canonical.name) }}
+      </a>
     </div>
     <div class="flex" v-if="!agent.canonical && can_edit">
       <span @click="edit_agent" class="text-spectra-600 cursor-pointer
