@@ -14,18 +14,20 @@
      },
      methods: {
          fetch_record() {
-             const vm = this;
-             if (vm.entry_id) {
-                 console.log("Fetch " + vm.entry_id);
-                 axios.get('/collector/api/entry/' + vm.entry_id)
-                      .then(function(res) {
-                          vm.record = res.data;
-                          vm.compute_languages();
+             if (this.entry_id) {
+                 axios.get('/collector/api/entry/' + this.entry_id)
+                      .then((res) => {
+                          this.record = res.data;
+                          this.compute_languages();
+                          if (this.entry_id !== this.record.id) {
+                              console.log("Redirecting");
+                              this.$router.push({ name: 'entry', params: { id: this.record.id } });
+                          }
                       });
              }
              else {
                  console.log("Resetting");
-                 vm.record = {}
+                 this.record = {}
              }
          },
          compute_languages() {

@@ -478,6 +478,8 @@ class LatestEntriesFeed(Feed):
 
 def get_entry(request, entry_id):
     entry = get_object_or_404(Entry, pk=entry_id)
+    if entry.canonical_entry:
+        entry = entry.canonical_entry
     record = entry.display_data(library_ids=_active_libraries(request.user))
     logger.debug(pp.pformat(record))
     return JsonResponse(record)
