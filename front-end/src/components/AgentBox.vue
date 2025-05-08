@@ -173,6 +173,7 @@
       </a>
     </div>
     <div v-if="show_editing">
+      <h3 class="font-bold">{{ agent.name }}</h3>
       <form @submit.prevent="update_agent">
         <div class="mt-1">
           <label class="mcrz-label" :for="`agent-wikidata-id-${agent.id}`">{{ $gettext('WikiData ID') }}</label>
