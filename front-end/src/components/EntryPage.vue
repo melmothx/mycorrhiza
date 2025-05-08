@@ -3,6 +3,8 @@
  import DataSourceBox from './DataSourceBox.vue'
  import BackButton from './BackButton.vue'
  import axios from 'axios'
+ axios.defaults.xsrfCookieName = "csrftoken";
+ axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'entry_id' ],
      components: { EntryDetails, DataSourceBox, BackButton },
