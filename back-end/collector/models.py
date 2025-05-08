@@ -647,6 +647,9 @@ class Agent(models.Model):
         for aliased in aliases:
             aliased.canonical_agent = canonical
             aliased.save()
+            if aliased.wikidata_id and not canonical.wikidata_id:
+                canonical.wikidata_id = aliased.wikidata_id
+                canonical.save()
             log_user_operation(user, 'add-merge-agent', canonical, aliased)
             for va in aliased.variant_agents.all():
                 va.canonical_agent = canonical
