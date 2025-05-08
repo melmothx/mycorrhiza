@@ -274,8 +274,16 @@
     </div>
     <div>
       <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
-        <input class="mcrz-input shadow-sm w-full my-1 sm:my-0"
-               type="text" :placeholder="$gettext('Search')" v-model="query"/>
+        <div class="relative w-full">
+          <input class="mcrz-input shadow-sm w-full my-1 sm:my-0 sm:h-8"
+                 type="text" :placeholder="$gettext('Search')" v-model="query"/>
+          <button v-if="query" type="button"
+                  @click="query = ''"
+                  class="absolute inset-y-0 right-0 flex items-center pr-3 font-bold
+                        text-claret-800 hover:text-claret-600 cursor-pointer">
+            &#10005;
+          </button>
+        </div>
         <Listbox v-model="sort_by" @click="refine()">
           <div class="relative m-0">
             <ListboxButton class="mcrz-listbox-button"
