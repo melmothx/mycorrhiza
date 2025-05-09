@@ -848,10 +848,20 @@ class Entry(models.Model):
             real_author = author
             if author.canonical_agent:
                 real_author = author.canonical_agent
-            authors.append({
-                "id": real_author.id,
-                "value": real_author.name,
-            });
+            if real_author.children.count():
+                for splat_author in real_author.children.all():
+                    sa = splat_author
+                    if splat_author.canonical_agent:
+                        sa = splat_author.canonical_agent
+                    authors.append({
+                        "id": sa.id,
+                        "value": sa.name,
+                    })
+            else:
+                authors.append({
+                    "id": real_author.id,
+                    "value": real_author.name,
+                });
 
         xapian_data_sources = []
         record_is_public = False
