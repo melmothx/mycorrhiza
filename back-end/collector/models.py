@@ -604,6 +604,7 @@ class Agent(models.Model):
         on_delete=models.SET_NULL,
         related_name="variant_agents",
     )
+    children = models.ManyToManyField('Agent', related_name="collapsed_agents")
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     normalized_name = models.CharField(max_length=255, null=True)
@@ -652,6 +653,14 @@ class Agent(models.Model):
         for agent in reindex_agents:
             for entry in agent.authored_entries.all():
                 entries.append(entry)
+        return entries
+
+    def split_into_multiple(self, aliases, user=None):
+        logger.debug(aliases)
+        self.children.set(aliases)
+        entries = []
+        for entry in self.authored_entries.all():
+            entries.append(entry)
         return entries
 
     def unmerge(self, user=None):

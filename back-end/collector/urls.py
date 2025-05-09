@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/file/<int:ds_id>/<filename>", views.get_datasource_file, name="api_get_datasource_file"),
     path("api/download/<target>", views.download_datasource, name="api_download_datasource"),
     path("api/merge/<target>", views.api_merge, name="api_merge"),
+    path("api/split-author", views.api_split_author, name="api_merge"),
     path("api/listing/<target>", views.api_listing, name="api_listing"),
     path("api/revert/<target>", views.api_revert, name="api_revert"),
     path("api/set-translations", views.api_set_translations, name="api_set_translations"),

@@ -64,6 +64,7 @@ def manipulate(op, user, main_id, *ids, create=None):
     classes = {
         'merge-agents': Agent,
         'revert-merged-agents': Agent,
+        'split-author': Agent,
 
         'add-translations': Entry,
         'revert-translations': Entry,
@@ -120,6 +121,10 @@ def manipulate(op, user, main_id, *ids, create=None):
     if op == 'merge-agents' or op == 'merge-entries':
         reindex = cls.merge_records(main_object, other_objects, user=user)
         out['success'] = "Merged"
+
+    elif op == 'split-author':
+        reindex = main_object.split_into_multiple(other_objects, user=user)
+        out['success'] = "Done"
 
     elif op == 'add-aggregations':
         if main_object.is_aggregation:
@@ -806,6 +811,23 @@ def api_merge(request, target):
         }
         ids = [ x['id'] for x in data ]
         out = manipulate(method.get(target, 'invalid-method'), user, *ids)
+    logger.debug(out)
+    return JsonResponse(out)
+
+@user_passes_test(user_can_merge)
+def api_split_author(request):
+    out = {}
+    data = None
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        out['error'] = "Invalid JSON!";
+
+    user = request.user
+    if data and user:
+        logger.debug(data)
+        ids = [ x['id'] for x in data ]
+        out = manipulate('split-author', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
