@@ -4,11 +4,14 @@
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  import L from "leaflet";
  import "leaflet/dist/leaflet.css";
+ import "leaflet.markercluster/dist/leaflet.markercluster.js";
+ import "leaflet.markercluster/dist/MarkerCluster.css";
+ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
  export default {
      data() {
          return {
              map: null,
-             marker_layer_group: null,
+             marker_cluster_group: null,
          }
      },
      methods: {
@@ -16,6 +19,7 @@
              const res = await axios.get('/collector/api/libraries');
              const markers = res.data.libraries.filter((l) => l.latitude && l.longitude)
              console.log(markers);
+             this.marker_cluster_group.clearLayers();
              markers.forEach(m => {
                  const div = document.createElement("div")
                  const link = document.createElement("a");
@@ -24,7 +28,7 @@
                  link.target = "_blank";
                  div.appendChild(link);
                  L.marker([m.latitude, m.longitude])
-                  .addTo(this.marker_layer_group)
+                  .addTo(this.marker_cluster_group)
                  .bindPopup(div)
              })
          }
@@ -34,8 +38,9 @@
          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
              attribution:
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-         }).addTo(this.map)
-         this.marker_layer_group = L.layerGroup().addTo(this.map);
+         }).addTo(this.map);
+         this.marker_cluster_group = L.markerClusterGroup();
+         this.marker_cluster_group.addTo(this.map);
          this.fetch_markers();
      }
  }
