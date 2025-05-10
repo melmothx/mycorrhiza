@@ -597,14 +597,6 @@ class Site(models.Model):
 
 class Agent(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255, default="", blank=True)
-    middle_name = models.CharField(max_length=255, default="", blank=True)
-    last_name = models.CharField(max_length=255, default="", blank=True)
-    date_of_birth  = models.IntegerField(null=True)
-    date_of_death  = models.IntegerField(null=True)
-    place_of_birth = models.CharField(max_length=255, blank=True, null=True)
-    place_of_death = models.CharField(max_length=255, blank=True, null=True)
-    viaf_identifier = models.BigIntegerField(null=True)
     wikidata_id = models.CharField(max_length=255, blank=True, null=True)
     canonical_agent = models.ForeignKey(
         'self',
@@ -612,6 +604,7 @@ class Agent(models.Model):
         on_delete=models.SET_NULL,
         related_name="variant_agents",
     )
+    children = models.ManyToManyField('Agent', related_name="collapsed_agents")
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     normalized_name = models.CharField(max_length=255, null=True)
@@ -660,6 +653,25 @@ class Agent(models.Model):
         for agent in reindex_agents:
             for entry in agent.authored_entries.all():
                 entries.append(entry)
+        return entries
+
+    def split_into_multiple(self, aliases, user=None):
+        logger.debug(aliases)
+        self.children.set(aliases)
+        for va in aliases:
+            log_user_operation(user, 'split-agent', self, va)
+        entries = []
+        for entry in self.authored_entries.all():
+            entries.append(entry)
+        return entries
+
+    def unsplit(self, user=None):
+        entries = [ e for e in self.authored_entries.all() ]
+        for child in self.children.all():
+            log_user_operation(user, 'unsplit-agent', self, child)
+            for entry in child.authored_entries.all():
+                entries.append(entry)
+        self.children.set([])
         return entries
 
     def unmerge(self, user=None):
@@ -847,10 +859,20 @@ class Entry(models.Model):
             real_author = author
             if author.canonical_agent:
                 real_author = author.canonical_agent
-            authors.append({
-                "id": real_author.id,
-                "value": real_author.name,
-            });
+            if real_author.children.count():
+                for splat_author in real_author.children.all():
+                    sa = splat_author
+                    if splat_author.canonical_agent:
+                        sa = splat_author.canonical_agent
+                    authors.append({
+                        "id": sa.id,
+                        "value": sa.name,
+                    })
+            else:
+                authors.append({
+                    "id": real_author.id,
+                    "value": real_author.name,
+                });
 
         xapian_data_sources = []
         record_is_public = False

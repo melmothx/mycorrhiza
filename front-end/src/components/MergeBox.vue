@@ -35,6 +35,12 @@
              console.log("Setting canonical agent to " + id + ' ' + label);
              this.handle_item('set_canonical', id, label, 'author');
          },
+         append_to_merge_list(id, label) {
+             this.merge_list.push({
+                 "id": id,
+                 "label": label,
+             });
+         },
          drag_element(e, id, label) {
              e.dataTransfer.dropEffect = 'copy';
              e.dataTransfer.effectAllowed = 'copy';
@@ -207,7 +213,10 @@
       <div>
         <div class="m-2 text-center" v-if="canonical && merge_list.length && !working">
           <button class="btn-primary pl-3 py-1 pr-4 pl-1 h-8 rounded-br-3xl"
-                  type="button" @click="merge_records">{{ $gettext('Merge') }}</button>
+                  type="button" @click="merge_records">
+            <span v-if="api_call == 'split-author'">{{ $gettext('Split') }}</span>
+            <span v-else>{{ $gettext('Merge') }}</span>
+          </button>
         </div>
         <div v-else>
           <div v-if="!flash_error && !flash_success && !working" class="h-10"></div>
@@ -233,7 +242,12 @@
       <CreateEntityBox @created-entity="set_canonical_aggregation" creation_type="aggregation" />
     </div>
     <div v-if="create_item && create_item == 'agent'">
-      <CreateEntityBox @created-entity="set_canonical_agent" creation_type="agent" />
+      <div v-if="api_call == 'split-author'">
+        <CreateEntityBox @created-entity="append_to_merge_list" creation_type="agent" />
+      </div>
+      <div v-else>
+        <CreateEntityBox @created-entity="set_canonical_agent" creation_type="agent" />
+      </div>
     </div>
   </div>
 </template>
