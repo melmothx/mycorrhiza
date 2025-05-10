@@ -71,33 +71,66 @@ class WikidataRetriever:
         statements = data.get('statements')
 
         supported = (
+            # image
             'P18',
+            # signature
             'P109',
+            # name in native language
+            'P1559',
+            # logo image
             'P154',
+            # title
             'P1476',
-            'P735', 'P5056', 'P734',
-            'P19', 'P569',
-            'P20', 'P570',
-            # 'P244',
-            # 'P25', 'P26',
+            # official website
+            'P856',
+            # headquarters location
+            'P159',
+            # given name
+            'P735',
+            # patronym oir matronym
+            'P5056',
+            # family name
+            'P734',
+            # notable works
+            'P800',
+            # country of origin
+            'P495',
+            # place of birth
+            'P19',
+            # date of birth
+            'P569',
+            # inception - magazines
+            'P571',
+            # pubblication date
+            'P577',
+            # place fo death
+            'P20',
+            # date fo death
+            'P570',
+            # manner of death
+            'P1196',
+            # cause of death
+            'P509',
+            # date of official closure
+            'P3999',
+            # dissolved, abolished
+            'P576',
             # viaf
             'P214',
-            # magazines
-            'P571',
-            'P495',
-            'P1559',
-            'P1196',
-            'P509',
-            'P800',
+            # archives at
             'P485',
+            # founded by
             'P112',
+            # language of work or name
             'P407',
+            # language spoken written or signed
             'P1412',
-            'P856',
-            'P159',
-            'P577',
-            'P3999',
-            'P576',
+            # Library of congress authority
+            # 'P244',
+            # mother
+            # 'P25',
+            # father
+            # 'P26',
         )
         if statements:
             for prop in supported:
