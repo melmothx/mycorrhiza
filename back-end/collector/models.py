@@ -658,9 +658,20 @@ class Agent(models.Model):
     def split_into_multiple(self, aliases, user=None):
         logger.debug(aliases)
         self.children.set(aliases)
+        for va in aliases:
+            log_user_operation(user, 'split-agent', self, va)
         entries = []
         for entry in self.authored_entries.all():
             entries.append(entry)
+        return entries
+
+    def unsplit(self, user=None):
+        entries = [ e for e in self.authored_entries.all() ]
+        for child in self.children.all():
+            log_user_operation(user, 'unsplit-agent', self, child)
+            for entry in child.authored_entries.all():
+                entries.append(entry)
+        self.children.set([])
         return entries
 
     def unmerge(self, user=None):

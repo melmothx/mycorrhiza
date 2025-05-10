@@ -65,6 +65,7 @@ def manipulate(op, user, main_id, *ids, create=None):
         'merge-agents': Agent,
         'revert-merged-agents': Agent,
         'split-author': Agent,
+        'revert-splat-agents': Agent,
 
         'add-translations': Entry,
         'revert-translations': Entry,
@@ -125,6 +126,10 @@ def manipulate(op, user, main_id, *ids, create=None):
     elif op == 'split-author':
         reindex = main_object.split_into_multiple(other_objects, user=user)
         out['success'] = "Done"
+
+    elif op == 'revert-splat-agents':
+        reindex = main_object.unsplit(user=user)
+        out['success'] = "Removed"
 
     elif op == 'add-aggregations':
         if main_object.is_aggregation:
@@ -968,7 +973,39 @@ def api_listing(request, target):
             { 'name': 'target', 'label': 'Name' },
             { 'name': 'comment', 'label': 'Reason' },
         ]
+
+    elif target == 'splat-agents':
+        records = []
+        for agent in (Agent.objects
+                      .filter(children__isnull=False)
+                      .prefetch_related('children')
+                      .distinct().all()):
+            records.append({
+                'name': agent.name,
+                'id': agent.id,
+                'splat': " | ".join([ child.name for child in agent.children.all() ]),
+            })
+        out['records'] = records
+        out['fields'] = [
+            { 'name': 'id', 'label': 'ID' },
+            { 'name': 'name', 'label': 'Original Name' },
+            { 'name': 'splat', 'label': 'Splat into' },
+        ]
     return JsonResponse(out)
+
+@login_required
+def api_reindex(request,target, entity_id):
+    reindexed = []
+    if target == 'entry':
+        entry = get_object_or_404(Entry, pk=entity_id)
+        reindexed.append(entry.id)
+    elif target == 'agent':
+        agent = get_object_or_404(Agent, pk=entity_id)
+        for entry in agent.authored_entries.all():
+            reindexed.append(entry.id)
+    xapian_index_records.delay(reindexed)
+    return JsonResponse({ "reindexing": reindexed })
+
 
 @login_required
 def api_revert(request, target):
