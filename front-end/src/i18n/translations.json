@@ -193,6 +193,9 @@
       "Country" : {
          "msgstr" : "Nazione"
       },
+      "Covers" : {
+         "msgstr" : "Copertine"
+      },
       "Create" : {
          "msgstr" : "Crea"
       },
@@ -226,6 +229,12 @@
       "Editable and printable text" : {
          "msgstr" : "Testo editabile e stampabile"
       },
+      "Edition" : {
+         "msgstr" : "Edizione"
+      },
+      "Edition Place and Date" : {
+         "msgstr" : "Luogo di stampa e anno dell'edizione"
+      },
       "Email" : {
          "msgstr" : "Email"
       },
@@ -243,6 +252,9 @@
       },
       "Failed" : {
          "msgstr" : "Fallito"
+      },
+      "Failure sending the report. Please contact us by email!" : {
+         "msgstr" : "Fallimento nell'invio del Report. Per favore contattaci via email!"
       },
       "Fill with blank pages before the last page if the signature is not full." : {
          "msgstr" : "Riempi con pagine bianche prima dell'ultima se il fascicolo non è completo."
@@ -267,6 +279,9 @@
       },
       "Fonts" : {
          "msgstr" : "Caratteri"
+      },
+      "From:" : {
+         "msgstr" : "Da:"
       },
       "Full text" : {
          "msgstr" : "Testo integrale"
@@ -400,6 +415,9 @@
       "No result found!" : {
          "msgstr" : "Non è stato trovato nessun risultato!"
       },
+      "No text added, so far!" : {
+         "msgstr" : "Nessun testo ancora aggiunto!"
+      },
       "None" : {
          "msgstr" : "Nessuno"
       },
@@ -408,6 +426,9 @@
       },
       "Nothing to show!" : {
          "msgstr" : "Niente da mostrare!"
+      },
+      "OPAC page" : {
+         "msgstr" : "Pagina OPAC"
       },
       "Omit" : {
          "msgstr" : "Ometti"
@@ -529,6 +550,21 @@
       "Replace all records" : {
          "msgstr" : "Sostituisci tutti i dati"
       },
+      "Report Error" : {
+         "msgstr" : "Segnala errore"
+      },
+      "Report Sent" : {
+         "msgstr" : "Report inviato"
+      },
+      "Report Sent!" : {
+         "msgstr" : "Report inviato!"
+      },
+      "Report a bug to the site administrators" : {
+         "msgstr" : "Segnala un errore a chi amministra il sito"
+      },
+      "Report an error for “%1” (%2)" : {
+         "msgstr" : "Segnala un errore per “%1” (%2)"
+      },
       "Reset" : {
          "msgstr" : "Azzera"
       },
@@ -580,11 +616,17 @@
       "See here for more details" : {
          "msgstr" : "Guarda qui per maggiori dettagli"
       },
+      "See the bookcover class for all the details" : {
+         "msgstr" : "Guarda la classe della copertina per tutti i dettagli"
+      },
       "See the library entries" : {
          "msgstr" : "Guarda gli inserimenti della biblioteca"
       },
       "See “%1”" : {
          "msgstr" : "Guarda “%1”"
+      },
+      "Send" : {
+         "msgstr" : "Invia"
       },
       "Set aggregations here" : {
          "msgstr" : "Imposta le aggregazioni qui"
