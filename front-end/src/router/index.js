@@ -11,6 +11,8 @@ import AgentOverView from '../views/AgentOverView.vue'
 import PageView from '../views/PageView.vue'
 import BookBuilderView from '../views/BookBuilderView.vue'
 import CoverBuilderView from '../views/CoverBuilderView.vue'
+const MapView = () => import('../views/MapView.vue')
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     scrollBehavior(to, from, savedPosition) {
@@ -27,6 +29,11 @@ const router = createRouter({
             name: 'home',
             path:  '/',
             redirect: { name: 'search' },
+        },
+        {
+            name: 'map',
+            path: '/map',
+            component: MapView,
         },
         {
             path: '/search',
