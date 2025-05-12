@@ -428,15 +428,6 @@
               {{ $gettext('Merge authors here') }}
             </MergeBox>
           </div>
-          <div id="split-authors" class="mb-2">
-            <MergeBox merge_type="author"
-                      api_call="split-author"
-                      create_item="agent"
-                      dashboard="splat-agents"
-                      help_text="__SPLIT_AUTHOR__">
-              {{ $gettext('Split authors here') }}
-            </MergeBox>
-          </div>
           <div id="title-cards" class="mb-2">
             <MergeBox merge_type="entry"
                       help_text="__MERGE_ENTRY__"
