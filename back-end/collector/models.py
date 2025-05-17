@@ -64,7 +64,7 @@ class Library(models.Model):
     library_type = models.CharField(max_length=32, null=True, choices=LIBRARY_TYPES)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.id)
+        return "{} {} [{}]".format(self.name, self.url, self.id)
     def as_api_dict(self):
         out = {}
         for f in ["id", "name", "url", "public", "active"]:
