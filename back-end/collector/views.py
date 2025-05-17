@@ -1133,8 +1133,11 @@ def api_list_agents(request):
             query = Q(normalized_name__contains=words.pop())
             while words:
                 query = query & Q(normalized_name__contains=words.pop())
-            # logger.debug(query)
-            rs = Agent.objects.prefetch_related('canonical_agent').order_by('name').filter(query)
+
+            # sort by canonical_agent.name descending, so null will
+            # pop up on top. variants will be sorted by name
+            rs = (Agent.objects.prefetch_related('canonical_agent')
+                  .order_by('-canonical_agent__normalized_name', 'normalized_name').filter(query))
             out['matches'] = rs.count()
             if out['matches'] > 100:
                 out['warning'] = "Too many results, continue searching"
