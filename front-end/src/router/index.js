@@ -71,7 +71,7 @@ const router = createRouter({
                 return { name: 'search',
                          query: {
                              query: "library:" + to.params.id,
-                             filter_library: to.params.id,
+                             // filter_library: to.params.id,
                              sort_by: "title_asc",
                          }
                        }
