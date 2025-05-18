@@ -122,28 +122,31 @@
 
 @utility btn-primary {
   @apply bg-linear-to-tr from-spectra-700 to-spectra-900
+  cursor-pointer
         hover:bg-linear-to-tr hover:from-spectra-600 hover:to-spectra-700
               font-semibold text-white;
 }
 
 @utility btn-secondary {
   @apply bg-linear-to-tr from-spectra-500 to-spectra-600
+  cursor-pointer
         hover:bg-linear-to-tr hover:from-spectra-700 hover:to-spectra-600
               font-semibold text-white;
 }
 
 @utility btn-accent {
   @apply bg-linear-to-tr from-cab-sav-800 to-cab-sav-950
+  cursor-pointer
         hover:bg-linear-to-tr hover:from-cab-sav-800 hover:to-cab-sav-700
               font-semibold text-white;
 }
 
 @utility mcrz-href-primary {
-  @apply text-spectra-800 hover:text-spectra-600 font-semibold;
+  @apply text-spectra-800 hover:text-spectra-600 font-semibold cursor-pointer;
 }
 
 @utility mcrz-href-normal {
-  @apply text-spectra-900 hover:text-spectra-700;
+  @apply text-spectra-900 hover:text-spectra-700 cursor-pointer;
 }
 
 @utility mcrz-radio {

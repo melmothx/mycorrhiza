@@ -41,6 +41,7 @@
              reset_message: null,
              current_language: null,
              show_login: false,
+             show_reset_password: false,
              bookbuilder,
          }
      },
@@ -80,9 +81,9 @@
                  "operation": "send-link",
                  "username":  this.username,
              }).then((res) => {
-                 console.log(res.data.message);
+                 console.log(res.data);
                  this.message = "";
-                 this.reset_message = res.data.message;
+                 this.reset_message = res.data.message || res.data.error;
              });
          },
          logout() {
@@ -148,7 +149,7 @@
       <span class="px-3">{{ $gettext('Hello, %1!', authenticated) }}</span>
     </div>
     <div v-else>
-      <UserIcon class="h-5 w-5 mx-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true" />
+      <UserIcon class="h-5 w-5 mx-2 text-spectra-800 cursor-pointer" @click="show_login = show_login ? false : true; show_reset_password = false" />
     </div>
     <div v-if="bookbuilder.session_id">
       <router-link :to="{ name: 'bookbuilder' }">
@@ -204,7 +205,7 @@
       </Menu>
     </div>
   </div>
-  <div v-if="!authenticated && show_login">
+  <div v-if="!authenticated && show_login && !show_reset_password">
     <form @submit.prevent="login" class="mx-4 flex">
       <input class="outline outline-0 border border-gray-300 focus:border-spectra-500 focus:ring-0 px-2 rounded-none h-8 w-full"
              :placeholder="$gettext('Username')"
@@ -219,12 +220,20 @@
       <div class="ml-4 py-2 text-claret-900 font-bold">
         {{ $gettext(message) }}
       </div>
-      <form v-if="username" @submit.prevent="password_reset" class="ml-4">
-        <button id="reset-password"
-                class="h-8 btn-secondary rounded-none rounded-br-3xl pr-10 pl-4 italic font-normal h-8 mr-2"
-                type="submit">{{ $gettext('Reset Password for %1?', username) }}</button>
-      </form>
     </div>
+    <div v-if="!show_reset_password" class="text-sm mx-4 mcrz-href-primary p-2" @click="show_reset_password = true">
+      {{ $gettext('Reset password?') }}
+    </div>
+  </div>
+  <div v-if="show_reset_password">
+    <form @submit.prevent="password_reset" class="ml-4 flex">
+      <input class="mcrz-input h-8"
+             :placeholder="$gettext('Username')"
+             type="text" v-model="username" required>
+      <button id="reset-password"
+              class="h-8 btn-secondary rounded-none rounded-br-3xl pr-10 pl-4 italic font-normal h-8 mr-2"
+              type="submit">{{ $gettext('Require Password Reset') }}</button>
+    </form>
     <div v-if="reset_message" class="p-2 ml-4 text-claret-900 font-bold" @click="reset_message = null">
       {{ $gettext(reset_message) }}
     </div>
