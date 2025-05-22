@@ -7,7 +7,7 @@
  import SingleFilterBox from './SingleFilterBox.vue'
  import axios from 'axios'
  import { Listbox, ListboxButton, ListboxOptions, ListboxOption, } from '@headlessui/vue'
- import { ChevronUpDownIcon, XCircleIcon, XMarkIcon, ListBulletIcon } from '@heroicons/vue/24/solid'
+ import { ChevronUpDownIcon, XCircleIcon, XMarkIcon, ListBulletIcon, Cog8ToothIcon } from '@heroicons/vue/24/solid'
  export default {
      components: {
          Listbox, ListboxButton, ListboxOptions, ListboxOption,
@@ -16,6 +16,7 @@
          ChevronUpDownIcon, XCircleIcon, XMarkIcon,
          ListBulletIcon,
          SingleFilterBox,
+         Cog8ToothIcon,
      },
      data() {
          const sort_by_values = [
@@ -55,6 +56,7 @@
              active_filters: [],
              search_was_run: false,
              single_filter_boxes: [],
+             search_is_running: false,
          }
      },
      methods: {
@@ -120,10 +122,12 @@
                      }
                  }
              }
+             this.search_is_running = true;
              axios.get('/collector/api/search',
                        { params: params })
                   .then((res) => {
                       this.search_was_run = true;
+                      this.search_is_running = false;
                       this.matches = res.data.matches;
                       if (opts && opts.update_facets) {
                           this.facets = res.data.facets;
@@ -399,6 +403,11 @@
       </div>
       <div id="result-box">
         <PaginationBox :pager="pager" @get-page="getPage" />
+        <div v-if="search_is_running" class="text-center m-8 font-bold flex">
+          <Cog8ToothIcon class="h-4 m-1 animate-spin" />
+          {{ $gettext('Fetching results, hold on...') }}
+          <Cog8ToothIcon class="h-4 m-1 animate-spin" />
+        </div>
         <div class="mb-2">
           <template v-for="match in matches" :key="match.entry_id">
             <EntryBox :record="match"
