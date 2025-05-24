@@ -114,7 +114,7 @@
          },
      },
      mounted() {
-         this.map = L.map(this.$refs.mapContainer, { minZoom: 4 });
+         this.map = L.map(this.$refs.mapContainer, { minZoom: 1 });
          this.map.setView(this.areas[0].center, 4);
          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
              attribution:
