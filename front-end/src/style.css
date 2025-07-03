@@ -369,5 +369,8 @@
   .mcrz-tab-active {
     @apply inline-block p-4 border-b-2 rounded-t-lg font-bold text-spectra-700 border-b-2 border-spectra-700;
   }
+  .mcrz-text-error {
+      @apply text-claret-900 font-bold;
+  }
 }
 

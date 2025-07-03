@@ -10,6 +10,7 @@
  import "leaflet.markercluster/dist/leaflet.markercluster.js";
  import "leaflet.markercluster/dist/MarkerCluster.css";
  import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+ import LibraryBox from './LibraryBox.vue';
  delete L.Icon.Default.prototype._getIconUrl;
  L.Icon.Default.mergeOptions({
      iconRetinaUrl: markerIcon2x,
@@ -17,6 +18,9 @@
      shadowUrl: markerShadow,
  });
  export default {
+     components: {
+         LibraryBox,
+     },
      data() {
          return {
              map: null,
@@ -24,65 +28,68 @@
              msg: null,
              imgWidth: 1200,
              imgHeight: 1200,
+             is_initialized: false,
+             all_libraries: [],
+             libraries: [],
              areas: [
                  {
-                     alt: "Europa",
-                     title: "Europa",
+                     // $gettext("Europe")
+                     title: "Europe",
                      coords: "400,271 320,395 370,410 425,415 495,400 510,375 500,325 460,290",
                      center: [46.0037, 8.9511],
                      fill: "deepskyblue", stroke: "blue"
                  },
                  {
-                     alt: "Asia",
+                     // $gettext("Asia")
                      title: "Asia",
                      coords: "411,0 411,197 400,271 460,290 500,325 510,375 495,400 520,440 575,440 650,475 675,415 790,475 925,425 980,470 930,515 915,700 1030,865 1200,880 1200,0",
                      center: [39.9042, 116.4074],
                      fill: "yellow", stroke: "goldenrod"
                  },
                  {
-                     alt: "Africa",
+                     // $gettext("Africa")
                      title: "Africa",
                      center: [-4.4419, 15.2663],
                      coords: "370,410 425,415 495,400 520,440 575,440 575,580 470,650 345,490",
                      fill: "orange", stroke: "orangered"
                  },
                  {
-                     alt: "Oceania",
+                     // $gettext("Oceania")
                      title: "Oceania",
                      coords: "650,475 675,415 790,475 925,425 980,470 930,515 915,700 735,785 660,625",
                      center: [-33.8688, 151.2093],
                      fill: "green", stroke: "darkgreen"
                  },
                  {
-                     alt: "North America East",
+                     // $gettext("North America East")
                      title: "North America East",
                      coords: "0,0 411,0 411,197 400,271 320,395 155,395 70,380 0,371",
                      center: [ 40.7128, -74.0060 ],
                      fill: "purple", stroke: "indigo"
                  },
                  {
-                     alt: "Center America East",
+                     // $gettext("Center America East")
                      title: "Center America East",
                      coords: "320,395 155,395 70,380 0,371 0,585 152,480 228,480",
                      center: [ 20.6597, -103.3496 ],
                      fill: "pink", stroke: "mediumvioletred"
                  },
                  {
-                     alt: "North America West",
+                     // $gettext("North America West")
                      title: "North America West",
                      coords: "960,1200 815,1000 1030,865 1200,880 1200,1200",
                      center: [ 34.0522, -118.2437 ],
                      fill: "lightblue", stroke: "blue"
                  },
                  {
-                     alt: "Center America West",
+                     // $gettext("Center America West")
                      title: "Center America West",
                      coords: "665,1040 725,1200 960,1200 815,1000",
                      center: [ 21.5218, -77.7812 ],
                      fill: "brown", stroke: "chocolate"
                  },
                  {
-                     alt: "South America",
+                     // $gettext("South America")
                      title: "South America",
                      coords: "0,585 152,480 228,480 375,575 520,770 665,1040 725,1200 0,1200",
                      center: [ -34.0637, -58.3816 ],
@@ -106,23 +113,47 @@
                  div.appendChild(link);
                  L.marker([m.latitude, m.longitude])
                   .addTo(this.marker_cluster_group)
-                 .bindPopup(div)
-             })
+                  .bindPopup(div);
+                 this.libraries.push(m);
+                 this.all_libraries.push(m);
+             });
+             this.update_visible_markers();
          },
          handle_area_click(area) {
+             if (!this.is_initialized) {
+                 this.initialize_big_map();
+             }
              this.map.setView(area.center, 4);
+         },
+         initialize_big_map() {
+             this.map = L.map(this.$refs.mapContainer, { minZoom: 1 });
+             this.map.setView(this.areas[0].center, 4);
+             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                 attribution:
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+             }).addTo(this.map);
+             this.marker_cluster_group = L.markerClusterGroup();
+             this.marker_cluster_group.addTo(this.map);
+             this.fetch_markers();
+             this.is_initialized = true;
+             this.map.on('moveend', e => this.update_visible_markers());
+             this.map.on('zoomend', e => this.update_visible_markers());
+         },
+         update_visible_markers() {
+             console.log("Called update visible markers");
+             const map_bounds = this.map.getBounds();
+             console.log(map_bounds);
+             this.libraries = this.all_libraries.filter((l) => {
+                 if (map_bounds.contains(L.latLng(l.latitude, l.longitude))) {
+                     return true;
+                 }
+                 else {
+                     return false;
+                 }
+             });
          },
      },
      mounted() {
-         this.map = L.map(this.$refs.mapContainer, { minZoom: 1 });
-         this.map.setView(this.areas[0].center, 4);
-         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-             attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-         }).addTo(this.map);
-         this.marker_cluster_group = L.markerClusterGroup();
-         this.marker_cluster_group.addTo(this.map);
-         this.fetch_markers();
      },
  }
 </script>
@@ -132,31 +163,48 @@
  }
 </style>
 <template>
-  <div class="m-2 grid sm:grid-cols-[200px_auto] gap-2">
-    <div class="hidden sm:block">
-      <svg
-          class="border-4 border-cab-sav-800 rounded-sm"
-          :viewBox="`0 0 ${imgWidth} ${imgHeight}`"
-          style="width: 100%; height: auto; display: block;"
-          xmlns="http://www.w3.org/2000/svg">
-        <!-- Actual image -->
-        <image href="/spilhaus.jpg" x="0" y="0" :width="imgWidth" :height="imgHeight" />
-        <!-- Polygons for each continent/area -->
-        <polygon
-            v-for="area in areas"
-            :key="area.title"
-            :points="area.coords"
-            :fill="area.fill"
-            :stroke="area.stroke"
-            :stroke-width="0"
-            fill-opacity="0"
-            style="cursor:pointer;"
-            @click="handle_area_click(area)"
-        >
-          <title>{{ area.title }}</title>
-        </polygon>
-      </svg>
+  <div class="grid grid-cols-2 gap-2">
+    <div>
+      <div v-if="!is_initialized">
+        <svg
+            class="border-4 rounded-sm"
+            :viewBox="`0 0 ${imgWidth} ${imgHeight}`"
+            style="width: 100%; height: auto; display: block;"
+            xmlns="http://www.w3.org/2000/svg">
+          <!-- Actual image -->
+          <image href="/spilhaus.jpg" x="0" y="0" :width="imgWidth" :height="imgHeight" />
+          <!-- Polygons for each continent/area -->
+          <polygon
+              v-for="area in areas"
+              :key="area.title"
+              :points="area.coords"
+              :fill="area.fill"
+              :stroke="area.stroke"
+              :stroke-width="0"
+              fill-opacity="0"
+              style="cursor:pointer;"
+              @click="handle_area_click(area)"
+          >
+            <title>{{ $gettext(area.title) }}</title>
+          </polygon>
+        </svg>
+        <div @click="handle_area_click(areas[0])" class="mt-2 mcrz-href-primary text-center">
+          {{ $gettext('Click on the map to locate a library') }}
+        </div>
+      </div>
+      <div ref="mapContainer" style="height: 600px"></div>
     </div>
-    <div ref="mapContainer" style="height: 600px"></div>
+    <div v-if="is_initialized">
+      <div v-if="libraries.length">
+        <div v-for="library in libraries">
+          <LibraryBox :library="library" class="mb-2" :concise="true" />
+        </div>
+      </div>
+      <div v-else>
+        <div class="mcrz-text-error px-4">
+          {{ $gettext("Sorry, no libraries here! Please zoom out") }}
+        </div>
+      </div>
+    </div>
   </div>
 </template>

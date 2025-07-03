@@ -2,11 +2,11 @@
  import { LinkIcon } from '@heroicons/vue/24/solid'
  export default {
      components: { LinkIcon },
-     props: [ "library", "full", "short" ],
+     props: [ "library", "full", "short", "concise" ],
      methods: {
          bare_url(url) {
              console.log(url)
-             return url.replace(/https?:\/\//, '')
+             return url.replace(/https?:\/\//, '').replace(/\/$/, '');
          }
      }
  }
@@ -28,10 +28,10 @@
         {{ bare_url(library.url) }}
       </a>
     </div>
-    <div v-if="library.established" class="font-bold my-1">
+    <div v-if="!concise && library.established" class="font-bold my-1">
       {{ $gettext('Project established in %1', library.established) }}
     </div>
-    <div v-if="library.languages" class="font-bold my-1">
+    <div v-if="!concise && library.languages" class="font-bold my-1">
       {{ library.languages }}
     </div>
     <div v-if="full">
@@ -71,7 +71,7 @@
         <pre class="text-[12px] border p-1">{{ library.pgp_public_key }}</pre>
       </div>
     </div>
-    <div v-else>
+    <div v-else-if="!concise">
       <div class="my-2" v-if="library.short_desc">
         <p class="whitespace-pre-line">
           {{ library.short_desc }}
