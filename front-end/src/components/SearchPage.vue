@@ -277,7 +277,7 @@
       </template>
     </div>
     <div>
-      <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8">
+      <div class="sm:flex sm:flex-nowrap sm:h-8">
         <div class="relative w-full">
           <input class="mcrz-input shadow-sm w-full my-1 sm:my-0 sm:h-8"
                  type="text" :placeholder="$gettext('Search')" v-model="query"/>

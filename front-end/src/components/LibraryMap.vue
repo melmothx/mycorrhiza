@@ -11,6 +11,8 @@
  import "leaflet.markercluster/dist/MarkerCluster.css";
  import "leaflet.markercluster/dist/MarkerCluster.Default.css";
  import LibraryBox from './LibraryBox.vue';
+ import EntryBox from './EntryBox.vue';
+ import SearchBar from '../components/SearchBar.vue'
  delete L.Icon.Default.prototype._getIconUrl;
  L.Icon.Default.mergeOptions({
      iconRetinaUrl: markerIcon2x,
@@ -20,9 +22,12 @@
  export default {
      components: {
          LibraryBox,
+         EntryBox,
+         SearchBar,
      },
      data() {
          return {
+             query: '',
              map: null,
              marker_cluster_group: null,
              msg: null,
@@ -31,6 +36,7 @@
              is_initialized: false,
              all_libraries: [],
              libraries: [],
+             latest_entries: [],
              areas: [
                  {
                      // $gettext("Europe")
@@ -138,6 +144,7 @@
              this.is_initialized = true;
              this.map.on('moveend', e => this.update_visible_markers());
              this.map.on('zoomend', e => this.update_visible_markers());
+             this.$refs.mapContainer.scrollIntoView({ behavior: "smooth" });
          },
          update_visible_markers() {
              console.log("Called update visible markers");
@@ -154,6 +161,14 @@
          },
      },
      mounted() {
+         axios.get('/collector/api/latest').then((res) => {
+             this.latest_entries = res.data.entries;
+         });
+     },
+     watch: {
+         query(new_query) {
+             console.log(`${this.query} => ${new_query}`);
+         }
      },
  }
 </script>
@@ -163,7 +178,9 @@
  }
 </style>
 <template>
-  <div class="grid grid-cols-2 gap-2">
+  <div>
+  <SearchBar v-model="query" />
+  <div class="sm:grid sm:grid-cols-2 sm:gap-8">
     <div>
       <div v-if="!is_initialized">
         <svg
@@ -192,19 +209,28 @@
           {{ $gettext('Click on the map to locate a library') }}
         </div>
       </div>
-      <div ref="mapContainer" style="height: 600px"></div>
+      <div ref="mapContainer" class="h-screen"></div>
     </div>
-    <div v-if="is_initialized">
-      <div v-if="libraries.length">
-        <div v-for="library in libraries">
-          <LibraryBox :library="library" class="mb-2" :concise="true" />
+    <div>
+      <div v-if="is_initialized">
+        <div v-if="libraries.length">
+          <div v-for="library in libraries">
+            <LibraryBox :library="library" class="mb-2" :concise="true" />
+          </div>
+        </div>
+        <div v-else>
+          <div class="mcrz-text-error mb-4">
+            {{ $gettext("Sorry, no libraries here! Please zoom out") }}
+          </div>
         </div>
       </div>
-      <div v-else>
-        <div class="mcrz-text-error px-4">
-          {{ $gettext("Sorry, no libraries here! Please zoom out") }}
+      <div v-if="!is_initialized || !libraries.length">
+        <h2 class="mb-4 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
+        <div v-for="match in latest_entries" :key="match.entry_id">
+          <EntryBox :record="match" />
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>

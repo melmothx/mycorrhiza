@@ -330,6 +330,25 @@ def _active_libraries(user):
     logger.debug("Active libs are {}".format(active_libraries))
     return active_libraries
 
+def api_latest_entries(request):
+    user = request.user
+    active_libraries = _active_libraries(user)
+    logger.debug("User libraries: {}".format(active_libraries))
+    exclusions = []
+    if user.is_authenticated:
+        for exclusion in user.exclusions.all():
+            exclusions.extend(exclusion.as_xapian_queries())
+        logger.debug("Exclusions: {}".format(exclusions))
+
+    res = search(
+        settings.XAPIAN_DB,
+        request.GET,
+        active_libraries=active_libraries,
+        exclusions=exclusions,
+        matches_only=True,
+    )
+    return JsonResponse({ "entries": res })
+
 def api_search(request):
     public_only = True
 
