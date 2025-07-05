@@ -345,6 +345,7 @@ def api_latest_entries(request):
         request.GET,
         active_libraries=active_libraries,
         exclusions=exclusions,
+        partial_match=True,
         matches_only=True,
     )
     return JsonResponse({ "entries": res })
