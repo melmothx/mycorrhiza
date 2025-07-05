@@ -7,7 +7,7 @@
   <NavBar />
   <main class="grow">
     <div class="m-1 md:m-5">
-      <LibraryMap class="mt-4" />
+      <LibraryMap />
     </div>
   </main>
   <NavFooter />  

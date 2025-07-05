@@ -132,6 +132,7 @@
              this.map.setView(area.center, 4);
          },
          initialize_big_map() {
+             this.is_initialized = true;
              this.map = L.map(this.$refs.mapContainer, { minZoom: 1 });
              this.map.setView(this.areas[0].center, 4);
              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -141,7 +142,6 @@
              this.marker_cluster_group = L.markerClusterGroup();
              this.marker_cluster_group.addTo(this.map);
              this.fetch_markers();
-             this.is_initialized = true;
              this.map.on('moveend', e => this.update_visible_markers());
              this.map.on('zoomend', e => this.update_visible_markers());
              this.$refs.mapContainer.scrollIntoView({ behavior: "smooth" });
@@ -159,15 +159,25 @@
                  }
              });
          },
+         get_latest_entries() {
+             let params = new URLSearchParams;
+             if (this.query) {
+                 params.append('query', this.query);
+             }
+             axios.get('/collector/api/latest',
+                       { params: params })
+                  .then((res) => {
+                      console.log("Fetched");
+                      this.latest_entries = res.data.entries;
+                  });
+         }
      },
      mounted() {
-         axios.get('/collector/api/latest').then((res) => {
-             this.latest_entries = res.data.entries;
-         });
+         this.get_latest_entries();
      },
      watch: {
-         query(new_query) {
-             console.log(`${this.query} => ${new_query}`);
+         query() {
+             this.get_latest_entries();
          }
      },
  }
@@ -178,9 +188,8 @@
  }
 </style>
 <template>
-  <div>
-  <SearchBar v-model="query" />
-  <div class="sm:grid sm:grid-cols-2 sm:gap-8">
+  <SearchBar class="m-1" v-model="query" />
+  <div class="mt-4 m-1 sm:grid sm:grid-cols-2 sm:gap-8">
     <div>
       <div v-if="!is_initialized">
         <svg
@@ -212,25 +221,20 @@
       <div ref="mapContainer" class="h-screen"></div>
     </div>
     <div>
-      <div v-if="is_initialized">
-        <div v-if="libraries.length">
-          <div v-for="library in libraries">
-            <LibraryBox :library="library" class="mb-2" :concise="true" />
-          </div>
-        </div>
-        <div v-else>
-          <div class="mcrz-text-error mb-4">
-            {{ $gettext("Sorry, no libraries here! Please zoom out") }}
-          </div>
+      <div v-if="is_initialized && !query && libraries.length">
+        <div v-for="library in libraries">
+          <LibraryBox :library="library" class="mb-2" :concise="true" />
         </div>
       </div>
-      <div v-if="!is_initialized || !libraries.length">
-        <h2 class="mb-4 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
+      <div v-else>
+        <div v-if="is_initialized && !libraries.length" class="mcrz-text-error mb-4">
+          {{ $gettext("Sorry, no libraries here! Please zoom out") }}
+        </div>
+        <h2 class="mb-4 mt-2 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
         <div v-for="match in latest_entries" :key="match.entry_id">
           <EntryBox :record="match" />
         </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
