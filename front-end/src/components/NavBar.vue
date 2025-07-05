@@ -217,7 +217,7 @@
               type="submit">{{ $gettext('Login') }}</button>
     </form>
     <div v-if="message" class="pt-2">
-      <div class="ml-4 py-2 text-claret-900 font-bold">
+      <div class="ml-4 p-2 text-claret-900 font-bold">
         {{ $gettext(message) }}
       </div>
     </div>

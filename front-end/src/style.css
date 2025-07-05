@@ -219,6 +219,10 @@
   @apply border border-perl-bush-200 bg-perl-bush-50 shadow-sm max-w-prose mx-auto rounded-sm p-4;
 }
 
+@utility mcrz-plain-box {
+  @apply border border-perl-bush-200 bg-perl-bush-50 shadow-sm rounded-sm p-4;
+}
+
 @layer components {
   /* static, always compiled, for full text and django app */
 

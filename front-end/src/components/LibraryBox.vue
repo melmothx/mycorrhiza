@@ -1,14 +1,12 @@
 <script>
- import { LinkIcon } from '@heroicons/vue/24/solid'
+ import { LinkIcon } from '@heroicons/vue/24/solid';
+ import LibraryLink from './LibraryLink.vue';
  export default {
-     components: { LinkIcon },
-     props: [ "library", "full", "short", "concise" ],
-     methods: {
-         bare_url(url) {
-             console.log(url)
-             return url.replace(/https?:\/\//, '').replace(/\/$/, '');
-         }
-     }
+     components: {
+         LinkIcon,
+         LibraryLink,
+     },
+     props: [ "library", "full", "short" ],
  }
 </script>
 <template>
@@ -20,18 +18,11 @@
     <slot>
       <h1 class="font-bold">{{ library.name }}</h1>
     </slot>
-    <div class="my-1" v-if="library.url">
-      <a class="text-sm text-claret-900 font-bold hover:text-claret-700"
-         target="_blank"
-         :title="$gettext('Visit Library Homepage')"
-         :href="library.url">
-        {{ bare_url(library.url) }}
-      </a>
-    </div>
-    <div v-if="!concise && library.established" class="font-bold my-1">
+    <LibraryLink :url="library.url" class="my-1" />
+    <div v-if="library.established" class="font-bold my-1">
       {{ $gettext('Project established in %1', library.established) }}
     </div>
-    <div v-if="!concise && library.languages" class="font-bold my-1">
+    <div v-if="library.languages" class="font-bold my-1">
       {{ library.languages }}
     </div>
     <div v-if="full">
@@ -71,7 +62,7 @@
         <pre class="text-[12px] border p-1">{{ library.pgp_public_key }}</pre>
       </div>
     </div>
-    <div v-else-if="!concise">
+    <div v-else>
       <div class="my-2" v-if="library.short_desc">
         <p class="whitespace-pre-line">
           {{ library.short_desc }}

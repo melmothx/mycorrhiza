@@ -10,7 +10,7 @@
  import "leaflet.markercluster/dist/leaflet.markercluster.js";
  import "leaflet.markercluster/dist/MarkerCluster.css";
  import "leaflet.markercluster/dist/MarkerCluster.Default.css";
- import LibraryBox from './LibraryBox.vue';
+ import LibraryLink from './LibraryLink.vue';
  import EntryBox from './EntryBox.vue';
  import SearchBar from '../components/SearchBar.vue'
  delete L.Icon.Default.prototype._getIconUrl;
@@ -21,7 +21,7 @@
  });
  export default {
      components: {
-         LibraryBox,
+         LibraryLink,
          EntryBox,
          SearchBar,
      },
@@ -144,7 +144,7 @@
              this.fetch_markers();
              this.map.on('moveend', e => this.update_visible_markers());
              this.map.on('zoomend', e => this.update_visible_markers());
-             this.$refs.mapContainer.scrollIntoView({ behavior: "smooth" });
+             // this.$refs.mapContainer.scrollIntoView({ behavior: "smooth" });
          },
          update_visible_markers() {
              console.log("Called update visible markers");
@@ -218,22 +218,28 @@
           {{ $gettext('Click on the map to locate a library') }}
         </div>
       </div>
-      <div ref="mapContainer" class="h-screen"></div>
-    </div>
-    <div>
-      <div v-if="is_initialized && !query && libraries.length">
-        <div v-for="library in libraries">
-          <LibraryBox :library="library" class="mb-2" :concise="true" />
+      <div ref="mapContainer" class="h-128 m-1"></div>
+      <div v-for="library in libraries" class="mx-1 my-2 mcrz-plain-box">
+        <router-link :to="{ name: 'library_view', params: { id: library.id } }">
+          <h2 class="font-bold text-center">
+            <span :class="`mcrz-library-${library.library_type || 'digital'}`">
+              {{ library.name }}
+            </span>
+          </h2>
+          <div v-if="library.logo_url">
+            <img class="py-1 max-h-12 mx-auto mb-2"
+                 :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
+          </div>
+        </router-link>
+        <div class="text-center">
+          <LibraryLink :url="library.url" class="my-1" />
         </div>
       </div>
-      <div v-else>
-        <div v-if="is_initialized && !libraries.length" class="mcrz-text-error mb-4">
-          {{ $gettext("Sorry, no libraries here! Please zoom out") }}
-        </div>
-        <h2 class="mb-4 mt-2 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
-        <div v-for="match in latest_entries" :key="match.entry_id">
-          <EntryBox :record="match" />
-        </div>
+    </div>
+    <div>
+      <h2 class="mb-4 mt-2 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
+      <div v-for="match in latest_entries" :key="match.entry_id">
+        <EntryBox :record="match" />
       </div>
     </div>
   </div>
