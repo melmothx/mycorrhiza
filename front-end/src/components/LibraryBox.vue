@@ -1,14 +1,12 @@
 <script>
- import { LinkIcon } from '@heroicons/vue/24/solid'
+ import { LinkIcon } from '@heroicons/vue/24/solid';
+ import LibraryLink from './LibraryLink.vue';
  export default {
-     components: { LinkIcon },
+     components: {
+         LinkIcon,
+         LibraryLink,
+     },
      props: [ "library", "full", "short" ],
-     methods: {
-         bare_url(url) {
-             console.log(url)
-             return url.replace(/https?:\/\//, '')
-         }
-     }
  }
 </script>
 <template>
@@ -20,14 +18,7 @@
     <slot>
       <h1 class="font-bold">{{ library.name }}</h1>
     </slot>
-    <div class="my-1" v-if="library.url">
-      <a class="text-sm text-claret-900 font-bold hover:text-claret-700"
-         target="_blank"
-         :title="$gettext('Visit Library Homepage')"
-         :href="library.url">
-        {{ bare_url(library.url) }}
-      </a>
-    </div>
+    <LibraryLink :url="library.url" class="my-1" />
     <div v-if="library.established" class="font-bold my-1">
       {{ $gettext('Project established in %1', library.established) }}
     </div>

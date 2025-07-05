@@ -32,7 +32,7 @@
 </script>
 <template>
   <div>
-    <a href="/search">
+    <a href="/">
       <template v-if="settings.site_logo">
         <img class="w-64" :src="settings.site_logo"
              :alt="settings.site_name || 'Home'"

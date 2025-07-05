@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("api/search", views.api_search, name="api_search"),
+    path("api/latest", views.api_latest_entries, name="api_latest_entries"),
     path("api/auth/login", views.api_login, name="api_login"),
     path("api/auth/logout", views.api_logout, name="api_logout"),
     path("api/auth/reset-password", views.api_reset_password, name="api_reset_password"),

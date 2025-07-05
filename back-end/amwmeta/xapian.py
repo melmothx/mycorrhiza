@@ -52,6 +52,7 @@ def search(db_path, query_params,
            active_libraries=[],
            exclusions=[],
            facets_only=False,
+           partial_match=False,
            matches_only=False):
     db = xapian.Database(db_path)
     querystring = strip_diacritics(query_params.get("query"))
@@ -88,6 +89,8 @@ def search(db_path, query_params,
     if querystring:
         # logger.info("Query is " + querystring)
         flags = queryparser.FLAG_PHRASE | queryparser.FLAG_BOOLEAN  | queryparser.FLAG_LOVEHATE | queryparser.FLAG_WILDCARD
+        if partial_match:
+            flags = flags | queryparser.FLAG_PARTIAL
         query = queryparser.parse_query(querystring, flags)
 
     filter_queries = []
