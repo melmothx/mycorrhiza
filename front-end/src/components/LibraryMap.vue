@@ -132,6 +132,7 @@
              this.map.setView(area.center, 4);
          },
          initialize_big_map() {
+             this.$refs.mapContainer.style.height = `${this.$refs.mapContainer.offsetWidth}px`;
              this.is_initialized = true;
              this.map = L.map(this.$refs.mapContainer, { minZoom: 1 });
              this.map.setView(this.areas[0].center, 4);
@@ -189,7 +190,7 @@
 </style>
 <template>
   <SearchBar class="m-1" v-model="query" />
-  <div class="mt-4 m-1 sm:grid sm:grid-cols-2 sm:gap-8">
+  <div class="mt-4 m-1 sm:grid sm:grid-cols-2 sm:gap-8 xl:grid-cols-[600px_auto]">
     <div>
       <div v-if="!is_initialized">
         <svg
@@ -218,7 +219,7 @@
           {{ $gettext('Click on the map to locate a library') }}
         </div>
       </div>
-      <div ref="mapContainer" class="h-128 m-1"></div>
+      <div ref="mapContainer" class="m-1"></div>
       <div v-for="library in libraries" class="mx-1 my-2 mcrz-plain-box">
         <router-link :to="{ name: 'library_view', params: { id: library.id } }">
           <h2 class="font-bold text-center">
