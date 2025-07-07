@@ -1121,16 +1121,42 @@ def api_process_spreadsheet(request, spreadsheet_id):
 
     return JsonResponse(out)
 
+def _listable_libraries(user):
+    if user.is_authenticated:
+        query = Q(active=True)
+    else:
+        query = Q(active=True) & (Q(public=True) | Q(library_type="physical"))
+    rs = Library.objects.filter(query).order_by('name')
+    return rs
+
+def _catalog_is_accessible(user, library):
+    if not library.active:
+        return False
+    elif library.public:
+        return True
+    elif user.is_authenticated:
+        return True
+    else:
+        return False
+
 def api_list_libraries(request):
-    active_libraries = _active_libraries(request.user)
-    data = [ l.public_data() for l in Library.objects.filter(id__in=active_libraries).order_by('name').all() ]
+    data = []
+    user = request.user
+    for l in _listable_libraries(user).all():
+        library = l.public_data()
+        library['catalog_is_accessible'] = _catalog_is_accessible(user, l)
+        data.append(library)
     return JsonResponse({ "libraries": data })
 
 def api_show_library(request, library_id):
-    library = {}
-    active_libraries = _active_libraries(request.user)
-    if library_id in active_libraries:
-        library = Library.objects.get(pk=library_id).public_data()
+    user = request.user
+    rs = _listable_libraries(user)
+    try:
+        l = rs.get(pk=library_id)
+        library = l.public_data()
+        library['catalog_is_accessible'] = _catalog_is_accessible(user, l)
+    except Library.DoesNotExist:
+        library = {}
     return JsonResponse({ "library": library })
 
 def api_list_agents(request):
