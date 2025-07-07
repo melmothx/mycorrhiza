@@ -24,16 +24,24 @@ logger = logging.getLogger(__name__)
 
 class Library(models.Model):
     LIBRARY_TYPES = [
-        ('physical', 'Physical Library'),
-        ('digital', 'Digital Library'),
-        ('closed', 'Closed or Private Library'),
+        ('physical', 'Physical Library, always listed'),
+        ('digital', 'Digital Library, listed only if public'),
+        ('closed', 'Closed or Private Library, listed only if public'),
     ]
     name = models.CharField(max_length=255)
     url = models.URLField(max_length=255,
                           blank=True,
                           null=True)
-    public = models.BooleanField(default=False, null=False)
-    active = models.BooleanField(default=True, null=False)
+    public = models.BooleanField(
+        default=False,
+        null=False,
+        help_text="If not checked, the catalog is accessible only to authenticated users",
+    )
+    active = models.BooleanField(
+        default=True,
+        null=False,
+        help_text="If not checked, the catalog is not accessible at all",
+    )
     email_public = models.EmailField(blank=True)
     email_internal = models.EmailField(blank=True)
     opening_hours = models.TextField(blank=True)

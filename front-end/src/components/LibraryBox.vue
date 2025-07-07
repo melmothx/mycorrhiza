@@ -74,7 +74,7 @@
         </router-link>
       </div>
     </div>
-    <div v-if="!short" class="my-4 text-sm">
+    <div v-if="!short && library.catalog_is_accessible" class="my-4 text-sm">
       <a class="btn-primary py-1 px-2"
          :href="`/library/entries/${library.id}`">
         {{ $gettext('See the library entries') }}
