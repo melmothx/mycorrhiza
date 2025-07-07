@@ -220,7 +220,7 @@
 }
 
 @utility mcrz-plain-box {
-  @apply border border-perl-bush-200 bg-perl-bush-50 shadow-sm rounded-sm p-4;
+  @apply border border-perl-bush-200 bg-perl-bush-50 shadow-sm rounded-sm;
 }
 
 @layer components {

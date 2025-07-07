@@ -113,9 +113,18 @@
              markers.forEach(m => {
                  const div = document.createElement("div")
                  const link = document.createElement("a");
-                 link.textContent = m.name
                  link.href = `/library/details/${m.id}`;
                  link.target = "_blank";
+                 if (m.logo_url) {
+                     const img = document.createElement("img");
+                     img.classList.add("library-logo-in-map");
+                     img.src = m.logo_url;
+                     link.appendChild(img);
+                 }
+                 const inner_div = document.createElement("div");
+                 inner_div.classList.add("library-link-in-map");
+                 inner_div.textContent = m.name;
+                 link.appendChild(inner_div);
                  div.appendChild(link);
                  L.marker([m.latitude, m.longitude])
                   .addTo(this.marker_cluster_group)
@@ -187,6 +196,14 @@
  .leaflet-control-attribution .leaflet-attribution-flag {
      display: none !important;
  }
+ img.library-logo-in-map {
+     max-width: 150px;
+     margin: 2px auto 10px auto;
+ }
+ .library-link-in-map {
+     text-align: center;
+ }
+
 </style>
 <template>
   <SearchBar class="m-1" v-model="query" />
@@ -220,21 +237,13 @@
         </div>
       </div>
       <div ref="mapContainer" class="m-1"></div>
-      <div v-for="library in libraries" class="mx-1 my-2 mcrz-plain-box">
+      <div v-for="library in libraries" class="mx-1 my-2 mcrz-plain-box py-1 px-2">
         <router-link :to="{ name: 'library_view', params: { id: library.id } }">
-          <h2 class="font-bold text-center">
-            <span :class="`mcrz-library-${library.library_type || 'digital'}`">
-              {{ library.name }}
-            </span>
-          </h2>
-          <div v-if="library.logo_url">
-            <img class="py-1 max-h-12 mx-auto mb-2"
-                 :src="library.logo_url" :alt="$gettext('%1 logo', library.name)" />
-          </div>
+          <span :class="`mcrz-library-${library.library_type || 'digital'}`">
+            {{ library.name }}
+          </span>
         </router-link>
-        <div class="text-center">
-          <LibraryLink :url="library.url" class="my-1" />
-        </div>
+        <span class="px-1">{{ library.address_city }}</span>
       </div>
     </div>
     <div>
