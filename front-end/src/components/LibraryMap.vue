@@ -244,6 +244,7 @@
           </span>
         </router-link>
         <span class="px-1">{{ library.address_city }}</span>
+        <span v-if="library.address_country" class="px-1">({{ library.address_country }})</span>
       </div>
     </div>
     <div>
