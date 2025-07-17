@@ -469,7 +469,7 @@ def api_search(request):
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
-    title = 'Latest entries'
+    title = "{} Latest Entries".format(General.settings().get('site_name', ''))
     link = "{}/feed".format(settings.CANONICAL_ADDRESS)
     feed_url = "{}/feed".format(settings.CANONICAL_ADDRESS)
     description = 'Latest entries sorted by acquisition date'
@@ -496,12 +496,19 @@ class LatestEntriesFeed(Feed):
         return title
 
     def item_description(self, item):
-        desc = ""
+        desc = []
         try:
-            desc = item['description'][0]['value']
+            desc.append(item['description'][0]['value'])
         except (KeyError, IndexError):
             pass
-        return desc
+        try:
+            for ds in item['data_sources']:
+                uri = ds['uri']
+                if uri:
+                    desc.append(uri)
+        except (KeyError):
+            pass
+        return "\n\n".join(desc)
 
     def item_link(self, item):
         return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, item['entry_id'])
