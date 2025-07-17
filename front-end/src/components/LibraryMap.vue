@@ -208,7 +208,7 @@
 <template>
   <SearchBar class="m-1" v-model="query" />
   <div class="mt-4 m-1 sm:grid sm:grid-cols-2 sm:gap-8 xl:grid-cols-[600px_auto]">
-    <div>
+    <div class="sm:mt-12">
       <div v-if="!is_initialized">
         <svg
             class="border-4 rounded-sm"
@@ -246,9 +246,16 @@
         <span class="px-1">{{ library.address_city }}</span>
         <span v-if="library.address_country" class="px-1">({{ library.address_country }})</span>
       </div>
+      <div class="mt-4 mb-8">
+        <div class="mx-auto text-center">
+          <router-link :to="{ name: 'library_overview' }" class="btn-accent p-2 mx-2 rounded-sm">
+            {{ $gettext('See all') }}
+          </router-link>
+        </div>
+      </div>
     </div>
     <div>
-      <h2 class="mb-4 mt-2 text-xl font-bold">{{ $gettext('Latest additions') }}</h2>
+      <h2 class="mb-4 mt-2 text-xl font-bold text-center">{{ $gettext('Latest additions') }}</h2>
       <div v-for="match in latest_entries" :key="match.entry_id">
         <EntryBox :record="match" />
       </div>
