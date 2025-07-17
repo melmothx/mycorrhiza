@@ -376,5 +376,8 @@
   .mcrz-text-error {
       @apply text-claret-900 font-bold;
   }
+  .mcrz-link {
+      @apply text-spectra-700 hover:text-spectra-500;
+  }
 }
 

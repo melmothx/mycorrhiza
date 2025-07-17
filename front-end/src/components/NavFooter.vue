@@ -1,11 +1,13 @@
 <script>
  import BugReport from './BugReport.vue'
+ import ContactButton from './ContactButton.vue'
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      components: {
          BugReport,
+         ContactButton,
      },
      data() {
          return {
@@ -40,6 +42,9 @@
       </div>
       <div class="m-2">
         <BugReport />
+      </div>
+      <div class="m-2">
+        <ContactButton />
       </div>
     </div>
   </footer>

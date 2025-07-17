@@ -1,11 +1,13 @@
 <script>
  import LibraryBox from './LibraryBox.vue'
+ import ContactButton from './ContactButton.vue'
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      components: {
          LibraryBox,
+         ContactButton,
      },
      data() {
          return {
@@ -54,10 +56,13 @@
   </div>
   <h1 class="font-bold text-4xl text-center my-4">{{ $gettext('Libraries') }}</h1>
   <div class="sm:flex sm:flex-nowrap sm:flex-nowrap sm:h-8 my-8">
-    <input class="mcrz-input shadow-sm w-full my-1 sm:my-0"
+    <input class="mcrz-input shadow-sm my-1 sm:my-0 flex-grow"
            v-model="query"
            @input="filter_libraries"
            :placeholder="$gettext('Type here to search the libraries')">
+    <div class="my-1 ml-3 mr-1">
+      <ContactButton>{{ $gettext('Join the project') }}</ContactButton>
+    </div>
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
     <div class="m-1" v-for="library in filtered_libraries">

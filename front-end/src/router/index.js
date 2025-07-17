@@ -11,6 +11,7 @@ import AgentOverView from '../views/AgentOverView.vue'
 import PageView from '../views/PageView.vue'
 import BookBuilderView from '../views/BookBuilderView.vue'
 import CoverBuilderView from '../views/CoverBuilderView.vue'
+import ContactView from '../views/ContactView.vue'
 const MapView = () => import('../views/MapView.vue')
 
 const router = createRouter({
@@ -28,12 +29,17 @@ const router = createRouter({
         {
             name: 'home',
             path:  '/',
-            redirect: { name: 'search' },
+            redirect: { name: 'map' },
         },
         {
             name: 'map',
             path: '/map',
             component: MapView,
+        },
+        {
+            name: 'contact',
+            path: '/contact',
+            component: ContactView,
         },
         {
             path: '/search',

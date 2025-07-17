@@ -109,7 +109,8 @@ class General(models.Model):
     GENERAL_VALUE_NAMES = [
         ("site_name", "Site Name"),
         ("site_logo", "Site Logo"),
-        ("site_description", "Site Description")
+        ("site_description", "Site Description"),
+        ("contact_email", "Contact Email"),
     ]
     name = models.CharField(max_length=32,
                             choices=GENERAL_VALUE_NAMES,
