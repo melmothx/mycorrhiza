@@ -80,7 +80,7 @@ msgstr "Impostazioni avanzate"
 #. $gettext("Africa")
 #: src/components/LibraryMap.vue:56
 msgid "Africa"
-msgstr ""
+msgstr "Africa"
 
 #. $gettext('Aggregated')
 #: src/components/SearchPage.vue:242
@@ -105,7 +105,7 @@ msgstr "Tutti i risultati (%1)"
 #. $gettext("Asia")
 #: src/components/LibraryMap.vue:49
 msgid "Asia"
-msgstr ""
+msgstr "Asia"
 
 #. $gettext('Author')
 #: src/components/BookBuilderView.vue:831
@@ -167,7 +167,7 @@ msgstr ""
 #. $gettext('Bug Report')
 #: src/components/BugReport.vue:61
 msgid "Bug Report"
-msgstr ""
+msgstr "Segnala un bug"
 
 #. $gettext('Build') $gettext('Build')
 #: src/components/CoverBuilderView.vue:169
@@ -184,12 +184,12 @@ msgstr "Cancella"
 #. $gettext("Center America East")
 #: src/components/LibraryMap.vue:77
 msgid "Center America East"
-msgstr ""
+msgstr "Centro America Orientale"
 
 #. $gettext("Center America West")
 #: src/components/LibraryMap.vue:91
 msgid "Center America West"
-msgstr ""
+msgstr "Centro America Occidentale"
 
 #. $gettext('Center all section titles')
 #: src/components/BookBuilderView.vue:566
@@ -229,7 +229,7 @@ msgstr "Pulisci elenco"
 #. $gettext('Click on the map to locate a library')
 #: src/components/LibraryMap.vue:236
 msgid "Click on the map to locate a library"
-msgstr ""
+msgstr "Clicca sulla mappa per localizzare una biblioteca"
 
 #. $gettext('Click to remove the filter')
 #: src/components/SearchPage.vue:268
@@ -254,7 +254,7 @@ msgstr "Nome della colonna"
 #. $gettext('Contacts') $gettext('Contacts')
 #: src/components/ContactButton.vue:10 src/components/ContactView.vue:34
 msgid "Contacts"
-msgstr ""
+msgstr "Contatti"
 
 #. $gettext('Contains:')
 #: src/components/EntryPage.vue:105
@@ -351,7 +351,7 @@ msgstr "Autorizzato al merging"
 #. $gettext("Europe")
 #: src/components/LibraryMap.vue:42
 msgid "Europe"
-msgstr ""
+msgstr "Europa"
 
 #. $gettext('Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4.')
 #: src/components/BookBuilderView.vue:685
@@ -382,12 +382,12 @@ msgstr "Fallimento nell'invio del Report. Per favore contattaci via email!"
 #. $gettext('Feel free to reach out to us at:')
 #: src/components/ContactView.vue:39
 msgid "Feel free to reach out to us at:"
-msgstr ""
+msgstr "Contattaci qui:"
 
 #. $gettext('Fetching results, hold on...')
 #: src/components/SearchPage.vue:408
 msgid "Fetching results, hold on..."
-msgstr ""
+msgstr "Stiamo raccogliendo i risultati, attendi..."
 
 #. $gettext('Fill with blank pages before the last page if the signature is not full.')
 #: src/components/BookBuilderView.vue:745
@@ -496,7 +496,7 @@ msgstr "Indirizzo internet"
 #. $gettext('Join the project with your library or archive')
 #: src/components/LibraryOverView.vue:64
 msgid "Join the project with your library or archive"
-msgstr ""
+msgstr "Aggiungi la tua biblioteca o archivio"
 
 #. $gettext('Justification')
 #: src/components/ExclusionButton.vue:66
@@ -531,7 +531,7 @@ msgstr "Cognome"
 #. $gettext('Latest additions')
 #: src/components/LibraryMap.vue:258
 msgid "Latest additions"
-msgstr ""
+msgstr "Ultime aggiunte"
 
 #. $gettext('Latitude')
 #: src/components/LibraryEdit.vue:212
@@ -673,12 +673,12 @@ msgstr "Nessuno"
 #. $gettext("North America East")
 #: src/components/LibraryMap.vue:70
 msgid "North America East"
-msgstr ""
+msgstr "Nord America Orientale"
 
 #. $gettext("North America West")
 #: src/components/LibraryMap.vue:84
 msgid "North America West"
-msgstr ""
+msgstr "Nord America Occidentale"
 
 #. $gettext('Notes')
 #: src/components/BookBuilderView.vue:839
@@ -698,7 +698,7 @@ msgstr "Pagina OPAC"
 #. $gettext("Oceania")
 #: src/components/LibraryMap.vue:63
 msgid "Oceania"
-msgstr ""
+msgstr "Oceania"
 
 #. $gettext('Omit') $gettext('Omit')
 #: src/components/ExclusionButton.vue:54 src/components/ExclusionButton.vue:86
@@ -723,7 +723,7 @@ msgstr "Ometti singola voce"
 #. $gettext('On any Wikipedia page, check Tools menu, Wikidata item')
 #: src/components/AgentBox.vue:187
 msgid "On any Wikipedia page, check Tools menu, Wikidata item"
-msgstr ""
+msgstr "Su qualsiasi pagina Wikipedia, controlla il menù "Tools", "Wikidata item" "
 
 #. $gettext('One page per sheet. This is useful only if you want to add the cropmarks')
 #: src/components/BookBuilderView.vue:737
@@ -776,7 +776,7 @@ msgstr "Pagina dalla quale cominciare un capitolo"
 #. $gettext('Page:')
 #: src/components/BugReport.vue:79
 msgid "Page:"
-msgstr ""
+msgstr "Pagina:"
 
 #. $gettext('Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages.')
 #: src/components/BookBuilderView.vue:649
@@ -962,7 +962,7 @@ msgstr "Reset Password per %1?"
 #. $gettext('Reset password?')
 #: src/components/NavBar.vue:225
 msgid "Reset password?"
-msgstr ""
+msgstr "Reimpostare la password?"
 
 #. $gettext('Restore')
 #: src/components/ExclusionRow.vue:37
@@ -1010,7 +1010,7 @@ msgstr[1] "Ricerca di “%1”: trovati %2 risultati"
 #. $gettext('See all')
 #: src/components/LibraryMap.vue:252
 msgid "See all"
-msgstr ""
+msgstr "Guarda tutto"
 
 #. $gettext('See all entries')
 #: src/components/EntryBox.vue:64
@@ -1086,17 +1086,17 @@ msgstr "Origine:"
 #. $gettext('Source: Wikidata')
 #: src/components/AgentBox.vue:139
 msgid "Source: Wikidata"
-msgstr ""
+msgstr "Origine: Wikidata"
 
 #. $gettext("South America")
 #: src/components/LibraryMap.vue:98
 msgid "South America"
-msgstr ""
+msgstr "Sud America"
 
 #. $gettext('Split')
 #: src/components/MergeBox.vue:217
 msgid "Split"
-msgstr ""
+msgstr "Separa"
 
 #. $gettext('Start the document with an empty page')
 #: src/components/BookBuilderView.vue:530
@@ -1126,7 +1126,7 @@ msgstr "Bersaglio"
 #. $gettext('TeX emergency stretch in pt')
 #: src/components/BookBuilderView.vue:449
 msgid "TeX emergency stretch in pt"
-msgstr "fFlessibilità TeX di emergenza in pt"
+msgstr "Flessibilità TeX di emergenza in pt"
 
 #. $gettext('TeX tolerance')
 #: src/components/BookBuilderView.vue:436
@@ -1176,7 +1176,7 @@ msgstr ""
 #. $gettext('This project has no contact email. Please check the footer instead')
 #: src/components/ContactView.vue:44
 msgid "This project has no contact email. Please check the footer instead"
-msgstr ""
+msgstr "Questo progetto non ha una mail di contatto. Per favore controlla piuttosto il footer"
 
 #. $gettext('This text is a translation')
 #: src/components/EntryBox.vue:100
@@ -1226,7 +1226,7 @@ msgstr "Digita qui per cercare tra gli autori"
 #. $gettext('Type here to search the libraries')
 #: src/components/LibraryOverView.vue:62
 msgid "Type here to search the libraries"
-msgstr ""
+msgstr "Scrivi qui per cercare tra le biblioteche"
 
 #. $gettext('UI language')
 #: src/components/NavBar.vue:117
