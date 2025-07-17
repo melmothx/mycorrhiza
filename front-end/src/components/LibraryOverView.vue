@@ -61,7 +61,7 @@
            @input="filter_libraries"
            :placeholder="$gettext('Type here to search the libraries')">
     <div class="my-1 ml-3 mr-1">
-      <ContactButton>{{ $gettext('Join the project with your library or archive') }}</ContactButton>
+      <ContactButton>{{ $gettext('Add your library or archive') }}</ContactButton>
     </div>
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
