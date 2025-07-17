@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 12:57:23 12:57+0000\n"
+"POT-Creation-Date: 13:57:03 13:57+0000\n"
 "PO-Revision-Date: 2025-01-01 08:47+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -493,9 +493,9 @@ msgstr "Email interna"
 msgid "Internet address"
 msgstr "Indirizzo internet"
 
-#. $gettext('Join the project')
+#. $gettext('Join the project with your library or archive')
 #: src/components/LibraryOverView.vue:64
-msgid "Join the project"
+msgid "Join the project with your library or archive"
 msgstr ""
 
 #. $gettext('Justification')
