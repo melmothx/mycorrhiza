@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 07:17:53 07:17+0000\n"
+"POT-Creation-Date: 12:57:23 12:57+0000\n"
 "PO-Revision-Date: 2025-01-01 08:47+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.4.4\n"
 
 #. $gettext('%1 logo', library.name)
-#: src/components/LibraryBox.vue:18
+#: src/components/LibraryBox.vue:16
 msgid "%1 logo"
 msgstr ""
 
@@ -53,7 +53,7 @@ msgid "Additional Address Line"
 msgstr "Parti aggiuntive dell'indirizzo"
 
 #. $gettext('Address')
-#: src/components/LibraryBox.vue:56
+#: src/components/LibraryBox.vue:47
 msgid "Address"
 msgstr "Indirizzo"
 
@@ -77,6 +77,11 @@ msgstr "Avanzate"
 msgid "Advanced settings"
 msgstr "Impostazioni avanzate"
 
+#. $gettext("Africa")
+#: src/components/LibraryMap.vue:56
+msgid "Africa"
+msgstr ""
+
 #. $gettext('Aggregated')
 #: src/components/SearchPage.vue:242
 msgid "Aggregated"
@@ -96,6 +101,11 @@ msgstr "Aggregazioni"
 #: src/components/SearchPage.vue:258
 msgid "All entries (%1)"
 msgstr "Tutti i risultati (%1)"
+
+#. $gettext("Asia")
+#: src/components/LibraryMap.vue:49
+msgid "Asia"
+msgstr ""
 
 #. $gettext('Author')
 #: src/components/BookBuilderView.vue:831
@@ -171,6 +181,16 @@ msgstr "Costruisci"
 msgid "Cancel"
 msgstr "Cancella"
 
+#. $gettext("Center America East")
+#: src/components/LibraryMap.vue:77
+msgid "Center America East"
+msgstr ""
+
+#. $gettext("Center America West")
+#: src/components/LibraryMap.vue:91
+msgid "Center America West"
+msgstr ""
+
 #. $gettext('Center all section titles')
 #: src/components/BookBuilderView.vue:566
 msgid "Center all section titles"
@@ -206,6 +226,11 @@ msgstr "Pulisci"
 msgid "Clear list"
 msgstr "Pulisci elenco"
 
+#. $gettext('Click on the map to locate a library')
+#: src/components/LibraryMap.vue:236
+msgid "Click on the map to locate a library"
+msgstr ""
+
 #. $gettext('Click to remove the filter')
 #: src/components/SearchPage.vue:268
 msgid "Click to remove the filter"
@@ -225,6 +250,11 @@ msgstr "Chiudi"
 #: src/components/CsvUpload.vue:193
 msgid "Column Name"
 msgstr "Nome della colonna"
+
+#. $gettext('Contacts') $gettext('Contacts')
+#: src/components/ContactButton.vue:10 src/components/ContactView.vue:34
+msgid "Contacts"
+msgstr ""
 
 #. $gettext('Contains:')
 #: src/components/EntryPage.vue:105
@@ -309,7 +339,7 @@ msgid "Email"
 msgstr "Email"
 
 #. $gettext('Email:')
-#: src/components/LibraryBox.vue:50
+#: src/components/LibraryBox.vue:41
 msgid "Email:"
 msgstr "Email:"
 
@@ -317,6 +347,11 @@ msgstr "Email:"
 #: src/components/UserCreation.vue:129
 msgid "Enabled for merging"
 msgstr "Autorizzato al merging"
+
+#. $gettext("Europe")
+#: src/components/LibraryMap.vue:42
+msgid "Europe"
+msgstr ""
 
 #. $gettext('Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4.')
 #: src/components/BookBuilderView.vue:685
@@ -343,6 +378,11 @@ msgstr "Fallito"
 #: src/components/ReportErrorPopUp.vue:68 src/components/BugReport.vue:87
 msgid "Failure sending the report. Please contact us by email!"
 msgstr "Fallimento nell'invio del Report. Per favore contattaci via email!"
+
+#. $gettext('Feel free to reach out to us at:')
+#: src/components/ContactView.vue:39
+msgid "Feel free to reach out to us at:"
+msgstr ""
 
 #. $gettext('Fetching results, hold on...')
 #: src/components/SearchPage.vue:408
@@ -453,6 +493,11 @@ msgstr "Email interna"
 msgid "Internet address"
 msgstr "Indirizzo internet"
 
+#. $gettext('Join the project')
+#: src/components/LibraryOverView.vue:64
+msgid "Join the project"
+msgstr ""
+
 #. $gettext('Justification')
 #: src/components/ExclusionButton.vue:66
 msgid "Justification"
@@ -483,6 +528,11 @@ msgstr "Ultima"
 msgid "Last Name"
 msgstr "Cognome"
 
+#. $gettext('Latest additions')
+#: src/components/LibraryMap.vue:258
+msgid "Latest additions"
+msgstr ""
+
 #. $gettext('Latitude')
 #: src/components/LibraryEdit.vue:212
 msgid "Latitude"
@@ -494,7 +544,7 @@ msgid "Layout"
 msgstr "Layout"
 
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
-#: src/components/LibraryOverView.vue:55 src/components/LibraryView.vue:42
+#: src/components/LibraryOverView.vue:57 src/components/LibraryView.vue:42
 #: src/components/SearchPage.vue:368 src/components/SearchPage.vue:372
 msgid "Libraries"
 msgstr "Biblioteche"
@@ -505,7 +555,7 @@ msgid "Library Users"
 msgstr "Utenti della biblioteca"
 
 #. $gettext('Library details')
-#: src/components/LibraryBox.vue:82
+#: src/components/LibraryBox.vue:73
 msgid "Library details"
 msgstr "Dettagli sulla biblioteca"
 
@@ -620,6 +670,16 @@ msgstr "Nessun testo ancora aggiunto!"
 msgid "None"
 msgstr "Nessuno"
 
+#. $gettext("North America East")
+#: src/components/LibraryMap.vue:70
+msgid "North America East"
+msgstr ""
+
+#. $gettext("North America West")
+#: src/components/LibraryMap.vue:84
+msgid "North America West"
+msgstr ""
+
 #. $gettext('Notes')
 #: src/components/BookBuilderView.vue:839
 msgid "Notes"
@@ -634,6 +694,11 @@ msgstr "Niente da mostrare!"
 #: src/components/DataSourceBox.vue:223
 msgid "OPAC page"
 msgstr "Pagina OPAC"
+
+#. $gettext("Oceania")
+#: src/components/LibraryMap.vue:63
+msgid "Oceania"
+msgstr ""
 
 #. $gettext('Omit') $gettext('Omit')
 #: src/components/ExclusionButton.vue:54 src/components/ExclusionButton.vue:86
@@ -669,7 +734,7 @@ msgstr ""
 "taglio"
 
 #. $gettext('Opening Hours') $gettext('Opening Hours')
-#: src/components/LibraryBox.vue:44 src/components/LibraryEdit.vue:105
+#: src/components/LibraryBox.vue:35 src/components/LibraryEdit.vue:105
 msgid "Opening Hours"
 msgstr "Orari di apertura"
 
@@ -694,7 +759,7 @@ msgid "Overview"
 msgstr "Panoramica"
 
 #. $gettext('PGP Public Key')
-#: src/components/LibraryBox.vue:70
+#: src/components/LibraryBox.vue:61
 msgid "PGP Public Key"
 msgstr "PGP Public Key"
 
@@ -820,7 +885,7 @@ msgid "Process File"
 msgstr "Elaborazione del file"
 
 #. $gettext('Project established in %1', library.established)
-#: src/components/LibraryBox.vue:32
+#: src/components/LibraryBox.vue:23
 msgid "Project established in %1"
 msgstr "Progetto iniziato nel %1"
 
@@ -928,8 +993,9 @@ msgstr ""
 msgid "Sans Font"
 msgstr "Carattere Sans"
 
-#. $gettext('Search') $gettext('Search') $gettext('Search')
+#. $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search')
 #: src/components/SearchPage.vue:283 src/components/SearchPage.vue:327
+#: src/components/SearchBar.vue:26 src/components/SearchBar.vue:37
 #: src/components/AgentOverView.vue:76
 msgid "Search"
 msgstr "Cerca"
@@ -940,6 +1006,11 @@ msgid "Search results for “%1”: found %2 entry"
 msgid_plural "Search results for “%1”: found %2 entries"
 msgstr[0] "Ricerca di “%1”: trovato %2 risultato"
 msgstr[1] "Ricerca di “%1”: trovati %2 risultati"
+
+#. $gettext('See all')
+#: src/components/LibraryMap.vue:252
+msgid "See all"
+msgstr ""
 
 #. $gettext('See all entries')
 #: src/components/EntryBox.vue:64
@@ -958,7 +1029,7 @@ msgid "See the bookcover class for all the details"
 msgstr "Guarda la classe della copertina per tutti i dettagli"
 
 #. $gettext('See the library entries')
-#: src/components/LibraryBox.vue:89
+#: src/components/LibraryBox.vue:80
 msgid "See the library entries"
 msgstr "Guarda gli inserimenti della biblioteca"
 
@@ -1015,6 +1086,11 @@ msgstr "Origine:"
 #. $gettext('Source: Wikidata')
 #: src/components/AgentBox.vue:139
 msgid "Source: Wikidata"
+msgstr ""
+
+#. $gettext("South America")
+#: src/components/LibraryMap.vue:98
+msgid "South America"
 msgstr ""
 
 #. $gettext('Split')
@@ -1097,6 +1173,11 @@ msgstr ""
 "Questo è un campo di testo libero. Per favore descrivi brevemente quali sono "
 "le lingue del progetto"
 
+#. $gettext('This project has no contact email. Please check the footer instead')
+#: src/components/ContactView.vue:44
+msgid "This project has no contact email. Please check the footer instead"
+msgstr ""
+
 #. $gettext('This text is a translation')
 #: src/components/EntryBox.vue:100
 msgid "This text is a translation"
@@ -1143,7 +1224,7 @@ msgid "Type here to search authors"
 msgstr "Digita qui per cercare tra gli autori"
 
 #. $gettext('Type here to search the libraries')
-#: src/components/LibraryOverView.vue:60
+#: src/components/LibraryOverView.vue:62
 msgid "Type here to search the libraries"
 msgstr ""
 
@@ -1205,7 +1286,7 @@ msgid "View PDF"
 msgstr "Visualizza PDF"
 
 #. $gettext('Visit Library Homepage')
-#: src/components/LibraryBox.vue:26
+#: src/components/LibraryLink.vue:15
 msgid "Visit Library Homepage"
 msgstr "Visita il sito della biblioteca"
 
