@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 13:57:03 13:57+0000\n"
-"PO-Revision-Date: 13:57:03 13:57+0000\n"
+"POT-Creation-Date: 19:38:19 19:38+0000\n"
+"PO-Revision-Date: 19:38:19 19:38+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@localhost>\n"
 "MIME-Version: 1.0\n"
@@ -37,6 +37,11 @@ msgstr ""
 #. $gettext('Add to the Book Builder')
 #: src/components/DataSourceBox.vue:249
 msgid "Add to the Book Builder"
+msgstr ""
+
+#. $gettext('Add your library or archive')
+#: src/components/LibraryOverView.vue:64
+msgid "Add your library or archive"
 msgstr ""
 
 #. $gettext('Added to the Book Builder!')
@@ -463,11 +468,6 @@ msgstr ""
 #. $gettext('Internet address')
 #: src/components/LibraryEdit.vue:73
 msgid "Internet address"
-msgstr ""
-
-#. $gettext('Join the project with your library or archive')
-#: src/components/LibraryOverView.vue:64
-msgid "Join the project with your library or archive"
 msgstr ""
 
 #. $gettext('Justification')

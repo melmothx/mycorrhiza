@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 13:57:03 13:57+0000\n"
-"PO-Revision-Date: 2025-01-01 08:47+0100\n"
+"POT-Creation-Date: 19:37:16 19:37+0000\n"
+"PO-Revision-Date: 2025-07-17 21:38+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -41,6 +41,11 @@ msgstr "Aggiungi segni di taglio al PDF"
 #: src/components/DataSourceBox.vue:249
 msgid "Add to the Book Builder"
 msgstr "Aggiungi al Book Builder"
+
+#. $gettext('Add your library or archive')
+#: src/components/LibraryOverView.vue:64
+msgid "Add your library or archive"
+msgstr "Aggiungi la tua biblioteca o il tuo archivio"
 
 #. $gettext('Added to the Book Builder!')
 #: src/components/DataSourceBox.vue:253
@@ -493,11 +498,6 @@ msgstr "Email interna"
 msgid "Internet address"
 msgstr "Indirizzo internet"
 
-#. $gettext('Join the project with your library or archive')
-#: src/components/LibraryOverView.vue:64
-msgid "Join the project with your library or archive"
-msgstr "Aggiungi la tua biblioteca o archivio"
-
 #. $gettext('Justification')
 #: src/components/ExclusionButton.vue:66
 msgid "Justification"
@@ -723,7 +723,9 @@ msgstr "Ometti singola voce"
 #. $gettext('On any Wikipedia page, check Tools menu, Wikidata item')
 #: src/components/AgentBox.vue:187
 msgid "On any Wikipedia page, check Tools menu, Wikidata item"
-msgstr "Su qualsiasi pagina Wikipedia, controlla il menù "Tools", "Wikidata item" "
+msgstr ""
+"Su qualsiasi pagina Wikipedia, controlla il menù \"Tools\", \"Wikidata "
+"item\" "
 
 #. $gettext('One page per sheet. This is useful only if you want to add the cropmarks')
 #: src/components/BookBuilderView.vue:737
@@ -1176,7 +1178,9 @@ msgstr ""
 #. $gettext('This project has no contact email. Please check the footer instead')
 #: src/components/ContactView.vue:44
 msgid "This project has no contact email. Please check the footer instead"
-msgstr "Questo progetto non ha una mail di contatto. Per favore controlla piuttosto il footer"
+msgstr ""
+"Questo progetto non ha una mail di contatto. Per favore controlla piuttosto "
+"il footer"
 
 #. $gettext('This text is a translation')
 #: src/components/EntryBox.vue:100
@@ -1367,6 +1371,9 @@ msgstr "pannello di gestione per "
 #: src/components/BookBuilderView.vue:333
 msgid "leave blank for default"
 msgstr "lascia bianco come predefinito"
+
+#~ msgid "Join the project with your library or archive"
+#~ msgstr "Aggiungi la tua biblioteca o archivio"
 
 #~ msgid "Reset Password for %1?"
 #~ msgstr "Reset Password per %1?"

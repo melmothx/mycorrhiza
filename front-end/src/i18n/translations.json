@@ -76,6 +76,9 @@
       "Add to the Book Builder" : {
          "msgstr" : "Aggiungi al Book Builder"
       },
+      "Add your library or archive" : {
+         "msgstr" : "Aggiungi la tua biblioteca o il tuo archivio"
+      },
       "Added to the Book Builder!" : {
          "msgstr" : "Aggiunto al Book Builder!"
       },
@@ -97,6 +100,9 @@
       "Advanced settings" : {
          "msgstr" : "Impostazioni avanzate"
       },
+      "Africa" : {
+         "msgstr" : "Africa"
+      },
       "Aggregated" : {
          "msgstr" : "Aggregati"
       },
@@ -111,6 +117,9 @@
       },
       "Ascending" : {
          "msgstr" : "Ascendente"
+      },
+      "Asia" : {
+         "msgstr" : "Asia"
       },
       "Author" : {
          "msgstr" : "Autore"
@@ -142,11 +151,20 @@
       "Blocks of 8 pages to be folded twice and then bound together." : {
          "msgstr" : "Fascicolo di 8 pagine da piegare due volte e legare assieme"
       },
+      "Bug Report" : {
+         "msgstr" : "Segnala un bug"
+      },
       "Build" : {
          "msgstr" : "Costruisci"
       },
       "Cancel" : {
          "msgstr" : "Cancella"
+      },
+      "Center America East" : {
+         "msgstr" : "Centro America Orientale"
+      },
+      "Center America West" : {
+         "msgstr" : "Centro America Occidentale"
       },
       "Center all section titles" : {
          "msgstr" : "Centra tutti i titoli di sezione"
@@ -169,6 +187,9 @@
       "Clear list" : {
          "msgstr" : "Pulisci elenco"
       },
+      "Click on the map to locate a library" : {
+         "msgstr" : "Clicca sulla mappa per localizzare una biblioteca"
+      },
       "Click to remove the filter" : {
          "msgstr" : "Premi per rimuovere il filtro"
       },
@@ -183,6 +204,9 @@
       },
       "Column Name" : {
          "msgstr" : "Nome della colonna"
+      },
+      "Contacts" : {
+         "msgstr" : "Contatti"
       },
       "Contains:" : {
          "msgstr" : "Contiene:"
@@ -244,6 +268,9 @@
       "Enabled for merging" : {
          "msgstr" : "Autorizzato al merging"
       },
+      "Europe" : {
+         "msgstr" : "Europa"
+      },
       "Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4." : {
          "msgstr" : "Esattamente come 2up, ma i fogli sono fatti per essere prima tagliati orizzontalmente e poi piegati su sé stessi. in questo modo puoi stampare, per esempio, fascicoli A6 su un A4."
       },
@@ -255,6 +282,12 @@
       },
       "Failure sending the report. Please contact us by email!" : {
          "msgstr" : "Fallimento nell'invio del Report. Per favore contattaci via email!"
+      },
+      "Feel free to reach out to us at:" : {
+         "msgstr" : "Contattaci qui:"
+      },
+      "Fetching results, hold on..." : {
+         "msgstr" : "Stiamo raccogliendo i risultati, attendi..."
       },
       "Fill with blank pages before the last page if the signature is not full." : {
          "msgstr" : "Riempi con pagine bianche prima dell'ultima se il fascicolo non è completo."
@@ -313,6 +346,9 @@
       "Internet address" : {
          "msgstr" : "Indirizzo internet"
       },
+      "Join the project with your library or archive" : {
+         "msgstr" : "Aggiungi la tua biblioteca o archivio"
+      },
       "Justification" : {
          "msgstr" : "Giustificazione"
       },
@@ -330,6 +366,9 @@
       },
       "Last Name" : {
          "msgstr" : "Cognome"
+      },
+      "Latest additions" : {
+         "msgstr" : "Ultime aggiunte"
       },
       "Latitude" : {
          "msgstr" : "Latitudine"
@@ -421,6 +460,12 @@
       "None" : {
          "msgstr" : "Nessuno"
       },
+      "North America East" : {
+         "msgstr" : "Nord America Orientale"
+      },
+      "North America West" : {
+         "msgstr" : "Nord America Occidentale"
+      },
       "Notes" : {
          "msgstr" : "Note"
       },
@@ -429,6 +474,9 @@
       },
       "OPAC page" : {
          "msgstr" : "Pagina OPAC"
+      },
+      "Oceania" : {
+         "msgstr" : "Oceania"
       },
       "Omit" : {
          "msgstr" : "Ometti"
@@ -441,6 +489,9 @@
       },
       "Omit single entry" : {
          "msgstr" : "Ometti singola voce"
+      },
+      "On any Wikipedia page, check Tools menu, Wikidata item" : {
+         "msgstr" : "Su qualsiasi pagina Wikipedia, controlla il menù \"Tools\", \"Wikidata item\" "
       },
       "One page per sheet. This is useful only if you want to add the cropmarks" : {
          "msgstr" : "Una pagina per foglio. Questo è utile solo se vuoi aggiungere i segni di taglio"
@@ -471,6 +522,9 @@
       },
       "Page where to start a chapter" : {
          "msgstr" : "Pagina dalla quale cominciare un capitolo"
+      },
+      "Page:" : {
+         "msgstr" : "Pagina:"
       },
       "Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages." : {
          "msgstr" : "Le pagine sono riordinate, in uno o più gruppi (fascicoli), quindi piegate a metà. Se hai più fascicoli, dovrai rilegarli assieme per far sì che diventino un libro. Con questa opzione, potresti voler decidere la dimensione dei fascicoli. Questa può essere un valore fisso (4,8,16, etc.), l'intero libro in un singolo fascicolo, o una dimensione ottimizzate per ridurre il numero di pagine vuote."
@@ -574,6 +628,9 @@
       "Reset password for %1" : {
          "msgstr" : "Reset Password per %1?"
       },
+      "Reset password?" : {
+         "msgstr" : "Reimpostare la password?"
+      },
       "Restore" : {
          "msgstr" : "Rigenera"
       },
@@ -609,6 +666,9 @@
             "0" : "Ricerca di “%1”: trovato %2 risultato",
             "1" : "Ricerca di “%1”: trovati %2 risultati"
          }
+      },
+      "See all" : {
+         "msgstr" : "Guarda tutto"
       },
       "See all entries" : {
          "msgstr" : "Guarda tutti gli inserimenti"
@@ -664,6 +724,15 @@
       "Source:" : {
          "msgstr" : "Origine:"
       },
+      "Source: Wikidata" : {
+         "msgstr" : "Origine: Wikidata"
+      },
+      "South America" : {
+         "msgstr" : "Sud America"
+      },
+      "Split" : {
+         "msgstr" : "Separa"
+      },
       "Start the document with an empty page" : {
          "msgstr" : "Comincia il documento con una pagina bianca"
       },
@@ -680,7 +749,7 @@
          "msgstr" : "Bersaglio"
       },
       "TeX emergency stretch in pt" : {
-         "msgstr" : "fFlessibilità TeX di emergenza in pt"
+         "msgstr" : "Flessibilità TeX di emergenza in pt"
       },
       "TeX tolerance" : {
          "msgstr" : "Tolleranza TeX"
@@ -705,6 +774,9 @@
       },
       "This is a free-text field. Please explain briefly which are the project languages" : {
          "msgstr" : "Questo è un campo di testo libero. Per favore descrivi brevemente quali sono le lingue del progetto"
+      },
+      "This project has no contact email. Please check the footer instead" : {
+         "msgstr" : "Questo progetto non ha una mail di contatto. Per favore controlla piuttosto il footer"
       },
       "This text is a translation" : {
          "msgstr" : "Questo testo è una traduzione"
@@ -738,6 +810,9 @@
       },
       "Type here to search authors" : {
          "msgstr" : "Digita qui per cercare tra gli autori"
+      },
+      "Type here to search the libraries" : {
+         "msgstr" : "Scrivi qui per cercare tra le biblioteche"
       },
       "UI language" : {
          "msgstr" : "Lingua dell'interfaccia utente"
