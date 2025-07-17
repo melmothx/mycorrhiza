@@ -376,5 +376,11 @@
   .mcrz-text-error {
       @apply text-claret-900 font-bold;
   }
+  .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+	  @apply bg-cab-sav-400;
+  }
+  .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+	  @apply bg-cab-sav-500;
+  }
 }
 

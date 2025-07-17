@@ -9,7 +9,7 @@
  import markerShadow from 'leaflet/dist/images/marker-shadow.png';
  import "leaflet.markercluster/dist/leaflet.markercluster.js";
  import "leaflet.markercluster/dist/MarkerCluster.css";
- import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+ // import "leaflet.markercluster/dist/MarkerCluster.Default.css";
  import LibraryLink from './LibraryLink.vue';
  import EntryBox from './EntryBox.vue';
  import SearchBar from '../components/SearchBar.vue'
@@ -203,7 +203,23 @@
  .library-link-in-map {
      text-align: center;
  }
+ .marker-cluster {
+	 background-clip: padding-box;
+	 border-radius: 20px;
+ }
+ .marker-cluster div {
+	 width: 30px;
+	 height: 30px;
+	 margin-left: 5px;
+	 margin-top: 5px;
 
+	 text-align: center;
+	 border-radius: 15px;
+	 font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+ }
+ .marker-cluster span {
+	 line-height: 30px;
+ }
 </style>
 <template>
   <SearchBar class="m-1" v-model="query" />
