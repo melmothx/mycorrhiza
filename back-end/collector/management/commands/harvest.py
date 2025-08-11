@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from amwmeta.xapian import MycorrhizaIndexer
 from collector.models import Site, Entry, Agent
-from django.db.models import Q
+from django.db.models import Q, Count
 import shutil
 import logging
 from django.db import connection
@@ -23,6 +23,9 @@ class Command(BaseCommand):
         parser.add_argument("--force",
                             action="store_true", # boolean
                             help="Force a full harvest")
+        parser.add_argument("--orphans",
+                            action="store_true", # boolean
+                            help="Reindex orphaned entries")
         parser.add_argument("--site",
                             help="Select a specific site")
         parser.add_argument("--reindex",
@@ -47,6 +50,12 @@ class Command(BaseCommand):
             indexer.index_record(data)
             return
 
+        if options['orphans']:
+            indexer = MycorrhizaIndexer(db_path=db_path)
+            for entry in Entry.objects.annotate(Count("datasource")).filter(datasource__count=0):
+                data = entry.indexing_data()
+                indexer.index_record(data)
+            return
         if options['reindex']:
             now = datetime.now(timezone.utc)
             stub_content = db_path_object.read_text()

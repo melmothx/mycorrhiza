@@ -403,8 +403,9 @@ class Site(models.Model):
         aggregations = record.pop('aggregations', [])
         entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
         out = []
-        if entry and ds:
+        if entry:
             out.append(entry)
+        if entry and ds:
             for agg in aggregations:
                 agg_record = {
                     "title": agg['full_aggregation_name'],
