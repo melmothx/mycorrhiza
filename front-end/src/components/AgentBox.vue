@@ -5,6 +5,7 @@
  import {
      PencilSquareIcon,
      HandRaisedIcon,
+     ChevronUpDownIcon,
  } from '@heroicons/vue/24/solid'
  import HelpPopUp from './HelpPopUp.vue'
  export default {
@@ -17,12 +18,14 @@
              agent_editable_data: {},
              display_details: {},
              wikidata: null,
+             show: true,
          }
      },
      components: {
          PencilSquareIcon,
          HandRaisedIcon,
          HelpPopUp,
+         ChevronUpDownIcon,
      },
      methods: {
          edit_agent() {
@@ -107,7 +110,7 @@
       <div v-else>
         <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ agent.name }}</h2>
       </div>
-      <div v-if="wikidata && wikidata.statements">
+      <div v-if="wikidata && wikidata.statements && show">
         <div v-for="ws in wikidata.statements" :key="ws.property">
           <div v-if="ws.data_type == 'commonsMedia'">
             <div v-for="wsv in ws.values">
@@ -153,8 +156,9 @@
     </div>
     <div class="flex" v-if="!agent.canonical && can_edit">
       <span @click="edit_agent" class="text-spectra-600 cursor-pointer
-                   hover:text-spectra-800
-                   focus:text-spectra-800">
+                                       hover:text-spectra-800
+                                       focus:text-spectra-800"
+                                :title="$gettext('Edit')">
         <PencilSquareIcon class="w-4 h-4 my-1 mr-2" />
       </span>
       <span class="drag-el cursor-grab active:cursor-grabbing drag-author
@@ -164,6 +168,13 @@
             :title="$gettext('Merge')"
             draggable="true" @dragstart="drag_element($event, 'author', agent.id, agent.name)">
         <HandRaisedIcon class="h-4 w-4 my-1" />
+      </span>
+      <span v-if="short" @click="show ? show = false : show = true"
+        :title="$gettext('Hide/Show')"
+        class="text-spectra-600 cursor-pointer
+               hover:text-spectra-800
+               focus:text-spectra-800">
+        <ChevronUpDownIcon class="w-4 h-4 my-1 ml-2" />
       </span>
     </div>
     <div v-if="!short && agent.wikidata_id">
