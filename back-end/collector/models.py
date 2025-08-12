@@ -129,6 +129,7 @@ class General(models.Model):
 
 class Page(models.Model):
     PAGE_LANGUAGES = [
+        ( 'ALL', 'All Languages' ),
         ( 'bg', 'Български' ),
         ( 'cs', 'Čeština' ),
         ( 'da', 'Dansk' ),
