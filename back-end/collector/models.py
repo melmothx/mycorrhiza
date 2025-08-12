@@ -405,6 +405,10 @@ class Site(models.Model):
         out = []
         if entry:
             out.append(entry)
+            # reindex existing aggregations
+            for aggregation_entry in entry.aggregation_entries.all():
+                logger.debug("Reindexing existing aggregations")
+                out.append(aggregation_entry.aggregation)
         if entry and ds:
             for agg in aggregations:
                 agg_record = {

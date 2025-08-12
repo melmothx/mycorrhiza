@@ -52,9 +52,10 @@ class Command(BaseCommand):
 
         if options['orphans']:
             indexer = MycorrhizaIndexer(db_path=db_path)
-            for entry in Entry.objects.annotate(Count("datasource")).filter(datasource__count=0):
-                data = entry.indexing_data()
-                indexer.index_record(data)
+            for entry in Entry.objects.alias(Count("datasource")).filter(datasource__count=0):
+                indexer.index_record(entry.indexing_data())
+                for agg in entry.aggregation_entries.all():
+                    indexer.index_record(agg.aggregation.indexing_data())
             return
         if options['reindex']:
             now = datetime.now(timezone.utc)
