@@ -102,10 +102,18 @@
 <template>
   <div v-if="agent" class="border border-perl-bush-200 bg-perl-bush-50 p-4 shadow-sm rounded-sm">
     <div v-if="short">
-      <div v-if="wikidata && wikidata.link">
-        <a :href="wikidata.link">
-          <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ wikidata.name }}</h2>
-        </a>
+      <div v-if="wikidata && wikidata.link" class="flex">
+        <div class="grow">
+          <a :href="wikidata.link">
+            <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ wikidata.name }}</h2>
+          </a>
+        </div>
+        <div @click="show ? show = false : show = true"
+             :title="$gettext('Hide/Show')"
+             class="text-spectra-600 cursor-pointer
+                   hover:text-spectra-800 focus:text-spectra-800">
+          <ChevronUpDownIcon class="w-4 h-4 my-1 ml-1" />
+        </div>
       </div>
       <div v-else>
         <h2 class="font-bold text-lg mb-4 border-b border-old-coper-100">{{ agent.name }}</h2>
@@ -168,13 +176,6 @@
             :title="$gettext('Merge')"
             draggable="true" @dragstart="drag_element($event, 'author', agent.id, agent.name)">
         <HandRaisedIcon class="h-4 w-4 my-1" />
-      </span>
-      <span v-if="short" @click="show ? show = false : show = true"
-        :title="$gettext('Hide/Show')"
-        class="text-spectra-600 cursor-pointer
-               hover:text-spectra-800
-               focus:text-spectra-800">
-        <ChevronUpDownIcon class="w-4 h-4 my-1 ml-2" />
       </span>
     </div>
     <div v-if="!short && agent.wikidata_id">
