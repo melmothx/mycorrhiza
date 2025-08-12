@@ -68,18 +68,18 @@
           {{ library.short_desc }}
         </p>
       </div>
-      <div class="my-4 text-sm">
-        <router-link class="btn-primary py-1 px-2" :to="{ name: 'library_view', params: { id: library.id } }">
+      <router-link :to="{ name: 'library_view', params: { id: library.id } }">
+        <div class="my-4 text-sm btn-primary py-1 px-2 rounded">
           {{ $gettext('Library details') }}
-        </router-link>
-      </div>
+        </div>
+      </router-link>
     </div>
-    <div v-if="!short && library.catalog_is_accessible" class="my-4 text-sm">
-      <a class="btn-primary py-1 px-2"
-         :href="`/library/entries/${library.id}`">
+    <a :href="`/library/entries/${library.id}`">
+      <div v-if="!short && library.catalog_is_accessible"
+           class="my-4 text-sm btn-primary py-1 px-2 rounded">
         {{ $gettext('See the library entries') }}
-      </a>
-    </div>
+      </div>
+    </a>
   </div>
 </template>
   

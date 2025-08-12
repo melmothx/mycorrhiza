@@ -252,8 +252,8 @@
         <span v-if="library.address_country" class="px-1">({{ library.address_country }})</span>
       </div>
       <div class="mt-4 mb-8" v-if="all_libraries_count">
-        <div class="mx-auto text-center">
-          <router-link :to="{ name: 'library_overview' }" class="btn-accent p-2 mx-2 rounded-sm">
+        <div class="mx-auto text-center btn-accent p-2 mx-2 rounded-sm">
+          <router-link :to="{ name: 'library_overview' }">
             {{ $gettext('See all the physical and digital libraries (%1)', all_libraries_count) }}
           </router-link>
         </div>
