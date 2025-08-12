@@ -1241,14 +1241,18 @@ def api_agent_wikidata(request, agent_id, lang):
     return JsonResponse(out)
 
 def api_list_pages(request, location, language):
-    pages = Page.objects.filter(published=True,
-                                location=location,
-                                language=language).order_by('sorting').all()
+    query = Q(published=True) & Q(location=location) & Q(language=language)
+    if not request.user.username:
+        query = query & Q(logged_in_only=False)
+    pages = Page.objects.filter(query).order_by('sorting').all()
     return JsonResponse({ "pages": [ p.overview() for p in pages ] })
 
 def api_view_page(request, page_id):
+    query = Q(published=True)
+    if not request.user.username:
+        query = query & Q(logged_in_only=False)
     try:
-        details = Page.objects.filter(published=True).get(pk=page_id).details()
+        details = Page.objects.filter(query).get(pk=page_id).details()
     except Page.DoesNotExist:
         details = {}
     return JsonResponse({ "page": details })
