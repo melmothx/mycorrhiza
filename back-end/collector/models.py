@@ -1224,6 +1224,8 @@ class DataSource(models.Model):
 
     def full_text(self):
         site_type = self.site.site_type
+        if self.is_aggregation:
+            return None
         if site_type == 'amusewiki':
             cached = self.get_cached_full_text()
             if cached:
