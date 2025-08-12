@@ -253,7 +253,13 @@ class MycorrhizaIndexer:
         termgenerator.set_stemmer(xapian.Stem("none"))
 
         # logger.debug(pp.pformat(record))
-        if len(record['data_sources']) > 0 or record['is_aggregation']:
+        if record['is_aggregation']:
+            if record['data_sources']:
+                # delete if there are no real ds aggregated
+                for ds in record['data_sources']:
+                    if ds.get('aggregated', []):
+                        is_deleted = False
+        elif record['data_sources']:
             is_deleted = False
 
         identifier = record['entry_id']
