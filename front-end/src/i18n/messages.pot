@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 19:38:19 19:38+0000\n"
-"PO-Revision-Date: 19:38:19 19:38+0000\n"
+"POT-Creation-Date: 08:55:11 08:55+0000\n"
+"PO-Revision-Date: 08:55:11 08:55+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@localhost>\n"
 "MIME-Version: 1.0\n"
@@ -80,7 +80,7 @@ msgid "Advanced settings"
 msgstr ""
 
 #. $gettext("Africa")
-#: src/components/LibraryMap.vue:56
+#: src/components/LibraryMap.vue:57
 msgid "Africa"
 msgstr ""
 
@@ -105,7 +105,7 @@ msgid "All entries (%1)"
 msgstr ""
 
 #. $gettext("Asia")
-#: src/components/LibraryMap.vue:49
+#: src/components/LibraryMap.vue:50
 msgid "Asia"
 msgstr ""
 
@@ -176,12 +176,12 @@ msgid "Cancel"
 msgstr ""
 
 #. $gettext("Center America East")
-#: src/components/LibraryMap.vue:77
+#: src/components/LibraryMap.vue:78
 msgid "Center America East"
 msgstr ""
 
 #. $gettext("Center America West")
-#: src/components/LibraryMap.vue:91
+#: src/components/LibraryMap.vue:92
 msgid "Center America West"
 msgstr ""
 
@@ -220,9 +220,9 @@ msgstr ""
 msgid "Clear list"
 msgstr ""
 
-#. $gettext('Click on the map to locate a library')
-#: src/components/LibraryMap.vue:236
-msgid "Click on the map to locate a library"
+#. $gettext('Click on the map to locate a physical library')
+#: src/components/LibraryMap.vue:241
+msgid "Click on the map to locate a physical library"
 msgstr ""
 
 #. $gettext('Click to remove the filter')
@@ -310,6 +310,11 @@ msgstr ""
 msgid "Drag the titles to reorder"
 msgstr ""
 
+#. $gettext('Edit')
+#: src/components/AgentBox.vue:161
+msgid "Edit"
+msgstr ""
+
 #. $gettext('Editable and printable text')
 #: src/components/SearchPage.vue:240
 msgid "Editable and printable text"
@@ -341,7 +346,7 @@ msgid "Enabled for merging"
 msgstr ""
 
 #. $gettext("Europe")
-#: src/components/LibraryMap.vue:42
+#: src/components/LibraryMap.vue:43
 msgid "Europe"
 msgstr ""
 
@@ -440,6 +445,11 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
+#. $gettext('Hide/Show')
+#: src/components/AgentBox.vue:173
+msgid "Hide/Show"
+msgstr ""
+
 #. $gettext('ID')
 #: src/components/DashboardTable.vue:118
 msgid "ID"
@@ -501,7 +511,7 @@ msgid "Last Name"
 msgstr ""
 
 #. $gettext('Latest additions')
-#: src/components/LibraryMap.vue:258
+#: src/components/LibraryMap.vue:263
 msgid "Latest additions"
 msgstr ""
 
@@ -571,7 +581,7 @@ msgid "Material Description"
 msgstr ""
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge') $gettext('Merge')
-#: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118 src/components/AgentBox.vue:164 src/components/MergeBox.vue:218
+#: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118 src/components/AgentBox.vue:168 src/components/MergeBox.vue:218
 msgid "Merge"
 msgstr ""
 
@@ -593,6 +603,11 @@ msgstr ""
 #. $gettext('Mono Font')
 #: src/components/BookBuilderView.vue:582
 msgid "Mono Font"
+msgstr ""
+
+#. $gettext('More')
+#: src/components/LibraryMap.vue:269
+msgid "More"
 msgstr ""
 
 #. $gettext('My Exclusions')
@@ -641,12 +656,12 @@ msgid "None"
 msgstr ""
 
 #. $gettext("North America East")
-#: src/components/LibraryMap.vue:70
+#: src/components/LibraryMap.vue:71
 msgid "North America East"
 msgstr ""
 
 #. $gettext("North America West")
-#: src/components/LibraryMap.vue:84
+#: src/components/LibraryMap.vue:85
 msgid "North America West"
 msgstr ""
 
@@ -666,7 +681,7 @@ msgid "OPAC page"
 msgstr ""
 
 #. $gettext("Oceania")
-#: src/components/LibraryMap.vue:63
+#: src/components/LibraryMap.vue:64
 msgid "Oceania"
 msgstr ""
 
@@ -691,7 +706,7 @@ msgid "Omit single entry"
 msgstr ""
 
 #. $gettext('On any Wikipedia page, check Tools menu, Wikidata item')
-#: src/components/AgentBox.vue:187
+#: src/components/AgentBox.vue:198
 msgid "On any Wikipedia page, check Tools menu, Wikidata item"
 msgstr ""
 
@@ -941,14 +956,14 @@ msgid "Search results for “%1”: found %2 entry"
 msgid_plural "Search results for “%1”: found %2 entries"
 msgstr[0] ""
 
-#. $gettext('See all')
-#: src/components/LibraryMap.vue:252
-msgid "See all"
-msgstr ""
-
 #. $gettext('See all entries')
 #: src/components/EntryBox.vue:64
 msgid "See all entries"
+msgstr ""
+
+#. $gettext('See all the physical and digital libraries (%1)', all_libraries_count)
+#: src/components/LibraryMap.vue:257
+msgid "See all the physical and digital libraries (%1)"
 msgstr ""
 
 #. $gettext('See here for more details') $gettext('See here for more details')
@@ -967,7 +982,7 @@ msgid "See the library entries"
 msgstr ""
 
 #. $gettext('See “%1”', display_details.canonical.name)
-#: src/components/AgentBox.vue:151
+#: src/components/AgentBox.vue:154
 msgid "See “%1”"
 msgstr ""
 
@@ -1017,12 +1032,12 @@ msgid "Source:"
 msgstr ""
 
 #. $gettext('Source: Wikidata')
-#: src/components/AgentBox.vue:139
+#: src/components/AgentBox.vue:142
 msgid "Source: Wikidata"
 msgstr ""
 
 #. $gettext("South America")
-#: src/components/LibraryMap.vue:98
+#: src/components/LibraryMap.vue:99
 msgid "South America"
 msgstr ""
 
@@ -1042,7 +1057,7 @@ msgid "State or Province"
 msgstr ""
 
 #. $gettext('Submit')
-#: src/components/AgentBox.vue:193
+#: src/components/AgentBox.vue:204
 msgid "Submit"
 msgstr ""
 
@@ -1222,7 +1237,7 @@ msgid "Width in mm"
 msgstr ""
 
 #. $gettext('WikiData ID')
-#: src/components/AgentBox.vue:179
+#: src/components/AgentBox.vue:190
 msgid "WikiData ID"
 msgstr ""
 
@@ -1257,7 +1272,7 @@ msgid "__SET_TRANSLATION__"
 msgstr ""
 
 #. $gettext('__WIKIDATA_HELP__')
-#: src/components/AgentBox.vue:187
+#: src/components/AgentBox.vue:198
 msgid "__WIKIDATA_HELP__"
 msgstr ""
 
