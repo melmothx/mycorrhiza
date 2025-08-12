@@ -37,6 +37,7 @@
              all_libraries: [],
              libraries: [],
              latest_entries: [],
+             all_libraries_count: 0,
              areas: [
                  {
                      // $gettext("Europe")
@@ -184,6 +185,10 @@
      },
      mounted() {
          this.get_latest_entries();
+         axios.get('/collector/api/libraries')
+              .then(res => {
+                  this.all_libraries_count = res.data.libraries.length;
+              });
      },
      watch: {
          query() {
@@ -233,7 +238,7 @@
           </polygon>
         </svg>
         <div @click="handle_area_click(areas[0])" class="mt-2 mcrz-href-primary text-center">
-          {{ $gettext('Click on the map to locate a library') }}
+          {{ $gettext('Click on the map to locate a physical library') }}
         </div>
       </div>
       <div ref="mapContainer" class="m-1"></div>
@@ -246,10 +251,10 @@
         <span class="px-1">{{ library.address_city }}</span>
         <span v-if="library.address_country" class="px-1">({{ library.address_country }})</span>
       </div>
-      <div class="mt-4 mb-8">
+      <div class="mt-4 mb-8" v-if="all_libraries_count">
         <div class="mx-auto text-center">
           <router-link :to="{ name: 'library_overview' }" class="btn-accent p-2 mx-2 rounded-sm">
-            {{ $gettext('See all') }}
+            {{ $gettext('See all the physical and digital libraries (%1)', all_libraries_count) }}
           </router-link>
         </div>
       </div>
@@ -258,6 +263,11 @@
       <h2 class="mb-4 mt-2 text-xl font-bold text-center">{{ $gettext('Latest additions') }}</h2>
       <div v-for="match in latest_entries" :key="match.entry_id">
         <EntryBox :record="match" />
+      </div>
+      <div class="mt-4 mx-auto text-center">
+        <router-link :to="{ name: 'search', query: { query: '', page_number: 2 } }" class="btn-accent p-2 mx-2 rounded-sm">
+          {{ $gettext('More') }}
+        </router-link>
       </div>
     </div>
   </div>
