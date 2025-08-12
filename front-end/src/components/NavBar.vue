@@ -111,9 +111,10 @@
 <template>
   <header>
   <div class="flex flex-wrap m-3 items-center">
-    <div class="grow">
+    <div class="grow mr-2 mb-4">
       <SiteLogo />
     </div>
+    <div class="flex items-center mb-4">
     <div :title="$gettext('UI language')">
       <Listbox v-model="current_language">
         <div class="relative m-0">
@@ -171,7 +172,7 @@
             leave-active-class="transition duration-75 ease-in"
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
-          <MenuItems class="absolute right-0 mt-1 max-h-60 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
+          <MenuItems class="absolute right-0 mt-1 max-h-120 w-48 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
             <MenuItem v-if="user_data.is_superuser" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
               <a href="/admin">
                 {{ $gettext('Admin') }}
@@ -204,6 +205,7 @@
         </transition>
       </Menu>
     </div>
+  </div>
   </div>
   <div v-if="!authenticated && show_login && !show_reset_password">
     <form @submit.prevent="login" class="mx-4 flex">
