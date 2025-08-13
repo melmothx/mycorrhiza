@@ -129,6 +129,7 @@ class General(models.Model):
 
 class Page(models.Model):
     PAGE_LANGUAGES = [
+        ( 'ALL', 'All Languages' ),
         ( 'bg', 'Български' ),
         ( 'cs', 'Čeština' ),
         ( 'da', 'Dansk' ),
@@ -163,6 +164,7 @@ class Page(models.Model):
     PAGE_LOCATIONS = [
         ( 'draft', 'Drafts' ),
         ( 'footer', 'Footer' ),
+        ( 'user_menu', 'User Menu' ),
     ]
     title = models.CharField(max_length=255)
     summary = models.TextField(blank=True)
@@ -173,6 +175,7 @@ class Page(models.Model):
     sorting = models.IntegerField(default=0)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
+    logged_in_only = models.BooleanField(default=False)
     def __str__(self):
         return "{} {}".format(self.id, self.title)
 

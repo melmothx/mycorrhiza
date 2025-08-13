@@ -42,6 +42,7 @@
              current_language: null,
              show_login: false,
              show_reset_password: false,
+             header_pages: [],
              bookbuilder,
          }
      },
@@ -105,6 +106,12 @@
          this.check();
          this.current_language = this.$getlanguage();
          this.bookbuilder.restore();
+         axios.get('/collector/api/pages/user_menu/' + this.$getlanguage())
+              .then(res => {
+                  if (res.data && res.data.pages) {
+                      this.header_pages = res.data.pages;
+                  }
+              });
      },
  }
 </script>
@@ -173,12 +180,14 @@
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
           <MenuItems class="absolute right-0 mt-1 max-h-120 w-48 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
-            <MenuItem v-if="user_data.is_superuser" class="cursor-pointer hover:text-spectra-800 py-1 px-2">
-              <a href="/admin">
-                {{ $gettext('Admin') }}
-              </a>
+            <MenuItem v-if="user_data.is_superuser" class="mcrz-menu-item">
+              <div>
+                <a href="/admin">
+                  {{ $gettext('Admin') }}
+                </a>
+              </div>
             </MenuItem>
-            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <MenuItem class="mcrz-menu-item">
               <div>
                 <router-link :to="{ name: 'dashboard', params: { type: 'exclusions' } }">
                   {{ $gettext('Exclusions') }}
@@ -187,7 +196,7 @@
             </MenuItem>
             <template v-if="user_data.is_library_admin">
               <template v-for="lib in user_data.libraries">
-                <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+                <MenuItem class="mcrz-menu-item">
                   <div>
                     <router-link :to="{ name: 'library_edit', params: { id: lib.id }}">
                       {{ lib.name }}
@@ -196,7 +205,16 @@
                 </MenuItem>
               </template>
             </template>
-            <MenuItem class="cursor-pointer hover:text-spectra-800 py-1 px-2">
+            <template v-for="page in header_pages">
+              <MenuItem class="mcrz-menu-item">
+                <div>
+                  <router-link :to="{ name: 'page_view', params: { id: page.id } }">
+                    {{ page.title }}
+                  </router-link>
+                </div>
+              </MenuItem>
+            </template>
+            <MenuItem class="mcrz-menu-item">
               <div @click="logout">
                 {{ $gettext('Logout') }}
               </div>
