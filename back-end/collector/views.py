@@ -1241,7 +1241,7 @@ def api_agent_wikidata(request, agent_id, lang):
     return JsonResponse(out)
 
 def api_list_pages(request, location, language):
-    query = Q(published=True) & Q(location=location) & Q(language=language)
+    query = Q(published=True) & Q(location=location) & (Q(language=language) | Q(language='ALL'))
     if not request.user.username:
         query = query & Q(logged_in_only=False)
     pages = Page.objects.filter(query).order_by('sorting').all()

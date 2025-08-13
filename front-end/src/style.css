@@ -379,5 +379,8 @@
   .mcrz-link {
       @apply text-spectra-700 hover:text-spectra-500;
   }
+  .mcrz-menu-item {
+      @apply cursor-pointer hover:bg-spectra-800 hover:text-white py-1 px-2;
+  }
 }
 
