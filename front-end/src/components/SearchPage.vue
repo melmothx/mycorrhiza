@@ -57,6 +57,8 @@
              search_was_run: false,
              single_filter_boxes: [],
              search_is_running: false,
+             search_error: false,
+             show_query_help: false,
          }
      },
      methods: {
@@ -123,6 +125,7 @@
                  }
              }
              this.search_is_running = true;
+             this.search_error = false;
              axios.get('/collector/api/search',
                        { params: params })
                   .then((res) => {
@@ -167,6 +170,10 @@
                       if (opts && opts.scroll) {
                           document.getElementById('result-box').scrollIntoView({ behavior: "smooth" });
                       }
+                  })
+                  .catch(() => {
+                      this.search_error = true;
+                      this.search_is_running = false;
                   });
          },
          getResults(opts) {
@@ -250,13 +257,17 @@
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="refine">
-    <h1 v-if="search_was_run" class="text-xl text-center font-semibold mt-8 mb-2">
+    <h1 v-if="search_was_run && !search_error" class="text-xl text-center font-semibold mt-8 mb-2">
       <template v-if="searched_query">
         {{ $ngettext("Search results for “%1”: found %2 entry", "Search results for “%1”: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
       <template v-else>
         {{ $gettext('All entries (%1)', total_entries) }}
       </template>
+    </h1>
+    <h1 v-if="search_error"
+        class="text-xl text-center font-bold mt-8 mb-2 text-claret-800">
+      {{ $gettext('Invalid query!') }}
     </h1>
     <div class="sm:hidden" v-for="sf in single_filter_boxes">
       <SingleFilterBox :key="sf.name + sf.id" :id="sf.id" :name="sf.name" :editable="can_merge" />
@@ -282,10 +293,20 @@
           <input class="mcrz-input shadow-sm w-full my-1 sm:my-0 sm:h-8"
                  type="text" :placeholder="$gettext('Search')" v-model="query"/>
           <button v-if="query" type="button"
+                  :title="$gettext('Clear the query')"
                   @click="query = ''"
-                  class="absolute inset-y-0 right-0 flex items-center pr-3 font-bold
+                  class="absolute inset-y-0 right-2 font-bold
+                        w-4 px-4
                         text-claret-800 hover:text-claret-600 cursor-pointer">
             &#10005;
+          </button>
+          <button v-if="query" type="button"
+                  :title="$gettext('Help on the query syntax')"
+                  @click="show_query_help = show_query_help ? false : true"
+                  class="absolute inset-y-0 right-8 font-bold
+                        w-4 px-4
+                        text-spectra-600 hover:text-spectra-500 cursor-pointer">
+            ?
           </button>
         </div>
         <Listbox v-model="sort_by" @click="refine()">
@@ -325,6 +346,15 @@
         <button class="btn-primary rounded-none h-8 px-4 w-full  sm:w-auto sm:rounded-br-3xl sm:pr-10 sm:pl-4"
                 type="button"
                 @click="refine">{{ $gettext('Search') }}</button>
+      </div>
+      <div v-if="show_query_help" class="mcrz-plain-box p-1 mt-2 text-sm">
+        <p>
+          {{ $gettext('You can search by title with the prefix “title:”, by author with the prefix “author:”. Do not add whitespace between the prefix and the term. You can combine the terms with AND, OR, NOT. You can use the asterisk as wildcard. You can quote phrases with double quotes.') }}
+        </p>
+        <p>
+          {{ $gettext('For example:') }}
+          <code>title:test OR author:doe* OR "my phrase"</code>
+        </p>
       </div>
     </div>
   </form>
