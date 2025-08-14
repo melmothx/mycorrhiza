@@ -157,7 +157,7 @@
       <h4 class="italic" v-if="source.subtitle">
         {{ source.subtitle }}
       </h4>
-      <div class="my-2" v-if="source.description && !short">
+      <div class="my-2 whitespace-pre-line" v-if="source.description && !short">
         {{ source.description }}
       </div>
       <table class="my-4 w-full">
@@ -165,7 +165,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('Shelf Location Code') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             <code>{{ source.shelf_location_code }}</code>
           </td>
         </tr>
@@ -173,7 +173,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('Material Description') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             {{ source.material_description }}
           </td>
         </tr>
@@ -181,7 +181,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('ISBN') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             <code>{{ source.isbn }}</code>
           </td>
         </tr>
@@ -189,7 +189,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('Publisher') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             {{ source.publisher }}
           </td>
         </tr>
@@ -197,7 +197,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('Edition') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             {{ source.edition_statement }}
           </td>
         </tr>
@@ -206,7 +206,7 @@
           <td class="p-1 pr-2">
             {{ $gettext('Edition Place and Date') }}
           </td>
-          <td>
+          <td class="whitespace-pre-line">
             {{ source.place_date_of_publication_distribution }}
           </td>
         </tr>

@@ -475,7 +475,7 @@ class Site(models.Model):
             languages.append(obj)
 
 
-        logger.debug(record)
+        # logger.debug(record)
         identifier = record.pop('identifier')
 
         ds_attributes = [

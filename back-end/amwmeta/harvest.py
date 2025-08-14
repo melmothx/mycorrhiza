@@ -97,14 +97,14 @@ class MarcXMLRecord(GenericMarcXMLRecord):
             ('edition_statement', '250',  ('a')),
             ('publisher', '260',  ('b')),
             ('publisher', '264',  ('b')),
-            ('place_date_of_publication_distribution', '260', ('a', 'c')),
-            ('place_date_of_publication_distribution', '264', ('a', 'c')), # this is actually the place + date
+            ('place_date_of_publication_distribution', '260', ('a', 'b', 'c')),
+            ('place_date_of_publication_distribution', '264', ('a', 'b', 'c')), # this is actually the place + date
             ('material_description', '300', ('a', 'b', 'c', 'e')),
             ('content_type', '336',  ('a')),
             ('date', '264', ('c')),
             ('date', '363', ('i')),
             ('date', '362', ('a')), # normalized date
-            # ('general_note', '500', ('a')),
+            ('description', '500', ('a')),
             # ('with_note', '501', ('a')),
             # ('dissertation_note', '502', ('a')),
             # ('numbering_peculiarities__note', '515', ('a')),
@@ -125,7 +125,7 @@ class MarcXMLRecord(GenericMarcXMLRecord):
             ('uri', '856', ('u')),
             # https://wiki.koha-community.org/wiki/Holdings_data_fields_(9xx)
             ('koha_uri', '952', ('u')),
-            ('shelf_location_code', '952', ('o')),
+            ('shelf_location_code', '952', ('h', 'o')),
             # ('serial_enumeration_caption', '952', ('h')),
             ('shelf_location_code', '852', ('c')),
             # ('trade_price_value', '365', ('b')),
@@ -450,13 +450,23 @@ def extract_fields(record, hostname):
         except (IndexError, KeyError):
             pass
 
-
+    fields = (
+        ('material_description', False),
+        ('description', False),
+        ('shelf_location_code', False),
+        ('isbn', True),
+        ('publisher', True),
+        ('edition_statement', False),
+        ('place_date_of_publication_distribution', False),
+    )
     # collapse these fields
-    for f in ('material_description', 'shelf_location_code', 'isbn', 'publisher',
-              'edition_statement', 'place_date_of_publication_distribution'):
+    for fld in fields:
+        (f, unique) = fld
         if record.get(f):
-            out[f] = ' '.join(record.get(f))
-
+            if unique:
+                out[f] = "\n".join(list(set(record.get(f))))
+            else:
+                out[f] = "\n".join(record.get(f))
 
     out['aggregations'] = []
     record['aggregation_names'] = []
@@ -504,7 +514,6 @@ def extract_fields(record, hostname):
         "subtitle": {
             "checksum": True,
         },
-        "description": {},
     }
     sha = hashlib.sha256()
     for field in sorted(mapping):
