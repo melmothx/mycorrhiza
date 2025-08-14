@@ -12,6 +12,7 @@
          return {
              record: {},
              languages: [],
+             has_data_sources: true,
          }
      },
      methods: {
@@ -21,15 +22,26 @@
                       .then((res) => {
                           this.record = res.data;
                           this.compute_languages();
-                          if (this.entry_id !== this.record.id) {
-                              console.log("Redirecting");
+                          if (this.entry_id != this.record.id) {
+                              console.log(`Redirecting from ${this.entry_id} to ${this.record.id}`);
                               this.$router.push({ name: 'entry', params: { id: this.record.id } });
                           }
+                          if (this.record.data_sources && this.record.data_sources.length) {
+                              this.has_data_sources = true;
+                          }
+                          else {
+                              this.has_data_sources = false;
+                          }
+                      })
+                      .catch((res) => {
+                          this.record = {}
+                          this.has_data_sources = false;
                       });
              }
              else {
                  console.log("Resetting");
                  this.record = {}
+                 this.has_data_sources = false;
              }
          },
          compute_languages() {
@@ -72,7 +84,7 @@
  }
 </script>
 <template>
-  <div>
+  <div v-if="has_data_sources">
     <div class="m-5 p-2">
       <div class="mb-2 flex">
         <div class="grow">
@@ -114,6 +126,14 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div v-else>
+    <div class="m-8 p-2 text-center">
+      <strong class="text-xl">{{ $gettext('Sorry! We could not found this entry!')  }}</strong>
+      <p class="mt-8">
+        {{ $gettext('The entry does not exist, it was deleted or it is not public any more') }}
+      </p>
     </div>
   </div>
 </template>
