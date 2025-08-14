@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 08:55:11 08:55+0000\n"
+"POT-Creation-Date: 12:53:07 12:53+0000\n"
 "PO-Revision-Date: 2025-07-17 21:38+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -68,7 +68,7 @@ msgid "Address Line"
 msgstr "Parti dell'indirizzo"
 
 #. $gettext('Admin') $gettext('Admin')
-#: src/components/NavBar.vue:177 src/components/MergeBox.vue:167
+#: src/components/NavBar.vue:186 src/components/MergeBox.vue:167
 msgid "Admin"
 msgstr "Amministrazione"
 
@@ -262,7 +262,7 @@ msgid "Contacts"
 msgstr "Contatti"
 
 #. $gettext('Contains:')
-#: src/components/EntryPage.vue:105
+#: src/components/EntryPage.vue:117
 msgid "Contains:"
 msgstr "Contiene:"
 
@@ -324,7 +324,7 @@ msgid "Drag the titles to reorder"
 msgstr "Trascina i titoli per riordinare"
 
 #. $gettext('Edit')
-#: src/components/AgentBox.vue:161
+#: src/components/AgentBox.vue:169
 msgid "Edit"
 msgstr ""
 
@@ -375,7 +375,7 @@ msgstr ""
 "per esempio, fascicoli A6 su un A4."
 
 #. $gettext('Exclusions')
-#: src/components/NavBar.vue:183
+#: src/components/NavBar.vue:193
 msgid "Exclusions"
 msgstr "Esclusioni"
 
@@ -464,7 +464,7 @@ msgid "Height in mm"
 msgstr "Altezza in mm"
 
 #. $gettext('Hello, %1!', authenticated)
-#: src/components/NavBar.vue:149
+#: src/components/NavBar.vue:157
 msgid "Hello, %1!"
 msgstr "Ciao, %1!"
 
@@ -474,7 +474,7 @@ msgid "Help"
 msgstr "Aiuto"
 
 #. $gettext('Hide/Show')
-#: src/components/AgentBox.vue:173
+#: src/components/AgentBox.vue:112
 msgid "Hide/Show"
 msgstr ""
 
@@ -575,7 +575,7 @@ msgid "Line spacing"
 msgstr "Interlinea"
 
 #. $gettext('Login')
-#: src/components/NavBar.vue:217
+#: src/components/NavBar.vue:237
 msgid "Login"
 msgstr "Accedi"
 
@@ -590,7 +590,7 @@ msgid "Logo address, e.g. https://mydomain.org/path/to/image"
 msgstr "Indirizzo del logo, a.e. https://mydomain.org/path/to/image"
 
 #. $gettext('Logout')
-#: src/components/NavBar.vue:200
+#: src/components/NavBar.vue:219
 msgid "Logout"
 msgstr "Esci"
 
@@ -611,7 +611,7 @@ msgstr "Descrizione fisica"
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge') $gettext('Merge')
 #: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118
-#: src/components/AgentBox.vue:168 src/components/MergeBox.vue:218
+#: src/components/AgentBox.vue:176 src/components/MergeBox.vue:218
 msgid "Merge"
 msgstr "Unisci"
 
@@ -736,7 +736,7 @@ msgid "Omit single entry"
 msgstr "Ometti singola voce"
 
 #. $gettext('On any Wikipedia page, check Tools menu, Wikidata item')
-#: src/components/AgentBox.vue:198
+#: src/components/AgentBox.vue:199
 msgid "On any Wikipedia page, check Tools menu, Wikidata item"
 msgstr ""
 "Su qualsiasi pagina Wikipedia, controlla il menù \"Tools\", \"Wikidata "
@@ -756,12 +756,12 @@ msgid "Opening Hours"
 msgstr "Orari di apertura"
 
 #. $gettext('Original')
-#: src/components/EntryPage.vue:92
+#: src/components/EntryPage.vue:104
 msgid "Original"
 msgstr "Originale"
 
 #. $gettext('Other languages:')
-#: src/components/EntryPage.vue:88
+#: src/components/EntryPage.vue:100
 msgid "Other languages:"
 msgstr "Altre lingue:"
 
@@ -837,12 +837,12 @@ msgid "Paragraph settings"
 msgstr "Impostazioni del paragrafo"
 
 #. $gettext('Part of:')
-#: src/components/EntryPage.vue:112
+#: src/components/EntryPage.vue:124
 msgid "Part of:"
 msgstr "Parte di:"
 
 #. $gettext('Password') $gettext('Password')
-#: src/components/NavBar.vue:214 src/components/PasswordReset.vue:65
+#: src/components/NavBar.vue:234 src/components/PasswordReset.vue:65
 msgid "Password"
 msgstr "Password"
 
@@ -962,7 +962,7 @@ msgid "Report an error for “%1” (%2)"
 msgstr "Segnala un errore per “%1” (%2)"
 
 #. $gettext('Require Password Reset')
-#: src/components/NavBar.vue:235
+#: src/components/NavBar.vue:255
 msgid "Require Password Reset"
 msgstr ""
 
@@ -977,7 +977,7 @@ msgid "Reset password for %1"
 msgstr "Reset Password per %1?"
 
 #. $gettext('Reset password?')
-#: src/components/NavBar.vue:225
+#: src/components/NavBar.vue:245
 msgid "Reset password?"
 msgstr "Reimpostare la password?"
 
@@ -1051,7 +1051,7 @@ msgid "See the library entries"
 msgstr "Guarda gli inserimenti della biblioteca"
 
 #. $gettext('See “%1”', display_details.canonical.name)
-#: src/components/AgentBox.vue:154
+#: src/components/AgentBox.vue:162
 msgid "See “%1”"
 msgstr "Guarda “%1”"
 
@@ -1085,6 +1085,11 @@ msgstr "Codice di Localizzazione a Scaffale"
 msgid "Short Description"
 msgstr "Descrizione breve"
 
+#. $gettext('Sorry! We could not found this entry!')
+#: src/components/EntryPage.vue:133
+msgid "Sorry! We could not found this entry!"
+msgstr ""
+
 #. $gettext('Sort')
 #: src/components/FacetBox.vue:53
 msgid "Sort"
@@ -1101,7 +1106,7 @@ msgid "Source:"
 msgstr "Origine:"
 
 #. $gettext('Source: Wikidata')
-#: src/components/AgentBox.vue:142
+#: src/components/AgentBox.vue:150
 msgid "Source: Wikidata"
 msgstr "Origine: Wikidata"
 
@@ -1126,7 +1131,7 @@ msgid "State or Province"
 msgstr "Stato o provincia"
 
 #. $gettext('Submit')
-#: src/components/AgentBox.vue:204
+#: src/components/AgentBox.vue:205
 msgid "Submit"
 msgstr "Invia"
 
@@ -1164,6 +1169,11 @@ msgstr "Larghezza del blocco di testo in mm"
 #: src/components/BookBuilderView.vue:494
 msgid "Text body only (no title, no final pages)"
 msgstr "Solo corpo del testo (nessun titolo, nessuna pagina finale)"
+
+#. $gettext('The entry does not exist, it was deleted or it is not public any more')
+#: src/components/EntryPage.vue:135
+msgid "The entry does not exist, it was deleted or it is not public any more"
+msgstr ""
 
 #. $gettext('The passwords do not match')
 #: src/components/PasswordReset.vue:71
@@ -1223,7 +1233,7 @@ msgid "Top margin in mm"
 msgstr "Margine superiore in mm"
 
 #. $gettext('Translation')
-#: src/components/EntryPage.vue:92
+#: src/components/EntryPage.vue:104
 msgid "Translation"
 msgstr "Traduzione"
 
@@ -1248,7 +1258,7 @@ msgid "Type here to search the libraries"
 msgstr "Scrivi qui per cercare tra le biblioteche"
 
 #. $gettext('UI language')
-#: src/components/NavBar.vue:117
+#: src/components/NavBar.vue:125
 msgid "UI language"
 msgstr "Lingua dell'interfaccia utente"
 
@@ -1279,7 +1289,7 @@ msgid "Use sans fonts for section titles"
 msgstr "Usa un carattere sans per i titoli di sezione"
 
 #. $gettext('User Menu')
-#: src/components/NavBar.vue:163
+#: src/components/NavBar.vue:171
 msgid "User Menu"
 msgstr "Menu utente"
 
@@ -1289,7 +1299,7 @@ msgid "User expiration (optional)"
 msgstr "Scadenza dell'utenza (opzionale)"
 
 #. $gettext('Username') $gettext('Username') $gettext('Username')
-#: src/components/NavBar.vue:211 src/components/NavBar.vue:231
+#: src/components/NavBar.vue:231 src/components/NavBar.vue:251
 #: src/components/UserCreation.vue:94
 msgid "Username"
 msgstr "username"
@@ -1316,7 +1326,7 @@ msgid "Width in mm"
 msgstr "Larghezza in mm"
 
 #. $gettext('WikiData ID')
-#: src/components/AgentBox.vue:190
+#: src/components/AgentBox.vue:191
 msgid "WikiData ID"
 msgstr ""
 
@@ -1362,7 +1372,7 @@ msgstr ""
 "stesso testo"
 
 #. $gettext('__WIKIDATA_HELP__')
-#: src/components/AgentBox.vue:198
+#: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
 msgstr ""
 
