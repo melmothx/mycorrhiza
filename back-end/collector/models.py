@@ -1150,7 +1150,7 @@ class DataSource(models.Model):
     content_type = models.CharField(max_length=128, null=True)
     # if this is the real book, if it exists: phisical description and call number
     material_description = models.TextField(null=True)
-    shelf_location_code = models.CharField(max_length=255, null=True)
+    shelf_location_code = models.TextField(null=True)
     edition_statement = models.TextField(null=True)
     place_date_of_publication_distribution = models.TextField(null=True)
     created = models.DateTimeField(auto_now_add=True)
