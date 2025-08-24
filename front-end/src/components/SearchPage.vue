@@ -340,12 +340,9 @@
             </transition>
           </div>
         </Listbox>
-        <button class="btn-primary rounded-none h-8 px-4 w-full sm:w-auto sm:border-r"
-                @click="clear_filters"
-                type="button">
-          {{ $gettext('Clear') }}
-        </button>
-        <button class="btn-primary rounded-none h-8 px-4 w-full  sm:w-auto sm:rounded-br-3xl sm:pr-10 sm:pl-4"
+        <button class="btn-primary rounded-none h-8 px-4 w-full
+                       mt-1 sm:mt-0
+                       sm:w-auto sm:rounded-br-3xl sm:pr-10 sm:pl-4"
                 type="button"
                 @click="refine">{{ $gettext('Search') }}</button>
       </div>
