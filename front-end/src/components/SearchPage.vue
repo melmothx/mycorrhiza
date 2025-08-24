@@ -259,7 +259,7 @@
 </script>
 <template>
   <form class="m-1 md:m-5" @submit.prevent="refine">
-    <h1 v-if="search_was_run && !search_error" class="text-xl text-center font-semibold mt-8 mb-2">
+    <h1 v-if="search_was_run && !search_error" class="text-xl text-center font-semibold mt-4 sm:mt-8 mb-2">
       <template v-if="searched_query">
         {{ $ngettext("Search results for “%1”: found %2 entry", "Search results for “%1”: found %2 entries", total_entries, searched_query, total_entries) }}
       </template>
@@ -349,7 +349,7 @@
       <SearchHelp v-if="show_query_help" />
     </div>
   </form>
-  <div class="m-1 md:m-5">
+  <div class="m-1 sm:m-5 mt-5">
     <div class="grid gap-8
                 grid-cols-1
                 sm:grid-cols-[250px_auto]
