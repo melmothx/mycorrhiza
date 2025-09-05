@@ -227,6 +227,7 @@ class Site(models.Model):
         ('abebooks_home_base', 'Abebooks Home Base'),
         ('disordine', 'Biblioteca Disordine'),
         ('belladonna', 'Biblioteca Belladonna'),
+        ('eutopia', 'Biblioteca Eutopia'),
     ]
     SITE_TYPES = [
         ('amusewiki', "Amusewiki"),

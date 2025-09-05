@@ -92,6 +92,19 @@ def sheet_definitions():
                 ('material_description', 'Npag', None, (round_to_int, add_name)),
             ],
         },
+        "eutopia": {
+            "type": "excel",
+            "mapping": [
+                ('title', 'Title'),
+                ('creator', 'Author', re.compile(r'\s*,\s*')),
+                ('creator', 'Editor', re.compile(r'\s*,\s*')),
+                ('publisher', 'Publisher'),
+                ('place_date_of_publication_distribution', 'Location'),
+                ('date', 'Date'),
+                ('edition_statement', 'Edition'),
+                ('subject', 'Themes/Tags'),
+            ],
+        },
         "belladonna": {
             "type": "csv",
             "csv": {
@@ -205,7 +218,7 @@ def normalize_records(records, mapping):
                 else:
                     normal[dest].append(value)
         if normal.get('title'):
-            if not normal['identifier']:
+            if not normal.get('identifier'):
                 sha = hashlib.sha1()
                 for field in ('creator', 'title', 'date'):
                     if normal[field]:
