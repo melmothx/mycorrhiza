@@ -94,15 +94,16 @@ def sheet_definitions():
         },
         "eutopia": {
             "type": "excel",
+# Τίτλος	Συγγραφέας	Επιμελιτής	Εκδότης	Έτος	Περιοχή	Έκδοση	Θεματική/Tags
             "mapping": [
-                ('title', 'Title'),
-                ('creator', 'Author', re.compile(r'\s*,\s*')),
-                ('creator', 'Editor', re.compile(r'\s*,\s*')),
-                ('publisher', 'Publisher'),
-                ('place_date_of_publication_distribution', 'Location'),
-                ('date', 'Date'),
-                ('edition_statement', 'Edition'),
-                ('subject', 'Themes/Tags'),
+                ('title', 'Τίτλος'),
+                ('creator', 'Συγγραφέας', re.compile(r'\s*,\s*')),
+                ('creator', 'Επιμελιτής', re.compile(r'\s*,\s*')),
+                ('publisher', 'Εκδότης'),
+                ('date', 'Έτος'),
+                ('place_date_of_publication_distribution', 'Περιοχή'),
+                ('edition_statement', 'Έκδοση'),
+                ('subject', 'Θεματική/Tags'),
             ],
         },
         "belladonna": {
