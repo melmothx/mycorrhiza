@@ -15,7 +15,7 @@ msgstr ""
 #. $gettext('%1 logo', library.name)
 #: src/components/LibraryBox.vue:16
 msgid "%1 logo"
-msgstr ""
+msgstr 
 
 #. $gettext('(Original size is %1)', bookbuilder.api_collection_data()
 #: src/components/BookBuilderView.vue:763
@@ -234,12 +234,12 @@ msgstr "Pulisci elenco"
 #. $gettext('Clear the query')
 #: src/components/SearchPage.vue:298
 msgid "Clear the query"
-msgstr ""
+msgstr "Pulisci la ricerca"
 
 #. $gettext('Click on the map to locate a physical library')
 #: src/components/LibraryMap.vue:241
 msgid "Click on the map to locate a physical library"
-msgstr ""
+msgstr "Premi sulla mappa per localizzare una biblioteca fisica"
 
 #. $gettext('Click to remove the filter')
 #: src/components/SearchPage.vue:281
@@ -331,7 +331,7 @@ msgstr "Trascina i titoli per riordinare"
 #. $gettext('Edit')
 #: src/components/AgentBox.vue:169
 msgid "Edit"
-msgstr ""
+msgstr "Modifica"
 
 #. $gettext('Editable and printable text')
 #: src/components/SearchPage.vue:249
@@ -455,7 +455,7 @@ msgstr "Caratteri"
 #. $gettext('For example:')
 #: src/components/SearchHelp.vue:12
 msgid "For example:"
-msgstr ""
+msgstr "Per esempio:"
 
 #. $gettext('From:')
 #: src/components/BugReport.vue:72
@@ -486,12 +486,12 @@ msgstr "Aiuto"
 #. $gettext('Help on the query syntax') $gettext('Help on the query syntax')
 #: src/components/SearchPage.vue:306 src/components/SearchBar.vue:42
 msgid "Help on the query syntax"
-msgstr ""
+msgstr "Aiuto con la sintassi della ricerca"
 
 #. $gettext('Hide/Show')
 #: src/components/AgentBox.vue:112
 msgid "Hide/Show"
-msgstr ""
+msgstr "Nascondi/Mostra"
 
 #. $gettext('ID')
 #: src/components/DashboardTable.vue:118
@@ -526,7 +526,7 @@ msgstr "Indirizzo internet"
 #. $gettext('Invalid query!')
 #: src/components/SearchPage.vue:272
 msgid "Invalid query!"
-msgstr ""
+msgstr "Ricerca non valida"
 
 #. $gettext('Justification')
 #: src/components/ExclusionButton.vue:66
@@ -658,7 +658,7 @@ msgstr "Carattere Mono"
 #. $gettext('More')
 #: src/components/LibraryMap.vue:269
 msgid "More"
-msgstr ""
+msgstr "Ancora"
 
 #. $gettext('My Exclusions')
 #: src/views/ExclusionView.vue:9
@@ -984,7 +984,7 @@ msgstr "Segnala un errore per “%1” (%2)"
 #. $gettext('Require Password Reset')
 #: src/components/NavBar.vue:255
 msgid "Require Password Reset"
-msgstr ""
+msgstr "È richiesta la reimpostazione della password"
 
 #. $gettext('Reset')
 #: src/components/BookBuilderView.vue:878
@@ -1052,7 +1052,7 @@ msgstr "Guarda tutti gli inserimenti"
 #. $gettext('See all the physical and digital libraries (%1)', all_libraries_count)
 #: src/components/LibraryMap.vue:257
 msgid "See all the physical and digital libraries (%1)"
-msgstr ""
+msgstr "Guarda tutte le biblioteche fisiche e digitali (%1)"
 
 #. $gettext('See here for more details') $gettext('See here for more details')
 #: src/components/BookBuilderView.vue:723
@@ -1108,7 +1108,7 @@ msgstr "Descrizione breve"
 #. $gettext('Sorry! We could not found this entry!')
 #: src/components/EntryPage.vue:133
 msgid "Sorry! We could not found this entry!"
-msgstr ""
+msgstr "Peccato! Non abbiamo trovato questa voce!"
 
 #. $gettext('Sort')
 #: src/components/FacetBox.vue:53
@@ -1193,7 +1193,7 @@ msgstr "Solo corpo del testo (nessun titolo, nessuna pagina finale)"
 #. $gettext('The entry does not exist, it was deleted or it is not public any more')
 #: src/components/EntryPage.vue:135
 msgid "The entry does not exist, it was deleted or it is not public any more"
-msgstr ""
+msgstr "Questa voce non esiste, è stata eliminata o non è più pubblica"
 
 #. $gettext('The passwords do not match')
 #: src/components/PasswordReset.vue:71
