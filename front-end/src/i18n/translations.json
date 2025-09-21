@@ -13,6 +13,20 @@
          }
       }
    },
+   "el" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      }
+   },
    "en" : {
       "All entries (%1)" : {
          "msgstr" : "All entries (%1)"
