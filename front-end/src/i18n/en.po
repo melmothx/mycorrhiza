@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 14:17:35 14:17+0000\n"
+"POT-Creation-Date: 05:17:03 05:17+0000\n"
 "PO-Revision-Date: 2025-09-21 07:13+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: English\n"
@@ -97,7 +97,7 @@ msgid "Aggregation"
 msgstr ""
 
 #. $gettext('Aggregations')
-#: src/components/SearchPage.vue:423
+#: src/components/SearchPage.vue:420
 msgid "Aggregations"
 msgstr ""
 
@@ -117,7 +117,7 @@ msgid "Author"
 msgstr ""
 
 #. $gettext('Authors') $gettext('Authors') $gettext('Authors')
-#: src/components/SearchPage.vue:378 src/components/SearchPage.vue:382
+#: src/components/SearchPage.vue:375 src/components/SearchPage.vue:379
 #: src/components/AgentOverView.vue:62
 msgid "Authors"
 msgstr ""
@@ -218,11 +218,6 @@ msgstr ""
 msgid "City"
 msgstr ""
 
-#. $gettext('Clear')
-#: src/components/SearchPage.vue:346
-msgid "Clear"
-msgstr ""
-
 #. $gettext('Clear list')
 #: src/components/MergeBox.vue:188
 msgid "Clear list"
@@ -290,7 +285,7 @@ msgstr ""
 
 #. $gettext('Date') $gettext('Date') $gettext('Date')
 #: src/components/ExclusionTable.vue:37 src/components/BookBuilderView.vue:835
-#: src/components/SearchPage.vue:404
+#: src/components/SearchPage.vue:401
 msgid "Date"
 msgstr ""
 
@@ -315,7 +310,7 @@ msgid "Do not use bold fonts"
 msgstr ""
 
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:414
+#: src/components/SearchPage.vue:411
 msgid "Download Types"
 msgstr ""
 
@@ -393,7 +388,7 @@ msgid "Feel free to reach out to us at:"
 msgstr ""
 
 #. $gettext('Fetching results, hold on...')
-#: src/components/SearchPage.vue:432
+#: src/components/SearchPage.vue:429
 msgid "Fetching results, hold on..."
 msgstr ""
 
@@ -527,7 +522,7 @@ msgid "Landing page"
 msgstr ""
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:368
+#: src/components/SearchPage.vue:365
 msgid "Language"
 msgstr ""
 
@@ -563,7 +558,7 @@ msgstr ""
 
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
 #: src/components/LibraryOverView.vue:57 src/components/LibraryView.vue:42
-#: src/components/SearchPage.vue:392 src/components/SearchPage.vue:396
+#: src/components/SearchPage.vue:389 src/components/SearchPage.vue:393
 msgid "Libraries"
 msgstr ""
 
@@ -624,12 +619,12 @@ msgid "Merge"
 msgstr ""
 
 #. $gettext('Merge authors here') $gettext('Merge authors here')
-#: src/components/SearchPage.vue:461 src/components/AgentOverView.vue:94
+#: src/components/SearchPage.vue:458 src/components/AgentOverView.vue:94
 msgid "Merge authors here"
 msgstr ""
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:469
+#: src/components/SearchPage.vue:466
 msgid "Merge entries here"
 msgstr ""
 
@@ -679,7 +674,7 @@ msgid "No records"
 msgstr ""
 
 #. $gettext('No result found!')
-#: src/components/SearchPage.vue:444
+#: src/components/SearchPage.vue:441
 msgid "No result found!"
 msgstr ""
 
@@ -999,7 +994,7 @@ msgid "Sans Font"
 msgstr ""
 
 #. $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search')
-#: src/components/SearchPage.vue:296 src/components/SearchPage.vue:350
+#: src/components/SearchPage.vue:296 src/components/SearchPage.vue:347
 #: src/components/SearchBar.vue:33 src/components/SearchBar.vue:53
 #: src/components/AgentOverView.vue:76
 msgid "Search"
@@ -1049,12 +1044,12 @@ msgid "Send"
 msgstr ""
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:486
+#: src/components/SearchPage.vue:483
 msgid "Set aggregations here"
 msgstr ""
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:477
+#: src/components/SearchPage.vue:474
 msgid "Set translations here"
 msgstr ""
 
@@ -1338,12 +1333,15 @@ msgstr ""
 #. $gettext('__MERGE_AUTHOR__')
 #: src/components/SearchPage.vue:254
 msgid "__MERGE_AUTHOR__"
-msgstr "With this function, you can unify the alternative forms of the name of the person who wrote the text. Bakunin and M. Bakunin -> Bakunin"
+msgstr ""
+"With this function, you can unify the alternative forms of the name of the "
+"person who wrote the text. Bakunin and M. Bakunin -> Bakunin"
 
 #. $gettext('__MERGE_ENTRY__')
 #: src/components/SearchPage.vue:255
 msgid "__MERGE_ENTRY__"
-msgstr "With this function you can merge two separate references to the same text"
+msgstr ""
+"With this function you can merge two separate references to the same text"
 
 #. $gettext('__SET_AGGREGATION__')
 #: src/components/SearchPage.vue:257
@@ -1356,12 +1354,16 @@ msgstr ""
 #. $gettext('__SET_TRANSLATION__')
 #: src/components/SearchPage.vue:256
 msgid "__SET_TRANSLATION__"
-msgstr "With this feature, you can link two translations of the same text in different languages. The first one in the list will be the original language"
+msgstr ""
+"With this feature, you can link two translations of the same text in "
+"different languages. The first one in the list will be the original language"
 
 #. $gettext('__WIKIDATA_HELP__')
 #: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
-msgstr "Enter the Wikidata ID code, which is the letter Q followed by several digits, that can be easily found on Wikipedia itself"
+msgstr ""
+"Enter the Wikidata ID code, which is the letter Q followed by several "
+"digits, that can be easily found on Wikipedia itself"
 
 #. $gettext('by count')
 #: src/components/FacetBox.vue:66

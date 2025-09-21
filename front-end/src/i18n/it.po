@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 14:17:35 14:17+0000\n"
+"POT-Creation-Date: 05:18:48 05:18+0000\n"
 "PO-Revision-Date: 2025-09-21 07:17+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -98,7 +98,7 @@ msgid "Aggregation"
 msgstr "Aggregazione"
 
 #. $gettext('Aggregations')
-#: src/components/SearchPage.vue:423
+#: src/components/SearchPage.vue:420
 msgid "Aggregations"
 msgstr "Aggregazioni"
 
@@ -118,7 +118,7 @@ msgid "Author"
 msgstr "Autore"
 
 #. $gettext('Authors') $gettext('Authors') $gettext('Authors')
-#: src/components/SearchPage.vue:378 src/components/SearchPage.vue:382
+#: src/components/SearchPage.vue:375 src/components/SearchPage.vue:379
 #: src/components/AgentOverView.vue:62
 msgid "Authors"
 msgstr "Autori"
@@ -221,11 +221,6 @@ msgstr "Scegli un file"
 msgid "City"
 msgstr "Città"
 
-#. $gettext('Clear')
-#: src/components/SearchPage.vue:346
-msgid "Clear"
-msgstr "Pulisci"
-
 #. $gettext('Clear list')
 #: src/components/MergeBox.vue:188
 msgid "Clear list"
@@ -294,7 +289,7 @@ msgstr "Crea"
 
 #. $gettext('Date') $gettext('Date') $gettext('Date')
 #: src/components/ExclusionTable.vue:37 src/components/BookBuilderView.vue:835
-#: src/components/SearchPage.vue:404
+#: src/components/SearchPage.vue:401
 msgid "Date"
 msgstr "Data"
 
@@ -319,7 +314,7 @@ msgid "Do not use bold fonts"
 msgstr "Non usare caratteri in grassetto"
 
 #. $gettext('Download Types')
-#: src/components/SearchPage.vue:414
+#: src/components/SearchPage.vue:411
 msgid "Download Types"
 msgstr "Tipi di download"
 
@@ -400,7 +395,7 @@ msgid "Feel free to reach out to us at:"
 msgstr "Contattaci qui:"
 
 #. $gettext('Fetching results, hold on...')
-#: src/components/SearchPage.vue:432
+#: src/components/SearchPage.vue:429
 msgid "Fetching results, hold on..."
 msgstr "Stiamo raccogliendo i risultati, attendi..."
 
@@ -539,7 +534,7 @@ msgid "Landing page"
 msgstr "Pagina sorgente"
 
 #. $gettext('Language')
-#: src/components/SearchPage.vue:368
+#: src/components/SearchPage.vue:365
 msgid "Language"
 msgstr "Lingua"
 
@@ -575,7 +570,7 @@ msgstr "Layout"
 
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
 #: src/components/LibraryOverView.vue:57 src/components/LibraryView.vue:42
-#: src/components/SearchPage.vue:392 src/components/SearchPage.vue:396
+#: src/components/SearchPage.vue:389 src/components/SearchPage.vue:393
 msgid "Libraries"
 msgstr "Biblioteche"
 
@@ -636,12 +631,12 @@ msgid "Merge"
 msgstr "Unisci"
 
 #. $gettext('Merge authors here') $gettext('Merge authors here')
-#: src/components/SearchPage.vue:461 src/components/AgentOverView.vue:94
+#: src/components/SearchPage.vue:458 src/components/AgentOverView.vue:94
 msgid "Merge authors here"
 msgstr "Unisci gli autori qui"
 
 #. $gettext('Merge entries here')
-#: src/components/SearchPage.vue:469
+#: src/components/SearchPage.vue:466
 msgid "Merge entries here"
 msgstr "Unisci le voci qui"
 
@@ -691,7 +686,7 @@ msgid "No records"
 msgstr "Nessun dato"
 
 #. $gettext('No result found!')
-#: src/components/SearchPage.vue:444
+#: src/components/SearchPage.vue:441
 msgid "No result found!"
 msgstr "Non è stato trovato nessun risultato!"
 
@@ -1031,7 +1026,7 @@ msgid "Sans Font"
 msgstr "Carattere Sans"
 
 #. $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search')
-#: src/components/SearchPage.vue:296 src/components/SearchPage.vue:350
+#: src/components/SearchPage.vue:296 src/components/SearchPage.vue:347
 #: src/components/SearchBar.vue:33 src/components/SearchBar.vue:53
 #: src/components/AgentOverView.vue:76
 msgid "Search"
@@ -1081,12 +1076,12 @@ msgid "Send"
 msgstr "Invia"
 
 #. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:486
+#: src/components/SearchPage.vue:483
 msgid "Set aggregations here"
 msgstr "Imposta le aggregazioni qui"
 
 #. $gettext('Set translations here')
-#: src/components/SearchPage.vue:477
+#: src/components/SearchPage.vue:474
 msgid "Set translations here"
 msgstr "Imposta le traduzioni qui"
 
@@ -1374,7 +1369,9 @@ msgstr "CAP"
 #. $gettext('__MERGE_AUTHOR__')
 #: src/components/SearchPage.vue:254
 msgid "__MERGE_AUTHOR__"
-msgstr "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo. Bakunin e M. Bakunin -> Bakunin"
+msgstr ""
+"Con questa funzione puoi unificare le forme alternative del nome di chi ha "
+"scritto il testo. Bakunin e M. Bakunin -> Bakunin"
 
 #. $gettext('__MERGE_ENTRY__')
 #: src/components/SearchPage.vue:255
@@ -1400,7 +1397,9 @@ msgstr ""
 #. $gettext('__WIKIDATA_HELP__')
 #: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
-msgstr "Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre, facilmente reperibile su wikipedia stessa"
+msgstr ""
+"Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre, "
+"facilmente reperibile su wikipedia stessa"
 
 #. $gettext('by count')
 #: src/components/FacetBox.vue:66
@@ -1422,6 +1421,9 @@ msgstr "pannello di gestione per "
 #: src/components/BookBuilderView.vue:333
 msgid "leave blank for default"
 msgstr "lascia bianco come predefinito"
+
+#~ msgid "Clear"
+#~ msgstr "Pulisci"
 
 #~ msgid "Click on the map to locate a library"
 #~ msgstr "Clicca sulla mappa per localizzare una biblioteca"

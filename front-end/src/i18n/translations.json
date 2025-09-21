@@ -28,6 +28,21 @@
             "0" : "",
             "1" : ""
          }
+      },
+      "__MERGE_AUTHOR__" : {
+         "msgstr" : "With this function, you can unify the alternative forms of the name of the person who wrote the text. Bakunin and M. Bakunin -> Bakunin"
+      },
+      "__MERGE_ENTRY__" : {
+         "msgstr" : "With this function you can merge two separate references to the same text"
+      },
+      "__SET_AGGREGATION__" : {
+         "msgstr" : "With this feature, you can merge multiple references within the same\naggregation, that is, the different articles that make up a magazine or the\ndifferent texts that make up an anthology"
+      },
+      "__SET_TRANSLATION__" : {
+         "msgstr" : "With this feature, you can link two translations of the same text in different languages. The first one in the list will be the original language"
+      },
+      "__WIKIDATA_HELP__" : {
+         "msgstr" : "Enter the Wikidata ID code, which is the letter Q followed by several digits, that can be easily found on Wikipedia itself"
       }
    },
    "fr" : {
@@ -187,8 +202,14 @@
       "Clear list" : {
          "msgstr" : "Pulisci elenco"
       },
+      "Clear the query" : {
+         "msgstr" : "Pulisci la ricerca"
+      },
       "Click on the map to locate a library" : {
          "msgstr" : "Clicca sulla mappa per localizzare una biblioteca"
+      },
+      "Click on the map to locate a physical library" : {
+         "msgstr" : "Premi sulla mappa per localizzare una biblioteca fisica"
       },
       "Click to remove the filter" : {
          "msgstr" : "Premi per rimuovere il filtro"
@@ -249,6 +270,9 @@
       },
       "Drag the titles to reorder" : {
          "msgstr" : "Trascina i titoli per riordinare"
+      },
+      "Edit" : {
+         "msgstr" : "Modifica"
       },
       "Editable and printable text" : {
          "msgstr" : "Testo editabile e stampabile"
@@ -313,6 +337,9 @@
       "Fonts" : {
          "msgstr" : "Caratteri"
       },
+      "For example:" : {
+         "msgstr" : "Per esempio:"
+      },
       "From:" : {
          "msgstr" : "Da:"
       },
@@ -327,6 +354,12 @@
       },
       "Help" : {
          "msgstr" : "Aiuto"
+      },
+      "Help on the query syntax" : {
+         "msgstr" : "Aiuto con la sintassi della ricerca"
+      },
+      "Hide/Show" : {
+         "msgstr" : "Nascondi/Mostra"
       },
       "ID" : {
          "msgstr" : "ID"
@@ -345,6 +378,9 @@
       },
       "Internet address" : {
          "msgstr" : "Indirizzo internet"
+      },
+      "Invalid query!" : {
+         "msgstr" : "Ricerca non valida"
       },
       "Join the project with your library or archive" : {
          "msgstr" : "Aggiungi la tua biblioteca o archivio"
@@ -432,6 +468,9 @@
       },
       "Mono Font" : {
          "msgstr" : "Carattere Mono"
+      },
+      "More" : {
+         "msgstr" : "Ancora"
       },
       "My Exclusions" : {
          "msgstr" : "Le mie esclusioni"
@@ -619,6 +658,9 @@
       "Report an error for “%1” (%2)" : {
          "msgstr" : "Segnala un errore per “%1” (%2)"
       },
+      "Require Password Reset" : {
+         "msgstr" : "È richiesta la reimpostazione della password"
+      },
       "Reset" : {
          "msgstr" : "Azzera"
       },
@@ -673,6 +715,9 @@
       "See all entries" : {
          "msgstr" : "Guarda tutti gli inserimenti"
       },
+      "See all the physical and digital libraries (%1)" : {
+         "msgstr" : "Guarda tutte le biblioteche fisiche e digitali (%1)"
+      },
       "See here for more details" : {
          "msgstr" : "Guarda qui per maggiori dettagli"
       },
@@ -702,6 +747,9 @@
       },
       "Short Description" : {
          "msgstr" : "Descrizione breve"
+      },
+      "Sorry! We could not found this entry!" : {
+         "msgstr" : "Peccato! Non abbiamo trovato questa voce!"
       },
       "Sort" : {
          "msgstr" : "Disponi"
@@ -762,6 +810,9 @@
       },
       "Text body only (no title, no final pages)" : {
          "msgstr" : "Solo corpo del testo (nessun titolo, nessuna pagina finale)"
+      },
+      "The entry does not exist, it was deleted or it is not public any more" : {
+         "msgstr" : "Questa voce non esiste, è stata eliminata o non è più pubblica"
       },
       "The passwords do not match" : {
          "msgstr" : "La password non corrisponde"
@@ -875,7 +926,7 @@
          "msgstr" : "CAP"
       },
       "__MERGE_AUTHOR__" : {
-         "msgstr" : "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo\nBakunin e Bakunin -> Bakunin"
+         "msgstr" : "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo. Bakunin e M. Bakunin -> Bakunin"
       },
       "__MERGE_ENTRY__" : {
          "msgstr" : "Con questa funzione puoi unire due riferimenti distinti allo stesso testo"
@@ -884,7 +935,10 @@
          "msgstr" : "Con questa funzione puoi unire più riferimenti all'interno di una stessa aggregazione, ovvero i diversi articoli che compongono una rivista oppure i diversi testi che compongono un'antologia"
       },
       "__SET_TRANSLATION__" : {
-         "msgstr" : "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo"
+         "msgstr" : "Con questa funzione puoi collegare due traduzioni in lingue diverse dello stesso testo. La prima della lista risulterà essere la lingua originale"
+      },
+      "__WIKIDATA_HELP__" : {
+         "msgstr" : "Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre, facilmente reperibile su wikipedia stessa"
       },
       "by count" : {
          "msgstr" : "per numero"
