@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 14:17:35 14:17+0000\n"
-"PO-Revision-Date: 2024-03-04 10:13+0000\n"
+"PO-Revision-Date: 2025-09-21 07:13+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: English\n"
 "Language: en\n"
@@ -1338,37 +1338,31 @@ msgstr ""
 #. $gettext('__MERGE_AUTHOR__')
 #: src/components/SearchPage.vue:254
 msgid "__MERGE_AUTHOR__"
-msgstr ""
-"With this function, you can unify the alternative forms of the name of the person"
-"who wrote the text"
-"Bakunin and M. Bakunin -> Bakunin"
+msgstr "With this function, you can unify the alternative forms of the name of the person who wrote the text. Bakunin and M. Bakunin -> Bakunin"
 
 #. $gettext('__MERGE_ENTRY__')
 #: src/components/SearchPage.vue:255
 msgid "__MERGE_ENTRY__"
-msgstr ""
-"With this function you can merge two separate references to the same text"
+msgstr "With this function you can merge two separate references to the same text"
 
 #. $gettext('__SET_AGGREGATION__')
 #: src/components/SearchPage.vue:257
 msgid "__SET_AGGREGATION__"
 msgstr ""
-"With this feature, you can merge multiple references within the same"
-"aggregation, that is, the different articles that make up a magazine or the"
+"With this feature, you can merge multiple references within the same\n"
+"aggregation, that is, the different articles that make up a magazine or the\n"
 "different texts that make up an anthology"
 
 #. $gettext('__SET_TRANSLATION__')
 #: src/components/SearchPage.vue:256
 msgid "__SET_TRANSLATION__"
-msgstr ""
-"With this feature, you can link two translations of the same text in different languages."
-"The first one in the list will be the original language"
+msgstr "With this feature, you can link two translations of the same text in different languages. The first one in the list will be the original language"
+
 #. $gettext('__WIKIDATA_HELP__')
 #: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
-msgstr ""
-"Enter the Wikidata ID code, which is the letter Q followed by several digits,"
-"that can be easily found on Wikipedia itself"
+msgstr "Enter the Wikidata ID code, which is the letter Q followed by several digits, that can be easily found on Wikipedia itself"
+
 #. $gettext('by count')
 #: src/components/FacetBox.vue:66
 msgid "by count"

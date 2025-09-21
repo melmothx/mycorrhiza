@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 14:17:35 14:17+0000\n"
-"PO-Revision-Date: 2025-07-17 21:38+0200\n"
+"PO-Revision-Date: 2025-09-21 07:14+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -15,7 +15,7 @@ msgstr ""
 #. $gettext('%1 logo', library.name)
 #: src/components/LibraryBox.vue:16
 msgid "%1 logo"
-msgstr 
+msgstr ""
 
 #. $gettext('(Original size is %1)', bookbuilder.api_collection_data()
 #: src/components/BookBuilderView.vue:763
