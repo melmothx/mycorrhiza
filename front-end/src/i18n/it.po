@@ -1376,8 +1376,8 @@ msgstr "CAP"
 msgid "__MERGE_AUTHOR__"
 msgstr ""
 "Con questa funzione puoi unificare le forme alternative del nome di chi ha "
-"scritto il testo\n"
-"Bakunin e Bakunin -> Bakunin"
+"scritto il testo"
+"Bakunin e M. Bakunin -> Bakunin"
 
 #. $gettext('__MERGE_ENTRY__')
 #: src/components/SearchPage.vue:255
@@ -1398,12 +1398,14 @@ msgstr ""
 msgid "__SET_TRANSLATION__"
 msgstr ""
 "Con questa funzione puoi collegare due traduzioni in lingue diverse dello "
-"stesso testo"
+"stesso testo. La prima della lista risulterà essere la lingua originale"
 
 #. $gettext('__WIKIDATA_HELP__')
 #: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
 msgstr ""
+"Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre,"
+"facilmente reperibile su wikipedia stessa"
 
 #. $gettext('by count')
 #: src/components/FacetBox.vue:66
