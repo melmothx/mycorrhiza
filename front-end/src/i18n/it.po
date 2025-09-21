@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 14:17:35 14:17+0000\n"
-"PO-Revision-Date: 2025-09-21 07:14+0200\n"
+"PO-Revision-Date: 2025-09-21 07:17+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -1374,10 +1374,7 @@ msgstr "CAP"
 #. $gettext('__MERGE_AUTHOR__')
 #: src/components/SearchPage.vue:254
 msgid "__MERGE_AUTHOR__"
-msgstr ""
-"Con questa funzione puoi unificare le forme alternative del nome di chi ha "
-"scritto il testo"
-"Bakunin e M. Bakunin -> Bakunin"
+msgstr "Con questa funzione puoi unificare le forme alternative del nome di chi ha scritto il testo. Bakunin e M. Bakunin -> Bakunin"
 
 #. $gettext('__MERGE_ENTRY__')
 #: src/components/SearchPage.vue:255
@@ -1403,9 +1400,7 @@ msgstr ""
 #. $gettext('__WIKIDATA_HELP__')
 #: src/components/AgentBox.vue:199
 msgid "__WIKIDATA_HELP__"
-msgstr ""
-"Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre,"
-"facilmente reperibile su wikipedia stessa"
+msgstr "Inserisci il codice  ID wikidata, ovvero la lettera Q seguita da più cifre, facilmente reperibile su wikipedia stessa"
 
 #. $gettext('by count')
 #: src/components/FacetBox.vue:66
