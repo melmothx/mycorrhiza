@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
 "POT-Creation-Date: 05:18:48 05:18+0000\n"
-"PO-Revision-Date: 2025-09-21 07:17+0200\n"
+"PO-Revision-Date: 2025-09-22 12:22+0200\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -10,12 +10,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.4\n"
+"X-Generator: Poedit 3.7\n"
 
 #. $gettext('%1 logo', library.name)
 #: src/components/LibraryBox.vue:16
+#, fuzzy
 msgid "%1 logo"
-msgstr ""
+msgstr "%1 logo"
 
 #. $gettext('(Original size is %1)', bookbuilder.api_collection_data()
 #: src/components/BookBuilderView.vue:763
@@ -157,17 +158,18 @@ msgstr "Correzione per la rilegatura in mm (margine interno addizionale)"
 #. $gettext('Blocks of 16 pages to be folded twice and then bound together.')
 #: src/components/BookBuilderView.vue:711
 msgid "Blocks of 16 pages to be folded twice and then bound together."
-msgstr "Fascicolo di 16 pagine da piegare due volte e legare assieme"
+msgstr "Fascicolo di 16 pagine da piegare due volte e legare assieme."
 
 #. $gettext('Blocks of 8 pages to be folded twice and then bound together.')
 #: src/components/BookBuilderView.vue:706
 msgid "Blocks of 8 pages to be folded twice and then bound together."
-msgstr "Fascicolo di 8 pagine da piegare due volte e legare assieme"
+msgstr "Fascicolo di 8 pagine da piegare due volte e legare assieme."
 
+# Questa parola fa riferimento alla funzione di Amusewiki, quindi non va tradotta
 #. $gettext('Book Builder')
 #: src/components/BookBuilderBar.vue:11
 msgid "Book Builder"
-msgstr ""
+msgstr "Book Builder"
 
 #. $gettext('Bug Report')
 #: src/components/BugReport.vue:61
@@ -420,13 +422,13 @@ msgstr "Nome proprio"
 #: src/components/BookBuilderView.vue:729
 msgid "Fixed 16 pages signatures on 2 sheets, with double individual folding."
 msgstr ""
-"Fascicoli fissi di 16 pagine su due fogli, con una doppia piega su ognuno"
+"Fascicoli fissi di 16 pagine su due fogli, con una doppia piega su ognuno."
 
 #. $gettext('Fixed 16 pages signatures on a single sheet, with triple folding.')
 #: src/components/BookBuilderView.vue:721
 msgid "Fixed 16 pages signatures on a single sheet, with triple folding."
 msgstr ""
-"Fascicoli fissi di 16 pagine su un singolo foglio, con tripla piegatura"
+"Fascicoli fissi di 16 pagine su un singolo foglio, con tripla piegatura."
 
 #. $gettext('Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together.')
 #: src/components/BookBuilderView.vue:716
@@ -496,7 +498,7 @@ msgstr "ID"
 #. $gettext('ISBN')
 #: src/components/DataSourceBox.vue:182
 msgid "ISBN"
-msgstr ""
+msgstr "ISBN"
 
 #. $gettext('Imposition')
 #: src/components/BookBuilderView.vue:214
@@ -521,7 +523,7 @@ msgstr "Indirizzo internet"
 #. $gettext('Invalid query!')
 #: src/components/SearchPage.vue:272
 msgid "Invalid query!"
-msgstr "Ricerca non valida"
+msgstr "Ricerca non valida!"
 
 #. $gettext('Justification')
 #: src/components/ExclusionButton.vue:66
@@ -754,8 +756,7 @@ msgstr "Ometti singola voce"
 #: src/components/AgentBox.vue:199
 msgid "On any Wikipedia page, check Tools menu, Wikidata item"
 msgstr ""
-"Su qualsiasi pagina Wikipedia, controlla il menù \"Tools\", \"Wikidata "
-"item\" "
+"Su qualsiasi pagina Wikipedia, controlla il menù \"Tools\", \"Wikidata item\""
 
 #. $gettext('One page per sheet. This is useful only if you want to add the cropmarks')
 #: src/components/BookBuilderView.vue:737
@@ -831,7 +832,7 @@ msgstr ""
 msgid "Pairs of consecutives pages are put on the same sheet side by side."
 msgstr ""
 "Le coppie di pagine consecutive sono messe sullo stesso foglio una accanto "
-"all'altra"
+"all'altra."
 
 #. $gettext('Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)')
 #: src/components/BookBuilderView.vue:805
@@ -989,7 +990,7 @@ msgstr "Azzera"
 #. $gettext('Reset password for %1', username) $gettext('Reset password for %1', username)
 #: src/components/PasswordReset.vue:59 src/components/PasswordReset.vue:77
 msgid "Reset password for %1"
-msgstr "Reset Password per %1?"
+msgstr "Reset Password per %1"
 
 #. $gettext('Reset password?')
 #: src/components/NavBar.vue:245
@@ -1235,7 +1236,8 @@ msgstr "Questo testo è tradotto"
 #. $gettext('This username already exist. You are going to add it to this library.')
 #: src/components/UserCreation.vue:95
 msgid "This username already exist. You are going to add it to this library."
-msgstr "Questo username esiste già. Lo stai per aggiungere a questa biblioteca"
+msgstr ""
+"Questo username esiste già. Lo stai per aggiungere a questa biblioteca."
 
 #. $gettext('Title') $gettext('Title')
 #: src/components/DashboardTable.vue:119 src/components/BookBuilderView.vue:823
@@ -1317,7 +1319,7 @@ msgstr "Scadenza dell'utenza (opzionale)"
 #: src/components/NavBar.vue:231 src/components/NavBar.vue:251
 #: src/components/UserCreation.vue:94
 msgid "Username"
-msgstr "username"
+msgstr "Username"
 
 #. $gettext('Value')
 #: src/components/CsvUpload.vue:195
@@ -1343,7 +1345,7 @@ msgstr "Larghezza in mm"
 #. $gettext('WikiData ID')
 #: src/components/AgentBox.vue:191
 msgid "WikiData ID"
-msgstr ""
+msgstr "Wikidata ID"
 
 #. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
 #: src/components/DashboardTable.vue:129 src/components/JobChecker.vue:84
@@ -1360,6 +1362,10 @@ msgid ""
 "combine the terms with AND, OR, NOT. You can use the asterisk as wildcard. "
 "You can quote phrases with double quotes."
 msgstr ""
+"Puoi cercare per titolo con il prefisso \"title:\", per autore con il "
+"prefisso \"author:\". Non inserire spazi tra il prefisso ed il termine. Puoi "
+"anche combinare termini con AND, OR, NOT. Puoi usare gli asterischi come "
+"caratteri Jolly. Puoi cercare frasi esatte con le doppie virgolette."
 
 #. $gettext('ZIP code')
 #: src/components/LibraryEdit.vue:175
