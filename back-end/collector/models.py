@@ -8,7 +8,7 @@ from amwmeta.xapian import MycorrhizaIndexer
 from amwmeta.calibre import scan_calibre_tree
 from django.conf import settings
 import logging
-from amwmeta.sheets import parse_sheet
+from amwmeta.sheets import parse_sheet, sheet_definitions
 import random
 import requests
 import re
@@ -609,6 +609,13 @@ class Site(models.Model):
             id_match = re.fullmatch(r'KOHA-.*:([0-9]+)', identifier)
             if url_match and id_match:
                 return "{}/opac-detail.pl?biblionumber={}".format(url_match.group(1), id_match.group(1))
+        return None
+
+    def csv_column_names(self):
+        if self.site_type == 'csv':
+            definition = sheet_definitions().get(self.csv_type)
+            if definition:
+                return ", ".join([ d[1] for d in definition['mapping'] ])
         return None
 
 # these are a level up from the oai pmh records

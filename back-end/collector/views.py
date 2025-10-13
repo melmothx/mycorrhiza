@@ -1072,7 +1072,7 @@ def api_spreadsheet(request, library_id):
         out['error'] = "Library does not exist"
     if library:
         if user.is_superuser or library.affiliated_users.filter(library_admin=True, username=user.username).count():
-            sites = [ { "title": s.title, "id": s.id } for s in library.sites.filter(site_type="csv", active=True) ]
+            sites = [ { "title": s.title, "id": s.id, "column_names": s.csv_column_names() } for s in library.sites.filter(site_type="csv", active=True) ]
     if sites:
         if request.method == 'POST':
             site_id = request.POST.get('site_id')

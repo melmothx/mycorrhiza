@@ -127,6 +127,14 @@
             </template>
           </label>
         </div>
+        <div class="mt-4" v-if="site.column_names">
+          <div>
+            {{ $gettext('Expected headers') }}
+          </div>
+          <div>
+             <code>{{ site.column_names }}</code>
+          </div>
+        </div>
         <div class="w-0 h-0">
           <input id="csv-upload-file" class="w-0" type="file" @change="load_file($event)" required>
         </div>
