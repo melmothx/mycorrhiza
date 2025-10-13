@@ -37,18 +37,16 @@
           <LibraryEdit :library_id="$route.params.id" :key="$route.params.id" />
         </div>
         <div class="mb-6">
-          <CsvUpload :library_id="$route.params.id" />
+          <CsvUpload :library_id="$route.params.id" :key="$route.params.id" />
         </div>
         <div class="mb-6">
-          <UserCreation :library_id="$route.params.id" @user-created="refresh_users"/>
+          <UserCreation :library_id="$route.params.id" :key="$route.params.id" @user-created="refresh_users"/>
         </div>
       </div>
       <DashboardTable :listing_url="'/collector/api/library/list-users/' + $route.params.id"
                       :removal_url="'/collector/api/library/remove-user/' + $route.params.id"
                       :table_title="$gettext('Library Users')"
-                      :key="user_list_key" />
-
-
+                      :key="$route.params.id" />
     </div>
   </main>
   <NavFooter />

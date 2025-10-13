@@ -180,39 +180,39 @@
             leave-from-class="transform scale-100 opacity-100"
             leave-to-class="transform scale-95 opacity-0">
           <MenuItems class="absolute right-0 mt-1 max-h-120 w-48 overflow-auto bg-perl-bush-50 p-0 shadow-lg rounded-br-3xl">
-            <MenuItem v-if="user_data.is_superuser" class="mcrz-menu-item">
-              <div>
-                <a href="/admin">
+            <a href="/admin">
+              <MenuItem v-if="user_data.is_superuser" class="mcrz-menu-item">
+                <div>
                   {{ $gettext('Admin') }}
-                </a>
-              </div>
-            </MenuItem>
-            <MenuItem class="mcrz-menu-item">
-              <div>
-                <router-link :to="{ name: 'dashboard', params: { type: 'exclusions' } }">
+                </div>
+              </MenuItem>
+            </a>
+            <router-link :to="{ name: 'dashboard', params: { type: 'exclusions' } }">
+              <MenuItem class="mcrz-menu-item">
+                <div>
                   {{ $gettext('Exclusions') }}
-                </router-link>
-              </div>
-            </MenuItem>
+                </div>
+              </MenuItem>
+            </router-link>
             <template v-if="user_data.is_library_admin">
               <template v-for="lib in user_data.libraries">
-                <MenuItem class="mcrz-menu-item">
-                  <div>
-                    <router-link :to="{ name: 'library_edit', params: { id: lib.id }}">
+                <router-link :to="{ name: 'library_edit', params: { id: lib.id }}">
+                  <MenuItem class="mcrz-menu-item">
+                    <div>
                       {{ lib.name }}
-                    </router-link>
-                  </div>
-                </MenuItem>
+                    </div>
+                  </MenuItem>
+                </router-link>
               </template>
             </template>
             <template v-for="page in header_pages">
-              <MenuItem class="mcrz-menu-item">
-                <div>
-                  <router-link :to="{ name: 'page_view', params: { id: page.id } }">
+              <router-link :to="{ name: 'page_view', params: { id: page.id } }">
+                <MenuItem class="mcrz-menu-item">
+                  <div>
                     {{ page.title }}
-                  </router-link>
-                </div>
-              </MenuItem>
+                  </div>
+                </MenuItem>
+              </router-link>
             </template>
             <MenuItem class="mcrz-menu-item">
               <div @click="logout">
