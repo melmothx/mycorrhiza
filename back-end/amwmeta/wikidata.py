@@ -26,6 +26,7 @@ class WikidataRetriever:
         self.language = language
         self.headers = {
             "Content-Type": "application/json",
+            "User-Agent": "Mycorrhiza",
             "Authorization": "Bearer {}".format(self.access_token)
         }
     def retrieve(self, path):
