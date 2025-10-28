@@ -475,15 +475,17 @@ def extract_fields(record, hostname):
         if aggregation_name:
             asha = hashlib.sha256()
             full_name = [ aggregation_name ]
-            item_identifier = agg.get('item_identifier')
-            identifier = item_identifier if item_identifier else aggregation_name
-            agg['identifier'] = 'aggregation:{}:{}'.format(hostname, identifier)
-
+            has_issue = False
             if agg.get('issue'):
                 full_name.append(agg.get('issue'))
-                # extend the identifier only if we need a surrogate
-                if not item_identifier:
-                    agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, identifier, agg['issue'])
+                has_issue = True
+            if agg.get('item_identifier'):
+                agg['identifier'] = agg['item_identifier']
+            elif has_issue:
+                agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, aggregation_name, agg['issue'])
+            else:
+                agg['identifier'] = 'aggregation:{}:{}'.format(hostname, aggregation_name)
+
             if agg.get('place_date_publisher'):
                 full_name.append("({})".format(agg['place_date_publisher']))
 
