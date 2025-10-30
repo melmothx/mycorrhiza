@@ -153,12 +153,12 @@ class HarvestTestCase(unittest.TestCase):
                  'issue': '1',
                  'name': 'Test',
                  'linkage': 'http://amusewiki.org/aggregation/fxm',
-                 'item_identifier': 'fmx',
+                 'item_identifier': 'oai:example.com:/aggregation/fxm',
              }]
         }, "pippo.org")
         self.assertNotEqual(rec8['checksum'], rec7['checksum'], "Checksum not equal");
         self.assertEqual(rec8['aggregations'][0]['linkage'], 'http://amusewiki.org/aggregation/fxm')
-        self.assertEqual(rec8['aggregations'][0]['identifier'], 'aggregation:pippo.org:fmx')
+        self.assertEqual(rec8['aggregations'][0]['identifier'], 'oai:example.com:/aggregation/fxm')
 
 
     def test_sheet(self):
