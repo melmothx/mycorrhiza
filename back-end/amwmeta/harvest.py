@@ -4,8 +4,11 @@ import logging
 from sickle.models import Record
 import re
 import hashlib
+import pprint
+from datetime import datetime, timezone
+from urllib.parse import urlparse
 
-
+pp = pprint.PrettyPrinter(compact=True)
 logger = logging.getLogger(__name__)
 
 class GenericMarcXMLRecord(Record):
@@ -371,6 +374,18 @@ def iso_lang_code(code):
     else:
         return full_names.get(code.lower())
 
+def extract_oai_fields(rec, hostname, now):
+    full_data = rec.get_metadata()
+    record = extract_fields(full_data, hostname)
+    record['deleted'] = rec.deleted
+    record['identifier'] = rec.header.identifier
+    record['full_data'] = full_data
+    try:
+        record['datestamp'] = datetime.fromisoformat(rec.header.datestamp)
+    except ValueError:
+        record['datestamp'] = now
+    return record
+
 def harvest_oai_pmh(url, records_type, opts):
     logger.debug([url, opts])
     class_mappings = {
@@ -393,8 +408,40 @@ def harvest_oai_pmh(url, records_type, opts):
     except NoRecordsMatch:
         return []
 
-    # just return the iterator
-    return records
+    # here we need to scan the records and prepend the aggregations, if any
+    aggregations = {}
+    fetched = []
+    now = datetime.now(timezone.utc)
+    hostname = urlparse(url).hostname
+    for rec in records:
+        record = extract_oai_fields(rec, hostname, now)
+        fetched.append(record)
+
+    for rec in fetched:
+        # logger.debug(pp.pprint(record))
+        collect_aggregations(sickle, record, aggregations, hostname, now, opts, 0)
+    pp.pprint(fetched)
+    raise "Err"
+    return fetched
+
+def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep):
+    if deep > 5:
+        logger.info("Recursion too deep, stopping here")
+        return
+    if record.get('aggregations'):
+        record['aggregation_objects'] = []
+        for agg in record['aggregations']:
+            agg_identifier = agg.get('item_identifier')
+            if agg_identifier:
+                if not agg_identifier in aggregations:
+                    agg_rec = sickle.GetRecord(identifier=agg_identifier,
+                                               metadataPrefix=opts.get('metadataPrefix'))
+                    aggregation = extract_oai_fields(agg_rec, hostname, now)
+                    logger.debug("Fetched {}".format(agg_identifier))
+                    aggregations[agg_identifier] = aggregation
+                    collect_aggregations(sickle, aggregation, aggregations, hostname, now,
+                                         opts, deep + 1)
+                record['aggregation_objects'].append(aggregations[agg_identifier])
 
 def extract_fields(record, hostname):
     out = {}
