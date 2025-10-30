@@ -1,5 +1,9 @@
 # Installation
 
+```
+apt install build-essential python3-venv libpq-dev
+```
+
 Setup the python virtualenv (`python3 -m venv DIRECTORY`)
 
 Then run:
