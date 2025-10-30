@@ -36,6 +36,7 @@ if args.identifier:
     data = rec.get_metadata();
     pp.pprint(data)
     pp.pprint(extract_fields(data, urlparse(args.endpoint).hostname))
+    pp.pprint(rec.header)
 
 else:
     records = sickle.ListRecords(metadataPrefix="marc21")

@@ -51,7 +51,6 @@ class ViewsTestCase(TestCase):
         # which is an entry
         agg = Entry.objects.get(pk=eid)
         self.assertTrue(agg.checksum)
-        self.assertTrue(agg.is_aggregation)
         self.assertEqual(agg.title, "Pizzosa")
 
         data = { "value": "test agent for merging" }
@@ -70,7 +69,7 @@ class ViewsTestCase(TestCase):
                                content_type="application/json")
         self.assertTrue(res.json()['error'])
 
-        entry = Entry.objects.create(title="A test title", is_aggregation=False);
+        entry = Entry.objects.create(title="A test title")
         library = Library.objects.create(
             name="Test library",
             public=True,
@@ -91,6 +90,7 @@ class ViewsTestCase(TestCase):
             full_data={},
         )
 
+        # TODO this needs to be redone
         for x in (1, 2, 3):
             data = [ { "id": agg.id }, { "id": entry.id } ]
             res = self.client.post(reverse('api_set_aggregated'),
@@ -102,7 +102,7 @@ class ViewsTestCase(TestCase):
             xapian_index_records([agg.id, entry.id])
 
             res = self.client.get(reverse('api_search'), { "query": "Pizzosa" })
-            # pp.pprint(res.json())
+            pp.pprint(res.json())
             self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
 
 @override_settings(XAPIAN_DB=str(xapian_test_db))
@@ -309,8 +309,6 @@ class AggregationProcessingTestCase(TestCase):
                          "One entry for the article and two for the aggregations")
         self.assertEqual(DataSource.objects.count(), 3,
                          "One DS for the article and two for the aggregations")
-        self.assertEqual(Entry.objects.filter(is_aggregation=True).count(), 2)
-        self.assertEqual(DataSource.objects.filter(is_aggregation=True).count(), 2)
         # for entry in Entry.objects.filter(is_aggregation=True).all():
             # pp.pprint(entry.indexing_data())
 
