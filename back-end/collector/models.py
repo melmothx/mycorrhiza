@@ -358,7 +358,6 @@ class Site(models.Model):
         records = harvest_oai_pmh(url, record_types.get(self.site_type, 'dc'), opts)
 
         aliases = self.record_aliases()
-        counter = 0
         for record in records:
             for entry in self.process_harvested_record(record, aliases, now):
                 if entry is None:
@@ -393,7 +392,7 @@ class Site(models.Model):
 
     def process_harvested_record(self, record, aliases, now):
         aggregations = record.pop('aggregations', [])
-        entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
+        entry, ds = self._process_single_harvested_record(record, aliases, now)
         out = []
         if entry:
             out.append(entry)
@@ -416,7 +415,7 @@ class Site(models.Model):
                     "checksum": agg['checksum'],
                     "datestamp": ds.datestamp,
                 }
-                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
+                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now)
                 out.append(agg_entry)
                 entry_rel = {
                     "aggregation": agg_entry,
@@ -445,7 +444,7 @@ class Site(models.Model):
                         relation.save()
         return out
 
-    def _process_single_harvested_record(self, record, aliases, now, is_aggregation=False):
+    def _process_single_harvested_record(self, record, aliases, now):
 
         authors = []
         languages = []
@@ -486,7 +485,6 @@ class Site(models.Model):
 
         ds_identifiers = {
             "oai_pmh_identifier": identifier,
-            "is_aggregation": is_aggregation,
         }
         try:
             ds = self.datasource_set.get(**ds_identifiers)
@@ -526,11 +524,11 @@ class Site(models.Model):
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
-                entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
+                entry = Entry.objects.get(checksum=record['checksum'])
             except Entry.DoesNotExist:
-                entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
+                entry = Entry.objects.create(**record)
             except Entry.MultipleObjectsReturned:
-                entry = Entry.objects.filter(checksum=record['checksum'], is_aggregation=is_aggregation).first()
+                entry = Entry.objects.filter(checksum=record['checksum']).first()
             ds.entry = entry
             ds.save()
 
@@ -715,7 +713,6 @@ class Entry(models.Model):
     authors = models.ManyToManyField(Agent, related_name="authored_entries")
     languages = models.ManyToManyField(Language)
     checksum = models.CharField(max_length=255)
-    is_aggregation = models.BooleanField(default=False)
     canonical_entry = models.ForeignKey(
         'self',
         null=True,
@@ -743,7 +740,7 @@ class Entry(models.Model):
 
     def as_api_dict(self, get_canonical=False, get_original=False):
         out = {}
-        for f in ["id", "title", "subtitle", "is_aggregation"]:
+        for f in ["id", "title", "subtitle"]:
             out[f] = getattr(self, f)
         out['authors'] = [ agent.name for agent in self.authors.all() ]
         out['languages'] = [ lang.code for lang in self.languages.all() ]
@@ -955,7 +952,6 @@ class Entry(models.Model):
             "unique_source": 0,
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
-            "is_aggregation": self.is_aggregation,
             "aggregate": [],
             "translate": [],
             "download": [ { "id": eff, "value": ff_map[eff] } for eff in entry_file_formats ],
@@ -1032,7 +1028,6 @@ class Entry(models.Model):
             record = {
                 "title": name,
                 "checksum": sha.hexdigest(),
-                "is_aggregation": True,
             }
             # here there's no uniqueness in the schema, but we enforce it
             try:
@@ -1047,8 +1042,6 @@ class Entry(models.Model):
 
     @classmethod
     def aggregate_entries(cls, aggregation, aggregated_objects, user=None):
-        if not aggregation.is_aggregation:
-            return []
         reindex = [ aggregation ]
         aggregated_datasources = []
         for aggregated in aggregated_objects:
@@ -1080,7 +1073,6 @@ class Entry(models.Model):
                         oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
                         datestamp=aggregation.datestamp,
                         entry_id=aggregation.id,
-                        is_aggregation=True,
                         full_data={},
                     )
                     agg_datasources.append(agg_ds)
@@ -1151,7 +1143,6 @@ class DataSource(models.Model):
     place_date_of_publication_distribution = models.TextField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    is_aggregation = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -1223,8 +1214,6 @@ class DataSource(models.Model):
 
     def full_text(self):
         site_type = self.site.site_type
-        if self.is_aggregation:
-            return None
         if site_type == 'amusewiki':
             cached = self.get_cached_full_text()
             if cached:
@@ -1281,10 +1270,9 @@ class DataSource(models.Model):
 
     def download_options(self):
         site = self.site
-        if self.is_aggregation:
-            return []
-        elif site.site_type == 'amusewiki':
+        if site.site_type == 'amusewiki':
             # all files are supposed to have the same downloads, more or less
+            # TODO beware the aggregations
             return site.amusewiki_formats
         elif site.site_type == 'calibretree':
             # the URI here holds the directory, so look into the dir

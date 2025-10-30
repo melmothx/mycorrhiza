@@ -248,19 +248,9 @@ class MycorrhizaIndexer:
         self.logs = []
 
     def index_record(self, record):
-        is_deleted = True
+        is_deleted = False if record['data_sources'] else True
         termgenerator = xapian.TermGenerator()
         termgenerator.set_stemmer(xapian.Stem("none"))
-
-        # logger.debug(pp.pformat(record))
-        if record['is_aggregation']:
-            if record['data_sources']:
-                # delete if there are no real ds aggregated
-                for ds in record['data_sources']:
-                    if ds.get('aggregated', []):
-                        is_deleted = False
-        elif record['data_sources']:
-            is_deleted = False
 
         identifier = record['entry_id']
         doc = xapian.Document()
@@ -341,6 +331,7 @@ class MycorrhizaIndexer:
 
         # if aggregation or aggregated, index titles and authors of
         # the related one as well.
+        # TODO unclear
 
         for dsd in record['data_sources']:
             for aggfield in ['aggregations', 'aggregated']:
