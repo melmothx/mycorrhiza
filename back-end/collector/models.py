@@ -359,23 +359,11 @@ class Site(models.Model):
 
         aliases = self.record_aliases()
         counter = 0
-        for rec in records:
-            counter += 1
-            if counter % 10 == 0:
-                logger.debug(str(counter) + " records done")
-            full_data = rec.get_metadata()
-            record = extract_fields(full_data, hostname)
-            record['deleted'] = rec.deleted
-            record['identifier'] = rec.header.identifier
-            record['full_data'] = full_data
-            try:
-                record['datestamp'] = datetime.fromisoformat(rec.header.datestamp)
-            except ValueError:
-                record['datestamp'] = now
-
+        for record in records:
             for entry in self.process_harvested_record(record, aliases, now):
                 if entry is None:
-                    logger.info("Skipping {} deleted? {}, returned None".format(rec.header.identifier, rec.deleted))
+                    logger.info("Skipping {} deleted? {}, returned None".format(record['identifier'],
+                                                                                record['deleted']))
                 else:
                     xapian_records.append(entry.id)
         # and index
