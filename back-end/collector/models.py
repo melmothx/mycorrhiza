@@ -17,6 +17,7 @@ import hashlib
 from amwmeta.utils import log_user_operation
 from pathlib import Path
 import subprocess
+import copy
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
@@ -390,33 +391,13 @@ class Site(models.Model):
                 self.save()
             self.harvest_set.create(datetime=now, logs="\n".join(logs))
 
-    def process_harvested_record(self, record, aliases, now):
-        aggregations = record.pop('aggregations', [])
+    def process_harvested_record(self, record, aliases, now, deep=0):
         entry, ds = self._process_single_harvested_record(record, aliases, now)
         out = []
         if entry:
             out.append(entry)
-            # reindex existing aggregations
-            for aggregation_entry in entry.aggregation_entries.all():
-                logger.debug("Reindexing existing aggregations")
-                out.append(aggregation_entry.aggregation)
-        if entry and ds:
-            for agg in aggregations:
-                agg_record = {
-                    "title": agg['full_aggregation_name'],
-                    "full_data": agg,
-                    "identifier": agg['identifier'],
-                    "uri": agg.get('linkage'),
-                    "uri_label": ds.uri_label,
-                    "year_edition": ds.year_edition,
-                    "year_first_edition": ds.year_first_edition,
-                    "content_type": ds.content_type,
-                    "deleted": False,
-                    "checksum": agg['checksum'],
-                    "datestamp": ds.datestamp,
-                }
-                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now)
-                out.append(agg_entry)
+            for agg in record.pop('aggregation_objects', []):
+                agg_entry, agg_ds = self._process_single_harvested_record(agg['data'], aliases, now)
                 entry_rel = {
                     "aggregation": agg_entry,
                     "aggregated": entry,
@@ -434,7 +415,6 @@ class Site(models.Model):
                     relation = AggregationDataSource.objects.get(**ds_rel_spec)
                 except AggregationDataSource.DoesNotExist:
                     relation = AggregationDataSource.objects.create(**ds_rel_spec)
-
                 if agg.get('order'):
                     try:
                         relation.sorting_pos = agg.get('order')
@@ -442,10 +422,16 @@ class Site(models.Model):
                     except ValueError:
                         relation.sorting_pos = None
                         relation.save()
+                # and see if there are children with recursion
+                deep = deep + 1
+                if deep > 5:
+                    logger.error("Recursion too deep when processing aggregations")
+                    return out
+                out.extend(self.process_harvested_record(agg['data'], aliases, now, deep=deep))
         return out
 
-    def _process_single_harvested_record(self, record, aliases, now):
-
+    def _process_single_harvested_record(self, original_record, aliases, now):
+        record = copy.deepcopy(original_record)
         authors = []
         languages = []
         for author in record.pop('authors', []):
