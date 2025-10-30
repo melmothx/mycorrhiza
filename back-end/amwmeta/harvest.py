@@ -420,8 +420,6 @@ def harvest_oai_pmh(url, records_type, opts):
     for rec in fetched:
         # logger.debug(pp.pprint(record))
         collect_aggregations(sickle, record, aggregations, hostname, now, opts, 0)
-    pp.pprint(fetched)
-    raise "Err"
     return fetched
 
 def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep):
@@ -441,7 +439,7 @@ def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep
                     aggregations[agg_identifier] = aggregation
                     collect_aggregations(sickle, aggregation, aggregations, hostname, now,
                                          opts, deep + 1)
-                record['aggregation_objects'].append(aggregations[agg_identifier])
+                record['aggregation_objects'].append({ 'order': agg.get('order'), 'data': aggregations[agg_identifier] })
 
 def extract_fields(record, hostname):
     out = {}
@@ -598,4 +596,3 @@ def extract_fields(record, hostname):
     # this was used only for the checksum
     out.pop('aggregation_names')
     return out
-
