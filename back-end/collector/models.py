@@ -398,6 +398,12 @@ class Site(models.Model):
             out.append(entry)
             for agg in record.pop('aggregation_objects', []):
                 agg_entry, agg_ds = self._process_single_harvested_record(agg['data'], aliases, now)
+                logger.debug("Creating relationship between {} and {}, ds {} {}".format(
+                    entry.id,
+                    agg_entry.id,
+                    ds.id,
+                    agg_ds.id
+                ))
                 entry_rel = {
                     "aggregation": agg_entry,
                     "aggregated": entry,
@@ -1139,9 +1145,11 @@ class DataSource(models.Model):
 
     def amusewiki_base_url(self):
         if self.uri:
-            return re.sub(r'((\.[a-z0-9]+)+)$',
-                          '',
-                          self.uri)
+            # exclude aggregations
+            m = re.fullmatch(r'^(https?://[^/]+/library/([a-z0-9-]+))((\.[a-z0-9]+)+)?$',
+                             self.uri)
+            if m:
+                return m.group(1)
         return None
 
     def amusewiki_uri(self):
@@ -1257,9 +1265,11 @@ class DataSource(models.Model):
     def download_options(self):
         site = self.site
         if site.site_type == 'amusewiki':
-            # all files are supposed to have the same downloads, more or less
-            # TODO beware the aggregations
-            return site.amusewiki_formats
+            # all library entries are supposed to have the same downloads, more or less
+            if self.amusewiki_base_url():
+                return site.amusewiki_formats
+            else:
+                return []
         elif site.site_type == 'calibretree':
             # the URI here holds the directory, so look into the dir
             downloads = []
