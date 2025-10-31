@@ -1,7 +1,7 @@
 # Installation
 
 ```
-apt install build-essential python3-venv libpq-dev
+apt install build-essential python3-venv libpq-dev rabbitmq-server
 ```
 
 Setup the python virtualenv (`python3 -m venv DIRECTORY`)
@@ -59,3 +59,14 @@ Now `http://127.0.0.1:8000/admin` should be working.
 
 The `MEDIA_ROOT` should not be exposed to the webserver. The only
 uploads we have are CSV which should not be public.
+
+## Rabbitmq
+
+Make it listen only on localhost. Create users and vhosts
+
+E.g.
+
+{{{
+rabbitmqctl add_user camp PASSWORD
+rabbitmqctl add_vhost "camp20"; rabbitmqctl set_permissions -p "camp20" camp ".*" ".*" ".*"
+}}}
