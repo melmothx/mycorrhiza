@@ -1,27 +1,41 @@
 <script>
  import EntryDetails from './EntryDetails.vue'
  import DataSourceBox from './DataSourceBox.vue'
+ import DataSourceShortBox from './DataSourceShortBox.vue'
  import BackButton from './BackButton.vue'
+ import { Cog8ToothIcon } from '@heroicons/vue/24/solid'
  import axios from 'axios'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'entry_id' ],
-     components: { EntryDetails, DataSourceBox, BackButton },
+     components: {
+         EntryDetails,
+         DataSourceBox,
+         DataSourceShortBox,
+         BackButton,
+         Cog8ToothIcon,
+     },
      data() {
          return {
              record: {},
              languages: [],
              has_data_sources: true,
+             query_is_running: false,
          }
      },
      methods: {
          fetch_record() {
+             this.query_is_running = true;
+             document.getElementById('app').scrollIntoView({ behavior: "smooth" });
+             this.record = {}
+             this.has_data_sources = false;
              if (this.entry_id) {
                  axios.get('/collector/api/entry/' + this.entry_id)
                       .then((res) => {
                           this.record = res.data;
                           this.compute_languages();
+                          this.query_is_running = false;
                           if (this.entry_id != this.record.id) {
                               console.log(`Redirecting from ${this.entry_id} to ${this.record.id}`);
                               this.$router.push({ name: 'entry', params: { id: this.record.id } });
@@ -34,14 +48,8 @@
                           }
                       })
                       .catch((res) => {
-                          this.record = {}
-                          this.has_data_sources = false;
+                          this.query_is_running = false;
                       });
-             }
-             else {
-                 console.log("Resetting");
-                 this.record = {}
-                 this.has_data_sources = false;
              }
          },
          compute_languages() {
@@ -84,6 +92,13 @@
  }
 </script>
 <template>
+  <div v-if="query_is_running" class="font-bold flex items-center justify-center">
+    <div class="flex">
+      <Cog8ToothIcon class="h-4 m-1 animate-spin" />
+      {{ $gettext('Fetching results, hold on...') }}
+      <Cog8ToothIcon class="h-4 m-1 animate-spin" />
+    </div>
+  </div>
   <div v-if="has_data_sources">
     <div class="m-5 p-2">
       <div class="mb-2 flex">
@@ -111,24 +126,30 @@
       </div>
       <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
-        <div v-if="source.aggregated && source.aggregated.length > 0">
-          <div v-for="agg in source.aggregated" :key="agg.id" class="p-4">
+        <div v-if="source.aggregated && source.aggregated.length > 0" class="p-2">
+          <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+            <h2 class="font-semibold my-2">{{ $gettext('Contains:') }}</h2>
+          </div>
+          <div v-for="agg in source.aggregated" :key="agg.id" class="py-2 border-b border-old-copper-200">
             <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
-              <DataSourceBox :source="agg" :short="true">{{ $gettext('Contains:') }}</DataSourceBox>
+              <DataSourceShortBox :source="agg" />
             </router-link>
           </div>
         </div>
-        <div v-if="source.aggregations && source.aggregations.length > 0">
-          <div v-for="agg in source.aggregations" :key="agg.id" class="p-4">
+        <div v-if="source.aggregations && source.aggregations.length > 0" class="p-2">
+          <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+            <h2 class="font-semibold my-2">{{ $gettext('Part of:') }}</h2>
+          </div>
+          <div v-for="agg in source.aggregations" :key="agg.id" class="py-2 border-b border-old-copper-200">
             <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
-              <DataSourceBox :source="agg" :short="true">{{ $gettext('Part of:') }}</DataSourceBox>
+              <DataSourceShortBox :source="agg" />
             </router-link>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else-if="!query_is_running">
     <div class="m-8 p-2 text-center">
       <strong class="text-xl">{{ $gettext('Sorry! We could not found this entry!')  }}</strong>
       <p class="mt-8">

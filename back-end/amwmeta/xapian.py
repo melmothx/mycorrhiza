@@ -329,21 +329,6 @@ class MycorrhizaIndexer:
                     # logger.debug("Indexing {} {}".format(field, value))
                     termgenerator.index_text(strip_diacritics(value), 10)
 
-        # if aggregation or aggregated, index titles and authors of
-        # the related one as well.
-        # TODO unclear
-
-        for dsd in record['data_sources']:
-            for aggfield in ['aggregations', 'aggregated']:
-                for agg in dsd[aggfield]:
-                    termgenerator.increase_termpos()
-                    for author in agg.get('authors', []):
-                        termgenerator.index_text(strip_diacritics(author), 20)
-                    for field in ['title', 'description']:
-                        value = agg.get(field)
-                        if value:
-                            termgenerator.index_text(strip_diacritics(value), 20)
-
         for ft in record.pop('full_texts'):
             if ft:
                 logger.debug("Indexing full text with {} chars".format(len(ft)))

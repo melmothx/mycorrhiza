@@ -778,6 +778,17 @@ class Entry(models.Model):
             year = ds.get('year_edition')
         return(download_key, year)
 
+    def entry_display_dict_short(self):
+        indexed = self.indexed_data
+        out = {
+            "entry_id": self.id,
+            "title": indexed.get('title'),
+            "subtitle": indexed.get('subtitle'),
+            "authors": indexed.get('creator'),
+            "languages": indexed.get('language'),
+        }
+        return out
+
     def display_dict(self, library_ids):
         out = {}
         indexed = self.indexed_data
@@ -834,18 +845,8 @@ class Entry(models.Model):
                 if tr_data.get('data_sources'):
                     record['translations'].append(tr_data)
 
-        record['aggregated'] = []
-        for agg in original.aggregated_entries.all():
-            agg_data = agg.aggregated.display_dict(library_ids)
-            if agg_data.get('data_sources'):
-                record['aggregated'].append(agg_data)
-
-        record['aggregations'] = []
-        for agg in original.aggregation_entries.all():
-            agg_data = agg.aggregation.display_dict(library_ids)
-            if agg_data.get('data_sources'):
-                record['aggregations'].append(agg_data)
-
+        record['aggregated'] = [ agg.aggregated.entry_display_dict_short() for agg in original.aggregated_entries.all() ]
+        record['aggregations'] = [ agg.aggregation.entry_display_dict_short() for agg in original.aggregation_entries.all() ]
         return record
 
     def indexing_data(self):
@@ -888,9 +889,6 @@ class Entry(models.Model):
 
         for topr in data_source_records:
             dsd = topr.indexing_data()
-            # at DS level
-            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.order_by('sorting_pos').all() ]
-            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.order_by('sorting_pos').all() ]
             xapian_data_sources.append(dsd)
             if dsd['public']:
                 record_is_public = True

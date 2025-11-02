@@ -5,7 +5,7 @@
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
-     props: [ 'source', 'short' ],
+     props: [ 'source' ],
      components: {
          ReportErrorPopUp
      },
@@ -121,21 +121,16 @@
 </script>
 <template>
   <div>
-    <div v-if="short"
-         class="bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-      <h3 class="font-semibold"><slot></slot></h3>
-    </div>
-    <div v-else
-         class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
+    <div class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
       <h3 class="font-semibold text-white"><slot></slot></h3>
-      <h4 class="font-semibold text-white" :id="`library-${source.library_id}`" v-if="!short">
+      <h4 class="font-semibold text-white" :id="`library-${source.library_id}`">
         <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
           <span class="text-white">{{ source.library_name }}</span>
         </router-link>
       </h4>
     </div>
-    <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100">
-      <div v-for="author in source.authors" :key="author">
+    <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100 flex flex-wrap">
+      <div v-for="author in source.authors" :key="author" class="me-2 my-2 p-1 border border-old-copper-200 rounded">
         {{ author }}
       </div>
     </div>
@@ -157,7 +152,7 @@
       <h4 class="italic" v-if="source.subtitle">
         {{ source.subtitle }}
       </h4>
-      <div class="my-2 whitespace-pre-line" v-if="source.description && !short">
+      <div class="my-2 whitespace-pre-line" v-if="source.description">
         {{ source.description }}
       </div>
       <table class="my-4 w-full">
