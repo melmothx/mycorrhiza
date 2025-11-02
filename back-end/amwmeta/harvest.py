@@ -440,6 +440,19 @@ def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep
                                          opts, deep + 1)
                 record['aggregation_objects'].append({ 'order': agg.get('order'), 'data': aggregations[agg_identifier] })
 
+def _extract_year_range(strings):
+    years = set()
+    for full in strings:
+        for m in re.findall(r'\b(1[0-9]{3}|20[0-9]{2})\b', full):
+            years.add(int(m))
+    if not years:
+        return ""
+    years = sorted(years)
+    if years[0] != years[-1]:
+        return "{}-{}".format(years[0], years[-1])
+    else:
+        return "{}".format(years[0])
+
 def extract_fields(record, hostname):
     out = {}
     # here we map the full metadata to a subset for the DB. All the
@@ -501,7 +514,6 @@ def extract_fields(record, hostname):
         ('isbn', True),
         ('publisher', True),
         ('edition_statement', False),
-        ('place_date_of_publication_distribution', False),
     )
     # collapse these fields
     for fld in fields:
@@ -509,6 +521,13 @@ def extract_fields(record, hostname):
         if record.get(f):
             if unique:
                 out[f] = "\n".join(list(set(record.get(f))))
+            else:
+                out[f] = "\n".join(record.get(f))
+    for f in ('place_date_of_publication_distribution',):
+        date_list = record.get(f)
+        if date_list:
+            if len(date_list) > 4:
+                out[f] = _extract_year_range(date_list)
             else:
                 out[f] = "\n".join(record.get(f))
 
