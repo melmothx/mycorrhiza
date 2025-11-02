@@ -414,12 +414,11 @@ def harvest_oai_pmh(url, records_type, opts):
     now = datetime.now(timezone.utc)
     hostname = urlparse(url).hostname
     for rec in records:
-        record = extract_oai_fields(rec, hostname, now)
-        fetched.append(record)
+        fetched.append(extract_oai_fields(rec, hostname, now))
 
     for rec in fetched:
-        # logger.debug(pp.pprint(record))
-        collect_aggregations(sickle, record, aggregations, hostname, now, opts, 0)
+        logger.debug("Fetched {}".format(rec.get('identifier')))
+        collect_aggregations(sickle, rec, aggregations, hostname, now, opts, 0)
     return fetched
 
 def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep):

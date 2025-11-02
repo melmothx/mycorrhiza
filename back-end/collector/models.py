@@ -396,13 +396,14 @@ class Site(models.Model):
         out = []
         if entry:
             out.append(entry)
-            for agg in record.pop('aggregation_objects', []):
+            for agg in record.get('aggregation_objects', []):
                 agg_entry, agg_ds = self._process_single_harvested_record(agg['data'], aliases, now)
-                logger.debug("Creating relationship between {} and {}, ds {} {}".format(
+                logger.debug("Creating relationship between {} and {}, ds {} {} at deep {}".format(
                     entry.id,
                     agg_entry.id,
                     ds.id,
-                    agg_ds.id
+                    agg_ds.id,
+                    deep,
                 ))
                 entry_rel = {
                     "aggregation": agg_entry,
@@ -438,6 +439,9 @@ class Site(models.Model):
 
     def _process_single_harvested_record(self, original_record, aliases, now):
         record = copy.deepcopy(original_record)
+        # discard by-product
+        record.pop('aggregations', None)
+        record.pop('aggregation_objects', None)
         authors = []
         languages = []
         for author in record.pop('authors', []):
