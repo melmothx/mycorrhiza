@@ -124,25 +124,25 @@
           </span>
         </div>
       </div>
-      <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
+      <div class="m-2 pb-4 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
-      </div>
-      <div v-if="record.aggregated && record.aggregated.length > 0" class="mb-2 text-sm shadow-md">
-        <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-          <h2 class="font-semibold my-2">{{ $gettext('Contains:') }}</h2>
-        </div>
-        <div v-for="agg in record.aggregated" :key="agg.id" class="p-2 border-b border-old-copper-200">
-          <EntryShortBox :record="agg" />
-        </div>
-      </div>
-      <div v-if="record.aggregations && record.aggregations.length > 0" class="mb-2 text-sm shadow-md">
-        <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-          <h2 class="font-semibold my-2">{{ $gettext('Part of:') }}</h2>
-        </div>
-        <div v-for="agg in record.aggregations" :key="agg.id" class="p-2 border-b border-old-copper-200">
-          <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
+        <div v-if="source.aggregated && source.aggregated.length > 0" class="m-4 text-sm shadow-md">
+          <div class="my-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+            <h2 class="font-semibold my-2">{{ $gettext('Contains:') }}</h2>
+          </div>
+          <div v-for="agg in source.aggregated" :key="agg.id" class="p-2 border-b border-old-copper-200">
             <EntryShortBox :record="agg" />
-          </router-link>
+          </div>
+        </div>
+        <div v-if="source.aggregations && source.aggregations.length > 0" class="m-4  text-sm shadow-md">
+          <div class="my-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+            <h2 class="font-semibold my-2">{{ $gettext('Part of:') }}</h2>
+          </div>
+          <div v-for="agg in source.aggregations" :key="agg.id" class="p-2 border-b border-old-copper-200 mb-2">
+            <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
+              <EntryShortBox :record="agg" />
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
