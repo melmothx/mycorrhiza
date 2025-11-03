@@ -205,7 +205,7 @@
             {{ source.place_date_of_publication_distribution }}
           </td>
         </tr>
-        <tr class="border-b border-t p-2" v-if="source.site_type == 'generic' && source.uri && source.uri_label">
+        <tr class="border-b border-t p-2" v-if="source.uri && source.uri_label">
           <td class="p-1 pr-2">
             {{ source.uri_label }}
           </td>
