@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import validate_password, password_validators_help_texts
 from django.db.models import Q
-from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, AggregationEntry, ChangeLog, Page, General, LibraryErrorReport
+from .models import User, Entry, Agent, Site, SpreadsheetUpload, DataSource, Library, Exclusion, ChangeLog, Page, General, LibraryErrorReport
 from .tasks import process_spreadsheet_upload, xapian_index_records
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
@@ -76,9 +76,6 @@ def manipulate(op, user, main_id, *ids, create=None):
         'add-exclusion': Exclusion,
         'revert-exclusions': Exclusion,
 
-        'add-aggregations': Entry,
-        # no revert at the moment
-
     }
     if not main_id and not create:
         out['error']: "Missing ID"
@@ -130,13 +127,6 @@ def manipulate(op, user, main_id, *ids, create=None):
     elif op == 'revert-splat-agents':
         reindex = main_object.unsplit(user=user)
         out['success'] = "Removed"
-
-    elif op == 'add-aggregations':
-        reindex = cls.aggregate_entries(main_object, other_objects, user=user)
-        if reindex:
-            out['success'] = "Added"
-        else:
-            out['error'] = "Failure aggregating entries"
 
     elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
         reindex = main_object.unmerge(user=user)
@@ -789,21 +779,6 @@ def exclusions(request):
     logger.debug(out)
     return JsonResponse(out)
 
-@user_passes_test(user_can_merge)
-def api_set_aggregated(request):
-    out = {}
-    data = None
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        out['error'] = "Invalid JSON!";
-    user = request.user
-
-    if data and user:
-        ids = [ x['id'] for x in data ]
-        out = manipulate('add-aggregations', user, *ids)
-    logger.debug(out)
-    return JsonResponse(out)
 
 @user_passes_test(user_can_merge)
 def api_set_translations(request):
@@ -881,9 +856,6 @@ def api_create(request, target):
             if target == 'agent':
                 # name is unique
                 created, is_creation  = Agent.objects.get_or_create(name=value)
-            elif target == 'aggregation':
-                created = Entry.create_virtual_aggregation(value)
-
         if created:
             log_user_operation(user, 'create-' + target, created, None)
             out['created'] = {
@@ -892,7 +864,7 @@ def api_create(request, target):
                 "type": target,
             }
         else:
-            out['error'] = "Invalid target (must be agent or aggregation)"
+            out['error'] = "Invalid target (must be an agent)"
 
     logger.debug(out)
     return JsonResponse(out)

@@ -20,7 +20,6 @@ urlpatterns = [
     path("api/listing/<target>", views.api_listing, name="api_listing"),
     path("api/revert/<target>", views.api_revert, name="api_revert"),
     path("api/set-translations", views.api_set_translations, name="api_set_translations"),
-    path("api/set-aggregated", views.api_set_aggregated, name="api_set_aggregated"),
     path("api/exclusions", views.exclusions, name="exclusions"),
     path("api/create/<target>", views.api_create, name="api_create"),
     path("api/library/<action>/<int:library_id>", views.api_library_action, name="api_library_action"),
