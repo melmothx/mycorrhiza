@@ -1,7 +1,7 @@
 <script>
  import EntryDetails from './EntryDetails.vue'
  import DataSourceBox from './DataSourceBox.vue'
- import DataSourceShortBox from './DataSourceShortBox.vue'
+ import EntryShortBox from './EntryShortBox.vue'
  import BackButton from './BackButton.vue'
  import { Cog8ToothIcon } from '@heroicons/vue/24/solid'
  import axios from 'axios'
@@ -12,7 +12,7 @@
      components: {
          EntryDetails,
          DataSourceBox,
-         DataSourceShortBox,
+         EntryShortBox,
          BackButton,
          Cog8ToothIcon,
      },
@@ -126,25 +126,23 @@
       </div>
       <div class="mb-2 text-sm shadow-md" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
-        <div v-if="source.aggregated && source.aggregated.length > 0" class="p-2">
-          <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-            <h2 class="font-semibold my-2">{{ $gettext('Contains:') }}</h2>
-          </div>
-          <div v-for="agg in source.aggregated" :key="agg.id" class="py-2 border-b border-old-copper-200">
-            <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
-              <DataSourceShortBox :source="agg" />
-            </router-link>
-          </div>
+      </div>
+      <div v-if="record.aggregated && record.aggregated.length > 0" class="mb-2 text-sm shadow-md">
+        <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+          <h2 class="font-semibold my-2">{{ $gettext('Contains:') }}</h2>
         </div>
-        <div v-if="source.aggregations && source.aggregations.length > 0" class="p-2">
-          <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-            <h2 class="font-semibold my-2">{{ $gettext('Part of:') }}</h2>
-          </div>
-          <div v-for="agg in source.aggregations" :key="agg.id" class="py-2 border-b border-old-copper-200">
-            <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
-              <DataSourceShortBox :source="agg" />
-            </router-link>
-          </div>
+        <div v-for="agg in record.aggregated" :key="agg.id" class="p-2 border-b border-old-copper-200">
+          <EntryShortBox :record="agg" />
+        </div>
+      </div>
+      <div v-if="record.aggregations && record.aggregations.length > 0" class="mb-2 text-sm shadow-md">
+        <div class="mt-2 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
+          <h2 class="font-semibold my-2">{{ $gettext('Part of:') }}</h2>
+        </div>
+        <div v-for="agg in record.aggregations" :key="agg.id" class="p-2 border-b border-old-copper-200">
+          <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
+            <EntryShortBox :record="agg" />
+          </router-link>
         </div>
       </div>
     </div>
