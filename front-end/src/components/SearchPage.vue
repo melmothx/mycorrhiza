@@ -474,15 +474,6 @@
               {{ $gettext('Set translations here') }}
             </MergeBox>
           </div>
-          <div id="aggregations-cards" class="mb-2">
-            <MergeBox merge_type="entry"
-                      api_call="set-aggregated"
-                      help_text="__SET_AGGREGATION__"
-                      create_item="aggregation"
-                      @refetch-results="getResults()">
-              {{ $gettext('Set aggregations here') }}
-            </MergeBox>
-          </div>
         </div>
       </div>
     </div>
