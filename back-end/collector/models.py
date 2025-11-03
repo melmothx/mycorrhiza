@@ -814,6 +814,9 @@ class Entry(models.Model):
                             ds['koha_url'] = site.koha_ds_url(ds['identifier'])
                         except Site.DoesNotExist:
                             pass
+                    dso = DataSource.objects.get(pk=ds.get('data_source_id'))
+                    ds['aggregated'] = [ agg.aggregated.entry.entry_display_dict_short() for agg in dso.aggregated_data_sources.order_by('sorting_pos') ]
+                    ds['aggregations'] = [ agg.aggregation.entry.entry_display_dict_short() for agg in dso.aggregation_data_sources.order_by('sorting_pos') ]
                     data_sources.append(ds)
                 except Library.DoesNotExist:
                     pass
@@ -844,9 +847,6 @@ class Entry(models.Model):
                 # ditto. No DS, it does not exist
                 if tr_data.get('data_sources'):
                     record['translations'].append(tr_data)
-
-        record['aggregated'] = [ agg.aggregated.entry_display_dict_short() for agg in original.aggregated_entries.all() ]
-        record['aggregations'] = [ agg.aggregation.entry_display_dict_short() for agg in original.aggregation_entries.all() ]
         return record
 
     def indexing_data(self):
