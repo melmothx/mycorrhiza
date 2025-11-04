@@ -2,12 +2,17 @@
  import axios from 'axios'
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
+ import EntryShortBox from './EntryShortBox.vue'
+ import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/24/solid'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
      props: [ 'source' ],
      components: {
-         ReportErrorPopUp
+         ReportErrorPopUp,
+         EntryShortBox,
+         ChevronDoubleDownIcon,
+         ChevronDoubleUpIcon,
      },
      data() {
          return {
@@ -16,6 +21,7 @@
              show_pdf_reader: false,
              working: false,
              added_to_the_bookbuilder: false,
+             show_aggregated: false,
              bookbuilder,
          }
      },
@@ -290,6 +296,22 @@
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
         <code>{{ source.identifier }}</code>
       </div>
+    </div>
+    <div v-if="source.aggregated && source.aggregated.length">
+      <div class="flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 p-2 flex cursor-pointer"
+           @click="show_aggregated = show_aggregated ? false : true">
+        <h2 class="font-semibold grow">
+          <span v-if="!show_aggregated">{{ $gettext('Click to see the contained items') }}</span>
+          <span v-if="show_aggregated">{{ $gettext('Contains:') }}</span>
+        </h2>
+        <ChevronDoubleUpIcon class="h-6 p-1" v-if="show_aggregated" />
+        <ChevronDoubleDownIcon class="h-6 p-1" v-if="!show_aggregated"/>
+      </div>
+      <template v-if="show_aggregated">
+        <div v-for="agg in source.aggregated" :key="agg.id" class="p-2 border-b border-e border-l border-old-copper-200">
+          <EntryShortBox :record="agg" />
+        </div>
+      </template>
     </div>
   </div>
 </template>

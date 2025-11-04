@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="mb-4">
-    <div class="flex mt-4 text-lg">
+    <div class="flex mt-1 text-lg">
       <h3 class="font-semibold mr-1" v-if="record.title">
         {{ record.title }}
       </h3>

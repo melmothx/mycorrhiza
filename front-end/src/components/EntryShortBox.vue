@@ -14,16 +14,12 @@
   <router-link :to="{ name: 'entry', params: { id: record.entry_id } }">
     <div class="flex">
       <div class="grow">
-        <template v-if="record.title && record.title.length">
-          <h3 class="font-semibold mr-1 p-1 grow" v-for="title in record.title">
-            {{ title.value }}
-          </h3>
-        </template>
-        <template v-if="record.subtitle && record.subtitle.length">
-          <h4 class="mr-1 p-1 grow" v-for="subtitle in record.subtitle">
-            <em>{{ subtitle.value }}</em>
-          </h4>
-        </template>
+        <h3 v-if="record.title" class="font-semibold">
+          {{ record.title }}
+        </h3>
+        <h4 class="italic" v-if="record.subtitle">
+          {{ record.subtitle }}
+        </h4>
       </div>
       <div class="font-bold" v-if="record.languages">
         <span class="bg-linear-to-tr from-spectra-700 to-spectra-900 rounded-sm p-1 shadow-md ml-2 text-white"
