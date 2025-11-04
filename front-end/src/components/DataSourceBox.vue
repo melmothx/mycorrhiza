@@ -3,7 +3,6 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
  import EntryShortBox from './EntryShortBox.vue'
- import { ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/24/solid'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
@@ -11,8 +10,6 @@
      components: {
          ReportErrorPopUp,
          EntryShortBox,
-         ChevronDoubleDownIcon,
-         ChevronDoubleUpIcon,
      },
      data() {
          return {
@@ -66,7 +63,7 @@
          can_have_full_text() {
              const src = this.source;
              if (src.site_type == 'amusewiki') {
-                 if (src.aggregated && src.aggregated.length == 0) {
+                 if (src.uri && src.uri.match(/\/library\//)) {
                      return true;
                  }
              }
@@ -127,7 +124,7 @@
 </script>
 <template>
   <div class="shadow-lg">
-    <div class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
+    <div class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 ps-6">
       <h3 class="font-semibold text-white"><slot></slot></h3>
       <h4 class="font-semibold text-white" :id="`library-${source.library_id}`">
         <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
@@ -216,7 +213,7 @@
             {{ source.uri_label }}
           </td>
           <td>
-            <a :href="source.uri">{{ source.uri }}</a>
+            <a class="mcrz-link" :href="source.uri">{{ source.uri }}</a>
           </td>
         </tr>
         <tr class="border-b border-t p-2" v-if="source.koha_url">
@@ -224,7 +221,7 @@
             {{ $gettext('OPAC page') }}
           </td>
           <td>
-            <a :href="source.koha_url">{{ source.koha_url }}</a>
+            <a class="mcrz-link" :href="source.koha_url">{{ source.koha_url }}</a>
           </td>
         </tr>
       </table>
@@ -237,7 +234,7 @@
           </div>
         </div>
       </div>
-      <div class="flex mb-8">
+      <div class="flex">
         <div class="grow"></div>
         <div v-if="can_have_full_text()">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
@@ -261,7 +258,6 @@
         <div class="grow"></div>
       </div>
       <div v-if="show_html">
-        <!-- mettere sotto full text -->
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
           <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded-sm">
             <a :href="get_binary_file(source.data_source_id, dl.ext)">
@@ -296,22 +292,6 @@
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
         <code>{{ source.identifier }}</code>
       </div>
-    </div>
-    <div v-if="source.aggregated && source.aggregated.length">
-      <div class="flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 p-2 flex cursor-pointer"
-           @click="show_aggregated = show_aggregated ? false : true">
-        <h2 class="font-semibold grow">
-          <span v-if="!show_aggregated">{{ $gettext('Click to see the contained items') }}</span>
-          <span v-if="show_aggregated">{{ $gettext('Contains:') }}</span>
-        </h2>
-        <ChevronDoubleUpIcon class="h-6 p-1" v-if="show_aggregated" />
-        <ChevronDoubleDownIcon class="h-6 p-1" v-if="!show_aggregated"/>
-      </div>
-      <template v-if="show_aggregated">
-        <div v-for="agg in source.aggregated" :key="agg.id" class="p-2 border-b border-e border-l border-old-copper-200">
-          <EntryShortBox :record="agg" />
-        </div>
-      </template>
     </div>
   </div>
 </template>
