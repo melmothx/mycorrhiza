@@ -798,6 +798,7 @@ class Entry(models.Model):
         out['languages'] = indexed.get('language')
         data_sources = []
         out['aggregations'] = [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ]
+        out['aggregated']   = [ agg.aggregated.entry_display_dict_short()  for agg in self.aggregated_entries.all()  ]
 
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
@@ -816,8 +817,6 @@ class Entry(models.Model):
                             ds['koha_url'] = site.koha_ds_url(ds['identifier'])
                         except Site.DoesNotExist:
                             pass
-                    dso = DataSource.objects.get(pk=ds.get('data_source_id'))
-                    ds['aggregated'] = [ agg.aggregated.entry.entry_display_dict_short() for agg in dso.aggregated_data_sources.order_by('sorting_pos') ]
                     data_sources.append(ds)
                 except Library.DoesNotExist:
                     pass

@@ -125,8 +125,8 @@
         </div>
       </div>
       <div v-if="record.aggregations && record.aggregations.length > 0" class="mb-4 text-sm shadow-md">
-        <div class="my-1 flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 p-2 rounded-t">
-          <h2 class="font-semibold my-1">{{ $gettext('Part of:') }}</h2>
+        <div class="flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 rounded-tl-3xl p-2 text-sm ps-6">
+          <h2 class="font-semibold">{{ $gettext('Part of:') }}</h2>
         </div>
         <div v-for="agg in record.aggregations" :key="agg.id" class="p-2">
           <router-link :to="{ name: 'entry', params: { id: agg.entry_id } }">
@@ -134,9 +134,16 @@
           </router-link>
         </div>
       </div>
-      <div class="text-sm mb-4"
-           v-for="source in record.data_sources" :key="source.identifier">
+      <div class="text-sm mb-4" v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
+      </div>
+      <div v-if="record.aggregated && record.aggregated.length">
+        <div class="flex bg-linear-to-tr from-old-copper-300 to-old-copper-200 rounded-tl-3xl text-sm p-2 ps-6">
+          <h2 class="font-semibold grow">{{ $gettext('Contains:') }}</h2>
+        </div>
+        <div v-for="agg in record.aggregated" :key="agg.id" class="p-2 border-b border-e border-l border-old-copper-200 text-sm">
+          <EntryShortBox :record="agg" />
+        </div>
       </div>
     </div>
   </div>
