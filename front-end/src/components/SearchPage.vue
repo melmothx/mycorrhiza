@@ -411,15 +411,6 @@
               <FacetBoxHeader :title="$gettext('Download Types')" />
             </FacetBox>
           </div>
-          <div v-if="facets.aggregate" class="mb-3">
-            <FacetBox
-                :use_sorting="false"
-                :values="facets.aggregate.values"
-                :name="facets.aggregate.name"
-                @toggle-app-filter="toggleFilter">
-              <FacetBoxHeader :title="$gettext('Aggregations')" />
-            </FacetBox>
-          </div>
         </div>
       </div>
       <div id="result-box">
