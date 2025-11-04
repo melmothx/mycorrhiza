@@ -134,7 +134,7 @@
           </router-link>
         </div>
       </div>
-      <div class="text-sm"
+      <div class="text-sm mb-4"
            v-for="source in record.data_sources" :key="source.identifier">
         <DataSourceBox :source="source"></DataSourceBox>
       </div>

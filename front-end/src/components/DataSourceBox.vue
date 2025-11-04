@@ -126,7 +126,7 @@
  }
 </script>
 <template>
-  <div>
+  <div class="shadow-lg">
     <div class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
       <h3 class="font-semibold text-white"><slot></slot></h3>
       <h4 class="font-semibold text-white" :id="`library-${source.library_id}`">
