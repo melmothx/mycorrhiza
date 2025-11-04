@@ -782,11 +782,11 @@ class Entry(models.Model):
         indexed = self.indexed_data
         out = {
             "entry_id": self.id,
-            "title": indexed.get('title'),
-            "subtitle": indexed.get('subtitle'),
             "authors": indexed.get('creator'),
             "languages": indexed.get('language'),
         }
+        for f in [ 'id', 'title', 'subtitle' ]:
+            out[f] = getattr(self, f)
         return out
 
     def display_dict(self, library_ids):
@@ -797,6 +797,8 @@ class Entry(models.Model):
         out['authors'] = indexed.get('creator')
         out['languages'] = indexed.get('language')
         data_sources = []
+        out['aggregations'] = [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ]
+
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
@@ -816,7 +818,6 @@ class Entry(models.Model):
                             pass
                     dso = DataSource.objects.get(pk=ds.get('data_source_id'))
                     ds['aggregated'] = [ agg.aggregated.entry.entry_display_dict_short() for agg in dso.aggregated_data_sources.order_by('sorting_pos') ]
-                    ds['aggregations'] = [ agg.aggregation.entry.entry_display_dict_short() for agg in dso.aggregation_data_sources.order_by('sorting_pos') ]
                     data_sources.append(ds)
                 except Library.DoesNotExist:
                     pass
