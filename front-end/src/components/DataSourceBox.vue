@@ -136,7 +136,7 @@
       </h4>
     </div>
     <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100 flex flex-wrap">
-      <div v-for="author in source.authors" :key="author" class="me-2 my-2 p-1 border border-old-copper-200 rounded">
+      <div v-for="author in source.authors" :key="author" class="me-2 my-1 p-1 border border-old-copper-200 rounded">
         {{ author }}
       </div>
     </div>
