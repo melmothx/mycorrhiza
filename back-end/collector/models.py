@@ -1011,26 +1011,6 @@ class Entry(models.Model):
         return reindex
 
     @classmethod
-    def create_virtual_aggregation(cls, name):
-        if name:
-            sha = hashlib.sha256()
-            sha.update(name.encode())
-            record = {
-                "title": name,
-                "checksum": sha.hexdigest(),
-            }
-            # here there's no uniqueness in the schema, but we enforce it
-            try:
-                created = cls.objects.get(**record)
-            except cls.DoesNotExist:
-                created = cls.objects.create(**record)
-            except cls.MultipleObjectsReturned:
-                logger.debug("Multiple rows found, using the first")
-                created = cls.objects.filter(**record).first()
-            return created
-        return None
-
-    @classmethod
     def aggregate_entries(cls, aggregation, aggregated_objects, user=None):
         reindex = [ aggregation ]
         aggregated_datasources = []
