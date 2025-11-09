@@ -955,15 +955,11 @@ class Entry(models.Model):
         else:
             xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+        if not xapian_record['aggregations']:
+            xapian_record['aggregate'].append({ "id": "no_aggregations", "value": "Exclude aggregated items" })
         if xapian_record['aggregated']:
-            # if it has aggregated entries, it's an aggregation
             xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
-        if xapian_record['aggregations']:
-            # if it has aggregation entries, it's an aggregated
-            xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
-        if not xapian_record['aggregate']:
-            # logger.debug("This is not an aggregated")
-            xapian_record['aggregate'].append({ "id": "none", "value": "None" })
+
 
         if self.original_entry_id:
             xapian_record['translate'].append({ "id": "translation", "value": "Translations" })
