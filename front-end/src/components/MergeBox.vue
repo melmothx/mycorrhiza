@@ -238,9 +238,6 @@
         </div>
       </div>
     </div>
-    <div v-if="create_item && create_item == 'aggregation'">
-      <CreateEntityBox @created-entity="set_canonical_aggregation" creation_type="aggregation" />
-    </div>
     <div v-if="create_item && create_item == 'agent'">
       <div v-if="api_call == 'split-author'">
         <CreateEntityBox @created-entity="append_to_merge_list" creation_type="agent" />
