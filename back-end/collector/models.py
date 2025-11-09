@@ -955,10 +955,10 @@ class Entry(models.Model):
         else:
             xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        if self.aggregated_entries.count():
+        if xapian_record['aggregated']:
             # if it has aggregated entries, it's an aggregation
             xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
-        if self.aggregation_entries.count():
+        if xapian_record['aggregations']:
             # if it has aggregation entries, it's an aggregated
             xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
         if not xapian_record['aggregate']:
