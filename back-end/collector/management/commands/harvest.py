@@ -56,7 +56,7 @@ class Command(BaseCommand):
                 indexer.index_record(entry.indexing_data())
                 for agg in entry.aggregation_entries.all():
                     indexer.index_record(agg.aggregation.indexing_data())
-                entry.delete()
+                # do not delete from DB
             return
         if options['reindex']:
             now = datetime.now(timezone.utc)
