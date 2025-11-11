@@ -62,7 +62,7 @@ class Command(BaseCommand):
         for site in rs.all():
             print("Harvesting {}".format(site.title))
             try:
-                site.harvest(force=options['force'])
+                xapian_index_records.delay(site.harvest(force=options['force']))
             except requests.exceptions.HTTPError:
                 print("Server error for {}, skipping".format(site.url))
             except requests.exceptions.ConnectionError:

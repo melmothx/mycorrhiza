@@ -8,20 +8,21 @@ from pathlib import Path
 import shutil
 import logging
 import pprint
-
+import re
 
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=2)
 
-# main router for user operations which need logging.
-
 @shared_task
 def process_spreadsheet_upload(spreadsheet_id):
     ss = SpreadsheetUpload.objects.get(pk=spreadsheet_id)
-    ss.process_csv()
+    ids = ss.process_csv()
+    xapian_index_records(ids)
 
 @shared_task
 def xapian_index_records(entry_ids):
+    if not entry_ids:
+        return
     indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
     for eid in entry_ids:
         try:

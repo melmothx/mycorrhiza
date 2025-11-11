@@ -313,11 +313,11 @@ class Site(models.Model):
 
     def harvest(self, force=False):
         if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
-            self.pmh_harvest(force=force)
+            return self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
-            self.process_calibre_tree(force=force)
+            return self.process_calibre_tree(force=force)
         else:
-            pass
+            return []
 
     def pmh_harvest(self, force=False):
         self.update_amusewiki_formats()
@@ -365,19 +365,19 @@ class Site(models.Model):
                                                                                 record['deleted']))
                 else:
                     xapian_records.append(entry.id)
-        # and index
-        self.index_harvested_records(xapian_records, now=now, set_last_harvested=set_last_harvested)
+        # and return the ids to index
+        return self.index_harvested_records(xapian_records, now=now, set_last_harvested=set_last_harvested)
 
     def index_harvested_records(self, xapian_records, now=None, set_last_harvested=True):
         all_ids = list(set(xapian_records))
         logger.debug("Indexing: {}".format(all_ids))
         if all_ids:
-            xapian_index_records.delay(all_ids, site_id=self.id)
             logger.info("Total ids scheduled: {}".format(len(all_ids)))
             if now and set_last_harvested:
                 logger.info("Setting last harvested to {}".format(now))
                 self.last_harvested = now
                 self.save()
+        return all_ids
 
     def process_harvested_record(self, record, aliases, now, deep=0):
         entry, ds = self._process_single_harvested_record(record, aliases, now)
@@ -561,7 +561,7 @@ class Site(models.Model):
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
-        self.index_harvested_records(xapian_records, now=now)
+        return self.index_harvested_records(xapian_records, now=now)
 
     def process_calibre_tree(self, force):
         # print("Calling process calibre tree")
@@ -571,7 +571,9 @@ class Site(models.Model):
                 since = self.last_harvested
             records = scan_calibre_tree(self.tree_path, since=since)
             logger.debug(pp.pprint(records))
-            self.process_generic_records(records, replace_all=force)
+            return self.process_generic_records(records, replace_all=force)
+        else:
+            return []
 
     def koha_ds_url(self, identifier):
         if self.site_type in ('koha-marc21', 'koha-unimarc', 'generic'):
@@ -1471,9 +1473,10 @@ class SpreadsheetUpload(models.Model):
     def process_csv(self):
         now = datetime.now(timezone.utc)
         records = parse_sheet(self.site.csv_type, self.spreadsheet.path)
-        self.site.process_generic_records(records, replace_all=self.replace_all)
+        ids = self.site.process_generic_records(records, replace_all=self.replace_all)
         self.processed = now
         self.save()
+        return ids
 
 class LibraryErrorReport(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
