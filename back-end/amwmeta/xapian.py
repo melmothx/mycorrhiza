@@ -245,7 +245,6 @@ class MycorrhizaIndexer:
     def __init__(self, *, db_path):
         logger.info("Initializing MycorrhizaIndexer with " + db_path)
         self.db = xapian.WritableDatabase(db_path, xapian.DB_CREATE_OR_OPEN)
-        self.logs = []
 
     def index_record(self, record):
         is_deleted = False if record['data_sources'] else True
@@ -340,9 +339,7 @@ class MycorrhizaIndexer:
         doc.add_boolean_term(idterm)
         if is_deleted:
             logger.info("Removing document " + idterm)
-            self.logs.append("Removing document " + idterm)
             self.db.delete_document(idterm)
         else:
             logger.info("Indexing document " + idterm)
-            self.logs.append("Indexing " + idterm)
             self.db.replace_document(idterm, doc)
