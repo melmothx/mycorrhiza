@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Site, Harvest, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog
+from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog
 
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
@@ -18,7 +18,6 @@ class UserAdmin(admin.ModelAdmin):
     ]
 
 # Register your models here.
-admin.site.register(Harvest)
 admin.site.register(Language)
 admin.site.register(NameAlias)
 admin.site.register(SpreadsheetUpload)

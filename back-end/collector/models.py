@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 from datetime import datetime, timezone
 from django.db import transaction
 from django.contrib.auth.models import AbstractUser
-from amwmeta.xapian import MycorrhizaIndexer
 from amwmeta.calibre import scan_calibre_tree
 from django.conf import settings
 import logging
@@ -367,29 +366,18 @@ class Site(models.Model):
                 else:
                     xapian_records.append(entry.id)
         # and index
-        self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
+        self.index_harvested_records(xapian_records, now=now, set_last_harvested=set_last_harvested)
 
-    def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
-        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+    def index_harvested_records(self, xapian_records, now=None, set_last_harvested=True):
         all_ids = list(set(xapian_records))
-        logger.debug("Indexing " + str(all_ids))
-        for iid in all_ids:
-            try:
-                ientry = Entry.objects.get(pk=iid)
-                indexer.index_record(ientry.indexing_data())
-            except Entry.DoesNotExist:
-                logger.info("Entry id {} not found?!".format(iid))
-
-        logs = indexer.logs
-        if logs:
-            msg = "Total indexed: " + str(len(logs))
-            # logger.info(msg)
-            logs.append(msg)
-            if set_last_harvested:
+        logger.debug("Indexing: {}".format(all_ids))
+        if all_ids:
+            xapian_index_records.delay(all_ids, site_id=self.id)
+            logger.info("Total ids scheduled: {}".format(len(all_ids)))
+            if now and set_last_harvested:
                 logger.info("Setting last harvested to {}".format(now))
                 self.last_harvested = now
                 self.save()
-            self.harvest_set.create(datetime=now, logs="\n".join(logs))
 
     def process_harvested_record(self, record, aliases, now, deep=0):
         entry, ds = self._process_single_harvested_record(record, aliases, now)
@@ -573,7 +561,7 @@ class Site(models.Model):
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
-        self.index_harvested_records(xapian_records, force=replace_all, now=now)
+        self.index_harvested_records(xapian_records, now=now)
 
     def process_calibre_tree(self, force):
         # print("Calling process calibre tree")
@@ -1382,14 +1370,6 @@ class NameAlias(models.Model):
 
     def __str__(self):
         return self.value_name + ' => ' + self.value_canonical
-
-# this is just to trace the harvesting
-class Harvest(models.Model):
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    logs = models.TextField()
-    def __str__(self):
-        return self.site.title + ' Harvest ' + self.datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 class Exclusion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exclusions")
