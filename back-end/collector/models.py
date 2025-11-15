@@ -768,7 +768,7 @@ class Entry(models.Model):
             year = ds.get('year_edition')
         return(download_key, year)
 
-    def entry_display_dict_short(self):
+    def entry_display_dict_short(self, with_years=False):
         indexed = self.indexed_data
         out = {
             "entry_id": self.id,
@@ -777,6 +777,19 @@ class Entry(models.Model):
         }
         for f in [ 'id', 'title', 'subtitle' ]:
             out[f] = getattr(self, f)
+        indexed_data = self.indexed_data
+        if with_years:
+            for ds in indexed_data.get('data_sources', []):
+                year = int(ds.get('year_edition', 0) or 0)
+                if year:
+                    current = out.get('year_edition')
+                    if current and current < year:
+                        pass
+                    else:
+                        out['year_edition'] = year
+            m = re.search(r'\d+', out.get('title', ''))
+            if m:
+                out['first_title_digits'] = int(m.group(0))
         return out
 
     def display_dict(self, library_ids):
@@ -787,8 +800,16 @@ class Entry(models.Model):
         out['authors'] = indexed.get('creator')
         out['languages'] = indexed.get('language')
         data_sources = []
-        out['aggregations'] = [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ]
-        out['aggregated']   = [ agg.aggregated.entry_display_dict_short()  for agg in self.aggregated_entries.all()  ]
+        out['aggregations'] = sorted(
+            [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ],
+            key=lambda i: (i.get("title", ""), i.get("subtitle", ""))
+        )
+        out['aggregated']  = sorted(
+            [ agg.aggregated.entry_display_dict_short(with_years=True) for agg in self.aggregated_entries.all() ],
+            key=lambda i: (i.get("year_edition", 3000),
+                           i.get("first_title_digits", 0),
+                           i.get("title", ""))
+        )
 
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
