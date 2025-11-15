@@ -246,6 +246,10 @@ class MycorrhizaIndexer:
         logger.info("Initializing MycorrhizaIndexer with " + db_path)
         self.db = xapian.WritableDatabase(db_path, xapian.DB_CREATE_OR_OPEN)
 
+    def close(self):
+        logger.info("Closing DB")
+        self.db.close()
+
     def index_record(self, record):
         is_deleted = False if record['data_sources'] else True
         termgenerator = xapian.TermGenerator()
