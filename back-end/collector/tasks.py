@@ -30,6 +30,7 @@ def xapian_index_records(entry_ids):
             indexer.index_record(entry.indexing_data())
         except Entry.DoesNotExist:
             logger.info("{} does not exist".format(eid))
+    indexer.close()
 
 @shared_task
 def xapian_reindex_all():
@@ -73,4 +74,4 @@ def xapian_reindex_all():
     for entry in Entry.objects.filter(last_indexed__date__gte=now):
         indexer.index_record(entry.indexing_data())
         logger.info("Reindexing {}, it was indexed before the reindex started".format(entry.id))
-    return
+    indexer.close()
