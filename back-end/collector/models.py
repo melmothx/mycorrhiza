@@ -1180,7 +1180,7 @@ class DataSource(models.Model):
         if self.datestamp:
             if cache.exists():
                 if cache.stat().st_mtime >= self.datestamp.timestamp():
-                    logger.info("Reusing cached content in {}".format(cache))
+                    logger.debug("Reusing cached content in {}".format(cache))
                     return cache.read_text(encoding='UTF-8')
                 else:
                     logger.debug("Cache {} is stale".format(cache))
@@ -1192,7 +1192,7 @@ class DataSource(models.Model):
 
     def set_cached_full_text(self, text):
         cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
-        logger.info("Writing cache in {}".format(cache))
+        logger.debug("Writing cache in {}".format(cache))
         cache.write_text(text, encoding='UTF-8')
 
     def full_text(self):

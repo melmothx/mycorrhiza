@@ -345,5 +345,5 @@ class MycorrhizaIndexer:
             logger.info("Removing document " + idterm)
             self.db.delete_document(idterm)
         else:
-            logger.info("Indexing document " + idterm)
+            logger.info("Indexing document: {} {}".format(idterm, record.get('library')))
             self.db.replace_document(idterm, doc)
