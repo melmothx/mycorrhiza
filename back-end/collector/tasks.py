@@ -24,7 +24,11 @@ def xapian_index_records(entry_ids):
     if not entry_ids:
         return
     indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+    counter = 0
     for eid in entry_ids:
+        counter += 1
+        if counter % 100 == 0:
+            logger.info("{} records done".format(counter))
         try:
             entry = Entry.objects.get(pk=eid)
             indexer.index_record(entry.indexing_data())
