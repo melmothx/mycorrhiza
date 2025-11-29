@@ -61,6 +61,7 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('country_of_publishing', '102',  ('a')),
             ('title', '200',  ('a', 'e')),
             ('creator', '200', ('f')),
+            ('creator', '200', ('g')),
             ('place_date_of_publication_distribution', '210', ('a', 'd')),
             ('publisher', '210', ('c')),
             ('date', '210', ('d')),
@@ -530,6 +531,9 @@ def extract_fields(record, hostname):
                 out[f] = _extract_year_range(date_list)
             else:
                 out[f] = "\n".join(record.get(f))
+    for f in ('creator',):
+        if record.get(f):
+            record[f] = [ re.sub(r'^[\s,]+', '', v) for v in record.get(f) ]
 
     out['aggregations'] = []
     record['aggregation_names'] = []
