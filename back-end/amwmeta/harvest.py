@@ -61,7 +61,7 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('country_of_publishing', '102',  ('a')),
             ('title', '200',  ('a', 'e')),
             ('creator', '200', ('f')),
-            ('creator', '200', ('g')),
+            ('description', '200', ('g')),
             ('place_date_of_publication_distribution', '210', ('a', 'd')),
             ('publisher', '210', ('c')),
             ('date', '210', ('d')),
