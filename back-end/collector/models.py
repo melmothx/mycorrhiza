@@ -316,8 +316,27 @@ class Site(models.Model):
             return self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
             return self.process_calibre_tree(force=force)
-        else:
-            return []
+        elif self.site_type == 'csv' and force:
+            # redo the incremental
+            ss_ids = []
+            results = []
+            spreadsheets = (
+                self.uploaded_spreadsheets
+                .filter(processed__isnull=False)
+                .order_by('-created')
+            )
+            for ss in spreadsheets.all():
+                ss_ids.append(ss.id)
+                logger.debug("Found spredsheet: {} {}".format(ss.id, ss.created))
+                if ss.replace_all:
+                    logger.debug("Stopping here: {} {}".format(ss.id, ss.created))
+                    break
+            for ss in SpreadsheetUpload.objects.filter(id__in=ss_ids).order_by('created').all():
+                logger.debug("Processing spredsheet: {} {}".format(ss.id, ss.created))
+                results.extend(ss.process_csv())
+            out = list(set(results))
+            return out
+        return []
 
     def pmh_harvest(self, force=False):
         self.update_amusewiki_formats()
@@ -1481,7 +1500,11 @@ class SpreadsheetUpload(models.Model):
     )
     spreadsheet = models.FileField(upload_to=spreadsheet_upload_directory)
     comment = models.TextField(blank=True)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(
+        Site,
+        on_delete=models.CASCADE,
+        related_name="uploaded_spreadsheets"
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     replace_all = models.BooleanField(default=False, null=False)
