@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 from datetime import datetime, timezone
 from django.db import transaction
 from django.contrib.auth.models import AbstractUser
-from amwmeta.xapian import MycorrhizaIndexer
 from amwmeta.calibre import scan_calibre_tree
 from django.conf import settings
 import logging
@@ -17,6 +16,7 @@ import hashlib
 from amwmeta.utils import log_user_operation
 from pathlib import Path
 import subprocess
+import copy
 
 pp = pprint.PrettyPrinter(indent=2)
 logger = logging.getLogger(__name__)
@@ -313,11 +313,30 @@ class Site(models.Model):
 
     def harvest(self, force=False):
         if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
-            self.pmh_harvest(force=force)
+            return self.pmh_harvest(force=force)
         elif self.site_type == 'calibretree':
-            self.process_calibre_tree(force=force)
-        else:
-            pass
+            return self.process_calibre_tree(force=force)
+        elif self.site_type == 'csv' and force:
+            # redo the incremental
+            ss_ids = []
+            results = []
+            spreadsheets = (
+                self.uploaded_spreadsheets
+                .filter(processed__isnull=False)
+                .order_by('-created')
+            )
+            for ss in spreadsheets.all():
+                ss_ids.append(ss.id)
+                logger.debug("Found spredsheet: {} {}".format(ss.id, ss.created))
+                if ss.replace_all:
+                    logger.debug("Stopping here: {} {}".format(ss.id, ss.created))
+                    break
+            for ss in SpreadsheetUpload.objects.filter(id__in=ss_ids).order_by('created').all():
+                logger.debug("Processing spredsheet: {} {}".format(ss.id, ss.created))
+                results.extend(ss.process_csv())
+            out = list(set(results))
+            return out
+        return []
 
     def pmh_harvest(self, force=False):
         self.update_amusewiki_formats()
@@ -358,78 +377,41 @@ class Site(models.Model):
         records = harvest_oai_pmh(url, record_types.get(self.site_type, 'dc'), opts)
 
         aliases = self.record_aliases()
-        counter = 0
-        for rec in records:
-            counter += 1
-            if counter % 10 == 0:
-                logger.debug(str(counter) + " records done")
-            full_data = rec.get_metadata()
-            record = extract_fields(full_data, hostname)
-            record['deleted'] = rec.deleted
-            record['identifier'] = rec.header.identifier
-            record['full_data'] = full_data
-            try:
-                record['datestamp'] = datetime.fromisoformat(rec.header.datestamp)
-            except ValueError:
-                record['datestamp'] = now
-
+        for record in records:
             for entry in self.process_harvested_record(record, aliases, now):
                 if entry is None:
-                    logger.info("Skipping {} deleted? {}, returned None".format(rec.header.identifier, rec.deleted))
+                    logger.info("Skipping {} deleted? {}, returned None".format(record['identifier'],
+                                                                                record['deleted']))
                 else:
                     xapian_records.append(entry.id)
-        # and index
-        self.index_harvested_records(xapian_records, force=force, now=now, set_last_harvested=set_last_harvested)
+        # and return the ids to index
+        return self.index_harvested_records(xapian_records, now=now, set_last_harvested=set_last_harvested)
 
-    def index_harvested_records(self, xapian_records, force=False, now=None, set_last_harvested=True):
-        indexer = MycorrhizaIndexer(db_path=settings.XAPIAN_DB)
+    def index_harvested_records(self, xapian_records, now=None, set_last_harvested=True):
         all_ids = list(set(xapian_records))
-        logger.debug("Indexing " + str(all_ids))
-        for iid in all_ids:
-            try:
-                ientry = Entry.objects.get(pk=iid)
-                indexer.index_record(ientry.indexing_data())
-            except Entry.DoesNotExist:
-                logger.info("Entry id {} not found?!".format(iid))
-
-        logs = indexer.logs
-        if logs:
-            msg = "Total indexed: " + str(len(logs))
-            # logger.info(msg)
-            logs.append(msg)
-            if set_last_harvested:
+        logger.debug("Indexing: {}".format(all_ids))
+        if all_ids:
+            logger.info("Total ids scheduled: {}".format(len(all_ids)))
+            if now and set_last_harvested:
                 logger.info("Setting last harvested to {}".format(now))
                 self.last_harvested = now
                 self.save()
-            self.harvest_set.create(datetime=now, logs="\n".join(logs))
+        return all_ids
 
-    def process_harvested_record(self, record, aliases, now):
-        aggregations = record.pop('aggregations', [])
-        entry, ds = self._process_single_harvested_record(record, aliases, now, is_aggregation=False)
+    def process_harvested_record(self, record, aliases, now, deep=0):
+        entry, ds = self._process_single_harvested_record(record, aliases, now)
         out = []
         if entry:
             out.append(entry)
-            # reindex existing aggregations
-            for aggregation_entry in entry.aggregation_entries.all():
-                logger.debug("Reindexing existing aggregations")
-                out.append(aggregation_entry.aggregation)
-        if entry and ds:
-            for agg in aggregations:
-                agg_record = {
-                    "title": agg['full_aggregation_name'],
-                    "full_data": agg,
-                    "identifier": agg['identifier'],
-                    "uri": agg.get('linkage'),
-                    "uri_label": ds.uri_label,
-                    "year_edition": ds.year_edition,
-                    "year_first_edition": ds.year_first_edition,
-                    "content_type": ds.content_type,
-                    "deleted": False,
-                    "checksum": agg['checksum'],
-                    "datestamp": ds.datestamp,
-                }
-                agg_entry, agg_ds = self._process_single_harvested_record(agg_record, aliases, now, is_aggregation=True)
-                out.append(agg_entry)
+            for agg in record.get('aggregation_objects', []):
+                agg_entry, agg_ds = self._process_single_harvested_record(agg['data'], aliases, now)
+                logger.debug("Creating relationship between {} and {}, ds {} {} at deep {}".format(
+                    entry.id,
+                    agg_entry.id,
+                    ds.id,
+                    agg_ds.id,
+                    deep,
+                ))
                 entry_rel = {
                     "aggregation": agg_entry,
                     "aggregated": entry,
@@ -447,7 +429,6 @@ class Site(models.Model):
                     relation = AggregationDataSource.objects.get(**ds_rel_spec)
                 except AggregationDataSource.DoesNotExist:
                     relation = AggregationDataSource.objects.create(**ds_rel_spec)
-
                 if agg.get('order'):
                     try:
                         relation.sorting_pos = agg.get('order')
@@ -455,10 +436,19 @@ class Site(models.Model):
                     except ValueError:
                         relation.sorting_pos = None
                         relation.save()
+                # and see if there are children with recursion
+                deep = deep + 1
+                if deep > 5:
+                    logger.error("Recursion too deep when processing aggregations")
+                    return out
+                out.extend(self.process_harvested_record(agg['data'], aliases, now, deep=deep))
         return out
 
-    def _process_single_harvested_record(self, record, aliases, now, is_aggregation=False):
-
+    def _process_single_harvested_record(self, original_record, aliases, now):
+        record = copy.deepcopy(original_record)
+        # discard by-product
+        record.pop('aggregations', None)
+        record.pop('aggregation_objects', None)
         authors = []
         languages = []
         for author in record.pop('authors', []):
@@ -498,7 +488,6 @@ class Site(models.Model):
 
         ds_identifiers = {
             "oai_pmh_identifier": identifier,
-            "is_aggregation": is_aggregation,
         }
         try:
             ds = self.datasource_set.get(**ds_identifiers)
@@ -538,11 +527,11 @@ class Site(models.Model):
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
-                entry = Entry.objects.get(checksum=record['checksum'], is_aggregation=is_aggregation)
+                entry = Entry.objects.get(checksum=record['checksum'])
             except Entry.DoesNotExist:
-                entry = Entry.objects.create(**record, is_aggregation=is_aggregation)
+                entry = Entry.objects.create(**record)
             except Entry.MultipleObjectsReturned:
-                entry = Entry.objects.filter(checksum=record['checksum'], is_aggregation=is_aggregation).first()
+                entry = Entry.objects.filter(checksum=record['checksum']).first()
             ds.entry = entry
             ds.save()
 
@@ -591,7 +580,7 @@ class Site(models.Model):
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
-        self.index_harvested_records(xapian_records, force=replace_all, now=now)
+        return self.index_harvested_records(xapian_records, now=now)
 
     def process_calibre_tree(self, force):
         # print("Calling process calibre tree")
@@ -601,7 +590,9 @@ class Site(models.Model):
                 since = self.last_harvested
             records = scan_calibre_tree(self.tree_path, since=since)
             logger.debug(pp.pprint(records))
-            self.process_generic_records(records, replace_all=force)
+            return self.process_generic_records(records, replace_all=force)
+        else:
+            return []
 
     def koha_ds_url(self, identifier):
         if self.site_type in ('koha-marc21', 'koha-unimarc', 'generic'):
@@ -727,7 +718,6 @@ class Entry(models.Model):
     authors = models.ManyToManyField(Agent, related_name="authored_entries")
     languages = models.ManyToManyField(Language)
     checksum = models.CharField(max_length=255)
-    is_aggregation = models.BooleanField(default=False)
     canonical_entry = models.ForeignKey(
         'self',
         null=True,
@@ -755,7 +745,7 @@ class Entry(models.Model):
 
     def as_api_dict(self, get_canonical=False, get_original=False):
         out = {}
-        for f in ["id", "title", "subtitle", "is_aggregation"]:
+        for f in ["id", "title", "subtitle"]:
             out[f] = getattr(self, f)
         out['authors'] = [ agent.name for agent in self.authors.all() ]
         out['languages'] = [ lang.code for lang in self.languages.all() ]
@@ -797,6 +787,30 @@ class Entry(models.Model):
             year = ds.get('year_edition')
         return(download_key, year)
 
+    def entry_display_dict_short(self, with_years=False):
+        indexed = self.indexed_data
+        out = {
+            "entry_id": self.id,
+            "authors": indexed.get('creator'),
+            "languages": indexed.get('language'),
+        }
+        for f in [ 'id', 'title', 'subtitle' ]:
+            out[f] = getattr(self, f)
+        indexed_data = self.indexed_data
+        if with_years:
+            for ds in indexed_data.get('data_sources', []):
+                year = int(ds.get('year_edition', 0) or 0)
+                if year:
+                    current = out.get('year_edition')
+                    if current and current < year:
+                        pass
+                    else:
+                        out['year_edition'] = year
+            m = re.search(r'\d+', out.get('title', ''))
+            if m:
+                out['first_title_digits'] = int(m.group(0))
+        return out
+
     def display_dict(self, library_ids):
         out = {}
         indexed = self.indexed_data
@@ -805,6 +819,17 @@ class Entry(models.Model):
         out['authors'] = indexed.get('creator')
         out['languages'] = indexed.get('language')
         data_sources = []
+        out['aggregations'] = sorted(
+            [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ],
+            key=lambda i: (i.get("title", ""), i.get("subtitle", ""))
+        )
+        out['aggregated']  = sorted(
+            [ agg.aggregated.entry_display_dict_short(with_years=True) for agg in self.aggregated_entries.all() ],
+            key=lambda i: (i.get("year_edition", 3000),
+                           i.get("first_title_digits", 0),
+                           i.get("title", ""))
+        )
+
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:
@@ -852,19 +877,6 @@ class Entry(models.Model):
                 # ditto. No DS, it does not exist
                 if tr_data.get('data_sources'):
                     record['translations'].append(tr_data)
-
-        record['aggregated'] = []
-        for agg in original.aggregated_entries.all():
-            agg_data = agg.aggregated.display_dict(library_ids)
-            if agg_data.get('data_sources'):
-                record['aggregated'].append(agg_data)
-
-        record['aggregations'] = []
-        for agg in original.aggregation_entries.all():
-            agg_data = agg.aggregation.display_dict(library_ids)
-            if agg_data.get('data_sources'):
-                record['aggregations'].append(agg_data)
-
         return record
 
     def indexing_data(self):
@@ -907,9 +919,6 @@ class Entry(models.Model):
 
         for topr in data_source_records:
             dsd = topr.indexing_data()
-            # at DS level
-            dsd['aggregations'] = [ ds.aggregation.indexing_data() for ds in topr.aggregation_data_sources.order_by('sorting_pos').all() ]
-            dsd['aggregated']   = [ ds.aggregated.indexing_data() for ds in topr.aggregated_data_sources.order_by('sorting_pos').all() ]
             xapian_data_sources.append(dsd)
             if dsd['public']:
                 record_is_public = True
@@ -967,7 +976,6 @@ class Entry(models.Model):
             "unique_source": 0,
             "aggregations": [ { "id": agg.aggregation.id, "value": agg.aggregation.title } for agg in self.aggregation_entries.all() ],
             "aggregated": [ { "id": agg.aggregated.id, "value": agg.aggregated.title } for agg in self.aggregated_entries.all() ],
-            "is_aggregation": self.is_aggregation,
             "aggregate": [],
             "translate": [],
             "download": [ { "id": eff, "value": ff_map[eff] } for eff in entry_file_formats ],
@@ -977,15 +985,11 @@ class Entry(models.Model):
         else:
             xapian_record["datestamp"] = self.created.strftime('%Y-%m-%dT%H:%M:%SZ')
 
-        if self.aggregated_entries.count():
-            # if it has aggregated entries, it's an aggregation
+        if not xapian_record['aggregations']:
+            xapian_record['aggregate'].append({ "id": "no_aggregations", "value": "Exclude aggregated items" })
+        if xapian_record['aggregated']:
             xapian_record['aggregate'].append({ "id": "aggregation", "value": "Aggregation" })
-        if self.aggregation_entries.count():
-            # if it has aggregation entries, it's an aggregated
-            xapian_record['aggregate'].append({ "id": "aggregated", "value": "Aggregated" })
-        if not xapian_record['aggregate']:
-            # logger.debug("This is not an aggregated")
-            xapian_record['aggregate'].append({ "id": "none", "value": "None" })
+
 
         if self.original_entry_id:
             xapian_record['translate'].append({ "id": "translation", "value": "Translations" })
@@ -1037,30 +1041,7 @@ class Entry(models.Model):
         return reindex
 
     @classmethod
-    def create_virtual_aggregation(cls, name):
-        if name:
-            sha = hashlib.sha256()
-            sha.update(name.encode())
-            record = {
-                "title": name,
-                "checksum": sha.hexdigest(),
-                "is_aggregation": True,
-            }
-            # here there's no uniqueness in the schema, but we enforce it
-            try:
-                created = cls.objects.get(**record)
-            except cls.DoesNotExist:
-                created = cls.objects.create(**record)
-            except cls.MultipleObjectsReturned:
-                logger.debug("Multiple rows found, using the first")
-                created = cls.objects.filter(**record).first()
-            return created
-        return None
-
-    @classmethod
     def aggregate_entries(cls, aggregation, aggregated_objects, user=None):
-        if not aggregation.is_aggregation:
-            return []
         reindex = [ aggregation ]
         aggregated_datasources = []
         for aggregated in aggregated_objects:
@@ -1092,7 +1073,6 @@ class Entry(models.Model):
                         oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
                         datestamp=aggregation.datestamp,
                         entry_id=aggregation.id,
-                        is_aggregation=True,
                         full_data={},
                     )
                     agg_datasources.append(agg_ds)
@@ -1163,7 +1143,6 @@ class DataSource(models.Model):
     place_date_of_publication_distribution = models.TextField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    is_aggregation = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
@@ -1174,9 +1153,11 @@ class DataSource(models.Model):
 
     def amusewiki_base_url(self):
         if self.uri:
-            return re.sub(r'((\.[a-z0-9]+)+)$',
-                          '',
-                          self.uri)
+            # exclude aggregations
+            m = re.fullmatch(r'^(https?://[^/]+/library/([a-z0-9-]+))((\.[a-z0-9]+)+)?$',
+                             self.uri)
+            if m:
+                return m.group(1)
         return None
 
     def amusewiki_uri(self):
@@ -1218,7 +1199,7 @@ class DataSource(models.Model):
         if self.datestamp:
             if cache.exists():
                 if cache.stat().st_mtime >= self.datestamp.timestamp():
-                    logger.info("Reusing cached content in {}".format(cache))
+                    logger.debug("Reusing cached content in {}".format(cache))
                     return cache.read_text(encoding='UTF-8')
                 else:
                     logger.debug("Cache {} is stale".format(cache))
@@ -1230,13 +1211,11 @@ class DataSource(models.Model):
 
     def set_cached_full_text(self, text):
         cache = Path(settings.FULL_TEXT_CACHE, str(self.id))
-        logger.info("Writing cache in {}".format(cache))
+        logger.debug("Writing cache in {}".format(cache))
         cache.write_text(text, encoding='UTF-8')
 
     def full_text(self):
         site_type = self.site.site_type
-        if self.is_aggregation:
-            return None
         if site_type == 'amusewiki':
             cached = self.get_cached_full_text()
             if cached:
@@ -1293,11 +1272,12 @@ class DataSource(models.Model):
 
     def download_options(self):
         site = self.site
-        if self.is_aggregation:
-            return []
-        elif site.site_type == 'amusewiki':
-            # all files are supposed to have the same downloads, more or less
-            return site.amusewiki_formats
+        if site.site_type == 'amusewiki':
+            # all library entries are supposed to have the same downloads, more or less
+            if self.amusewiki_base_url():
+                return site.amusewiki_formats
+            else:
+                return []
         elif site.site_type == 'calibretree':
             # the URI here holds the directory, so look into the dir
             downloads = []
@@ -1433,14 +1413,6 @@ class NameAlias(models.Model):
     def __str__(self):
         return self.value_name + ' => ' + self.value_canonical
 
-# this is just to trace the harvesting
-class Harvest(models.Model):
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
-    datetime = models.DateTimeField()
-    logs = models.TextField()
-    def __str__(self):
-        return self.site.title + ' Harvest ' + self.datetime.strftime('%Y-%m-%dT%H:%M:%SZ')
-
 class Exclusion(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="exclusions")
     exclude_library = models.ForeignKey(Library, null=True, on_delete=models.SET_NULL)
@@ -1528,7 +1500,11 @@ class SpreadsheetUpload(models.Model):
     )
     spreadsheet = models.FileField(upload_to=spreadsheet_upload_directory)
     comment = models.TextField(blank=True)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(
+        Site,
+        on_delete=models.CASCADE,
+        related_name="uploaded_spreadsheets"
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     replace_all = models.BooleanField(default=False, null=False)
@@ -1541,9 +1517,10 @@ class SpreadsheetUpload(models.Model):
     def process_csv(self):
         now = datetime.now(timezone.utc)
         records = parse_sheet(self.site.csv_type, self.spreadsheet.path)
-        self.site.process_generic_records(records, replace_all=self.replace_all)
+        ids = self.site.process_generic_records(records, replace_all=self.replace_all)
         self.processed = now
         self.save()
+        return ids
 
 class LibraryErrorReport(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)

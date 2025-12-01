@@ -245,22 +245,15 @@ class MycorrhizaIndexer:
     def __init__(self, *, db_path):
         logger.info("Initializing MycorrhizaIndexer with " + db_path)
         self.db = xapian.WritableDatabase(db_path, xapian.DB_CREATE_OR_OPEN)
-        self.logs = []
+
+    def close(self):
+        logger.info("Closing DB")
+        self.db.close()
 
     def index_record(self, record):
-        is_deleted = True
+        is_deleted = False if record['data_sources'] else True
         termgenerator = xapian.TermGenerator()
         termgenerator.set_stemmer(xapian.Stem("none"))
-
-        # logger.debug(pp.pformat(record))
-        if record['is_aggregation']:
-            if record['data_sources']:
-                # delete if there are no real ds aggregated
-                for ds in record['data_sources']:
-                    if ds.get('aggregated', []):
-                        is_deleted = False
-        elif record['data_sources']:
-            is_deleted = False
 
         identifier = record['entry_id']
         doc = xapian.Document()
@@ -339,20 +332,6 @@ class MycorrhizaIndexer:
                     # logger.debug("Indexing {} {}".format(field, value))
                     termgenerator.index_text(strip_diacritics(value), 10)
 
-        # if aggregation or aggregated, index titles and authors of
-        # the related one as well.
-
-        for dsd in record['data_sources']:
-            for aggfield in ['aggregations', 'aggregated']:
-                for agg in dsd[aggfield]:
-                    termgenerator.increase_termpos()
-                    for author in agg.get('authors', []):
-                        termgenerator.index_text(strip_diacritics(author), 20)
-                    for field in ['title', 'description']:
-                        value = agg.get(field)
-                        if value:
-                            termgenerator.index_text(strip_diacritics(value), 20)
-
         for ft in record.pop('full_texts'):
             if ft:
                 logger.debug("Indexing full text with {} chars".format(len(ft)))
@@ -364,9 +343,7 @@ class MycorrhizaIndexer:
         doc.add_boolean_term(idterm)
         if is_deleted:
             logger.info("Removing document " + idterm)
-            self.logs.append("Removing document " + idterm)
             self.db.delete_document(idterm)
         else:
-            logger.info("Indexing document " + idterm)
-            self.logs.append("Indexing " + idterm)
+            logger.info("Indexing document: {} {}".format(idterm, record.get('library')))
             self.db.replace_document(idterm, doc)

@@ -2,12 +2,14 @@
  import axios from 'axios'
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
+ import EntryShortBox from './EntryShortBox.vue'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
-     props: [ 'source', 'short' ],
+     props: [ 'source' ],
      components: {
-         ReportErrorPopUp
+         ReportErrorPopUp,
+         EntryShortBox,
      },
      data() {
          return {
@@ -16,6 +18,7 @@
              show_pdf_reader: false,
              working: false,
              added_to_the_bookbuilder: false,
+             show_aggregated: false,
              bookbuilder,
          }
      },
@@ -60,7 +63,7 @@
          can_have_full_text() {
              const src = this.source;
              if (src.site_type == 'amusewiki') {
-                 if (src.aggregated && src.aggregated.length == 0) {
+                 if (src.uri && src.uri.match(/\/library\//)) {
                      return true;
                  }
              }
@@ -120,22 +123,17 @@
  }
 </script>
 <template>
-  <div>
-    <div v-if="short"
-         class="bg-linear-to-tr from-old-copper-300 to-old-copper-200 px-2 py-2 rounded-t">
-      <h3 class="font-semibold"><slot></slot></h3>
-    </div>
-    <div v-else
-         class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 text-right">
+  <div class="shadow-lg">
+    <div class="bg-linear-to-tr from-old-copper-800 to-old-copper-700 font-semibold rounded-tl-3xl p-2 ps-6">
       <h3 class="font-semibold text-white"><slot></slot></h3>
-      <h4 class="font-semibold text-white" :id="`library-${source.library_id}`" v-if="!short">
+      <h4 class="font-semibold text-white" :id="`library-${source.library_id}`">
         <router-link :to="{ name: 'library_view', params: { id: source.library_id } }">
           <span class="text-white">{{ source.library_name }}</span>
         </router-link>
       </h4>
     </div>
-    <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100">
-      <div v-for="author in source.authors" :key="author">
+    <div v-if="source.authors && source.authors.length" class="p-2 bg-perl-bush-50 border-b border-old-copper-100 flex flex-wrap">
+      <div v-for="author in source.authors" :key="author" class="me-2 my-1 p-1 border border-old-copper-200 rounded">
         {{ author }}
       </div>
     </div>
@@ -157,7 +155,7 @@
       <h4 class="italic" v-if="source.subtitle">
         {{ source.subtitle }}
       </h4>
-      <div class="my-2 whitespace-pre-line" v-if="source.description && !short">
+      <div class="my-2 whitespace-pre-line" v-if="source.description">
         {{ source.description }}
       </div>
       <table class="my-4 w-full">
@@ -210,12 +208,12 @@
             {{ source.place_date_of_publication_distribution }}
           </td>
         </tr>
-        <tr class="border-b border-t p-2" v-if="source.site_type == 'generic' && source.uri && source.uri_label">
+        <tr class="border-b border-t p-2" v-if="source.uri && source.uri_label">
           <td class="p-1 pr-2">
             {{ source.uri_label }}
           </td>
           <td>
-            <a :href="source.uri">{{ source.uri }}</a>
+            <a class="mcrz-link" :href="source.uri">{{ source.uri }}</a>
           </td>
         </tr>
         <tr class="border-b border-t p-2" v-if="source.koha_url">
@@ -223,7 +221,7 @@
             {{ $gettext('OPAC page') }}
           </td>
           <td>
-            <a :href="source.koha_url">{{ source.koha_url }}</a>
+            <a class="mcrz-link" :href="source.koha_url">{{ source.koha_url }}</a>
           </td>
         </tr>
       </table>
@@ -236,7 +234,7 @@
           </div>
         </div>
       </div>
-      <div class="flex mb-8">
+      <div class="flex">
         <div class="grow"></div>
         <div v-if="can_have_full_text()">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
@@ -260,7 +258,6 @@
         <div class="grow"></div>
       </div>
       <div v-if="show_html">
-        <!-- mettere sotto full text -->
         <div class="flex flex-wrap" v-if="source.downloads && source.downloads.length">
           <div v-for="dl in source.downloads" :key="dl.code" class="btn-primary m-1 p-1 rounded-sm">
             <a :href="get_binary_file(source.data_source_id, dl.ext)">

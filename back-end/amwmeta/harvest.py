@@ -4,8 +4,11 @@ import logging
 from sickle.models import Record
 import re
 import hashlib
+import pprint
+from datetime import datetime, timezone
+from urllib.parse import urlparse
 
-
+pp = pprint.PrettyPrinter(compact=True)
 logger = logging.getLogger(__name__)
 
 class GenericMarcXMLRecord(Record):
@@ -58,6 +61,7 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('country_of_publishing', '102',  ('a')),
             ('title', '200',  ('a', 'e')),
             ('creator', '200', ('f')),
+            ('description', '200', ('g')),
             ('place_date_of_publication_distribution', '210', ('a', 'd')),
             ('publisher', '210', ('c')),
             ('date', '210', ('d')),
@@ -371,6 +375,18 @@ def iso_lang_code(code):
     else:
         return full_names.get(code.lower())
 
+def extract_oai_fields(rec, hostname, now):
+    full_data = rec.get_metadata()
+    record = extract_fields(full_data, hostname)
+    record['deleted'] = rec.deleted
+    record['identifier'] = rec.header.identifier
+    record['full_data'] = full_data
+    try:
+        record['datestamp'] = datetime.fromisoformat(rec.header.datestamp)
+    except ValueError:
+        record['datestamp'] = now
+    return record
+
 def harvest_oai_pmh(url, records_type, opts):
     logger.debug([url, opts])
     class_mappings = {
@@ -393,8 +409,50 @@ def harvest_oai_pmh(url, records_type, opts):
     except NoRecordsMatch:
         return []
 
-    # just return the iterator
-    return records
+    # here we need to scan the records and prepend the aggregations, if any
+    aggregations = {}
+    fetched = []
+    now = datetime.now(timezone.utc)
+    hostname = urlparse(url).hostname
+    for rec in records:
+        fetched.append(extract_oai_fields(rec, hostname, now))
+
+    for rec in fetched:
+        logger.debug("Fetched {}".format(rec.get('identifier')))
+        collect_aggregations(sickle, rec, aggregations, hostname, now, opts, 0)
+    return fetched
+
+def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep):
+    if deep > 5:
+        logger.info("Recursion too deep, stopping here")
+        return
+    if record.get('aggregations'):
+        record['aggregation_objects'] = []
+        for agg in record['aggregations']:
+            agg_identifier = agg.get('item_identifier')
+            if agg_identifier:
+                if not agg_identifier in aggregations:
+                    agg_rec = sickle.GetRecord(identifier=agg_identifier,
+                                               metadataPrefix=opts.get('metadataPrefix'))
+                    aggregation = extract_oai_fields(agg_rec, hostname, now)
+                    logger.debug("Fetched {}".format(agg_identifier))
+                    aggregations[agg_identifier] = aggregation
+                    collect_aggregations(sickle, aggregation, aggregations, hostname, now,
+                                         opts, deep + 1)
+                record['aggregation_objects'].append({ 'order': agg.get('order'), 'data': aggregations[agg_identifier] })
+
+def _extract_year_range(strings):
+    years = set()
+    for full in strings:
+        for m in re.findall(r'\b(1[0-9]{3}|20[0-9]{2})\b', full):
+            years.add(int(m))
+    if not years:
+        return ""
+    years = sorted(years)
+    if years[0] != years[-1]:
+        return "{}-{}".format(years[0], years[-1])
+    else:
+        return "{}".format(years[0])
 
 def extract_fields(record, hostname):
     out = {}
@@ -457,7 +515,6 @@ def extract_fields(record, hostname):
         ('isbn', True),
         ('publisher', True),
         ('edition_statement', False),
-        ('place_date_of_publication_distribution', False),
     )
     # collapse these fields
     for fld in fields:
@@ -467,6 +524,16 @@ def extract_fields(record, hostname):
                 out[f] = "\n".join(list(set(record.get(f))))
             else:
                 out[f] = "\n".join(record.get(f))
+    for f in ('place_date_of_publication_distribution',):
+        date_list = record.get(f)
+        if date_list:
+            if len(date_list) > 4:
+                out[f] = _extract_year_range(date_list)
+            else:
+                out[f] = "\n".join(record.get(f))
+    for f in ('creator',):
+        if record.get(f):
+            record[f] = [ re.sub(r'^[\s,]+', '', v) for v in record.get(f) ]
 
     out['aggregations'] = []
     record['aggregation_names'] = []
@@ -475,15 +542,17 @@ def extract_fields(record, hostname):
         if aggregation_name:
             asha = hashlib.sha256()
             full_name = [ aggregation_name ]
-            item_identifier = agg.get('item_identifier')
-            identifier = item_identifier if item_identifier else aggregation_name
-            agg['identifier'] = 'aggregation:{}:{}'.format(hostname, identifier)
-
+            has_issue = False
             if agg.get('issue'):
                 full_name.append(agg.get('issue'))
-                # extend the identifier only if we need a surrogate
-                if not item_identifier:
-                    agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, identifier, agg['issue'])
+                has_issue = True
+            if agg.get('item_identifier'):
+                agg['identifier'] = agg['item_identifier']
+            elif has_issue:
+                agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, aggregation_name, agg['issue'])
+            else:
+                agg['identifier'] = 'aggregation:{}:{}'.format(hostname, aggregation_name)
+
             if agg.get('place_date_publisher'):
                 full_name.append("({})".format(agg['place_date_publisher']))
 
@@ -549,4 +618,3 @@ def extract_fields(record, hostname):
     # this was used only for the checksum
     out.pop('aggregation_names')
     return out
-

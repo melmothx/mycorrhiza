@@ -132,12 +132,11 @@ def manipulate(op, user, main_id, *ids, create=None):
         out['success'] = "Removed"
 
     elif op == 'add-aggregations':
-        if main_object.is_aggregation:
-            reindex = cls.aggregate_entries(main_object, other_objects, user=user)
-            if reindex:
-                out['success'] = "Added"
+        reindex = cls.aggregate_entries(main_object, other_objects, user=user)
+        if reindex:
+            out['success'] = "Added"
         else:
-            out['error'] = "First item must be an aggregation"
+            out['error'] = "Failure aggregating entries"
 
     elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
         reindex = main_object.unmerge(user=user)
@@ -882,9 +881,6 @@ def api_create(request, target):
             if target == 'agent':
                 # name is unique
                 created, is_creation  = Agent.objects.get_or_create(name=value)
-            elif target == 'aggregation':
-                created = Entry.create_virtual_aggregation(value)
-
         if created:
             log_user_operation(user, 'create-' + target, created, None)
             out['created'] = {
@@ -893,7 +889,7 @@ def api_create(request, target):
                 "type": target,
             }
         else:
-            out['error'] = "Invalid target (must be agent or aggregation)"
+            out['error'] = "Invalid target (must be an agent)"
 
     logger.debug(out)
     return JsonResponse(out)
