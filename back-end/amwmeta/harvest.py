@@ -432,8 +432,11 @@ def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep
             agg_identifier = agg.get('item_identifier')
             if agg_identifier:
                 if not agg_identifier in aggregations:
-                    agg_rec = sickle.GetRecord(identifier=agg_identifier,
-                                               metadataPrefix=opts.get('metadataPrefix'))
+                    try:
+                        agg_rec = sickle.GetRecord(identifier=agg_identifier,
+                                                   metadataPrefix=opts.get('metadataPrefix'))
+                    except IdDoesNotExist:
+                        continue
                     aggregation = extract_oai_fields(agg_rec, hostname, now)
                     logger.debug("Fetched {}".format(agg_identifier))
                     aggregations[agg_identifier] = aggregation
