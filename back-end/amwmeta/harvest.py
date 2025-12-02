@@ -7,6 +7,7 @@ import hashlib
 import pprint
 from datetime import datetime, timezone
 from urllib.parse import urlparse
+import copy
 
 pp = pprint.PrettyPrinter(compact=True)
 logger = logging.getLogger(__name__)
@@ -71,7 +72,9 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('shelf_location_code', '950', ('a')),
             # dewey
             ('shelf_location_code', '676', ('a')),
+            ('shelf_location_code', '995', ('k')),
             ('edition_statement', '225', ('a', 'v')),
+            ('internal_library_code', '995', ('c')),
             # aggregations is a todo
         ]
         structured = {
@@ -420,7 +423,19 @@ def harvest_oai_pmh(url, records_type, opts):
     for rec in fetched:
         logger.debug("Fetched {}".format(rec.get('identifier')))
         collect_aggregations(sickle, rec, aggregations, hostname, now, opts, 0)
-    return fetched
+
+    out = []
+    for rec in fetched:
+        done = False
+        internal_library_codes = rec.pop('internal_library_code', [])
+        for alc in internal_library_codes:
+            myrec = copy.deepcopy(rec)
+            myrec['internal_library_code'] = alc
+            out.append(myrec)
+            done = True
+        if not done:
+            out.append(rec)
+    return out
 
 def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep):
     if deep > 5:
@@ -537,6 +552,12 @@ def extract_fields(record, hostname):
     for f in ('creator',):
         if record.get(f):
             record[f] = [ re.sub(r'^[\s,]+', '', v) for v in record.get(f) ]
+
+    for f in ('internal_library_code',):
+        if record.get(f):
+            v = record.get(f)
+            if len(v) < 255:
+                out[f] = v
 
     out['aggregations'] = []
     record['aggregation_names'] = []

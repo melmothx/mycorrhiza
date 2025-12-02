@@ -483,6 +483,7 @@ class Site(models.Model):
             'publisher',
             'edition_statement',
             'place_date_of_publication_distribution',
+            'internal_library_code',
         ]
         ds_attrs = { x: record.pop(x, None) for x in ds_attributes }
 
@@ -609,7 +610,13 @@ class Site(models.Model):
                 return ", ".join([ d[1] for d in definition['mapping'] ])
         return None
 
-# these are a level up from the oai pmh records
+class InternalLibraryCode(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name="internal_library_codes")
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name="internal_library_codes")
+    internal_library_code = models.CharField(max_length=255)
+    def __str__(self):
+        return "{}: {}".format(self.site.title, self.library.name)
+
 
 class Agent(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -933,8 +940,8 @@ class Entry(models.Model):
         descriptions = []
         dates = {}
         for topr in data_source_records:
-            if not entry_libraries.get(topr.site.library_id):
-                entry_library = topr.site.library
+            entry_library = topr.actual_library()
+            if not entry_libraries.get(entry_library.id):
                 entry_libraries[entry_library.id] = {
                     "id": entry_library.id,
                     "value": entry_library.name,
@@ -1141,6 +1148,7 @@ class DataSource(models.Model):
     shelf_location_code = models.TextField(null=True)
     edition_statement = models.TextField(null=True)
     place_date_of_publication_distribution = models.TextField(null=True)
+    internal_library_code = models.CharField(max_length=255, null=True)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -1303,9 +1311,17 @@ class DataSource(models.Model):
         else:
             return []
 
+    def actual_library(self):
+        internal_code = self.internal_library_code
+        if internal_code:
+            ic = self.site.internal_library_codes.filter(internal_library_code=internal_code).first()
+            if ic:
+                return ic.library
+        return self.site.library
+
     def indexing_data(self):
         site = self.site
-        library = site.library
+        library = self.actual_library()
         original_entry = self.entry
         ds = {
             "data_source_id": self.id,

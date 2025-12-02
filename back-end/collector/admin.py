@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog
+from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog, InternalLibraryCode
 
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
@@ -25,3 +25,4 @@ admin.site.register(Library)
 admin.site.register(Page)
 admin.site.register(General)
 admin.site.register(ChangeLog)
+admin.site.register(InternalLibraryCode)

@@ -51,13 +51,21 @@ class Command(BaseCommand):
             xapian_index_records.delay(orphans)
             return
 
-        if options['reindex']:
-            xapian_reindex_all.delay()
-            return
-
         rs = Site.objects.filter(active=True)
         if options['site']:
             rs = rs.filter(Q(url__contains=options['site']) | Q(title__contains=options['site']))
+
+        if options['reindex']:
+            if options['site']:
+                ids = []
+                for site in rs.all():
+                    for ds in site.datasource_set.all():
+                        if ds.entry_id:
+                            ids.append(ds.entry_id)
+                xapian_index_records.delay(list(set(ids)))
+            else:
+                xapian_reindex_all.delay()
+            return
 
         for site in rs.all():
             print("Harvesting {}".format(site.title))
