@@ -28,6 +28,9 @@ class Command(BaseCommand):
                             help="Reindex orphaned entries")
         parser.add_argument("--site",
                             help="Select a specific site")
+        parser.add_argument("--identifier",
+                            action="append",
+                            help="Select a specific identifier")
         parser.add_argument("--reindex",
                             action="store_true", # boolean
                             help="Do not fetch from OAI-PMH, just rebuild the Xapian index")
@@ -68,9 +71,9 @@ class Command(BaseCommand):
             return
 
         for site in rs.all():
-            print("Harvesting {}".format(site.title))
+            print("Harvesting {}, {}".format(site.title, options['identifier']))
             try:
-                xapian_index_records.delay(site.harvest(force=options['force']))
+                xapian_index_records.delay(site.harvest(force=options['force'], only_ids=options['identifier']))
             except requests.exceptions.HTTPError:
                 print("Server error for {}, skipping".format(site.url))
             except requests.exceptions.ConnectionError:
