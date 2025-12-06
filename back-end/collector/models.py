@@ -826,12 +826,20 @@ class Entry(models.Model):
         out['authors'] = indexed.get('creator')
         out['languages'] = indexed.get('language')
         data_sources = []
+        aggregation_entries = []
+        aggregated_entries = []
+        for e in [ self, *self.variant_entries.all() ]:
+            for agg in e.aggregation_entries.all():
+                aggregation_entries.append(agg.aggregation.entry_display_dict_short())
+            for agg in e.aggregated_entries.all():
+                aggregated_entries.append(agg.aggregated.entry_display_dict_short())
+
         out['aggregations'] = sorted(
-            [ agg.aggregation.entry_display_dict_short() for agg in self.aggregation_entries.all() ],
+            aggregation_entries,
             key=lambda i: (i.get("title", ""), i.get("subtitle", ""))
         )
         out['aggregated']  = sorted(
-            [ agg.aggregated.entry_display_dict_short(with_years=True) for agg in self.aggregated_entries.all() ],
+            aggregated_entries,
             key=lambda i: (i.get("year_edition", 3000),
                            i.get("first_title_digits", 0),
                            i.get("title", ""))
