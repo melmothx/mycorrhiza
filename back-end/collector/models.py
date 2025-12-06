@@ -408,7 +408,7 @@ class Site(models.Model):
             for agg in record.get('aggregation_objects', []):
                 agg_entry, agg_ds = self._process_single_harvested_record(agg['data'], aliases, now)
                 if not agg_entry or not agg_ds:
-                    debug.logger("Skipping object {}".format(agg))
+                    logger.debug("Skipping object {}".format(agg))
                     continue
                 logger.debug("Creating relationship between {} and {}, ds {} {} at deep {}".format(
                     entry.id,
