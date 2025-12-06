@@ -311,9 +311,9 @@ class Site(models.Model):
             self.amusewiki_formats = None
             self.save()
 
-    def harvest(self, force=False):
+    def harvest(self, force=False, only_ids=None):
         if self.site_type in ['amusewiki', 'generic', 'koha-unimarc', 'koha-marc21']:
-            return self.pmh_harvest(force=force)
+            return self.pmh_harvest(force=force, only_ids=only_ids)
         elif self.site_type == 'calibretree':
             return self.process_calibre_tree(force=force)
         elif self.site_type == 'csv' and force:
@@ -338,7 +338,7 @@ class Site(models.Model):
             return out
         return []
 
-    def pmh_harvest(self, force=False):
+    def pmh_harvest(self, force=False, only_ids=None):
         self.update_amusewiki_formats()
         url = self.url
         hostname = self.hostname()
@@ -365,6 +365,8 @@ class Site(models.Model):
 
         if self.site_type == 'amusewiki':
             opts['set'] = 'web'
+        if only_ids:
+            opts['only_ids'] = only_ids
 
         xapian_records = []
         if force:
@@ -844,7 +846,6 @@ class Entry(models.Model):
                            i.get("first_title_digits", 0),
                            i.get("title", ""))
         )
-
         for ds in indexed.get('data_sources'):
             # only the sites explicitely set in the argument
             if ds['library_id'] in library_ids:

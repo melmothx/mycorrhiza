@@ -62,6 +62,7 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('country_of_publishing', '102',  ('a')),
             ('title', '200',  ('a', 'e')),
             ('creator', '200', ('f')),
+            ('creator', '710', ('a')), # not a physical person
             ('description', '200', ('g')),
             ('place_date_of_publication_distribution', '210', ('a', 'd')),
             ('publisher', '210', ('c')),
@@ -75,9 +76,10 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('shelf_location_code', '995', ('k')),
             ('edition_statement', '225', ('a', 'v')),
             ('internal_library_code', '995', ('c')),
-            # aggregations is a todo
+            ('aggregation', '461', ('t', 'e', 'd', 'c', '0')),
         ]
         structured = {
+            'aggregation': ('name', 'issue', 'date', 'place_date_publisher', 'item_identifier'),
         }
         return (specs, structured)
 
@@ -407,10 +409,25 @@ def harvest_oai_pmh(url, records_type, opts):
     else:
         sickle = Sickle(url)
 
-    try:
-        records = sickle.ListRecords(**opts)
-    except NoRecordsMatch:
-        return []
+    only_ids = opts.pop('only_ids', None)
+    records = []
+    if only_ids:
+        logger.info("Requiring specifc ids {}".format(only_ids))
+        for identifier in only_ids:
+            try:
+                single_rec = sickle.GetRecord(identifier=identifier,
+                                              metadataPrefix=opts.get('metadataPrefix'))
+                records.append(single_rec)
+            except IdDoesNotExist:
+                continue
+        if not records:
+            return []
+    else:
+        try:
+            records = sickle.ListRecords(**opts)
+        except NoRecordsMatch:
+            return []
+
 
     # here we need to scan the records and prepend the aggregations, if any
     aggregations = {}
@@ -447,13 +464,23 @@ def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep
             agg_identifier = agg.get('item_identifier')
             if agg_identifier:
                 if not agg_identifier in aggregations:
+                    # this is an invalid ID. So get the prefix from the main record
+                    if re.fullmatch(r'[0-9]+', agg_identifier):
+                        m = re.search(r'^[a-zA-Z]+.*:', record.get('identifier'))
+                        if m:
+                            prefix = m.group()
+                            agg_identifier = "{}{}".format(prefix, agg_identifier)
                     try:
                         agg_rec = sickle.GetRecord(identifier=agg_identifier,
                                                    metadataPrefix=opts.get('metadataPrefix'))
                     except IdDoesNotExist:
+                        logger.info("Id {} does not exist".format(agg_identifier))
+                        continue
+                    except BadArgument:
+                        logger.info("Bad argument with id {}".format(agg_identifier))
                         continue
                     aggregation = extract_oai_fields(agg_rec, hostname, now)
-                    logger.debug("Fetched {}".format(agg_identifier))
+                    logger.debug("Fetched aggregation {}".format(agg_identifier))
                     aggregations[agg_identifier] = aggregation
                     collect_aggregations(sickle, aggregation, aggregations, hostname, now,
                                          opts, deep + 1)
