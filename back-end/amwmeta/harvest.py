@@ -38,15 +38,18 @@ class GenericMarcXMLRecord(Record):
                         composed = dict(zip(codes, structured[target]))
 
                     for code in codes:
-                        # print("Searching " + code + " in " + tag)
                         for sf in el.findall('.//subfield[@code="{0}"]'.format(code), namespaces=ns):
                             values.append(sf.text)
                             if composed:
-                                structured_data[composed[code]] = sf.text
+                                try:
+                                    structured_data[composed[code]].append(sf.text)
+                                except KeyError:
+                                    structured_data[composed[code]] = [ sf.text ]
                     # print(values)
                     if len(values):
                         if composed:
-                            out[target].append(structured_data)
+                            # flatten the values
+                            out[target].append({ k: ' '.join(v) for k, v in structured_data.items() })
                         else:
                             out[target].append(' '.join(values))
         return out
@@ -76,10 +79,10 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('shelf_location_code', '995', ('k')),
             ('edition_statement', '225', ('a', 'v')),
             ('internal_library_code', '995', ('c')),
-            ('aggregation', '461', ('t', 'e', 'd', 'c', '0')),
+            ('aggregation', '461', ('t', 'a', 'e', 'd', 'c', '0')),
         ]
         structured = {
-            'aggregation': ('name', 'issue', 'date', 'place_date_publisher', 'item_identifier'),
+            'aggregation': ('name', 'name', 'issue', 'date', 'place_date_publisher', 'item_identifier'),
         }
         return (specs, structured)
 
