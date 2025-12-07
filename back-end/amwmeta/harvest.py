@@ -101,7 +101,7 @@ class MarcXMLRecord(GenericMarcXMLRecord):
             ('language', '041', ('a')),
             # ('country_of_publishing', '044',  ('c')),
             ('creator', '100', ('a')),
-            ('agent_details', '100',  ('a', 'd', '4', 'e')),
+            # ('agent_details', '100',  ('a', 'd', '4', 'e')),
             # ('title_for_search', '222',  ('a')),
             ('title', '245',  ('a', 'b', 'c')),
             ('subtitle', '246',  ('a', 'b')),
@@ -147,7 +147,7 @@ class MarcXMLRecord(GenericMarcXMLRecord):
         ]
         structured = {
             'uri_info': ('uri', 'content_type', 'label'),
-            'agent_details': ('name', 'dates', 'relationship', 'relator_term'),
+            # 'agent_details': ('name', 'dates', 'relationship', 'relator_term'),
             # https://www.loc.gov/marc/bibliographic/bd773.html
             'aggregation': ('name', 'issue', 'isbn', 'order', 'place_date_publisher', 'item_identifier', 'linkage'),
         }
