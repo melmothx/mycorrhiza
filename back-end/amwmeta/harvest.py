@@ -80,8 +80,10 @@ class UniMarcXMLRecord(GenericMarcXMLRecord):
             ('edition_statement', '225', ('a', 'v')),
             ('internal_library_code', '995', ('c')),
             ('aggregation', '461', ('t', 'a', 'e', 'd', 'c', '0')),
+            ('uri_info', '856', ('u', 'y')),
         ]
         structured = {
+            'uri_info': ('uri', 'label'),
             'aggregation': ('name', 'name', 'issue', 'date', 'place_date_publisher', 'item_identifier'),
         }
         return (specs, structured)
