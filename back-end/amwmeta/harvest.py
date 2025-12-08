@@ -525,8 +525,9 @@ def extract_fields(record, hostname):
                 out['year_first_edition'] = unique_dates[0]
 
     url_re = re.compile('https?://')
+    out['links'] = []
     if "uri_info" in record:
-        # be sure that we have real urls
+        # be sure that we have real and valid urls
         uri_lists = [ u for u in record['uri_info'] if url_re.match(u.get('uri', '')) ]
         # here we have a bit of logic.
         # if there's only one record, no brainer.
@@ -546,6 +547,9 @@ def extract_fields(record, hostname):
             out['uri'] = good_uri['uri']
             out['content_type'] = good_uri.get('content_type', '')
             out['uri_label'] = good_uri.get('label', '')
+            out['links'] = [ u for u in uri_lists if u is not good_uri ]
+        else:
+            out['links'] = uri_lists
 
     if not out.get('uri'):
         try:

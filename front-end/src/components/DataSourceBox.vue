@@ -216,6 +216,14 @@
             <a class="mcrz-link" :href="source.uri">{{ source.uri }}</a>
           </td>
         </tr>
+        <tr class="border-b border-t p-2" v-for="link in source.links">
+          <td class="p-1 pr-2">
+            {{ link.label }}
+          </td>
+          <td>
+            <a class="mcrz-link additional-link" :href="link.uri">{{ link.uri }}</a>
+          </td>
+        </tr>
         <tr class="border-b border-t p-2" v-if="source.koha_url">
           <td class="p-1 pr-2">
             {{ $gettext('OPAC page') }}

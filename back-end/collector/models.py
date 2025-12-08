@@ -541,6 +541,10 @@ class Site(models.Model):
             ds.entry = entry
             ds.save()
 
+        ds.links.all().delete()
+        # logger.debug("Creating links {}".format(record.get('links', [])))
+        DataSourceLink.objects.bulk_create([ DataSourceLink(datasource=ds, **data) for data in record.get('links', []) ])
+
         # update the entry and assign the many to many
         for attr, value in record.items():
             setattr(entry, attr, value)
@@ -1346,7 +1350,10 @@ class DataSource(models.Model):
             # I think these should go
             "uri_label": self.uri_label,
             "content_type": self.content_type,
-
+            "links": [
+                { "uri": link.uri, "label": link.label }
+                for link in self.links.all()
+            ],
             "shelf_location_code": self.shelf_location_code,
             "public": False,
             "site_name": site.title,
@@ -1412,6 +1419,14 @@ class AggregationDataSource(models.Model):
                 name='unique_data_source_aggregation_aggregated'
             ),
         ]
+
+class DataSourceLink(models.Model):
+    datasource = models.ForeignKey(DataSource, on_delete=models.CASCADE, null=False, related_name="links")
+    sorting_pos = models.IntegerField(null=True)
+    label = models.TextField(blank=True, null=True)
+    uri = models.URLField(max_length=2048, null=True)
+    label = models.CharField(max_length=2048, null=True)
+    content_type = models.CharField(max_length=128, null=True)
 
 class NameAlias(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)
