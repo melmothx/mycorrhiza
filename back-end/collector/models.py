@@ -1387,6 +1387,13 @@ class DataSource(models.Model):
             ds['file_formats'].append('text')
         elif '.pdf' in file_formats:
             ds['file_formats'].append('raw')
+        elif ds['uri'] and ds['uri'].lower().endswith('.pdf'):
+            ds['file_formats'].append('raw')
+        else:
+            for link in ds['links']:
+                if link.get('uri', '').lower().endswith('.pdf'):
+                    ds['file_formats'].append('raw')
+                    break
 
         if library.active and library.public:
             ds['public'] = True
