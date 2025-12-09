@@ -13,7 +13,7 @@
   </div>
   <router-link :to="{ name: 'entry', params: { id: record.entry_id } }">
     <div class="flex">
-      <div class="grow">
+      <div class="grow me-2 my-1 p-1 border border-old-copper-200 rounded hover:bg-perl-bush-50">
         <h3 v-if="record.title" class="font-semibold">
           {{ record.title }}
         </h3>
@@ -21,7 +21,7 @@
           {{ record.subtitle }}
         </h4>
       </div>
-      <div class="font-bold" v-if="record.languages">
+      <div class="font-bold my-1 p-1" v-if="record.languages">
         <span class="bg-linear-to-tr from-spectra-700 to-spectra-900 rounded-sm p-1 shadow-md ml-2 text-white"
               v-for="lang in record.languages" :key="lang.id">
           {{ lang.value }}
