@@ -838,11 +838,16 @@ class Entry(models.Model):
         data_sources = []
         aggregation_entries = []
         aggregated_entries = []
+        # check the variants as well but skip entries without datasources
         for e in [ self, *self.variant_entries.all() ]:
-            for agg in e.aggregation_entries.all():
-                aggregation_entries.append(agg.aggregation.entry_display_dict_short())
-            for agg in e.aggregated_entries.all():
-                aggregated_entries.append(agg.aggregated.entry_display_dict_short())
+            for aggrel in e.aggregation_entries.all():
+                agg = aggrel.aggregation
+                if agg.datasource_set.count():
+                    aggregation_entries.append(agg.entry_display_dict_short())
+            for aggrel in e.aggregated_entries.all():
+                agg = aggrel.aggregated
+                if agg.datasource_set.count():
+                    aggregated_entries.append(agg.entry_display_dict_short())
 
         out['aggregations'] = sorted(
             aggregation_entries,
