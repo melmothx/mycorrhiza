@@ -839,14 +839,15 @@ class Entry(models.Model):
         aggregation_entries = []
         aggregated_entries = []
         # check the variants as well but skip entries without datasources
+        site_ids = [ s.id for s in Site.objects.filter(library_id__in=library_ids).all() ]
         for e in [ self, *self.variant_entries.all() ]:
             for aggrel in e.aggregation_entries.all():
                 agg = aggrel.aggregation
-                if agg.datasource_set.count():
+                if agg.datasource_set.filter(site_id__in=site_ids).count():
                     aggregation_entries.append(agg.entry_display_dict_short())
             for aggrel in e.aggregated_entries.all():
                 agg = aggrel.aggregated
-                if agg.datasource_set.count():
+                if agg.datasource_set.filter(site_id__in=site_ids).count():
                     aggregated_entries.append(agg.entry_display_dict_short())
 
         out['aggregations'] = sorted(
