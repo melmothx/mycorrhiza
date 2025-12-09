@@ -530,6 +530,10 @@ class Site(models.Model):
         if not record.get('checksum'):
             raise Exception("Expecting checksum in normal entry")
 
+        ds.links.all().delete()
+        # logger.debug("Creating links {}".format(record.get('links', [])))
+        DataSourceLink.objects.bulk_create([ DataSourceLink(datasource=ds, **data) for data in record.pop('links', []) ])
+
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
@@ -541,9 +545,6 @@ class Site(models.Model):
             ds.entry = entry
             ds.save()
 
-        ds.links.all().delete()
-        # logger.debug("Creating links {}".format(record.get('links', [])))
-        DataSourceLink.objects.bulk_create([ DataSourceLink(datasource=ds, **data) for data in record.get('links', []) ])
 
         # update the entry and assign the many to many
         for attr, value in record.items():
