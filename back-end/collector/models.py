@@ -530,6 +530,10 @@ class Site(models.Model):
         if not record.get('checksum'):
             raise Exception("Expecting checksum in normal entry")
 
+        ds.links.all().delete()
+        # logger.debug("Creating links {}".format(record.get('links', [])))
+        DataSourceLink.objects.bulk_create([ DataSourceLink(datasource=ds, **data) for data in record.pop('links', []) ])
+
         if not entry:
             # check if there's already a entry with the same checksum.
             try:
@@ -540,6 +544,7 @@ class Site(models.Model):
                 entry = Entry.objects.filter(checksum=record['checksum']).first()
             ds.entry = entry
             ds.save()
+
 
         # update the entry and assign the many to many
         for attr, value in record.items():
@@ -833,11 +838,16 @@ class Entry(models.Model):
         data_sources = []
         aggregation_entries = []
         aggregated_entries = []
+        # check the variants as well but skip entries without datasources
         for e in [ self, *self.variant_entries.all() ]:
-            for agg in e.aggregation_entries.all():
-                aggregation_entries.append(agg.aggregation.entry_display_dict_short())
-            for agg in e.aggregated_entries.all():
-                aggregated_entries.append(agg.aggregated.entry_display_dict_short())
+            for aggrel in e.aggregation_entries.all():
+                agg = aggrel.aggregation
+                if agg.datasource_set.count():
+                    aggregation_entries.append(agg.entry_display_dict_short())
+            for aggrel in e.aggregated_entries.all():
+                agg = aggrel.aggregated
+                if agg.datasource_set.count():
+                    aggregated_entries.append(agg.entry_display_dict_short())
 
         out['aggregations'] = sorted(
             aggregation_entries,
@@ -1346,7 +1356,10 @@ class DataSource(models.Model):
             # I think these should go
             "uri_label": self.uri_label,
             "content_type": self.content_type,
-
+            "links": [
+                { "uri": link.uri, "label": link.label }
+                for link in self.links.all()
+            ],
             "shelf_location_code": self.shelf_location_code,
             "public": False,
             "site_name": site.title,
@@ -1380,6 +1393,13 @@ class DataSource(models.Model):
             ds['file_formats'].append('text')
         elif '.pdf' in file_formats:
             ds['file_formats'].append('raw')
+        elif ds['uri'] and ds['uri'].lower().endswith('.pdf'):
+            ds['file_formats'].append('raw')
+        else:
+            for link in ds['links']:
+                if link.get('uri', '').lower().endswith('.pdf'):
+                    ds['file_formats'].append('raw')
+                    break
 
         if library.active and library.public:
             ds['public'] = True
@@ -1412,6 +1432,14 @@ class AggregationDataSource(models.Model):
                 name='unique_data_source_aggregation_aggregated'
             ),
         ]
+
+class DataSourceLink(models.Model):
+    datasource = models.ForeignKey(DataSource, on_delete=models.CASCADE, null=False, related_name="links")
+    sorting_pos = models.IntegerField(null=True)
+    label = models.TextField(blank=True, null=True)
+    uri = models.URLField(max_length=2048, null=True)
+    label = models.CharField(max_length=2048, null=True)
+    content_type = models.CharField(max_length=128, null=True)
 
 class NameAlias(models.Model):
     site = models.ForeignKey(Site, on_delete=models.CASCADE)

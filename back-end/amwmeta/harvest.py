@@ -490,6 +490,23 @@ def collect_aggregations(sickle, record, aggregations, hostname, now, opts, deep
                     collect_aggregations(sickle, aggregation, aggregations, hostname, now,
                                          opts, deep + 1)
                 record['aggregation_objects'].append({ 'order': agg.get('order'), 'data': aggregations[agg_identifier] })
+            else:
+                logger.debug("No aggregation identifier found, creating dummy record from {}".format(pp.pformat(agg)))
+                record['aggregation_objects'].append({
+                    'order': None,
+                    'data': {
+                        "title": agg['full_aggregation_name'],
+                        "full_data": agg,
+                        "identifier": agg['identifier'],
+                        "uri": agg.get('linkage'),
+                        "year_edition": record.get('year_edition'),
+                        "year_first_edition": record.get('year_first_edition'),
+                        "content_type": record.get('content_type'),
+                        "deleted": False,
+                        "checksum": agg['checksum'],
+                        "datestamp": record.get('datestamp'),
+                    }
+                })
 
 def _extract_year_range(strings):
     years = set()
@@ -525,8 +542,9 @@ def extract_fields(record, hostname):
                 out['year_first_edition'] = unique_dates[0]
 
     url_re = re.compile('https?://')
+    out['links'] = []
     if "uri_info" in record:
-        # be sure that we have real urls
+        # be sure that we have real and valid urls
         uri_lists = [ u for u in record['uri_info'] if url_re.match(u.get('uri', '')) ]
         # here we have a bit of logic.
         # if there's only one record, no brainer.
@@ -546,6 +564,9 @@ def extract_fields(record, hostname):
             out['uri'] = good_uri['uri']
             out['content_type'] = good_uri.get('content_type', '')
             out['uri_label'] = good_uri.get('label', '')
+            out['links'] = [ u for u in uri_lists if u is not good_uri ]
+        else:
+            out['links'] = uri_lists
 
     if not out.get('uri'):
         try:
@@ -598,24 +619,25 @@ def extract_fields(record, hostname):
         if aggregation_name:
             asha = hashlib.sha256()
             full_name = [ aggregation_name ]
-            has_issue = False
             if agg.get('issue'):
                 full_name.append(agg.get('issue'))
-                has_issue = True
-            if agg.get('item_identifier'):
-                agg['identifier'] = agg['item_identifier']
-            elif has_issue:
-                agg['identifier'] = 'aggregation:{}:{}:{}'.format(hostname, aggregation_name, agg['issue'])
-            else:
-                agg['identifier'] = 'aggregation:{}:{}'.format(hostname, aggregation_name)
-
             if agg.get('place_date_publisher'):
                 full_name.append("({})".format(agg['place_date_publisher']))
 
             full_name_str = ' '.join(full_name)
             agg['full_aggregation_name'] = full_name_str
+
             asha.update(full_name_str.encode())
             agg['checksum'] = asha.hexdigest()
+
+            if agg.get('item_identifier'):
+                agg['identifier'] = agg['item_identifier']
+            else:
+                agg['identifier'] = 'aggregation:{}:{}'.format(hostname, agg['checksum'])
+
+
+
+
             record['aggregation_names'].append(agg['identifier'])
             out['aggregations'].append(agg)
 
