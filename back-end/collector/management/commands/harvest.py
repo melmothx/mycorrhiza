@@ -35,6 +35,7 @@ class Command(BaseCommand):
                             action="store_true", # boolean
                             help="Do not fetch from OAI-PMH, just rebuild the Xapian index")
         parser.add_argument("--entry",
+                            action="append",
                             help="Reindex a single entry")
 
     def handle(self, *args, **options):
@@ -44,7 +45,7 @@ class Command(BaseCommand):
         logger.debug(options)
         if options['entry']:
             print("Scheduling {} for reindex".format(options['entry']))
-            xapian_index_records.delay([ options['entry'] ])
+            xapian_index_records.delay(options['entry'])
             return
 
         if options['orphans']:
