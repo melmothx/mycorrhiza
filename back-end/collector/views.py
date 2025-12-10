@@ -131,13 +131,6 @@ def manipulate(op, user, main_id, *ids, create=None):
         reindex = main_object.unsplit(user=user)
         out['success'] = "Removed"
 
-    elif op == 'add-aggregations':
-        reindex = cls.aggregate_entries(main_object, other_objects, user=user)
-        if reindex:
-            out['success'] = "Added"
-        else:
-            out['error'] = "Failure aggregating entries"
-
     elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
         reindex = main_object.unmerge(user=user)
         if reindex:

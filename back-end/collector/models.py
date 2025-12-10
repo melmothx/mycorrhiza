@@ -1071,55 +1071,6 @@ class Entry(models.Model):
         return reindex
 
     @classmethod
-    def aggregate_entries(cls, aggregation, aggregated_objects, user=None):
-        reindex = [ aggregation ]
-        aggregated_datasources = []
-        for aggregated in aggregated_objects:
-            reindex.append(aggregated)
-            aggregated_datasources.extend([ ds for ds in aggregated.datasource_set.all() ])
-            entry_rel = {
-                "aggregation": aggregation,
-                "aggregated": aggregated,
-            }
-            try:
-                rel = AggregationEntry.objects.get(**entry_rel)
-            except AggregationEntry.DoesNotExist:
-                rel = AggregationEntry.objects.create(**entry_rel)
-                logger.info("Created AggregationEntry {}".format(rel.id))
-
-            log_user_operation(user, 'add-aggregation', aggregation, aggregated)
-
-            # now we have all the aggregated datasources.
-            # check if we have a real or virtual DS in the aggregation
-            for ds in aggregated_datasources:
-                # search all the DS for this aggregation entry with a matching site
-                agg_datasources = [ x for x in aggregation.datasource_set.filter(site_id=ds.site_id).all() ]
-                if agg_datasources:
-                    logger.debug("{} already has an aggregation datasource".format(ds.oai_pmh_identifier))
-                else:
-                    logger.info("Creating virtual DS for {}".format(ds.oai_pmh_identifier))
-                    agg_ds = DataSource.objects.create(
-                        site_id=ds.site_id,
-                        oai_pmh_identifier="virtual:site-{}:aggregation-{}".format(ds.site_id, aggregation.id),
-                        datestamp=aggregation.datestamp,
-                        entry_id=aggregation.id,
-                        full_data={},
-                    )
-                    agg_datasources.append(agg_ds)
-
-                for agg_ds in agg_datasources:
-                    agg_rel = {
-                        "aggregation": agg_ds,
-                        "aggregated": ds,
-                    }
-                    try:
-                        rel = AggregationDataSource.objects.get(**agg_rel)
-                    except AggregationDataSource.DoesNotExist:
-                        rel = AggregationDataSource.objects.create(**agg_rel)
-                        logger.info("Created AggregationDataSource {}".format(rel.id))
-        return reindex
-
-    @classmethod
     def translate_records(cls, original, translations, user=None):
         reindex = [ original ]
         for translation in translations:
