@@ -458,6 +458,9 @@ def api_search(request):
     if res['querystring']:
         res['pretty_query'] = re.sub(r'(creator|library):([0-9]+)', replace_codes, res['querystring'])
 
+    if not user.is_authenticated:
+        res['facets'].pop('aggregate', None)
+
     return JsonResponse(res)
 
 class LatestEntriesFeed(Feed):
