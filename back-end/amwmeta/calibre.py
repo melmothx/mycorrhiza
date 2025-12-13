@@ -2,13 +2,14 @@ from lxml import etree
 import os
 import sys
 import pprint
+import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 
 pp = pprint.PrettyPrinter(indent=2)
 
 
-def parse_opf(opf_file):
+def parse_opf(opf_file, hostname=None):
     doc = etree.parse(opf_file)
     metadata = doc.getroot().find('{http://www.idpf.org/2007/opf}metadata')
     tags = [
@@ -36,18 +37,32 @@ def parse_opf(opf_file):
         # in a calibre tree we are probably going to find a single issue, not articles.
         # our implementation for the aggregations is relative to single articles.
         # So either we aggregate by "series" or don't aggreegate at all.
-        # aggregation = {}
-        # for meta in metadata.findall('{http://www.idpf.org/2007/opf}meta'):
-        #     if meta.attrib.get('name') == 'calibre:series':
-        #         aggregation['name'] = meta.attrib.get('content')
-        #     # we don't expect to find articles here, just whole issues
-        #     # if meta.attrib.get('name') == 'calibre:series_index':
-        #     #    aggregation['issue'] = meta.attrib.get('content')
-        # if 'name' in aggregation:
-        #     out['aggregation'] = [ aggregation ]
+        agg = {}
+        for meta in metadata.findall('{http://www.idpf.org/2007/opf}meta'):
+            if meta.attrib.get('name') == 'calibre:series':
+                agg['name'] = meta.attrib.get('content')
+            # we don't expect to find articles here, just whole issues
+            if meta.attrib.get('name') == 'calibre:series_index':
+                agg['order'] = meta.attrib.get('content')
+        if 'name' in agg:
+            asha = hashlib.sha256()
+            asha.update(agg['name'].encode())
+            agg['checksum'] = asha.hexdigest()
+            out['aggregation_objects'] = [
+                {
+                    'order': agg.get('order', None),
+                    'data': {
+                        'title': agg['name'],
+                        "checksum": agg['checksum'],
+                        'identifier': 'aggregation:{}:{}'.format(hostname, agg['checksum']),
+                        "full_data": agg,
+                        "deleted": False,
+                    }
+                }
+            ]
     return out
 
-def scan_calibre_tree(tree, since=None):
+def scan_calibre_tree(tree, since=None, hostname=None):
     records = []
     since_epoch = 0
     if since:
@@ -65,7 +80,7 @@ def scan_calibre_tree(tree, since=None):
             if since_epoch:
                 if file_epoch < since_epoch:
                     continue
-            metadata = parse_opf(metadata_file)
+            metadata = parse_opf(metadata_file, hostname=hostname)
             metadata['file_uri'] = [ root ]
             metadata['datestamp'] = datestamp
             if metadata.get('identifier'):

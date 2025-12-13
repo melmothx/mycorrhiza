@@ -583,6 +583,7 @@ class Site(models.Model):
             # logger.debug(full)
             record = extract_fields(full, hostname)
             record['datestamp'] = full.pop('datestamp', now)
+            record['aggregation_objects'] = full.pop('aggregation_objects', [])
             if full.get('identifier'):
                 record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
                                                          hostname,
@@ -599,7 +600,7 @@ class Site(models.Model):
             since = None
             if not force:
                 since = self.last_harvested
-            records = scan_calibre_tree(self.tree_path, since=since)
+            records = scan_calibre_tree(self.tree_path, since=since, hostname=self.hostname())
             logger.debug(pp.pprint(records))
             return self.process_generic_records(records, replace_all=force)
         else:
