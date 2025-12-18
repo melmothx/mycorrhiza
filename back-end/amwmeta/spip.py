@@ -11,12 +11,39 @@ from datetime import datetime,timezone
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=2)
 
+def extract_text_from_element(el):
+    BLOCK_TAGS = {"div", "p", "hr", "pre", "li"}
+    parts = []
+    links = []
+    def walk(node):
+        if node.tag == 'a':
+            link = node.get('href')
+            if link:
+                links.append(link)
+        if node.text:
+            parts.append(re.sub(r'\s+', ' ', node.text))
+        for child in node:
+            if child.tag in BLOCK_TAGS:
+                if parts and parts[-1] == "\n":
+                    pass
+                else:
+                    parts.append("\n")
+            walk(child)
+        if node.tail:
+            parts.append(re.sub(r'\s+', ' ', node.tail))
+    walk(el)
+    return {
+        "body": "".join(parts),
+        "links": links
+    }
+
 class SpipIndexer:
-    def __init__(self, base_url, max_id=2000, skip_fields=[]):
+    def __init__(self, base_url, max_id=2000, skip_fields=[], body_is_description=True):
         self.max_id = max_id
         self.base_url = base_url
         self.hostname = urlparse(base_url).hostname
         self.skip_fields = skip_fields
+        self.body_is_description = body_is_description
         self.records = []
         self.ua = requests.Session()
         self.ua.headers.update({ 'User-Agent': 'Mycorrhiza 1.0 https://github.com/melmothx/mycorrhiza' })
@@ -89,6 +116,18 @@ class SpipIndexer:
                                             "deleted": False,
                                         }
                                     })
+                        if self.body_is_description:
+                            xpath = "//div[contains(concat(' ', normalize-space(@class), ' '), ' {}-{} ')]"
+                            full_body = []
+                            for spip_class in ('article-chapo', 'article-texte', 'article-descriptif', 'article-ps'):
+                                for el in doc.xpath(xpath.format(spip_class, identifier)):
+                                    fragment = extract_text_from_element(el)
+                                    if fragment['body']:
+                                        full_body.append(fragment['body'])
+                                    for link in fragment['links']:
+                                        out['uri_info'].append({ "uri": link, "label": "URL" })
+                            if full_body:
+                                out.setdefault('description', []).append("".join(full_body))
                         datestamps = out.pop('datestamp')
                         if datestamps:
                             try:

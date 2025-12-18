@@ -289,7 +289,11 @@ class Site(models.Model):
         verbose_name="SPIP: meta headers to ignore",
         help_text="One per line",
     )
-
+    spip_article_body_is_description = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name="SPIP: parse the article body as item description",
+    )
     def __str__(self):
         return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
 
@@ -643,7 +647,8 @@ class Site(models.Model):
 
             records = SpipIndexer(self.url,
                                   max_id=self.spip_max_ids,
-                                  skip_fields=skip_fields
+                                  skip_fields=skip_fields,
+                                  body_is_description=self.spip_article_body_is_description,
                                 ).harvest(force=force)
             logger.debug(pp.pprint(records))
             return self.process_generic_records(records, replace_all=force)
