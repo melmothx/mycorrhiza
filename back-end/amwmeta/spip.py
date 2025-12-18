@@ -78,7 +78,8 @@ class SpipIndexer:
                 identifier = good.group(1)
                 r = self.ua.get(url)
                 if r.status_code == 200:
-                    doc = html.fromstring(r.content)
+                    r.encoding = 'utf-8'
+                    doc = html.fromstring(r.text)
                     out = {
                         'identifier': [ identifier ],
                         'uri_info': [{
