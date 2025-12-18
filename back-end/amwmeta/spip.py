@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=2)
 
 def extract_text_from_element(el):
-    BLOCK_TAGS = {"div", "p", "hr", "pre", "li"}
+    BLOCK_TAGS = {"div", "p", "hr", "pre", "li", "br"}
     parts = []
     links = []
     def walk(node):
@@ -117,13 +117,19 @@ class SpipIndexer:
                                         }
                                     })
                         if self.body_is_description:
-                            xpath = "//div[contains(concat(' ', normalize-space(@class), ' '), ' {}-{} ')]"
+                            xpath = "//*[contains(concat(' ', normalize-space(@class), ' '), ' {}-{} ')]"
                             full_body = []
                             for spip_class in ('article-chapo', 'article-texte', 'article-descriptif', 'article-ps'):
                                 for el in doc.xpath(xpath.format(spip_class, identifier)):
                                     fragment = extract_text_from_element(el)
                                     if fragment['body']:
                                         full_body.append(fragment['body'])
+                                        if spip_class == 'article-chapo':
+                                            m = re.match(r'.*([0-9]{4})', fragment['body'])
+                                            if m:
+                                                possible_date = m.group(1)
+                                                if int(possible_date) > 1800 and int(possible_date) < 2050:
+                                                    out['date'] = [ possible_date ]
                                     for link in fragment['links']:
                                         out['uri_info'].append({ "uri": link, "label": "URL" })
                             if full_body:
