@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from django.contrib.auth.models import AbstractUser
 from amwmeta.calibre import scan_calibre_tree
+from amwmeta.spip import SpipIndexer
 from django.conf import settings
 import logging
 from amwmeta.sheets import parse_sheet, sheet_definitions
@@ -236,6 +237,7 @@ class Site(models.Model):
         ('koha-unimarc', "KOHA UNIMARC"),
         ('csv', "CSV Upload"),
         ('calibretree', "Calibre File Tree"),
+        ('spip', "SPIP Site with meta DC fields"),
     ]
     library = models.ForeignKey(Library,
                                 null=False,
@@ -264,6 +266,7 @@ class Site(models.Model):
     tree_path = models.CharField(blank=True, null=True, max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    spip_max_ids = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
@@ -316,6 +319,8 @@ class Site(models.Model):
             return self.pmh_harvest(force=force, only_ids=only_ids)
         elif self.site_type == 'calibretree':
             return self.process_calibre_tree(force=force)
+        elif self.site_type == 'spip':
+            return self.process_spip(force=force)
         elif self.site_type == 'csv' and force:
             # redo the incremental
             ss_ids = []
@@ -578,6 +583,7 @@ class Site(models.Model):
             "koha-unimarc": "pmh",
             "koha-marc21": "pmh",
             "amusewiki": "amw",
+            "spip": "spip",
         }
         for full in records:
             # logger.debug(full)
@@ -601,6 +607,15 @@ class Site(models.Model):
             if not force:
                 since = self.last_harvested
             records = scan_calibre_tree(self.tree_path, since=since, hostname=self.hostname())
+            logger.debug(pp.pprint(records))
+            return self.process_generic_records(records, replace_all=force)
+        else:
+            return []
+
+    def process_spip(self, force):
+        args = [ self.url ]
+        if self.spip_max_ids:
+            records = SpipIndexer(self.url, self.spip_max_ids).harvest(force=force)
             logger.debug(pp.pprint(records))
             return self.process_generic_records(records, replace_all=force)
         else:
