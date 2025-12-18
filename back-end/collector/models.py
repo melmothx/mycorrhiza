@@ -244,15 +244,19 @@ class Site(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="sites")
     title = models.CharField(max_length=255)
-    url = models.URLField(blank=True, max_length=255)
+    url = models.URLField(blank=True, max_length=255, verbose_name="URL")
     last_harvested = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
     oai_set = models.CharField(max_length=64,
+                               verbose_name="OAI-PMH set",
+                               help_text="Not relevant for Amusewiki PMH and other non-PMH sites",
                                blank=True,
                                null=True)
     oai_metadata_format = models.CharField(max_length=32,
                                            null=True,
                                            blank=True,
+                                           verbose_name="OAI-PMH metadata format",
+                                           help_text="Relevant only for Generic OAI PHM sites",
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     csv_type = models.CharField(
@@ -260,13 +264,31 @@ class Site(models.Model):
         null=True,
         blank=True,
         choices=CSV_TYPES,
+        verbose_name="CSV type",
+        help_text="Relevant only for CSV sites",
     )
     active = models.BooleanField(default=True, null=False)
     amusewiki_formats = models.JSONField(null=True)
-    tree_path = models.CharField(blank=True, null=True, max_length=255)
+    tree_path = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        verbose_name="Calibre local path on the file system",
+    )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    spip_max_ids = models.IntegerField(null=True, blank=True)
+    spip_max_ids = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="SPIP: Max ID",
+        help_text="Used on the initial load. Required for SPIP",
+    )
+    spip_ignore_meta_fields = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name="SPIP: meta headers to ignore",
+        help_text="One per line",
+    )
 
     def __str__(self):
         return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
@@ -615,7 +637,14 @@ class Site(models.Model):
     def process_spip(self, force):
         args = [ self.url ]
         if self.spip_max_ids:
-            records = SpipIndexer(self.url, self.spip_max_ids).harvest(force=force)
+            skip_fields = []
+            if self.spip_ignore_meta_fields:
+                skip_fields = [ f for f in re.split(r'[^a-zA-Z0-9.]', self.spip_ignore_meta_fields) if f ]
+
+            records = SpipIndexer(self.url,
+                                  max_id=self.spip_max_ids,
+                                  skip_fields=skip_fields
+                                ).harvest(force=force)
             logger.debug(pp.pprint(records))
             return self.process_generic_records(records, replace_all=force)
         else:
