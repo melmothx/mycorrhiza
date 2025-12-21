@@ -1,51 +1,21 @@
 <script>
  import BugReport from './BugReport.vue'
  import ContactButton from './ContactButton.vue'
- import axios from 'axios'
- axios.defaults.xsrfCookieName = "csrftoken";
- axios.defaults.xsrfHeaderName = "X-CSRFToken";
+ import DocSite from './DocSite.vue'
  export default {
      components: {
          BugReport,
          ContactButton,
+         DocSite,
      },
-     data() {
-         return {
-             pages: [],
-         }
-     },
-     methods: {
-         get_site_pages() {
-             axios.get('/collector/api/pages/footer/' + this.$getlanguage())
-                  .then(res => {
-                      this.error = null;
-                      this.pages = res.data.pages;
-                  })
-                  .catch(error => {
-                      this.error = error;
-                  });
-         },
-     },
-     mounted() {
-         this.get_site_pages();
-     }
  }
 </script>
 <template>
   <footer class="mt-8 p-4 bg-linear-to-tr from-old-copper-200 to-old-copper-300">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-      <div v-for="page in pages" class="m-2">
-        <router-link class="hover:text-old-copper-900" :to="{ name: 'page_view', params: { id: page.id } }">
-          <strong>{{ page.title }}</strong>
-          <div>{{ page.summary }}</div>
-        </router-link>
-      </div>
-      <div class="m-2">
-        <BugReport />
-      </div>
-      <div class="m-2">
-        <ContactButton />
-      </div>
+    <div class="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+      <DocSite />
+      <BugReport />
+      <ContactButton />
     </div>
   </footer>
 </template>

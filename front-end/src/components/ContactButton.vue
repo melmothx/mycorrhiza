@@ -6,7 +6,9 @@
  }
 </script>
 <template>
-  <router-link :to="{ name: 'contact' }" class="btn-accent text-sm px-4 py-1 rounded-sm shadow-lg">
-    <slot>{{ $gettext('Contacts') }}</slot>
+  <router-link :to="{ name: 'contact' }">
+    <div class="btn-accent text-sm mx-4 p-2 rounded-sm shadow-lg text-center">
+      {{ $gettext('Contacts') }}
+    </div>
   </router-link>
 </template>
