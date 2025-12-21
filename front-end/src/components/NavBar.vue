@@ -142,7 +142,7 @@
               leave-active-class="transition duration-75 ease-in"
               leave-from-class="transform scale-100 opacity-100"
               leave-to-class="transform scale-95 opacity-0">
-            <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg rounded-sm">
+            <ListboxOptions class="absolute mt-1 max-h-60 w-full overflow-auto bg-perl-bush-50 pl-3 text-base shadow-lg rounded-sm z-100">
               <ListboxOption v-for="lang in ['en', 'it']"
                              :value="lang" :key="lang"
                              @click="set_language"
