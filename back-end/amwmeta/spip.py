@@ -5,23 +5,26 @@ import pprint
 import sys
 import re
 import hashlib
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from datetime import datetime,timezone
 
 logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=2)
 
-def extract_text_from_element(el):
+def extract_text_from_element(el, url):
     BLOCK_TAGS = {"div", "p", "hr", "pre", "li", "br"}
     parts = []
-    links = []
     def walk(node):
-        if node.tag == 'a':
-            link = node.get('href')
-            if link:
-                links.append(link)
         if node.text:
             parts.append(re.sub(r'\s+', ' ', node.text))
+        if node.tag == 'a' or node.tag == '<img>':
+            link = node.get('href') or node.get('src')
+            if link:
+                u = urljoin(url, link)
+                if node.text and u in node.text:
+                    pass
+                else:
+                    parts.append(" [{}] ".format(u))
         for child in node:
             if child.tag in BLOCK_TAGS:
                 if parts and parts[-1] == "\n":
@@ -34,7 +37,6 @@ def extract_text_from_element(el):
     walk(el)
     return {
         "body": "".join(parts),
-        "links": links
     }
 
 class SpipIndexer:
@@ -122,7 +124,7 @@ class SpipIndexer:
                             full_body = []
                             for spip_class in ('article-chapo', 'article-texte', 'article-descriptif', 'article-ps'):
                                 for el in doc.xpath(xpath.format(spip_class, identifier)):
-                                    fragment = extract_text_from_element(el)
+                                    fragment = extract_text_from_element(el, url)
                                     if fragment['body']:
                                         full_body.append(fragment['body'])
                                         if spip_class == 'article-chapo':
@@ -131,8 +133,6 @@ class SpipIndexer:
                                                 possible_date = m.group(1)
                                                 if int(possible_date) > 1800 and int(possible_date) < 2050:
                                                     out['date'] = [ possible_date ]
-                                    for link in fragment['links']:
-                                        out['uri_info'].append({ "uri": link, "label": "URL" })
                             if full_body:
                                 out.setdefault('description', []).append("".join(full_body))
                         datestamps = out.pop('datestamp')
