@@ -29,6 +29,7 @@
              added_to_the_bookbuilder: false,
              show_aggregated: false,
              show_extended_desc: false,
+             linkified_description: [],
              bookbuilder,
          }
      },
@@ -143,24 +144,53 @@
              }
              return false;
          },
-     },
-     computed: {
-         desc_first_lines() {
-             if (this.source && this.source.description) {
-                 return this.source.description.split(/\r?\n/).slice(0, this.desc_max_lines).join("\n")
+         async check_if_internal_url(url) {
+             try {
+                 const res = await axios.get('/collector/api/check-internal-url', {
+                     params: { url }
+                 })
+                 if (res.data && res.data.entry_id && res.data.entry_id != this.source.entry_id) {
+                     return '/entry/' + res.data.entry_id;
+                 }
+                 else {
+                     return url;
+                 }
+             }
+             catch {
+                 console.log(`Returning ${url}`);
+                 return url;
              }
          },
-         linkified_description() {
-             const url_regex = /(https?:\/\/[^\s]+)/i;
-             if (this.source && this.source.description) {
-                 return this.source.description.split(url_regex).map(part => {
+         async linkify_description(parts) {
+             const promises = parts.map(async part => {
+                 if (part.type === 'link') {
+                     const new_url = await this.check_if_internal_url(part.value)
+                     return { ...part, value: new_url };
+                 } else {
+                     return part;
+                 }
+             });
+             return Promise.all(promises);
+         },
+     },
+     watch: {
+         'source.description': {
+             immediate: true,
+             handler: async function(description) {
+                 if (!description) {
+                     description = '';
+                 }
+                 const url_regex = /(https?:\/\/[^\s]+)/i;
+                 const split_regex = /((?:https?:\/\/[^\s]+)|(?:\n))/i;
+                 const parts = description.split(split_regex).map(part => {
                      if (url_regex.test(part)) {
-                         return { type: 'link', value: part }
+                         return { type: 'link', value: part, label: part }
                      }
                      else {
                          return { type: 'text', value: part }
                      }
-                 })
+                 });
+                 this.linkified_description = await this.linkify_description(parts);
              }
          }
      }
@@ -200,16 +230,15 @@
         {{ source.subtitle }}
       </h4>
       <div v-if="has_extended_desc()">
-        <div v-if="show_extended_desc" class="my-2 whitespace-pre-line">
+        <div class="my-2 whitespace-pre-line">
           <template v-for="(part, i) in linkified_description" :key="i">
-            <a v-if="part.type ==='link'" :href="part.value" class="mcrz-link" target="_blank">
-              {{ part.value }}
-            </a>
-            <span v-else>{{ part.value }}</span>
+            <template v-if="show_extended_desc ? true : i < desc_max_lines">
+              <a v-if="part.type ==='link'" :href="part.value" class="mcrz-link">
+                {{ part.label }}
+              </a>
+              <span v-else>{{ part.value }}</span>
+            </template>
           </template>
-        </div>
-        <div v-else class="my-2 whitespace-pre-line">
-          {{ desc_first_lines }}
         </div>
         <div class="text-center">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_show_extended_desc">
