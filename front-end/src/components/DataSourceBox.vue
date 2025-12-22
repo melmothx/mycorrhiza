@@ -3,6 +3,7 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
  import EntryShortBox from './EntryShortBox.vue'
+ import { Cog8ToothIcon } from '@heroicons/vue/24/solid'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
@@ -19,6 +20,7 @@
      components: {
          ReportErrorPopUp,
          EntryShortBox,
+         Cog8ToothIcon,
      },
      data() {
          return {
@@ -30,6 +32,7 @@
              show_aggregated: false,
              show_extended_desc: false,
              linkified_description: [],
+             fetching_description: false,
              bookbuilder,
          }
      },
@@ -182,6 +185,7 @@
                  }
                  const url_regex = /(https?:\/\/[^\s]+)/i;
                  const split_regex = /((?:https?:\/\/[^\s]+)|(?:\n))/i;
+                 this.fetching_description = true;
                  const parts = description.split(split_regex).map(part => {
                      if (url_regex.test(part)) {
                          return { type: 'link', value: part, label: part }
@@ -191,6 +195,7 @@
                      }
                  });
                  this.linkified_description = await this.linkify_description(parts);
+                 this.fetching_description = false;
              }
          }
      }
@@ -231,6 +236,13 @@
       </h4>
       <div v-if="has_extended_desc()">
         <div class="my-2 whitespace-pre-line">
+          <div v-if="fetching_description" class="flex items-center justify-center m-4">
+            <div class="flex">
+              <Cog8ToothIcon class="h-4 animate-spin" />
+              {{ $gettext('Fetching description, hold on...') }}
+              <Cog8ToothIcon class="h-4 animate-spin" />
+            </div>
+          </div>
           <template v-for="(part, i) in linkified_description" :key="i">
             <template v-if="show_extended_desc ? true : i < desc_max_lines">
               <a v-if="part.type ==='link'" :href="part.value" class="mcrz-link">

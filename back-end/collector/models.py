@@ -1167,7 +1167,7 @@ class DataSource(models.Model):
     isbn = models.TextField(null=True)
 
     # if digital, provide the url
-    uri = models.URLField(max_length=2048, null=True)
+    uri = models.URLField(max_length=2048, null=True, db_index=True)
     uri_label = models.CharField(max_length=2048, null=True)
     content_type = models.CharField(max_length=128, null=True)
     # if this is the real book, if it exists: phisical description and call number
