@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 pp = pprint.PrettyPrinter(indent=2)
 
 def extract_text_from_element(el, url):
-    BLOCK_TAGS = {"div", "p", "hr", "pre", "li", "br"}
+    BLOCK_TAGS = {"div", "p", "hr", "pre", "li", "br", "tr"}
     parts = []
     def walk(node):
         if node.text:
@@ -24,7 +24,7 @@ def extract_text_from_element(el, url):
                 if node.text and u in node.text:
                     pass
                 else:
-                    parts.append(" [{}] ".format(u))
+                    parts.append(" {} ".format(u))
         for child in node:
             if child.tag in BLOCK_TAGS:
                 if parts and parts[-1] == "\n":

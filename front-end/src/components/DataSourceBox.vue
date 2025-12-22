@@ -63,11 +63,6 @@
                  return newlines > this.desc_max_lines ? true : false;
              }
          },
-         show_desc_first_lines() {
-             if (this.source && this.source.description) {
-                 return this.source.description.split(/\r?\n/).slice(0, this.desc_max_lines).join("\n")
-             }
-         },
          get_full_text() {
              const vm = this;
              console.log("Getting the full text")
@@ -148,6 +143,26 @@
              }
              return false;
          },
+     },
+     computed: {
+         desc_first_lines() {
+             if (this.source && this.source.description) {
+                 return this.source.description.split(/\r?\n/).slice(0, this.desc_max_lines).join("\n")
+             }
+         },
+         linkified_description() {
+             const url_regex = /(https?:\/\/[^\s]+)/i;
+             if (this.source && this.source.description) {
+                 return this.source.description.split(url_regex).map(part => {
+                     if (url_regex.test(part)) {
+                         return { type: 'link', value: part }
+                     }
+                     else {
+                         return { type: 'text', value: part }
+                     }
+                 })
+             }
+         }
      }
  }
 </script>
@@ -186,10 +201,15 @@
       </h4>
       <div v-if="has_extended_desc()">
         <div v-if="show_extended_desc" class="my-2 whitespace-pre-line">
-          {{ source.description }}
+          <template v-for="(part, i) in linkified_description" :key="i">
+            <a v-if="part.type ==='link'" :href="part.value" class="mcrz-link" target="_blank">
+              {{ part.value }}
+            </a>
+            <span v-else>{{ part.value }}</span>
+          </template>
         </div>
         <div v-else class="my-2 whitespace-pre-line">
-          {{ show_desc_first_lines() }}
+          {{ desc_first_lines }}
         </div>
         <div class="text-center">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_show_extended_desc">
