@@ -6,7 +6,16 @@
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
-     props: [ 'source' ],
+     props: {
+         source: {
+             type: Object,
+             required: true,
+         },
+         desc_max_lines: {
+             type: Number,
+             default: 10,
+         }
+     },
      components: {
          ReportErrorPopUp,
          EntryShortBox,
@@ -19,6 +28,7 @@
              working: false,
              added_to_the_bookbuilder: false,
              show_aggregated: false,
+             show_extended_desc: false,
              bookbuilder,
          }
      },
@@ -38,6 +48,25 @@
          toggle_pdf_reader() {
              this.show_html = false;
              this.show_pdf_reader = !this.show_pdf_reader;
+         },
+         toggle_show_extended_desc() {
+             this.show_extended_desc = !this.show_extended_desc;
+         },
+         has_extended_desc() {
+             if (this.source && this.source.description) {
+                 let newlines = 0;
+                 for (const c of this.source.description) {
+                     if (c == "\n") {
+                         newlines++;
+                     }
+                 }
+                 return newlines > this.desc_max_lines ? true : false;
+             }
+         },
+         show_desc_first_lines() {
+             if (this.source && this.source.description) {
+                 return this.source.description.split(/\r?\n/).slice(0, this.desc_max_lines).join("\n")
+             }
          },
          get_full_text() {
              const vm = this;
@@ -118,7 +147,7 @@
                  }
              }
              return false;
-         }
+         },
      }
  }
 </script>
@@ -155,8 +184,23 @@
       <h4 class="italic" v-if="source.subtitle">
         {{ source.subtitle }}
       </h4>
-      <div class="my-2 whitespace-pre-line" v-if="source.description">
-        {{ source.description }}
+      <div v-if="has_extended_desc()">
+        <div v-if="show_extended_desc" class="my-2 whitespace-pre-line">
+          {{ source.description }}
+        </div>
+        <div v-else class="my-2 whitespace-pre-line">
+          {{ show_desc_first_lines() }}
+        </div>
+        <div class="text-center">
+          <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_show_extended_desc">
+            {{ show_extended_desc ? $gettext('Less') : $gettext('More') }}
+          </button>
+        </div>
+      </div>
+      <div v-else>
+        <div class="my-2 whitespace-pre-line" v-if="source.description">
+          {{ source.description }}
+        </div>
       </div>
       <table class="my-4 w-full">
         <tr class="border-b border-t p-2" v-if="source.shelf_location_code">
