@@ -623,7 +623,10 @@ class Site(models.Model):
             record['full_data'] = full
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
-                xapian_records.append(entry.id)
+                if entry.canonical_entry:
+                    xapian_records.append(entry.canonical_entry.id)
+                for e in entry.variant_entries.all():
+                    xapian_records.append(e.id)
         return self.index_harvested_records(xapian_records, now=now)
 
     def process_calibre_tree(self, force):

@@ -120,10 +120,17 @@ class SpipIndexer:
                                         }
                                     })
                         if self.body_is_description:
-                            xpath = "//*[contains(concat(' ', normalize-space(@class), ' '), ' {}-{} ')]"
+                            xpath = "//*[contains(concat(' ', normalize-space(@class), ' '), ' {} ')]"
                             full_body = []
-                            for spip_class in ('article-chapo', 'article-texte', 'article-descriptif', 'article-ps'):
-                                for el in doc.xpath(xpath.format(spip_class, identifier)):
+                            crawled_classes = (
+                                "article-chapo-{}".format(identifier),
+                                "article-texte-{}".format(identifier),
+                                "article-descriptif-{}".format(identifier),
+                                "divers",
+                                "article-ps-{}".format(identifier),
+                            )
+                            for spip_class in crawled_classes:
+                                for el in doc.xpath(xpath.format(spip_class)):
                                     fragment = extract_text_from_element(el, url)
                                     if fragment['body']:
                                         full_body.append(fragment['body'])
