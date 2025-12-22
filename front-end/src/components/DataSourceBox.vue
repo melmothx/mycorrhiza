@@ -185,10 +185,15 @@
                  }
                  const url_regex = /(https?:\/\/[^\s]+)/i;
                  const split_regex = /((?:https?:\/\/[^\s]+)|(?:\n))/i;
+                 const image_regex = /(jpe?g|png|webp|gif)$/i;
                  this.fetching_description = true;
                  const parts = description.split(split_regex).map(part => {
                      if (url_regex.test(part)) {
-                         return { type: 'link', value: part, label: part }
+                         return {
+                             type: image_regex.test(part) ? 'image' : 'link',
+                             value: part,
+                             label: part
+                         }
                      }
                      else {
                          return { type: 'text', value: part }
@@ -245,9 +250,12 @@
           </div>
           <template v-for="(part, i) in linkified_description" :key="i">
             <template v-if="show_extended_desc ? true : i < desc_max_lines">
-              <a v-if="part.type ==='link'" :href="part.value" class="mcrz-link">
+              <a v-if="part.type === 'link'" :href="part.value" class="mcrz-link">
                 {{ part.label }}
               </a>
+              <div v-else-if="part.type === 'image'">
+                <img :src="part.value" :alt="part.label" class="max-w-full h-auto my-4 mx-auto"/>
+              </div>
               <span v-else>{{ part.value }}</span>
             </template>
           </template>
