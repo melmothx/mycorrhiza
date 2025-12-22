@@ -17,7 +17,7 @@ def extract_text_from_element(el, url):
     def walk(node):
         if node.text:
             parts.append(re.sub(r'\s+', ' ', node.text))
-        if node.tag == 'a' or node.tag == '<img>':
+        if node.tag == 'a' or node.tag == 'img':
             link = node.get('href') or node.get('src')
             if link:
                 u = urljoin(url, link)
