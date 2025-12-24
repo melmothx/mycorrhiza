@@ -111,6 +111,7 @@ class General(models.Model):
         ("site_logo", "Site Logo"),
         ("site_description", "Site Description"),
         ("contact_email", "Contact Email"),
+        ("amusewiki_doc_site", "Amusewiki Site of Documentation"),
     ]
     name = models.CharField(max_length=32,
                             choices=GENERAL_VALUE_NAMES,
@@ -125,6 +126,11 @@ class General(models.Model):
     @classmethod
     def settings(self):
         return { v.name: v.value for v in self.objects.all() }
+
+    class Meta:
+        verbose_name = "General Setting"
+        verbose_name_plural = "General Settings"
+
 
 
 class Page(models.Model):

@@ -53,7 +53,7 @@
  }
 </script>
 <template>
-  <button class="btn-accent text-sm px-4 py-1 rounded-sm shadow-lg" @click="toggle_dialog">
+  <button v-if="!open" class="btn-accent text-sm p-2 mx-4 rounded-sm shadow-lg" @click="toggle_dialog">
     <template v-if="message_sent">
       {{ $gettext('Report Sent') }}
     </template>
