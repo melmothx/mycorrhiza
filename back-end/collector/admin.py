@@ -4,6 +4,12 @@ from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User,
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
     exclude = ["last_harvested", "amusewiki_formats"]
+    search_fields = ['title', 'url', 'comment', 'library__name', 'library__url']
+
+@admin.register(Library)
+class LibraryAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'url', 'description', 'email_public', 'email_internal']
+
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -16,12 +22,12 @@ class UserAdmin(admin.ModelAdmin):
         "password_reset_expiration",
         "date_joined",
     ]
+    search_fields = ['email', 'username', 'first_name', 'last_name']
 
 # Register your models here.
 admin.site.register(Language)
 admin.site.register(NameAlias)
 admin.site.register(SpreadsheetUpload)
-admin.site.register(Library)
 admin.site.register(Page)
 admin.site.register(General)
 admin.site.register(ChangeLog)
