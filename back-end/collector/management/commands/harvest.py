@@ -27,6 +27,7 @@ class Command(BaseCommand):
                             action="store_true", # boolean
                             help="Reindex orphaned entries")
         parser.add_argument("--site",
+                            action="append",
                             help="Select a specific site")
         parser.add_argument("--identifier",
                             action="append",
@@ -57,7 +58,16 @@ class Command(BaseCommand):
 
         rs = Site.objects.filter(active=True)
         if options['site']:
-            rs = rs.filter(Q(url__contains=options['site']) | Q(title__contains=options['site']))
+            to_index = options['site']
+            query = None
+            while to_index:
+                word = to_index.pop()
+                q = Q(url__contains=word) | Q(title__contains=word)
+                if query:
+                    query = query | q
+                else:
+                    query = q
+            rs = rs.filter(query)
 
         if options['reindex']:
             if options['site']:
