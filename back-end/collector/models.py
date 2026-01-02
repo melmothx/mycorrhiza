@@ -637,7 +637,7 @@ class Site(models.Model):
             if not force:
                 since = self.last_harvested
             records = scan_calibre_tree(self.tree_path, since=since, hostname=self.hostname())
-            logger.debug(pp.pprint(records))
+            logger.debug(pp.pformat(records))
             return self.process_generic_records(records, replace_all=force)
         else:
             return []
@@ -654,7 +654,8 @@ class Site(models.Model):
                                   skip_fields=skip_fields,
                                   body_is_description=self.spip_article_body_is_description,
                                 ).harvest(force=force)
-            logger.debug(pp.pprint(records))
+            logger.debug("Fetched the records:")
+            logger.debug(pp.pformat(records))
             return self.process_generic_records(records, replace_all=force)
         else:
             return []
