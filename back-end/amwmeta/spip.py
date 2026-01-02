@@ -75,7 +75,7 @@ class SpipIndexer:
             ('dc.relation', 'aggregation'),
         ]
         for url in urls:
-            good = re.fullmatch(r'.*/article([0-9]+)\.html', url)
+            good = re.fullmatch(r'.*/(?:spip\.php\?)?article([0-9]+)(?:\.html)?', url)
             if good:
                 identifier = good.group(1)
                 r = self.ua.get(url)
@@ -126,7 +126,6 @@ class SpipIndexer:
                                 "article-chapo-{}".format(identifier),
                                 "article-texte-{}".format(identifier),
                                 "article-descriptif-{}".format(identifier),
-                                "divers",
                                 "article-ps-{}".format(identifier),
                             )
                             for spip_class in crawled_classes:
