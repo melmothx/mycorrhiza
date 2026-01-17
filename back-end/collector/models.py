@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from django.db import transaction
 from django.contrib.auth.models import AbstractUser
 from amwmeta.calibre import scan_calibre_tree
+from amwmeta.spip import SpipIndexer
 from django.conf import settings
 import logging
 from amwmeta.sheets import parse_sheet, sheet_definitions
@@ -242,21 +243,26 @@ class Site(models.Model):
         ('koha-unimarc', "KOHA UNIMARC"),
         ('csv', "CSV Upload"),
         ('calibretree', "Calibre File Tree"),
+        ('spip', "SPIP Site with meta DC fields"),
     ]
     library = models.ForeignKey(Library,
                                 null=False,
                                 on_delete=models.CASCADE,
                                 related_name="sites")
     title = models.CharField(max_length=255)
-    url = models.URLField(blank=True, max_length=255)
+    url = models.URLField(blank=True, max_length=255, verbose_name="URL")
     last_harvested = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(blank=True)
     oai_set = models.CharField(max_length=64,
+                               verbose_name="OAI-PMH set",
+                               help_text="Not relevant for Amusewiki PMH and other non-PMH sites",
                                blank=True,
                                null=True)
     oai_metadata_format = models.CharField(max_length=32,
                                            null=True,
                                            blank=True,
+                                           verbose_name="OAI-PMH metadata format",
+                                           help_text="Relevant only for Generic OAI PHM sites",
                                            choices=OAI_PMH_METADATA_FORMATS)
     site_type = models.CharField(max_length=32, choices=SITE_TYPES, default="generic")
     csv_type = models.CharField(
@@ -264,13 +270,36 @@ class Site(models.Model):
         null=True,
         blank=True,
         choices=CSV_TYPES,
+        verbose_name="CSV type",
+        help_text="Relevant only for CSV sites",
     )
     active = models.BooleanField(default=True, null=False)
     amusewiki_formats = models.JSONField(null=True)
-    tree_path = models.CharField(blank=True, null=True, max_length=255)
+    tree_path = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        verbose_name="Calibre local path on the file system",
+    )
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-
+    spip_max_ids = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="SPIP: Max ID",
+        help_text="Used on the initial load. Required for SPIP",
+    )
+    spip_ignore_meta_fields = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name="SPIP: meta headers to ignore",
+        help_text="One per line",
+    )
+    spip_article_body_is_description = models.BooleanField(
+        default=False,
+        null=False,
+        verbose_name="SPIP: parse the article body as item description",
+    )
     def __str__(self):
         return "{} ({} - {})".format(self.title, self.library.name, self.site_type)
 
@@ -322,6 +351,8 @@ class Site(models.Model):
             return self.pmh_harvest(force=force, only_ids=only_ids)
         elif self.site_type == 'calibretree':
             return self.process_calibre_tree(force=force)
+        elif self.site_type == 'spip':
+            return self.process_spip(force=force)
         elif self.site_type == 'csv' and force:
             # redo the incremental
             ss_ids = []
@@ -584,6 +615,7 @@ class Site(models.Model):
             "koha-unimarc": "pmh",
             "koha-marc21": "pmh",
             "amusewiki": "amw",
+            "spip": "spip",
         }
         for full in records:
             # logger.debug(full)
@@ -598,6 +630,10 @@ class Site(models.Model):
             record['deleted'] = False
             for entry in self.process_harvested_record(record, aliases, now):
                 xapian_records.append(entry.id)
+                if entry.canonical_entry:
+                    xapian_records.append(entry.canonical_entry.id)
+                for e in entry.variant_entries.all():
+                    xapian_records.append(e.id)
         return self.index_harvested_records(xapian_records, now=now)
 
     def process_calibre_tree(self, force):
@@ -607,7 +643,25 @@ class Site(models.Model):
             if not force:
                 since = self.last_harvested
             records = scan_calibre_tree(self.tree_path, since=since, hostname=self.hostname())
-            logger.debug(pp.pprint(records))
+            logger.debug(pp.pformat(records))
+            return self.process_generic_records(records, replace_all=force)
+        else:
+            return []
+
+    def process_spip(self, force):
+        args = [ self.url ]
+        if self.spip_max_ids:
+            skip_fields = []
+            if self.spip_ignore_meta_fields:
+                skip_fields = [ f for f in re.split(r'[^a-zA-Z0-9.]', self.spip_ignore_meta_fields) if f ]
+
+            records = SpipIndexer(self.url,
+                                  max_id=self.spip_max_ids,
+                                  skip_fields=skip_fields,
+                                  body_is_description=self.spip_article_body_is_description,
+                                ).harvest(force=force)
+            logger.debug("Fetched the records:")
+            logger.debug(pp.pformat(records))
             return self.process_generic_records(records, replace_all=force)
         else:
             return []
@@ -1121,7 +1175,7 @@ class DataSource(models.Model):
     isbn = models.TextField(null=True)
 
     # if digital, provide the url
-    uri = models.URLField(max_length=2048, null=True)
+    uri = models.URLField(max_length=2048, null=True, db_index=True)
     uri_label = models.CharField(max_length=2048, null=True)
     content_type = models.CharField(max_length=128, null=True)
     # if this is the real book, if it exists: phisical description and call number

@@ -516,6 +516,15 @@ def get_entry(request, entry_id):
     logger.debug(pp.pformat(record))
     return JsonResponse(record)
 
+def check_internal_url(request):
+    url = request.GET.get('url')
+    if url:
+        ds = DataSource.objects.filter(site__library_id__in=_active_libraries(request.user),
+                                       uri=url).first()
+        if ds:
+            return JsonResponse({ 'entry_id': ds.entry_id })
+    return JsonResponse({})
+
 # should this be login required?
 def get_datasource_full_text(request, ds_id):
     ds = get_object_or_404(DataSource, pk=ds_id)

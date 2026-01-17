@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/auth/user", views.api_user, name="api_user"),
     path("api/auth/user-check/<username>", views.api_user_check, name="api_user_check"),
     path("api/entry/<int:entry_id>", views.get_entry, name="api_get_entry"),
+    path("api/check-internal-url", views.check_internal_url, name="api_check_internal_url"),
     path("api/full-text/<int:ds_id>", views.get_datasource_full_text, name="api_full_text"),
     path("api/file/<int:ds_id>/<filename>", views.get_datasource_file, name="api_get_datasource_file"),
     path("api/download/<target>", views.download_datasource, name="api_download_datasource"),

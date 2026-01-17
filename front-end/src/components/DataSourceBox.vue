@@ -3,13 +3,24 @@
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
  import EntryShortBox from './EntryShortBox.vue'
+ import { Cog8ToothIcon } from '@heroicons/vue/24/solid'
  axios.defaults.xsrfCookieName = "csrftoken";
  axios.defaults.xsrfHeaderName = "X-CSRFToken";
  export default {
-     props: [ 'source' ],
+     props: {
+         source: {
+             type: Object,
+             required: true,
+         },
+         desc_max_lines: {
+             type: Number,
+             default: 10,
+         }
+     },
      components: {
          ReportErrorPopUp,
          EntryShortBox,
+         Cog8ToothIcon,
      },
      data() {
          return {
@@ -19,6 +30,9 @@
              working: false,
              added_to_the_bookbuilder: false,
              show_aggregated: false,
+             show_extended_desc: false,
+             linkified_description: [],
+             fetching_description: false,
              bookbuilder,
          }
      },
@@ -38,6 +52,20 @@
          toggle_pdf_reader() {
              this.show_html = false;
              this.show_pdf_reader = !this.show_pdf_reader;
+         },
+         toggle_show_extended_desc() {
+             this.show_extended_desc = !this.show_extended_desc;
+         },
+         has_extended_desc() {
+             if (this.source && this.source.description) {
+                 let newlines = 0;
+                 for (const c of this.source.description) {
+                     if (c == "\n") {
+                         newlines++;
+                     }
+                 }
+                 return newlines > this.desc_max_lines ? true : false;
+             }
          },
          get_full_text() {
              const vm = this;
@@ -118,6 +146,62 @@
                  }
              }
              return false;
+         },
+         async check_if_internal_url(url) {
+             try {
+                 const res = await axios.get('/collector/api/check-internal-url', {
+                     params: { url }
+                 })
+                 if (res.data && res.data.entry_id && res.data.entry_id != this.source.entry_id) {
+                     return '/entry/' + res.data.entry_id;
+                 }
+                 else {
+                     return url;
+                 }
+             }
+             catch {
+                 console.log(`Returning ${url}`);
+                 return url;
+             }
+         },
+         async linkify_description(parts) {
+             const promises = parts.map(async part => {
+                 if (part.type === 'link') {
+                     const new_url = await this.check_if_internal_url(part.value)
+                     return { ...part, value: new_url };
+                 } else {
+                     return part;
+                 }
+             });
+             return Promise.all(promises);
+         },
+     },
+     watch: {
+         'source.description': {
+             immediate: true,
+             handler: async function(description) {
+                 if (!description) {
+                     description = '';
+                 }
+                 const url_regex = /(https?:\/\/[^\s]+)/i;
+                 const split_regex = /((?:https?:\/\/[^\s]+)|(?:\n))/i;
+                 const image_regex = /(jpe?g|png|webp|gif)$/i;
+                 this.fetching_description = true;
+                 const parts = description.split(split_regex).map(part => {
+                     if (url_regex.test(part)) {
+                         return {
+                             type: image_regex.test(part) ? 'image' : 'link',
+                             value: part,
+                             label: part
+                         }
+                     }
+                     else {
+                         return { type: 'text', value: part }
+                     }
+                 });
+                 this.linkified_description = await this.linkify_description(parts);
+                 this.fetching_description = false;
+             }
          }
      }
  }
@@ -155,8 +239,37 @@
       <h4 class="italic" v-if="source.subtitle">
         {{ source.subtitle }}
       </h4>
-      <div class="my-2 whitespace-pre-line" v-if="source.description">
-        {{ source.description }}
+      <div v-if="has_extended_desc()">
+        <div class="my-2 whitespace-pre-line">
+          <div v-if="fetching_description" class="flex items-center justify-center m-4">
+            <div class="flex">
+              <Cog8ToothIcon class="h-4 animate-spin" />
+              {{ $gettext('Fetching description, hold on...') }}
+              <Cog8ToothIcon class="h-4 animate-spin" />
+            </div>
+          </div>
+          <template v-for="(part, i) in linkified_description" :key="i">
+            <template v-if="show_extended_desc ? true : i < desc_max_lines">
+              <a v-if="part.type === 'link'" :href="part.value" class="mcrz-link">
+                {{ part.label }}
+              </a>
+              <div v-else-if="part.type === 'image'">
+                <img :src="part.value" :alt="part.label" class="max-w-full h-auto my-4 mx-auto"/>
+              </div>
+              <span v-else>{{ part.value }}</span>
+            </template>
+          </template>
+        </div>
+        <div class="text-center">
+          <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_show_extended_desc">
+            {{ show_extended_desc ? $gettext('Less') : $gettext('More') }}
+          </button>
+        </div>
+      </div>
+      <div v-else>
+        <div class="my-2 whitespace-pre-line" v-if="source.description">
+          {{ source.description }}
+        </div>
       </div>
       <table class="my-4 w-full">
         <tr class="border-b border-t p-2" v-if="source.shelf_location_code">
