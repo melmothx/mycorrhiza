@@ -1,4 +1,18 @@
 {
+   "ca" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      }
+   },
    "de" : {
       "Authors matching “%1” (%2 entry)" : {
          "plurals" : {
@@ -57,6 +71,817 @@
       },
       "__WIKIDATA_HELP__" : {
          "msgstr" : "Enter the Wikidata ID code, which is the letter Q followed by several digits, that can be easily found on Wikipedia itself"
+      }
+   },
+   "es" : {
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "",
+            "1" : ""
+         }
+      }
+   },
+   "eu" : {
+      "%1 logo" : {
+         "msgstr" : "%1 liburutegiaren logotipoa"
+      },
+      "(Original size is %1)" : {
+         "msgstr" : "(Jatorrizko tamaina %1 da)"
+      },
+      "Add" : {
+         "msgstr" : "Gehitu"
+      },
+      "Add User" : {
+         "msgstr" : "Gehitu erabiltzailea"
+      },
+      "Add crop marks to PDF" : {
+         "msgstr" : "Gehitu mozketa-markak PDFan"
+      },
+      "Add to the Book Builder" : {
+         "msgstr" : "Gehitu Liburu-sortzailean"
+      },
+      "Add your library or archive" : {
+         "msgstr" : "Gehitu liburutegia edo artxiboa"
+      },
+      "Added to the Book Builder!" : {
+         "msgstr" : "Gehitu da Liburu-sortzailean."
+      },
+      "Additional Address Line" : {
+         "msgstr" : "Helbidearen lerro gehigarria"
+      },
+      "Address" : {
+         "msgstr" : "Helbidea"
+      },
+      "Address Line" : {
+         "msgstr" : "Helbidearen lerroa"
+      },
+      "Admin" : {
+         "msgstr" : "Administratzailea"
+      },
+      "Advanced" : {
+         "msgstr" : "Aurreratua"
+      },
+      "Advanced settings" : {
+         "msgstr" : "Ezarpen aurreratuak"
+      },
+      "Africa" : {
+         "msgstr" : "Afrika"
+      },
+      "Aggregated" : {
+         "msgstr" : "Agregatuta"
+      },
+      "Aggregation" : {
+         "msgstr" : "Agregazioa"
+      },
+      "Aggregations" : {
+         "msgstr" : "Agregazioak"
+      },
+      "All entries (%1)" : {
+         "msgstr" : "Sarrera guztiak (%1)"
+      },
+      "Asia" : {
+         "msgstr" : "Asia"
+      },
+      "Author" : {
+         "msgstr" : "Egilea"
+      },
+      "Authors" : {
+         "msgstr" : "Egileak"
+      },
+      "Authors matching “%1” (%2 entry)" : {
+         "plurals" : {
+            "0" : "“%1” bilaketarekin bat datozen egileak (%2 sarrera)",
+            "1" : ""
+         }
+      },
+      "Automatic margins: choose a factor. 9 has the widest margins, 15 the narrowest" : {
+         "msgstr" : "Marjina automatikoak: aukeratu zenbaki bat. 9ak marjiina zabalenak ditu, 15ak laburrenak"
+      },
+      "Back" : {
+         "msgstr" : "Atzera"
+      },
+      "Bibliographical entry only" : {
+         "msgstr" : "Sarrera bibliografikoa soilik"
+      },
+      "Binding correction in mm (additional inner margin)" : {
+         "msgstr" : "Azalaren zuzenketa mm-tan (barneko marjina gehigarria)"
+      },
+      "Blocks of 16 pages to be folded twice and then bound together." : {
+         "msgstr" : "Birritan tolestuko diren 16 orrialdeko blokeak, gero elkarrekin koadernatzeko."
+      },
+      "Blocks of 8 pages to be folded twice and then bound together." : {
+         "msgstr" : "Birritan tolestuko diren 8 orrialdeko blokeak, gero elkarrekin koadernatzeko."
+      },
+      "Book Builder" : {
+         "msgstr" : "Liburu-sortzailea"
+      },
+      "Bug Report" : {
+         "msgstr" : "Eman akats baten berri"
+      },
+      "Build" : {
+         "msgstr" : "Sortu"
+      },
+      "Cancel" : {
+         "msgstr" : "Utzi"
+      },
+      "Center America East" : {
+         "msgstr" : "Erdialdeko Amerikaren ekialdea"
+      },
+      "Center America West" : {
+         "msgstr" : "Erdialdeko Amerikaren hegoaldea"
+      },
+      "Center all section titles" : {
+         "msgstr" : "Erdiratu sekzioko izenburu guztiak"
+      },
+      "Center chapter titles" : {
+         "msgstr" : "Erdiratu ataleko izenburuak"
+      },
+      "Choose another file" : {
+         "msgstr" : "Aukeratu beste fitxategi bat"
+      },
+      "Choose file" : {
+         "msgstr" : "Aukeratu fitxategia"
+      },
+      "City" : {
+         "msgstr" : "Hiria"
+      },
+      "Clear list" : {
+         "msgstr" : "Garbitu zerrenda"
+      },
+      "Clear the query" : {
+         "msgstr" : "Garbitu kontsulta"
+      },
+      "Click on the map to locate a physical library" : {
+         "msgstr" : "Sakatu mapan liburutegi fisiko bat kokatzeko"
+      },
+      "Click to remove the filter" : {
+         "msgstr" : "Sakatu iragazkia kentzeko"
+      },
+      "Click to sort" : {
+         "msgstr" : "Sakatu ordenatzeko"
+      },
+      "Close" : {
+         "msgstr" : "Itxi"
+      },
+      "Column Name" : {
+         "msgstr" : "Zutabearen izena"
+      },
+      "Contacts" : {
+         "msgstr" : "Kontaktuak"
+      },
+      "Contains:" : {
+         "msgstr" : "Edukia:"
+      },
+      "Continuous footnote numbering across the whole document" : {
+         "msgstr" : "Oin-oharren zenbatze jarraitua dokumentu osoan zehar"
+      },
+      "Country" : {
+         "msgstr" : "Herrialdea"
+      },
+      "Covers" : {
+         "msgstr" : "Azalak"
+      },
+      "Create" : {
+         "msgstr" : "Sortu"
+      },
+      "Date" : {
+         "msgstr" : "Data"
+      },
+      "Date Established" : {
+         "msgstr" : "Sortze-data"
+      },
+      "Description" : {
+         "msgstr" : "Azalpena"
+      },
+      "Do not create a cover page and start the text on the first page" : {
+         "msgstr" : "Ez sortu azalaren orrialderik eta hasi testua lehen orrian"
+      },
+      "Do not use bold fonts" : {
+         "msgstr" : "Ez erabili letra lodirik"
+      },
+      "Download Types" : {
+         "msgstr" : "Deskarga motak"
+      },
+      "Drag the titles to reorder" : {
+         "msgstr" : "Arrastatu izenburuak berrantolatzeko"
+      },
+      "Edit" : {
+         "msgstr" : "Editatu"
+      },
+      "Editable and printable text" : {
+         "msgstr" : "Edita eta inprima daitekeen testua"
+      },
+      "Edition" : {
+         "msgstr" : "Edizioa"
+      },
+      "Edition Place and Date" : {
+         "msgstr" : "Edizioaren lekua eta data"
+      },
+      "Email" : {
+         "msgstr" : "Helbide elektronikoa"
+      },
+      "Email:" : {
+         "msgstr" : "Helbide elektronikoa:"
+      },
+      "Enabled for merging" : {
+         "msgstr" : "Konbinatzeko gaituta dago"
+      },
+      "Europe" : {
+         "msgstr" : "Europa"
+      },
+      "Exactly like 2up, but the sheets are meant to be cut horizontally first and then stacked on each other. This way you can print, for example, A6 booklets on A4." : {
+         "msgstr" : "2UP bezala, baina orriak horizontalki mozteko dira, gero elkarrekin koadernatzeko. Horrela, A6 liburuxkak A4 formatuan inprima ditzakezu, adibidez."
+      },
+      "Exclusions" : {
+         "msgstr" : "Bazterketak"
+      },
+      "Failed" : {
+         "msgstr" : "Hutsegiteak"
+      },
+      "Failure sending the report. Please contact us by email!" : {
+         "msgstr" : "Ezin izan da bidali txostena. Jarri gurekin harremaneta posta elektronikoz."
+      },
+      "Feel free to reach out to us at:" : {
+         "msgstr" : "Jar zaitez gurekin harremanetan hemen:"
+      },
+      "Fetching results, hold on..." : {
+         "msgstr" : "Emaitzak lortzen, itxoin…"
+      },
+      "Fill with blank pages before the last page if the signature is not full." : {
+         "msgstr" : "Bete orrialde hutsekin azken orria baino lehen sinadura ez bada osoa."
+      },
+      "First" : {
+         "msgstr" : "Lehena"
+      },
+      "First Name" : {
+         "msgstr" : "Izena"
+      },
+      "Fixed 16 pages signatures on 2 sheets, with double individual folding." : {
+         "msgstr" : "16 orrialde finkoren sinadurak 2 orritan, banako toleste bikoitzarekin."
+      },
+      "Fixed 16 pages signatures on a single sheet, with triple folding." : {
+         "msgstr" : "16 orrialde finkoren sinadurak orri bakarrean, toleste hirukoitzarekin."
+      },
+      "Fixed signatures of 8 pages, to be cut horizontally, folded individually, and bound together." : {
+         "msgstr" : "8 orrialde finkoren sinadurak, horizontalki mozteko, banaka tolesteko eta elkarrekin koadernatzeko."
+      },
+      "Font Size" : {
+         "msgstr" : "Letra-tipoaren tamaina"
+      },
+      "Fonts" : {
+         "msgstr" : "Letra-tipoak"
+      },
+      "For example:" : {
+         "msgstr" : "Adibidez:"
+      },
+      "From:" : {
+         "msgstr" : "Bidaltzailea:"
+      },
+      "Full text" : {
+         "msgstr" : "Testu osoa"
+      },
+      "Height in mm" : {
+         "msgstr" : "Altuera mm-tan"
+      },
+      "Hello, %1!" : {
+         "msgstr" : "Kaixo, %1!"
+      },
+      "Help" : {
+         "msgstr" : "Laguntza"
+      },
+      "Help on the query syntax" : {
+         "msgstr" : "Laguntza kontsultaren sintaxiarekin"
+      },
+      "Hide/Show" : {
+         "msgstr" : "Ezkutatu/Erakutsi"
+      },
+      "ID" : {
+         "msgstr" : "IDa"
+      },
+      "ISBN" : {
+         "msgstr" : "ISBNa"
+      },
+      "Imposition" : {
+         "msgstr" : "Inposizioa"
+      },
+      "Imposition Schema" : {
+         "msgstr" : "Inposizioaren eskema"
+      },
+      "Internal email" : {
+         "msgstr" : "Barneko mezu elektronikoa"
+      },
+      "Internet address" : {
+         "msgstr" : "Interneteko helbidea"
+      },
+      "Invalid query!" : {
+         "msgstr" : "Kontsultak ez du balio."
+      },
+      "Justification" : {
+         "msgstr" : "Justifikazioa"
+      },
+      "Landing page" : {
+         "msgstr" : "Helmuga-orria"
+      },
+      "Language" : {
+         "msgstr" : "Hizkuntza"
+      },
+      "Languages" : {
+         "msgstr" : "Hizkuntzak"
+      },
+      "Last" : {
+         "msgstr" : "Azkena"
+      },
+      "Last Name" : {
+         "msgstr" : "Abizena"
+      },
+      "Latest additions" : {
+         "msgstr" : "Etorri berriak"
+      },
+      "Latitude" : {
+         "msgstr" : "Latitudea"
+      },
+      "Layout" : {
+         "msgstr" : "Diseinua"
+      },
+      "Libraries" : {
+         "msgstr" : "Liburutegiak"
+      },
+      "Library Users" : {
+         "msgstr" : "Liburutegiko erabiltzaileak"
+      },
+      "Library details" : {
+         "msgstr" : "Liburutegiaren datuak"
+      },
+      "Line spacing" : {
+         "msgstr" : "Lerroaren tartea"
+      },
+      "Login" : {
+         "msgstr" : "Saio-hasiera"
+      },
+      "Logo URL" : {
+         "msgstr" : "Logotipoaren URLa"
+      },
+      "Logo address, e.g. https://mydomain.org/path/to/image" : {
+         "msgstr" : "Logotipoaren helbidea, adibidez: https://niredomeinua.org/irudirako/bidea"
+      },
+      "Logout" : {
+         "msgstr" : "Saio-amaiera"
+      },
+      "Longitude" : {
+         "msgstr" : "Longitudea"
+      },
+      "Main Font" : {
+         "msgstr" : "Letra-tipo nagusia"
+      },
+      "Material Description" : {
+         "msgstr" : "Materialaren azalpena"
+      },
+      "Merge" : {
+         "msgstr" : "Konbinatu"
+      },
+      "Merge authors here" : {
+         "msgstr" : "Konbinatu egileak hemen"
+      },
+      "Merge entries here" : {
+         "msgstr" : "Konbinatu sarrerak hemen"
+      },
+      "Missing help, sorry..." : {
+         "msgstr" : "Laguntza falta da, barkatu…"
+      },
+      "Mono Font" : {
+         "msgstr" : "Tarte finkoko letra-tipoa"
+      },
+      "More" : {
+         "msgstr" : "Gehiago"
+      },
+      "My Exclusions" : {
+         "msgstr" : "Nire bazterketak"
+      },
+      "Never display the cover image" : {
+         "msgstr" : "Ez bistaratu inoiz azalaren irudia"
+      },
+      "Never generate a table of content" : {
+         "msgstr" : "Ez sortu inoiz eduki-taula bat"
+      },
+      "Never generate the final page with text details" : {
+         "msgstr" : "Ez sortu inoiz azken orrialdea testuaren datuekin"
+      },
+      "Next" : {
+         "msgstr" : "Hurrengoa"
+      },
+      "No records" : {
+         "msgstr" : "Erregistrorik gabe"
+      },
+      "No result found!" : {
+         "msgstr" : "Ez da aurkitu emaitzarik."
+      },
+      "No text added, so far!" : {
+         "msgstr" : "Ez da gehitu testurik, oraingoz."
+      },
+      "None" : {
+         "msgstr" : "Ezer"
+      },
+      "North America East" : {
+         "msgstr" : "Ipar Amerikako ekialdea"
+      },
+      "North America West" : {
+         "msgstr" : "Ipar Amerikako hegoaldea"
+      },
+      "Notes" : {
+         "msgstr" : "Oharrak"
+      },
+      "Nothing to show!" : {
+         "msgstr" : "Ez dago ezer."
+      },
+      "OPAC page" : {
+         "msgstr" : "OPAC orria"
+      },
+      "Oceania" : {
+         "msgstr" : "Ozeania"
+      },
+      "Omit" : {
+         "msgstr" : "Saltatu"
+      },
+      "Omit Library" : {
+         "msgstr" : "Saltatu liburutegia"
+      },
+      "Omit author" : {
+         "msgstr" : "Saltatu egilea"
+      },
+      "Omit single entry" : {
+         "msgstr" : "Saltatu sarrera bakarra"
+      },
+      "On any Wikipedia page, check Tools menu, Wikidata item" : {
+         "msgstr" : "Wikipediako orri batean, ikusi Tresnak menua, Wikidataren elementua"
+      },
+      "One page per sheet. This is useful only if you want to add the cropmarks" : {
+         "msgstr" : "Orrialde bat orri bakoitzeko. Aukera hau soilik mozketa-markak gehitu nahi badituzu da baliagarria"
+      },
+      "Opening Hours" : {
+         "msgstr" : "Irekitze-orduak"
+      },
+      "Original" : {
+         "msgstr" : "Jatorrizkoa"
+      },
+      "Other languages:" : {
+         "msgstr" : "Beste hizkuntza batzuk:"
+      },
+      "Outer margin in mm" : {
+         "msgstr" : "Kanpoko marjina mm-tan"
+      },
+      "Overview" : {
+         "msgstr" : "Informazio orokorra"
+      },
+      "PGP Public Key" : {
+         "msgstr" : "PGP gako publikoa"
+      },
+      "PGP public key, if any" : {
+         "msgstr" : "PGP gako publikoa, baldin badago"
+      },
+      "Page where to start a chapter" : {
+         "msgstr" : "Atal bat hasiko den orrialdea"
+      },
+      "Page:" : {
+         "msgstr" : "Orrialdea:"
+      },
+      "Pages are reordered, in one or more groups (signatures), then folded in half. If you have more signatures, you will have to bound them together like a book. With this option, you may want to decide the size of the signatures. This can be a fixed value (4,8,16, etc.), the whole book in a single signature, or an optimized size to reduce the number of blank pages." : {
+         "msgstr" : "Orrialdeak talde batean edo gehiagotan berrantolatzen dira (sinadurak), gero, erditik tolesten dira. Sinadura gehiago badituzu, liburu baten eran koadernatu beharko dituzu. Aukera honekin, sinaduren tamaina aukeratu behar duzu. Balio finko bat izan daitke (4, 8, 16, etab.), liburu osoa sinadura bakarrean edo optimizatutako tamaina bat orrialde huts kopurua murrizteko."
+      },
+      "Pairs of consecutives pages are put on the same sheet side by side." : {
+         "msgstr" : "Ondoz ondoko orrialde pareak orri berean jartzen dira bata bestearen alboan."
+      },
+      "Paper thickness in mm (0.10 should be appropriate for common 80g/m2 paper)" : {
+         "msgstr" : "Paperaren lodiera mm-tan (0,10 egokia da 80g/m2-ko ohiko paperarekin erabiltzeko)"
+      },
+      "Paragraph indentation in points (pt)" : {
+         "msgstr" : "Paragrafoaren koska puntutan (pt)"
+      },
+      "Paragraph settings" : {
+         "msgstr" : "Paragrafoaren ezarpenak"
+      },
+      "Part of:" : {
+         "msgstr" : "Honen parte:"
+      },
+      "Password" : {
+         "msgstr" : "Pasahitza"
+      },
+      "Place the notes on the back of the first page, impressum-style" : {
+         "msgstr" : "Jarri oharrak lehen orrialdearen atzealdean, Impressum estiloa"
+      },
+      "Please choose a paper size" : {
+         "msgstr" : "Aukeratu paperaren tamaina bat"
+      },
+      "Please describe the project. Just a few words, for the preview" : {
+         "msgstr" : "Azaldu proiektua. Hitz gutxitan, aurrebistarako soilik"
+      },
+      "Please select the signature size" : {
+         "msgstr" : "Hautatu sinaduraren tamaina"
+      },
+      "Please select the size of each page including the crop marks, before the imposing." : {
+         "msgstr" : "Hautatu orrialde bakoitzaren orrialdeak, mozketa-markak barne, ezarri aurretik."
+      },
+      "Please set" : {
+         "msgstr" : "Ezarri"
+      },
+      "Please type your new password in both fields" : {
+         "msgstr" : "Idatzi pasahitz berria bi eremutan"
+      },
+      "Previous" : {
+         "msgstr" : "Aurrekoa"
+      },
+      "Process File" : {
+         "msgstr" : "Prozesatu fitxategia"
+      },
+      "Project established in %1" : {
+         "msgstr" : "Proiektuaren sortze-data: %1"
+      },
+      "Public email" : {
+         "msgstr" : "Helbide elektroniko publikoa"
+      },
+      "Publisher" : {
+         "msgstr" : "Argitaratzailea"
+      },
+      "Queued" : {
+         "msgstr" : "Ilaran"
+      },
+      "Reason" : {
+         "msgstr" : "Arrazoia"
+      },
+      "Repeat Password" : {
+         "msgstr" : "Errepikatu pasahitza"
+      },
+      "Replace all records" : {
+         "msgstr" : "Ordeztu erregistro guztiak"
+      },
+      "Report Error" : {
+         "msgstr" : "Eman errorearen berri"
+      },
+      "Report Sent" : {
+         "msgstr" : "Txostena bidali da"
+      },
+      "Report Sent!" : {
+         "msgstr" : "Txostena bidali da."
+      },
+      "Report a bug to the site administrators" : {
+         "msgstr" : "Eman akats baten berri guneko administratzaileei"
+      },
+      "Report an error for “%1” (%2)" : {
+         "msgstr" : "Eman “%1” liburutegiaren errore baten berri (%2)"
+      },
+      "Require Password Reset" : {
+         "msgstr" : "Eskatu pasahitza berrezartzeko"
+      },
+      "Reset" : {
+         "msgstr" : "Berrezarri"
+      },
+      "Reset password for %1" : {
+         "msgstr" : "Berrezarri %1 erabiltzailearen pasahitza"
+      },
+      "Reset password?" : {
+         "msgstr" : "Pasahitza berrezarri nahi duzu?"
+      },
+      "Restore" : {
+         "msgstr" : "Berrezarri"
+      },
+      "Running headings" : {
+         "msgstr" : "Goiburuak exekutatzen"
+      },
+      "Same as 2UP, but for duplex printers" : {
+         "msgstr" : "2UP bezala, baina duplex inprimagailuentzako"
+      },
+      "Same as 2UP, but the pages are rotated by 90 degrees counter-clockwise, binding on the top edge." : {
+         "msgstr" : "2UP bezala, baina orrialdeak 90 gradu biratzen dira erloju-orratzen aurkako noranzkoan, azala goiko ertzan dagoelarik."
+      },
+      "Sans Font" : {
+         "msgstr" : "Letra-tipo kamutsa"
+      },
+      "Search" : {
+         "msgstr" : "Bilatu"
+      },
+      "Search results for “%1”: found %2 entry" : {
+         "plurals" : {
+            "0" : "“%1” bilaketaren emaitzak: %2 sarrera aurkitu da",
+            "1" : "“%1” bilaketaren emaitzak: %2 sarrera aurkitu dira"
+         }
+      },
+      "See all entries" : {
+         "msgstr" : "Ikusi sarrera guztiak"
+      },
+      "See all the physical and digital libraries (%1)" : {
+         "msgstr" : "Ikusi liburutegi fisiko eta digital guztiak (%1)"
+      },
+      "See here for more details" : {
+         "msgstr" : "Ikusi hemen datu gehiagorako"
+      },
+      "See the bookcover class for all the details" : {
+         "msgstr" : "Ikusi liburuaren azalaren klasea datu guztiak lortzeko"
+      },
+      "See the library entries" : {
+         "msgstr" : "Ikusi liburutegiaren sarrerak"
+      },
+      "See “%1”" : {
+         "msgstr" : "Ikusi “%1”"
+      },
+      "Send" : {
+         "msgstr" : "Bidali"
+      },
+      "Set aggregations here" : {
+         "msgstr" : "Ezarri agregazioak hemen"
+      },
+      "Set translations here" : {
+         "msgstr" : "Ezarri itzulpenak hemen"
+      },
+      "Sheet Preview, Total %1 Records" : {
+         "msgstr" : "Orriaren aurrebista, %1 erregistro guztira"
+      },
+      "Shelf Location Code" : {
+         "msgstr" : "Apalaren kokaleku-kodea"
+      },
+      "Short Description" : {
+         "msgstr" : "Azalpen laburra"
+      },
+      "Sorry! We could not found this entry!" : {
+         "msgstr" : "Barkatu. Ezin izan dugu aurkitu sarrera hau."
+      },
+      "Sort" : {
+         "msgstr" : "Antolatu"
+      },
+      "Source" : {
+         "msgstr" : "Iturria"
+      },
+      "Source:" : {
+         "msgstr" : "Iturria:"
+      },
+      "Source: Wikidata" : {
+         "msgstr" : "Iturria: Wikidata"
+      },
+      "South America" : {
+         "msgstr" : "Hego Amerika"
+      },
+      "Split" : {
+         "msgstr" : "Banandu"
+      },
+      "Start the document with an empty page" : {
+         "msgstr" : "Hasi dokumentua orrialde huts batekin"
+      },
+      "State or Province" : {
+         "msgstr" : "Probintzia"
+      },
+      "Submit" : {
+         "msgstr" : "Bidali"
+      },
+      "Subtitle" : {
+         "msgstr" : "Azpititulua"
+      },
+      "Target" : {
+         "msgstr" : "Helburua"
+      },
+      "TeX emergency stretch in pt" : {
+         "msgstr" : "TeX-en larrialdi-tartea pt-tan"
+      },
+      "TeX tolerance" : {
+         "msgstr" : "TeX-en tolerantzia"
+      },
+      "Text block height in mm" : {
+         "msgstr" : "Testu-koadroaren altuera mm-tan"
+      },
+      "Text block width in mm" : {
+         "msgstr" : "Testu-koadroaren zabalera mm-tan"
+      },
+      "Text body only (no title, no final pages)" : {
+         "msgstr" : "Testu-gorputza soilik (izenbururik eta azken orrialderik gabe)"
+      },
+      "The entry does not exist, it was deleted or it is not public any more" : {
+         "msgstr" : "Sarrera ez dago, ezabatu egin da edo ez da publikoa jadanik"
+      },
+      "The passwords do not match" : {
+         "msgstr" : "Pasahitzak ez datoz bat"
+      },
+      "The whole book in as single signature" : {
+         "msgstr" : "Liburu osoa sinadura bakar gisa"
+      },
+      "This is a free-text field. Please describe the project" : {
+         "msgstr" : "Testu libreko eremu bat da hau. Azaldu proiektua"
+      },
+      "This is a free-text field. Please explain briefly which are the project languages" : {
+         "msgstr" : "Testu libreko eremu bat da hau. Azaldu laburki zeintzuk diren proiektuaren hizkuntzak"
+      },
+      "This project has no contact email. Please check the footer instead" : {
+         "msgstr" : "Proiektu honek ez du harremanetarako helbide elektronikorik. Ikusi oina, bestela"
+      },
+      "This text is a translation" : {
+         "msgstr" : "Testu hau itzulpen bat da"
+      },
+      "This text is translated" : {
+         "msgstr" : "Testu hau itzulita dago"
+      },
+      "This username already exist. You are going to add it to this library." : {
+         "msgstr" : "Erabiltzaile-izen hau badago. Liburutegi honetan gehituko duzu."
+      },
+      "Title" : {
+         "msgstr" : "Izenburua"
+      },
+      "Top margin in mm" : {
+         "msgstr" : "Goiko marjina mm-tan"
+      },
+      "Translation" : {
+         "msgstr" : "Itzulpena"
+      },
+      "Two side layout" : {
+         "msgstr" : "Bi aldeko diseinua"
+      },
+      "Type" : {
+         "msgstr" : "Mota"
+      },
+      "Type here to search authors" : {
+         "msgstr" : "Idatzi hemen egileak bilatzeko"
+      },
+      "Type here to search the libraries" : {
+         "msgstr" : "Idatzi hemen liburutegiak bilatzeko"
+      },
+      "UI language" : {
+         "msgstr" : "Interfazearen hizkuntza"
+      },
+      "Update" : {
+         "msgstr" : "Eguneratu"
+      },
+      "Upload File" : {
+         "msgstr" : "Kargatu fitxategia"
+      },
+      "Upload a CSV" : {
+         "msgstr" : "Kargatu CSV gisa"
+      },
+      "Use optimized signatures with 40-80 pages each" : {
+         "msgstr" : "Erabili optimizatutako sinadurak bakoitzak 40-80 orrialde dituelarik"
+      },
+      "Use sans fonts for section titles" : {
+         "msgstr" : "Erabili letra-tipo kamutsa sekzioko izenburuetarako"
+      },
+      "User Menu" : {
+         "msgstr" : "Erabiltzailearen menua"
+      },
+      "User expiration (optional)" : {
+         "msgstr" : "Erabiltzailearen iraungipena (aukerakoa)"
+      },
+      "Username" : {
+         "msgstr" : "Erabiltzaile-izena"
+      },
+      "Value" : {
+         "msgstr" : "Balioa"
+      },
+      "View PDF" : {
+         "msgstr" : "Ikusi PDFa"
+      },
+      "Visit Library Homepage" : {
+         "msgstr" : "Bisitatu liburutegiaren hasiera-orria"
+      },
+      "Width in mm" : {
+         "msgstr" : "Zabalera mm-tan"
+      },
+      "WikiData ID" : {
+         "msgstr" : "WikiData-ren IDa"
+      },
+      "Working" : {
+         "msgstr" : "Lanean"
+      },
+      "You can search by title with the prefix “title:”, by author with the prefix “author:”. Do not add whitespace between the prefix and the term. You can combine the terms with AND, OR, NOT. You can use the asterisk as wildcard. You can quote phrases with double quotes." : {
+         "msgstr" : "Izenburuaren arabera bila dezakezu “title:” aurrizkiarekin, eta egilearen arabera “author:” aurrizkiarekin. Ez gehitu zuriunerik aurrizkiaren eta hitzaren artean. Hitzak AND, OR, NOT hitzekin konbina ditzakezu. Izartxoa erabil dezakezu komodin gisa. Esaldiak aipa ditzakezu aipuekin."
+      },
+      "ZIP code" : {
+         "msgstr" : "Posta-kodea"
+      },
+      "__MERGE_AUTHOR__" : {
+         "msgstr" : "With this function, you can unify the alternative forms of the name of the person who wrote the text. Bakunin and M. Bakunin -> Bakunin"
+      },
+      "__MERGE_ENTRY__" : {
+         "msgstr" : "With this function you can merge two separate references to the same text"
+      },
+      "__SET_AGGREGATION__" : {
+         "msgstr" : "With this feature, you can merge multiple references within the same\naggregation, that is, the different articles that make up a magazine or the\ndifferent texts that make up an anthology"
+      },
+      "__SET_TRANSLATION__" : {
+         "msgstr" : "With this feature, you can link two translations of the same text in different languages. The first one in the list will be the original language"
+      },
+      "__WIKIDATA_HELP__" : {
+         "msgstr" : "Enter the Wikidata ID code, which is the letter Q followed by several digits, that can be easily found on Wikipedia itself"
+      },
+      "by count" : {
+         "msgstr" : "kopuruaren arabera"
+      },
+      "by term" : {
+         "msgstr" : "hitzaren arabera"
+      },
+      "dashboard for " : {
+         "msgstr" : "honen panela: "
+      },
+      "leave blank for default" : {
+         "msgstr" : "utzi hutsik balio lehenetsirako"
       }
    },
    "fr" : {

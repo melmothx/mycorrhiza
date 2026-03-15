@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 05:17:03 05:17+0000\n"
+"POT-Creation-Date: 08:01:47 08:01+0000\n"
 "PO-Revision-Date: 2026-01-18 20:20+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: English\n"
@@ -38,7 +38,7 @@ msgid "Add crop marks to PDF"
 msgstr "Gehitu mozketa-markak PDFan"
 
 #. $gettext('Add to the Book Builder')
-#: src/components/DataSourceBox.vue:249
+#: src/components/DataSourceBox.vue:368
 msgid "Add to the Book Builder"
 msgstr "Gehitu Liburu-sortzailean"
 
@@ -48,7 +48,7 @@ msgid "Add your library or archive"
 msgstr "Gehitu liburutegia edo artxiboa"
 
 #. $gettext('Added to the Book Builder!')
-#: src/components/DataSourceBox.vue:253
+#: src/components/DataSourceBox.vue:372
 msgid "Added to the Book Builder!"
 msgstr "Gehitu da Liburu-sortzailean."
 
@@ -68,7 +68,7 @@ msgid "Address Line"
 msgstr "Helbidearen lerroa"
 
 #. $gettext('Admin') $gettext('Admin')
-#: src/components/NavBar.vue:186 src/components/MergeBox.vue:167
+#: src/components/MergeBox.vue:167 src/components/NavBar.vue:186
 msgid "Admin"
 msgstr "Administratzailea"
 
@@ -118,8 +118,8 @@ msgid "Author"
 msgstr "Egilea"
 
 #. $gettext('Authors') $gettext('Authors') $gettext('Authors')
-#: src/components/SearchPage.vue:375 src/components/SearchPage.vue:379
-#: src/components/AgentOverView.vue:62
+#: src/components/AgentOverView.vue:62 src/components/SearchPage.vue:375
+#: src/components/SearchPage.vue:379
 msgid "Authors"
 msgstr "Egileak"
 
@@ -184,8 +184,8 @@ msgid "Build"
 msgstr "Sortu"
 
 #. $gettext('Cancel') $gettext('Cancel') $gettext('Cancel') $gettext('Cancel')
-#: src/components/ExclusionButton.vue:80 src/components/ReportErrorPopUp.vue:86
-#: src/components/CsvUpload.vue:221 src/components/BugReport.vue:99
+#: src/components/BugReport.vue:99 src/components/ReportErrorPopUp.vue:86
+#: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:229
 msgid "Cancel"
 msgstr "Utzi"
 
@@ -255,17 +255,17 @@ msgid "Close"
 msgstr "Itxi"
 
 #. $gettext('Column Name')
-#: src/components/CsvUpload.vue:193
+#: src/components/CsvUpload.vue:201
 msgid "Column Name"
 msgstr "Zutabearen izena"
 
 #. $gettext('Contacts') $gettext('Contacts')
-#: src/components/ContactButton.vue:10 src/components/ContactView.vue:34
+#: src/components/ContactButton.vue:11 src/components/ContactView.vue:34
 msgid "Contacts"
 msgstr "Kontaktuak"
 
 #. $gettext('Contains:')
-#: src/components/EntryPage.vue:117
+#: src/components/EntryPage.vue:142
 msgid "Contains:"
 msgstr "Edukia:"
 
@@ -315,6 +315,11 @@ msgstr "Ez sortu azalaren orrialderik eta hasi testua lehen orrian"
 msgid "Do not use bold fonts"
 msgstr "Ez erabili letra lodirik"
 
+#. $gettext('Documentation')
+#: src/components/DocSite.vue:35
+msgid "Documentation"
+msgstr ""
+
 #. $gettext('Download Types')
 #: src/components/SearchPage.vue:411
 msgid "Download Types"
@@ -336,12 +341,12 @@ msgid "Editable and printable text"
 msgstr "Edita eta inprima daitekeen testua"
 
 #. $gettext('Edition')
-#: src/components/DataSourceBox.vue:198
+#: src/components/DataSourceBox.vue:309
 msgid "Edition"
 msgstr "Edizioa"
 
 #. $gettext('Edition Place and Date')
-#: src/components/DataSourceBox.vue:207
+#: src/components/DataSourceBox.vue:318
 msgid "Edition Place and Date"
 msgstr "Edizioaren lekua eta data"
 
@@ -381,13 +386,18 @@ msgstr ""
 msgid "Exclusions"
 msgstr "Bazterketak"
 
+#. $gettext('Expected headers')
+#: src/components/CsvUpload.vue:132
+msgid "Expected headers"
+msgstr ""
+
 #. $gettext('Failed')
 #: src/components/JobChecker.vue:69
 msgid "Failed"
 msgstr "Hutsegiteak"
 
 #. $gettext('Failure sending the report. Please contact us by email!') $gettext('Failure sending the report. Please contact us by email!')
-#: src/components/ReportErrorPopUp.vue:68 src/components/BugReport.vue:87
+#: src/components/BugReport.vue:87 src/components/ReportErrorPopUp.vue:68
 msgid "Failure sending the report. Please contact us by email!"
 msgstr ""
 "Ezin izan da bidali txostena. Jarri gurekin harremaneta posta elektronikoz."
@@ -397,8 +407,13 @@ msgstr ""
 msgid "Feel free to reach out to us at:"
 msgstr "Jar zaitez gurekin harremanetan hemen:"
 
-#. $gettext('Fetching results, hold on...')
-#: src/components/SearchPage.vue:429
+#. $gettext('Fetching description, hold on...')
+#: src/components/DataSourceBox.vue:247
+msgid "Fetching description, hold on..."
+msgstr ""
+
+#. $gettext('Fetching results, hold on...') $gettext('Fetching results, hold on...')
+#: src/components/EntryPage.vue:98 src/components/SearchPage.vue:429
 msgid "Fetching results, hold on..."
 msgstr "Emaitzak lortzen, itxoin…"
 
@@ -460,7 +475,7 @@ msgid "From:"
 msgstr "Bidaltzailea:"
 
 #. $gettext('Full text')
-#: src/components/DataSourceBox.vue:242
+#: src/components/DataSourceBox.vue:361
 msgid "Full text"
 msgstr "Testu osoa"
 
@@ -481,7 +496,7 @@ msgid "Help"
 msgstr "Laguntza"
 
 #. $gettext('Help on the query syntax') $gettext('Help on the query syntax')
-#: src/components/SearchPage.vue:306 src/components/SearchBar.vue:42
+#: src/components/SearchBar.vue:42 src/components/SearchPage.vue:306
 msgid "Help on the query syntax"
 msgstr "Laguntza kontsultaren sintaxiarekin"
 
@@ -496,7 +511,7 @@ msgid "ID"
 msgstr "IDa"
 
 #. $gettext('ISBN')
-#: src/components/DataSourceBox.vue:182
+#: src/components/DataSourceBox.vue:293
 msgid "ISBN"
 msgstr "ISBNa"
 
@@ -531,7 +546,7 @@ msgid "Justification"
 msgstr "Justifikazioa"
 
 #. $gettext('Landing page')
-#: src/components/DataSourceBox.vue:276
+#: src/components/DataSourceBox.vue:394
 msgid "Landing page"
 msgstr "Helmuga-orria"
 
@@ -570,9 +585,14 @@ msgstr "Latitudea"
 msgid "Layout"
 msgstr "Diseinua"
 
+#. $gettext('Less')
+#: src/components/DataSourceBox.vue:265
+msgid "Less"
+msgstr ""
+
 #. $gettext('Libraries') $gettext('Libraries') $gettext('Libraries') $gettext('Libraries')
-#: src/components/LibraryOverView.vue:57 src/components/LibraryView.vue:42
-#: src/components/SearchPage.vue:389 src/components/SearchPage.vue:393
+#: src/components/LibraryView.vue:42 src/components/SearchPage.vue:389
+#: src/components/SearchPage.vue:393 src/components/LibraryOverView.vue:57
 msgid "Libraries"
 msgstr "Liburutegiak"
 
@@ -623,18 +643,18 @@ msgid "Main Font"
 msgstr "Letra-tipo nagusia"
 
 #. $gettext('Material Description')
-#: src/components/DataSourceBox.vue:174
+#: src/components/DataSourceBox.vue:285
 msgid "Material Description"
 msgstr "Materialaren azalpena"
 
 #. $gettext('Merge') $gettext('Merge') $gettext('Merge') $gettext('Merge')
+#: src/components/MergeBox.vue:218 src/components/AgentBox.vue:176
 #: src/components/EntryBox.vue:75 src/components/EntryBox.vue:118
-#: src/components/AgentBox.vue:176 src/components/MergeBox.vue:218
 msgid "Merge"
 msgstr "Konbinatu"
 
 #. $gettext('Merge authors here') $gettext('Merge authors here')
-#: src/components/SearchPage.vue:458 src/components/AgentOverView.vue:94
+#: src/components/AgentOverView.vue:94 src/components/SearchPage.vue:458
 msgid "Merge authors here"
 msgstr "Konbinatu egileak hemen"
 
@@ -653,8 +673,8 @@ msgstr "Laguntza falta da, barkatu…"
 msgid "Mono Font"
 msgstr "Tarte finkoko letra-tipoa"
 
-#. $gettext('More')
-#: src/components/LibraryMap.vue:269
+#. $gettext('More') $gettext('More')
+#: src/components/DataSourceBox.vue:265 src/components/LibraryMap.vue:269
 msgid "More"
 msgstr "Gehiago"
 
@@ -724,7 +744,7 @@ msgid "Nothing to show!"
 msgstr "Ez dago ezer."
 
 #. $gettext('OPAC page')
-#: src/components/DataSourceBox.vue:223
+#: src/components/DataSourceBox.vue:342
 msgid "OPAC page"
 msgstr "OPAC orria"
 
@@ -767,17 +787,17 @@ msgstr ""
 "badituzu da baliagarria"
 
 #. $gettext('Opening Hours') $gettext('Opening Hours')
-#: src/components/LibraryBox.vue:35 src/components/LibraryEdit.vue:105
+#: src/components/LibraryEdit.vue:105 src/components/LibraryBox.vue:35
 msgid "Opening Hours"
 msgstr "Irekitze-orduak"
 
 #. $gettext('Original')
-#: src/components/EntryPage.vue:104
+#: src/components/EntryPage.vue:119
 msgid "Original"
 msgstr "Jatorrizkoa"
 
 #. $gettext('Other languages:')
-#: src/components/EntryPage.vue:100
+#: src/components/EntryPage.vue:115
 msgid "Other languages:"
 msgstr "Beste hizkuntza batzuk:"
 
@@ -851,12 +871,12 @@ msgid "Paragraph settings"
 msgstr "Paragrafoaren ezarpenak"
 
 #. $gettext('Part of:')
-#: src/components/EntryPage.vue:124
+#: src/components/EntryPage.vue:129
 msgid "Part of:"
 msgstr "Honen parte:"
 
 #. $gettext('Password') $gettext('Password')
-#: src/components/NavBar.vue:234 src/components/PasswordReset.vue:65
+#: src/components/PasswordReset.vue:65 src/components/NavBar.vue:234
 msgid "Password"
 msgstr "Pasahitza"
 
@@ -909,7 +929,7 @@ msgid "Previous"
 msgstr "Aurrekoa"
 
 #. $gettext('Process File')
-#: src/components/CsvUpload.vue:215
+#: src/components/CsvUpload.vue:223
 msgid "Process File"
 msgstr "Prozesatu fitxategia"
 
@@ -924,7 +944,7 @@ msgid "Public email"
 msgstr "Helbide elektroniko publikoa"
 
 #. $gettext('Publisher')
-#: src/components/DataSourceBox.vue:190
+#: src/components/DataSourceBox.vue:301
 msgid "Publisher"
 msgstr "Argitaratzailea"
 
@@ -934,7 +954,7 @@ msgid "Queued"
 msgstr "Ilaran"
 
 #. $gettext('Reason') $gettext('Reason')
-#: src/components/ExclusionButton.vue:70 src/components/ExclusionTable.vue:36
+#: src/components/ExclusionTable.vue:36 src/components/ExclusionButton.vue:70
 msgid "Reason"
 msgstr "Arrazoia"
 
@@ -944,7 +964,7 @@ msgid "Repeat Password"
 msgstr "Errepikatu pasahitza"
 
 #. $gettext('Replace all records')
-#: src/components/CsvUpload.vue:176
+#: src/components/CsvUpload.vue:184
 msgid "Replace all records"
 msgstr "Ordeztu erregistro guztiak"
 
@@ -1023,9 +1043,9 @@ msgid "Sans Font"
 msgstr "Letra-tipo kamutsa"
 
 #. $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search') $gettext('Search')
-#: src/components/SearchPage.vue:296 src/components/SearchPage.vue:347
 #: src/components/SearchBar.vue:33 src/components/SearchBar.vue:53
-#: src/components/AgentOverView.vue:76
+#: src/components/AgentOverView.vue:76 src/components/SearchPage.vue:296
+#: src/components/SearchPage.vue:347
 msgid "Search"
 msgstr "Bilatu"
 
@@ -1068,14 +1088,9 @@ msgid "See “%1”"
 msgstr "Ikusi “%1”"
 
 #. $gettext('Send') $gettext('Send')
-#: src/components/ReportErrorPopUp.vue:83 src/components/BugReport.vue:96
+#: src/components/BugReport.vue:96 src/components/ReportErrorPopUp.vue:83
 msgid "Send"
 msgstr "Bidali"
-
-#. $gettext('Set aggregations here')
-#: src/components/SearchPage.vue:483
-msgid "Set aggregations here"
-msgstr "Ezarri agregazioak hemen"
 
 #. $gettext('Set translations here')
 #: src/components/SearchPage.vue:474
@@ -1083,12 +1098,12 @@ msgid "Set translations here"
 msgstr "Ezarri itzulpenak hemen"
 
 #. $gettext('Sheet Preview, Total %1 Records', number_of_records)
-#: src/components/CsvUpload.vue:188
+#: src/components/CsvUpload.vue:196
 msgid "Sheet Preview, Total %1 Records"
 msgstr "Orriaren aurrebista, %1 erregistro guztira"
 
 #. $gettext('Shelf Location Code')
-#: src/components/DataSourceBox.vue:166
+#: src/components/DataSourceBox.vue:277
 msgid "Shelf Location Code"
 msgstr "Apalaren kokaleku-kodea"
 
@@ -1098,7 +1113,7 @@ msgid "Short Description"
 msgstr "Azalpen laburra"
 
 #. $gettext('Sorry! We could not found this entry!')
-#: src/components/EntryPage.vue:133
+#: src/components/EntryPage.vue:152
 msgid "Sorry! We could not found this entry!"
 msgstr "Barkatu. Ezin izan dugu aurkitu sarrera hau."
 
@@ -1113,7 +1128,7 @@ msgid "Source"
 msgstr "Iturria"
 
 #. $gettext('Source:')
-#: src/components/CsvUpload.vue:142
+#: src/components/CsvUpload.vue:150
 msgid "Source:"
 msgstr "Iturria:"
 
@@ -1183,7 +1198,7 @@ msgid "Text body only (no title, no final pages)"
 msgstr "Testu-gorputza soilik (izenbururik eta azken orrialderik gabe)"
 
 #. $gettext('The entry does not exist, it was deleted or it is not public any more')
-#: src/components/EntryPage.vue:135
+#: src/components/EntryPage.vue:154
 msgid "The entry does not exist, it was deleted or it is not public any more"
 msgstr "Sarrera ez dago, ezabatu egin da edo ez da publikoa jadanik"
 
@@ -1245,7 +1260,7 @@ msgid "Top margin in mm"
 msgstr "Goiko marjina mm-tan"
 
 #. $gettext('Translation')
-#: src/components/EntryPage.vue:104
+#: src/components/EntryPage.vue:119
 msgid "Translation"
 msgstr "Itzulpena"
 
@@ -1280,7 +1295,7 @@ msgid "Update"
 msgstr "Eguneratu"
 
 #. $gettext('Upload File')
-#: src/components/CsvUpload.vue:181
+#: src/components/CsvUpload.vue:189
 msgid "Upload File"
 msgstr "Kargatu fitxategia"
 
@@ -1317,12 +1332,12 @@ msgid "Username"
 msgstr "Erabiltzaile-izena"
 
 #. $gettext('Value')
-#: src/components/CsvUpload.vue:195
+#: src/components/CsvUpload.vue:203
 msgid "Value"
 msgstr "Balioa"
 
 #. $gettext('View PDF')
-#: src/components/DataSourceBox.vue:245
+#: src/components/DataSourceBox.vue:364
 msgid "View PDF"
 msgstr "Ikusi PDFa"
 
@@ -1343,9 +1358,9 @@ msgid "WikiData ID"
 msgstr "WikiData-ren IDa"
 
 #. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
-#: src/components/DashboardTable.vue:129 src/components/JobChecker.vue:84
-#: src/components/MergeBox.vue:237 src/components/DataSourceBox.vue:286
-#: src/components/CsvUpload.vue:116
+#: src/components/DashboardTable.vue:129 src/components/MergeBox.vue:237
+#: src/components/DataSourceBox.vue:404 src/components/CsvUpload.vue:116
+#: src/components/JobChecker.vue:84
 msgid "Working"
 msgstr "Lanean"
 
@@ -1423,3 +1438,5 @@ msgstr "honen panela: "
 msgid "leave blank for default"
 msgstr "utzi hutsik balio lehenetsirako"
 
+#~ msgid "Set aggregations here"
+#~ msgstr "Ezarri agregazioak hemen"
