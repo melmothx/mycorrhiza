@@ -583,8 +583,8 @@ def extract_fields(dirty, hostname):
             pass
 
     if not out.get('uri'):
-        if record['identifier']:
-            for s in record['identifier']:
+        if record.get('identifier'):
+            for s in record.get('identifier'):
                 if s and url_re.match(s):
                     out['uri'] = s
                     out['uri_label'] = 'URL'
