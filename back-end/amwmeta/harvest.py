@@ -521,11 +521,14 @@ def _extract_year_range(strings):
     else:
         return "{}".format(years[0])
 
-def extract_fields(record, hostname):
+def extract_fields(dirty, hostname):
     out = {}
     # here we map the full metadata to a subset for the DB. All the
     # fields are lists, so we either collapse them (default) or filter
     # somehow.
+
+    # remove None from the lists
+    record = { k: [ x for x in v if x is not None ] for k, v in dirty.items() }
 
     # clean and sort the dates
     years = re.compile(r'[12][0-9]{3}')
