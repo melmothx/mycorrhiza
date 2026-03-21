@@ -582,6 +582,13 @@ def extract_fields(dirty, hostname):
         except (IndexError, KeyError):
             pass
 
+    if not out.get('uri'):
+        if record['identifier']:
+            for s in record['identifier']:
+                if s and url_re.match(s):
+                    out['uri'] = s
+                    out['uri_label'] = 'URL'
+
     fields = (
         ('material_description', False),
         ('description', False),
