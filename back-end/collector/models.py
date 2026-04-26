@@ -619,8 +619,9 @@ class Site(models.Model):
         }
         for full in records:
             # logger.debug(full)
+            my_datestamp = full.pop('datestamp', now)
             record = extract_fields(full, hostname)
-            record['datestamp'] = full.pop('datestamp', now)
+            record['datestamp'] = my_datestamp
             record['aggregation_objects'] = full.pop('aggregation_objects', [])
             if full.get('identifier'):
                 record['identifier'] = '{}:{}:{}'.format(site_type_ids.get(self.site_type, "x"),
