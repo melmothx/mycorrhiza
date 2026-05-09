@@ -178,3 +178,70 @@ $ ./utils/create-systemd-unit-files.sh
 # systemctl start mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
 # systemctl enable mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
 ```
+
+## Nginx relevant config
+
+```
+server {
+    # ...
+    root /home/mycorrhiza/htdocs;
+    location @django {
+         uwsgi_read_timeout 6000s;
+         uwsgi_send_timeout 6000s;
+         uwsgi_pass unix:///home/mycorrhiza/var/mycorrhiza.socket;
+         include uwsgi_params;
+    }
+    location @amusecompile {
+              proxy_pass http://127.0.0.1:9500;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /assets/ {
+        expires 24h;
+    }
+    location /static {
+        alias /home/mycorrhiza/static;
+    }
+    location /admin {
+        try_files $uri $uri/index.html @django;
+    }
+    location /feed {
+        try_files $uri $uri/index.html @django;
+    }
+    location /collector/ {
+        try_files $uri $uri/index.html @django;
+    }
+    location /minion {
+        try_files $uri @amusecompile;
+    }
+    location /mojo {
+        try_files $uri @amusecompile;
+    }
+    location / {
+        add_header Cache-Control 'no-store';
+        try_files $uri $uri/ /index.html;
+    }
+
+}
+```
+
+## Start harvesting
+
+If you are migrating the instance:
+
+
+```
+./manage.ph harvest --force
+```
+
+Otherwise add libraries and sites and then:
+
+```
+./manage.ph harvest
+```
+
+
