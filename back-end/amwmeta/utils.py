@@ -193,7 +193,12 @@ def log_user_operation(user, op, canonical, alias):
 
 def strip_diacritics(s):
     if isinstance(s, str):
-        return ''.join(c for c in unicodedata.normalize('NFKD', s) if unicodedata.category(c) != 'Mn')
+        out = ''.join(c for c in unicodedata.normalize('NFKD', s) if unicodedata.category(c) != 'Mn')
+        tt = str.maketrans({
+            "’": ' ',
+            "'": ' ',
+        })
+        return out.translate(tt)
     elif s:
         return str(s)
     else:
