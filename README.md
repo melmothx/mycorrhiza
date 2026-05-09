@@ -166,3 +166,15 @@ script/amusecompile  daemon
 
 ## Systemd Unit files
 
+Create the unit files and install them
+
+```
+$ ./utils/create-systemd-unit-files.sh
+```
+
+```
+# cp -v /home/mycorrhiza/var/systemd-unit-files/* /etc/systemd/system
+# systemctl daemon-reload
+# systemctl start mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
+# systemctl enable mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
+```

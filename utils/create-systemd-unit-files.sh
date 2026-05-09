@@ -63,7 +63,7 @@ KillMode=process
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.targe
+WantedBy=multi-user.target
 EOF
 
 cat <<EOF > $appname-amc.service
