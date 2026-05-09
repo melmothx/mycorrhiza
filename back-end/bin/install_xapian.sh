@@ -2,7 +2,7 @@
 # first argument of the script is Xapian version (e.g. 1.4.19)
 # stolen from  https://github.com/notanumber/xapian-haystack/blob/master/install_xapian.sh
 
-source venv/bin/activate
+source ~/venv/bin/activate
 
 VERSION=${1:-1.4.24}
 
