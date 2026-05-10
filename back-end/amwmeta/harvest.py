@@ -439,9 +439,11 @@ def harvest_oai_pmh(url, records_type, opts):
     fetched = []
     now = datetime.now(timezone.utc)
     hostname = urlparse(url).hostname
-    for rec in records:
-        fetched.append(extract_oai_fields(rec, hostname, now))
-
+    try:
+        for rec in records:
+            fetched.append(extract_oai_fields(rec, hostname, now))
+    except XMLSyntaxError:
+        return []
     for rec in fetched:
         logger.debug("Fetched {}".format(rec.get('identifier')))
         collect_aggregations(sickle, rec, aggregations, hostname, now, opts, 0)

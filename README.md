@@ -10,7 +10,7 @@ distro, while keeping python in a virtual env.
 # apt install build-essential python3-venv libpq-dev rabbitmq-server nginx \
     postgresql libmojolicious-perl libmojo-pg-perl libdbd-pg-perl libminion-perl \
     libdata-dumper-concise-perl libbusiness-isbn-perl libdatetime-perl \
-    libpython3-dev
+    libpython3-dev poppler-utils
 # wget https://deb.amusewiki.org/amusewiki-archive-keyring-trixie_1.0.0_all.deb
 # dpkg -i amusewiki-archive-keyring-trixie_1.0.0_all.deb
 # apt update
