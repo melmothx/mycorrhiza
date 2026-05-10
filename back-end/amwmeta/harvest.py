@@ -8,6 +8,7 @@ import pprint
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 import copy
+from lxml.etree import XMLSyntaxError
 
 pp = pprint.PrettyPrinter(compact=True)
 logger = logging.getLogger(__name__)
@@ -430,9 +431,8 @@ def harvest_oai_pmh(url, records_type, opts):
     else:
         try:
             records = sickle.ListRecords(**opts)
-        except NoRecordsMatch:
+        except (NoRecordsMatch, XMLSyntaxError):
             return []
-
 
     # here we need to scan the records and prepend the aggregations, if any
     aggregations = {}
