@@ -82,7 +82,7 @@ sub startup ($self) {
                           });
     my $api = $r->under('/api/v1', sub ($c) {
                             if (my $token = $c->req->headers->header('X-AMC-API-Key')) {
-                                if (grep { $_ eq $token } @{$self->config('api_keys') || []}) {
+                                if (grep { secure_compare($token, $_) } @{$self->config('api_keys') || []}) {
                                     $c->log->debug("Valid Token");
                                     return 1;
                                 }
