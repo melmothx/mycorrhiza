@@ -40,6 +40,8 @@ class GenericMarcXMLRecord(Record):
 
                     for code in codes:
                         for sf in el.findall('.//subfield[@code="{0}"]'.format(code), namespaces=ns):
+                            if not sf.text:
+                                continue
                             values.append(sf.text)
                             if composed:
                                 try:
@@ -172,6 +174,10 @@ def iso_lang_code(code):
 
     lang_code_re = re.compile(r'^[a-z]{2,3}$', re.IGNORECASE)
     match = lang_code_re.match(code)
+    if not match:
+        # try to match the beginning of the string, e.g. French, English
+        lang_code_relax = re.compile(r'^[a-z]{3}', re.IGNORECASE)
+        match = lang_code_relax.match(code)
     if match:
         actual_code = match.group().lower()
         mapping = {
