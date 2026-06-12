@@ -2,6 +2,7 @@
  import axios from 'axios'
  import { bookbuilder } from '../stores/bookbuilder.js'
  import ReportErrorPopUp from './ReportErrorPopUp.vue'
+ import AskQuestionButton from './AskQuestionButton.vue'
  import EntryShortBox from './EntryShortBox.vue'
  import { Cog8ToothIcon } from '@heroicons/vue/24/solid'
  axios.defaults.xsrfCookieName = "csrftoken";
@@ -19,6 +20,7 @@
      },
      components: {
          ReportErrorPopUp,
+         AskQuestionButton,
          EntryShortBox,
          Cog8ToothIcon,
      },
@@ -375,6 +377,9 @@
           <ReportErrorPopUp :data_source_id="source.data_source_id"
                             :data_source_title="source.title"
                             :library_name="source.library_name" />
+        </div>
+        <div>
+          <AskQuestionButton :data_source_id="source.data_source_id" />
         </div>
         <div class="grow"></div>
       </div>
