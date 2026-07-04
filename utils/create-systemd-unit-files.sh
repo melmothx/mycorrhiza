@@ -87,6 +87,28 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
+cat <<EOF> $appname-cron.service
+[Unit]
+Description=$appname Cron wrapper
+
+[Service]
+Type=oneshot
+User=$(whoami)
+Group=$(whoami)
+WorkingDirectory=$appdir
+ExecStart=$appdir/utils/cron.sh
+EOF
+
+cat <<EOF> $appname-cron.timer
+[Unit]
+Description=Run the $appname cron wrapper
+
+[Timer]
+OnBootSec=10min
+OnUnitInactiveSec=30min
+Persistent=true
+EOF
+
 
 echo "Please install the files in $(pwd) into /etc/systemd/system and start/enable them"
 
