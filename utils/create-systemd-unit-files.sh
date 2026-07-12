@@ -107,6 +107,9 @@ Description=Run the $appname cron wrapper
 OnBootSec=10min
 OnUnitInactiveSec=30min
 Persistent=true
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
 
