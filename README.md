@@ -50,7 +50,7 @@ git clone https://github.com/melmothx/mycorrhiza.git
 cd mycorrhiza/back-end
 pip install -r requirements.txt
 pip install uwsgi
-bin/install_xapian 2.0.0
+bin/install_xapian.sh 2.0.0
 ```
 
 Create a postgresql database:
@@ -118,28 +118,6 @@ Check if it starts:
 python manage.py runserver
 ```
 
-And create the a uwsgi wrapper:
-
-```
-#!/bin/bash
-
-source $HOME/venv/bin/activate
-mkdir -p $HOME/var
-echo "Starting up..."
-uwsgi --chdir=$HOME/mycorrhiza/back-end \
-      --module=mycorrhiza.wsgi:application \
-      --env DJANGO_SETTINGS_MODULE=mycorrhiza.settings \
-      --master \
-      --cheap \
-      --socket=$HOME/var/mycorrhiza.socket \
-      --chmod-socket=666 \
-      --pidfile=$HOME/var/mycorrhiza.pid \
-      --processes=5 \
-      --harakiri=6000 \
-      --max-requests=50
-```
-
-
 ## Mojolicious application
 
 Create the file `amusecompile/amusecompile.yml`
@@ -178,6 +156,10 @@ $ ./utils/create-systemd-unit-files.sh
 # systemctl start mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
 # systemctl enable mycorrhiza-amc.service  mycorrhiza-celery.service mycorrhiza-django.service mycorrhiza-minion.service
 ```
+
+## Static files (Vue app)
+
+Install the assets in /home/mycorrhiza/htdocs/
 
 ## Nginx relevant config
 
@@ -225,7 +207,6 @@ server {
         add_header Cache-Control 'no-store';
         try_files $uri $uri/ /index.html;
     }
-
 }
 ```
 
