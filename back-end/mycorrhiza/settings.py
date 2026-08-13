@@ -181,6 +181,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
 try:
     from local_settings import *
 except ImportError:

@@ -53,7 +53,7 @@
              return '/collector/api/bookbuilder/' + this.session_id;
          },
          pdf_reader() {
-             return '/pdfjs/web/viewer.html?file=' + this.download_url();
+             return this.download_url() + '?inline=1';
          },
      },
      mounted() {

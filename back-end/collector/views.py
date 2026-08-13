@@ -564,6 +564,9 @@ def get_datasource_file(request, ds_id, filename):
 def download_datasource(request, target):
     check = re.compile(r'(\d+)((\.[a-z0-9]+)+)$')
     m = check.match(target)
+    disposition = 'attachment'
+    if request.GET.get('inline'):
+        disposition = 'inline'
     if m:
         ds_id = m.group(1)
         ds = get_object_or_404(DataSource, pk=ds_id)
@@ -576,7 +579,8 @@ def download_datasource(request, target):
                 if r and r.status_code == 200:
                     response = HttpResponse(r.content, content_type=r.headers['content-type'])
                     target = urlparse(r.url)
-                    response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(
+                    response.headers['Content-Disposition'] = '{}; filename="{}.{}"'.format(
+                        disposition,
                         target.hostname,
                         re.split(r'/', target.path)[-1]
                     )
@@ -592,7 +596,11 @@ def download_datasource(request, target):
                         ".txt": "text/plain",
                     }
                     response = HttpResponse(f.read_bytes(), content_type=content_types[ext])
-                    response.headers['Content-Disposition'] = 'attachment; filename="{}.{}"'.format(site.hostname(), f.name)
+                    response.headers['Content-Disposition'] = '{}; filename="{}.{}"'.format(
+                        disposition,
+                        site.hostname(),
+                        f.name
+                    )
                     return response
                 else:
                     raise Http404("File not found!")
@@ -1283,10 +1291,13 @@ def download_compiled_book(request, session_id):
     base_url = settings.AMUSECOMPILE_URL
     r = requests.get(base_url + '/compile/' + session_id, headers=api_auth)
     if r.status_code == 200:
+        disposition = r.headers['Content-Disposition']
+        if request.GET.get('inline'):
+            disposition = disposition.replace('attachment', 'inline')
         return HttpResponse(r.content,
                             content_type=r.headers['content-type'],
                             headers={
-                                'Content-Disposition': r.headers['Content-Disposition']
+                                'Content-Disposition': disposition,
                             })
     else:
         raise Http404("File not found!")
