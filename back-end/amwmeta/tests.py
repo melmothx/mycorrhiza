@@ -76,7 +76,7 @@ class HarvestTestCase(unittest.TestCase):
             "uri_info": [{ "uri": "http://example.com/xx" }, { "uri": "http://amusewiki.org/xx" }],
             "uri": [ "https://example.com/xx", "http://amusewiki.org/xx" ],
         }, "pippo.org")
-        self.assertEqual(rec4['languages'], [ "enx", "itx" ])
+        self.assertEqual(rec4['languages'], [])
 
         rec5 = extract_fields({
             "title": [ "Firstx", " and second part" ],

@@ -388,7 +388,11 @@ def iso_lang_code(code):
             'zha': 'za',
             'zul': 'zu',
         }
-        return mapping.get(actual_code, actual_code)
+        valid_codes = [ v for k, v in mapping.items() ]
+        if actual_code in valid_codes:
+            return actual_code
+        else:
+            return mapping.get(actual_code)
     else:
         return full_names.get(code.lower())
 
