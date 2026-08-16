@@ -100,7 +100,7 @@ class HarvestTestCase(unittest.TestCase):
                                                  'name': 'My Aggregation',
                                                  'order': '21',
                                                  'place_date_publisher': 'March 19-April 1, 1970',
-                                                 'identifier': 'aggregation:pippo.org:My Aggregation:101',
+                                                 'identifier': 'aggregation:pippo.org:2303dffa3e6c5b50100a786adb784b13761b5f9319ebc5551d08c88bacfc66c1',
                                                  'full_aggregation_name': 'My Aggregation 101 (March 19-April 1, 1970)',
                                                  }])
 
@@ -121,7 +121,7 @@ class HarvestTestCase(unittest.TestCase):
         self.assertEqual(rec6['aggregations'], [{
             'name': 'My Aggregation',
             'full_aggregation_name': 'My Aggregation',
-            'identifier': 'aggregation:pippo.org:My Aggregation',
+            'identifier': 'aggregation:pippo.org:ccabd31a4e11b903238336684999fefbc0c87a9fbcd781745743066582e5f207',
         }])
 
         rec7 = extract_fields({

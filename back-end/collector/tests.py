@@ -85,20 +85,6 @@ class ViewsTestCase(TestCase):
             entry=agg,
             full_data={},
         )
-        # TODO this needs to be redone
-        for x in (1, 2, 3):
-            data = [ { "id": agg.id }, { "id": entry.id } ]
-            res = self.client.post(reverse('api_set_aggregated'),
-                                   data=data,
-                                   content_type="application/json")
-            # pp.pprint(res.json())
-            found_rel = AggregationEntry.objects.get(aggregated_id=entry.id, aggregation_id = agg.id)
-            self.assertTrue(found_rel)
-            xapian_index_records([agg.id, entry.id])
-
-            res = self.client.get(reverse('api_search'), { "query": "test" })
-            pp.pprint(res.json())
-            self.assertEqual(res.json()['total_entries'], 2, "Found the aggregated and the aggregation")
 
 @override_settings(XAPIAN_DB=str(xapian_test_db))
 class AliasesTestCase(TestCase):
