@@ -75,10 +75,6 @@ def manipulate(op, user, main_id, *ids, create=None):
 
         'add-exclusion': Exclusion,
         'revert-exclusions': Exclusion,
-
-        'add-aggregations': Entry,
-        # no revert at the moment
-
     }
     if not main_id and not create:
         out['error']: "Missing ID"
@@ -799,22 +795,6 @@ def exclusions(request):
                 out['error'] = "Invalid operation {}".format(op)
         else:
             out['error'] = "Missing parameters"
-    logger.debug(out)
-    return JsonResponse(out)
-
-@user_passes_test(user_can_merge)
-def api_set_aggregated(request):
-    out = {}
-    data = None
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        out['error'] = "Invalid JSON!";
-    user = request.user
-
-    if data and user:
-        ids = [ x['id'] for x in data ]
-        out = manipulate('add-aggregations', user, *ids)
     logger.debug(out)
     return JsonResponse(out)
 
