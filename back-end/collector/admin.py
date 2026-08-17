@@ -26,9 +26,25 @@ class UserAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(Language)
-admin.site.register(NameAlias)
-admin.site.register(SpreadsheetUpload)
+# admin.site.register(NameAlias)
+# admin.site.register(SpreadsheetUpload)
 admin.site.register(Page)
 admin.site.register(General)
-admin.site.register(ChangeLog)
+
+@admin.register(ChangeLog)
+class ChangeLogAdmin(admin.ModelAdmin):
+    # raw_id_fields = [ "entry", "agent", "exclusion" ]
+    search_fields = [ "username", "operation", "comment" ]
+    readonly_fields = [
+        "user",
+        "username",
+        "entry",
+        "agent",
+        "exclusion",
+        "operation",
+        "comment",
+        "object_data",
+        "created",
+    ]
+
 admin.site.register(InternalLibraryCode)
