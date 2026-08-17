@@ -34,14 +34,7 @@ cd $VIRTUAL_ENV/packages/${CORE}
 
 PYTHON_FLAG=--with-python3
 
-# The bindings for Python require python-sphinx
-echo "Installing Python-Sphinx..."
-SPHINX2_FIXED_VERSION=1.4.12
-if [ $(printf "${VERSION}\n${SPHINX2_FIXED_VERSION}" | sort -V | head -n1) = "${SPHINX2_FIXED_VERSION}" ]; then
-    pip install sphinx
-else
-    pip install "sphinx<2"
-fi
+pip install sphinx
 
 echo "Installing Xapian-bindings..."
 cd $VIRTUAL_ENV/packages/${BINDINGS}
