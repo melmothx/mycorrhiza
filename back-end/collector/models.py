@@ -1601,6 +1601,10 @@ class LibraryErrorReport(models.Model):
     recipient = models.EmailField()
     sent = models.DateTimeField(null=True)
 
+    def __str__(self):
+        return "[{}] from {} to {} ({})".format(self.id, self.sender, self.recipient,
+                                              self.created.strftime('%Y-%m-%d %H:%M'))
+
 class ChangeLog(models.Model):
     user = models.ForeignKey(
         User,

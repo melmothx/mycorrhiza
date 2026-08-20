@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog, InternalLibraryCode
+from .models import Site, Language, NameAlias, SpreadsheetUpload, Library, User, Page, General, ChangeLog, InternalLibraryCode, LibraryErrorReport
 
 @admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
@@ -48,3 +48,8 @@ class ChangeLogAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(InternalLibraryCode)
+
+@admin.register(LibraryErrorReport)
+class LibraryErrorReportAdmin(admin.ModelAdmin):
+    search_fields = [ "message", "sender", "recipient" ],
+    readonly_fields = [ "message", "created", "sender", "recipient", "sent", "library", "user" ]
