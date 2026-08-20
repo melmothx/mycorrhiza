@@ -50,7 +50,7 @@ git clone https://github.com/melmothx/mycorrhiza.git
 cd mycorrhiza/back-end
 pip install -r requirements.txt
 pip install uwsgi
-bin/install_xapian.sh 2.0.0
+bin/install_xapian.sh 2.1.0
 ```
 
 Create a postgresql database:
