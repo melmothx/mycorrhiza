@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mycorrhiza 0.01\n"
-"POT-Creation-Date: 08:01:47 08:01+0000\n"
+"POT-Creation-Date: 06:27:54 06:27+0000\n"
 "PO-Revision-Date: 2026-01-18 20:20+0100\n"
 "Last-Translator: Marco <melmothx@gmail.com>\n"
 "Language-Team: English\n"
@@ -112,6 +112,16 @@ msgstr "Sarrera guztiak (%1)"
 msgid "Asia"
 msgstr "Asia"
 
+#. $gettext('Ask a Question')
+#: src/components/ReportErrorPopUp.vue:60
+msgid "Ask a Question"
+msgstr ""
+
+#. $gettext('Ask a question about “%1” to %2', data_source_title, library_name)
+#: src/components/ReportErrorPopUp.vue:88
+msgid "Ask a question about “%1” to %2"
+msgstr ""
+
 #. $gettext('Author')
 #: src/components/BookBuilderView.vue:831
 msgid "Author"
@@ -184,7 +194,7 @@ msgid "Build"
 msgstr "Sortu"
 
 #. $gettext('Cancel') $gettext('Cancel') $gettext('Cancel') $gettext('Cancel')
-#: src/components/BugReport.vue:99 src/components/ReportErrorPopUp.vue:86
+#: src/components/BugReport.vue:99 src/components/ReportErrorPopUp.vue:102
 #: src/components/ExclusionButton.vue:80 src/components/CsvUpload.vue:229
 msgid "Cancel"
 msgstr "Utzi"
@@ -397,7 +407,7 @@ msgid "Failed"
 msgstr "Hutsegiteak"
 
 #. $gettext('Failure sending the report. Please contact us by email!') $gettext('Failure sending the report. Please contact us by email!')
-#: src/components/BugReport.vue:87 src/components/ReportErrorPopUp.vue:68
+#: src/components/BugReport.vue:87 src/components/ReportErrorPopUp.vue:79
 msgid "Failure sending the report. Please contact us by email!"
 msgstr ""
 "Ezin izan da bidali txostena. Jarri gurekin harremaneta posta elektronikoz."
@@ -546,7 +556,7 @@ msgid "Justification"
 msgstr "Justifikazioa"
 
 #. $gettext('Landing page')
-#: src/components/DataSourceBox.vue:394
+#: src/components/DataSourceBox.vue:401
 msgid "Landing page"
 msgstr "Helmuga-orria"
 
@@ -948,6 +958,11 @@ msgstr "Helbide elektroniko publikoa"
 msgid "Publisher"
 msgstr "Argitaratzailea"
 
+#. $gettext('Question Sent!')
+#: src/components/ReportErrorPopUp.vue:70
+msgid "Question Sent!"
+msgstr ""
+
 #. $gettext('Queued')
 #: src/components/JobChecker.vue:76
 msgid "Queued"
@@ -969,7 +984,7 @@ msgid "Replace all records"
 msgstr "Ordeztu erregistro guztiak"
 
 #. $gettext('Report Error')
-#: src/components/ReportErrorPopUp.vue:58
+#: src/components/ReportErrorPopUp.vue:63
 msgid "Report Error"
 msgstr "Eman errorearen berri"
 
@@ -979,7 +994,7 @@ msgid "Report Sent"
 msgstr "Txostena bidali da"
 
 #. $gettext('Report Sent!')
-#: src/components/ReportErrorPopUp.vue:63
+#: src/components/ReportErrorPopUp.vue:73
 msgid "Report Sent!"
 msgstr "Txostena bidali da."
 
@@ -989,7 +1004,7 @@ msgid "Report a bug to the site administrators"
 msgstr "Eman akats baten berri guneko administratzaileei"
 
 #. $gettext('Report an error for “%1” (%2)', data_source_title, library_name)
-#: src/components/ReportErrorPopUp.vue:76
+#: src/components/ReportErrorPopUp.vue:91
 msgid "Report an error for “%1” (%2)"
 msgstr "Eman “%1” liburutegiaren errore baten berri (%2)"
 
@@ -1088,7 +1103,7 @@ msgid "See “%1”"
 msgstr "Ikusi “%1”"
 
 #. $gettext('Send') $gettext('Send')
-#: src/components/BugReport.vue:96 src/components/ReportErrorPopUp.vue:83
+#: src/components/BugReport.vue:96 src/components/ReportErrorPopUp.vue:99
 msgid "Send"
 msgstr "Bidali"
 
@@ -1359,7 +1374,7 @@ msgstr "WikiData-ren IDa"
 
 #. $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working') $gettext('Working')
 #: src/components/DashboardTable.vue:129 src/components/MergeBox.vue:237
-#: src/components/DataSourceBox.vue:404 src/components/CsvUpload.vue:116
+#: src/components/DataSourceBox.vue:411 src/components/CsvUpload.vue:116
 #: src/components/JobChecker.vue:84
 msgid "Working"
 msgstr "Lanean"
