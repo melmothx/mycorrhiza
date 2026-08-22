@@ -371,10 +371,17 @@
         <router-link v-if="added_to_the_bookbuilder" :to="{ name: 'bookbuilder' }" class="bg-linear-to-tr from-spectra-700 to-spectra-900 m-1 px-4 py-1 rounded-sm shadow-lg text-white font-bold">
           {{ $gettext('Added to the Book Builder!') }}
         </router-link>
-        <div v-if="source.report_error">
+        <div v-if="source.report_error" class="flex">
           <ReportErrorPopUp :data_source_id="source.data_source_id"
                             :data_source_title="source.title"
-                            :library_name="source.library_name" />
+                            :library_name="source.library_name"
+                            report_type="error"
+          />
+          <ReportErrorPopUp :data_source_id="source.data_source_id"
+                            :data_source_title="source.title"
+                            :library_name="source.library_name"
+                            report_type="question"
+          />
         </div>
         <div class="grow"></div>
       </div>

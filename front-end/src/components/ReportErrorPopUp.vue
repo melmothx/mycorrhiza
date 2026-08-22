@@ -7,6 +7,7 @@
          'data_source_id',
          'library_name',
          'data_source_title',
+         'report_type',
      ],
      data() {
          return {
@@ -37,7 +38,7 @@
              this.message_sent = true;
              this.close_dialog();
              axios.post('/collector/api/report/data-source-error/' + this.data_source_id,
-                        { message: this.message })
+                        { message: this.message, report_type: this.report_type })
                   .then(res => {
                       console.log(res.data);
                       if (res.data.success) {
@@ -55,12 +56,22 @@
 <template>
   <div v-if="user_data.logged_in && user_data.email && !message_sent">
     <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_dialog">
-      {{ $gettext('Report Error') }}
+      <template v-if="report_type == 'question'">
+        {{ $gettext('Ask a Question') }}
+      </template>
+      <template v-else>
+        {{ $gettext('Report Error') }}
+      </template>
     </button>
   </div>
   <div v-if="message_sent">
     <button class="btn-primary m-1 px-4 py-1 rounded-sm shadow-lg">
-      {{ $gettext('Report Sent!') }}
+      <template v-if="report_type == 'question'">
+        {{ $gettext('Question Sent!') }}
+      </template>
+      <template v-else>
+        {{ $gettext('Report Sent!') }}
+      </template>
     </button>
   </div>
   <div v-if="message_failure">
@@ -73,7 +84,12 @@
       <div class="flex items-center justify-center p-4">
         <div class="mx-8 mt-16 p-8 w-1/2 border border-perl-bush-200 text-black shadow-lg bg-perl-bush-100 shadow-lg">
           <h2 class="font-bold text-lg text-center">
+            <template v-if="report_type == 'question'">
+              {{ $gettext('Ask a question about “%1” to %2', data_source_title, library_name) }}
+            </template>
+            <template v-else>
             {{ $gettext('Report an error for “%1” (%2)', data_source_title, library_name) }}
+            </template>
           </h2>
           <div class="px-4 pb-4 pt-5">
             <textarea class="mcrz-textarea w-full h-64" v-model="message"></textarea>

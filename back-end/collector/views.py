@@ -1448,10 +1448,27 @@ def api_report_ds_error(request, data_source_id):
                     original_url = "{}/entry/{}".format(settings.CANONICAL_ADDRESS,
                                                         ds.entry_id)
                     entry_title = ds.entry.title
+                    report_type = data.get('report_type', 'error')
+                    wordings = {
+                        'error': {
+                            'intro': 'reported the following about your bibliographical entry listed at',
+                            'subject': 'Error Report',
+                        },
+                        'question': {
+                            'intro': 'asked the following about your bibliographical entry listed at',
+                            'subject': 'User Question',
+                        }
+                    }
+                    try:
+                        wording = wordings[data.get('report_type', 'error')]
+                    except KeyError:
+                        out['error'] = 'Invalid report type'
+                        return JsonResponse(out)
+
                     body = """
 Greetings,
 
-{} reported the following about your bibliographical entry listed at
+{} {}
 {}
 
 {}
@@ -1465,18 +1482,23 @@ Thanks
                         user=request.user,
                         library=library,
                         message=body.format(
-                            user.email, original_url, data.get('message'),
+                            user.email,
+                            wording['intro'],
+                            original_url, data.get('message'),
                             our_name,
                             settings.CANONICAL_ADDRESS,
                         ),
                         sender=user.email,
                         recipient=library.email_internal,
                     )
-                    logger.info("Reporting {} from {} to {}".format(data.get('message'),
-                                                                    report.sender,
-                                                                    report.recipient))
-                    subject = "[{} Error Report #{}] {}".format(
+                    logger.info("Reporting {} from {} to {} ({})".format(data.get('message'),
+                                                                         report.sender,
+                                                                         report.recipient,
+                                                                         report_type,
+                                                                         ))
+                    subject = "[{} {} #{}] {}".format(
                         our_name,
+                        wording['subject'],
                         report.id,
                         re.sub(r'\s+', ' ', ds.entry.title)
                     )
