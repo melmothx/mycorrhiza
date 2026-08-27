@@ -62,6 +62,12 @@ def xapian_reindex_all():
     if Path(target_db).is_dir():
         logger.info("Removing {}".format(target_db))
         shutil.rmtree(target_db)
+    cache_dir = Path(settings.FULL_TEXT_CACHE)
+    if cache_dir.is_dir():
+        for child in cache_dir.iterdir():
+            if child.is_file() and child.name != '.gitignore':
+                logger.info("Removing {}".format(child))
+                child.unlink()
 
     indexer = MycorrhizaIndexer(db_path=target_db)
     counter = 0
