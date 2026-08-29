@@ -53,8 +53,13 @@
              return '/collector/api/bookbuilder/' + this.session_id;
          },
          pdf_reader() {
-             return this.download_url() + '?inline=1';
+             return '/pdfjs/web/viewer.html?file=' + this.download_url();
          },
+     },
+     computed: {
+         pdfUrl() {
+             return this.pdf_reader();
+         }
      },
      mounted() {
          console.log(`Mounted job checker with ${this.job_id} ${this.session_id}`);
@@ -87,6 +92,6 @@
     </div>
   </div>
   <div class="my-4" v-if="status == 'finished'">
-    <iframe :src="pdf_reader()" class="w-full h-96"></iframe>
+    <iframe :key="pdfUrl" :src="pdfUrl" class="w-full h-96"></iframe>
   </div>
 </template>

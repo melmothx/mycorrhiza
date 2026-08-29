@@ -117,7 +117,7 @@
              const src = this.source;
              if (src.downloads) {
                  if (src.downloads.find((e) => e.ext == '.pdf')) {
-                     return this.get_binary_file(src.data_source_id, '.pdf?inline=1');
+                     return '/pdfjs/web/viewer.html?file=' + this.get_binary_file(src.data_source_id, '.pdf');
                  }
              }
              return false;
@@ -175,6 +175,11 @@
              });
              return Promise.all(promises);
          },
+     },
+     computed: {
+         pdfUrl() {
+             return this.pdf_reader();
+         }
      },
      watch: {
          'source.description': {
@@ -360,7 +365,7 @@
         <div v-if="can_have_full_text()">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_full_text">{{ $gettext('Full text') }}</button>
         </div>
-        <div v-if="pdf_reader()">
+        <div v-if="pdfUrl">
           <button class="btn-accent m-1 px-4 py-1 rounded-sm shadow-lg" @click="toggle_pdf_reader">{{ $gettext('View PDF') }}</button>
         </div>
         <div v-if="can_have_the_bookbuilder() && !added_to_the_bookbuilder">
@@ -414,10 +419,8 @@
                v-html="html"></div>
         </div>
       </div>
-      <div class="my-4 p-1 shadow-sm" v-if="show_pdf_reader && pdf_reader()">
-        <iframe
-            :key="pdf_reader()"
-            :src="pdf_reader()" width="100%" height="500px"></iframe>
+      <div class="my-4 p-1 shadow-sm" v-if="show_pdf_reader && pdfUrl">
+        <iframe :src="pdfUrl" :key="pdfUrl" width="100%" height="500px"></iframe>
       </div>
       <div class="mt-4 mx-auto text-[10px] text-perl-bush-400" v-if="source.identifier">
         <code>{{ source.identifier }}</code>
