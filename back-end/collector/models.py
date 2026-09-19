@@ -853,6 +853,9 @@ class Entry(models.Model):
     def display_name(self):
         return self.title
 
+    def frontend_url(self):
+        return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, self.id)
+
     def sort_display_datasources(self, ds):
         download_key = 0
         muse_download = [ i for i in ds.get('downloads', []) if i.get('code') == 'muse' ]

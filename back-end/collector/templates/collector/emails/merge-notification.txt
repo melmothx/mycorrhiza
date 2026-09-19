@@ -1,0 +1,25 @@
+Greetings,
+
+These records:
+
+{% for rec in merged_records %}
+ - "{{ rec.display_name }}"
+{% endfor %}
+
+were merged into "{{ merged_into.display_name }}"
+
+Please see: {{ url }}
+
+Affected entries:
+
+{% for entry in entries %}
+ - {{ entry.display_name }}
+   {{ entry.frontend_url }}
+{% endfor %}
+
+You are receiving this email because your library owns related
+records.
+
+Thanks
+
+
