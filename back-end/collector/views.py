@@ -20,6 +20,7 @@ from .tasks import process_spreadsheet_upload, xapian_index_records
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
 from secrets import token_urlsafe
 from http import HTTPStatus
 from urllib.parse import urlparse
@@ -118,6 +119,54 @@ def manipulate(op, user, main_id, *ids, create=None):
     if op == 'merge-agents' or op == 'merge-entries':
         reindex = cls.merge_records(main_object, other_objects, user=user)
         out['success'] = "Merged"
+        notify = Library.objects.filter(
+            sites__datasource__entry__in=reindex
+        ).distinct()
+        merged_into = main_object.display_name()
+        msg_map = {
+            "merge-agents": {
+                "subject": "[{}] Merged authors into {}",
+                "url": "{}/library/author/{}",
+            },
+            "merge-entries": {
+                "subject": "[{}] Merged entries into {}",
+                "url": "{}/entry/{}",
+            },
+        }
+        msg_body = render_to_string(
+            "collector/emails/merge-notification.txt",
+            {
+                "merged_records": other_objects,
+                "merged_into": main_object,
+                "entries": [ e for e in reindex ],
+                "url": msg_map[op]['url'].format(settings.CANONICAL_ADDRESS,
+                                                 main_object.id),
+            })
+        site_name = General.settings().get('site_name', '')
+        msg_subject = msg_map[op]['subject'].format(site_name,
+                                                    main_object.display_name())
+        notified = False
+        for library in notify:
+            recipient = library.email_internal or library.email_public
+            if recipient:
+                mail_message = EmailMessage(
+                    subject=msg_subject,
+                    body=msg_body,
+                    from_email=settings.MYCORRHIZA_EMAIL_FROM,
+                    to=[recipient],
+                    cc=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
+                )
+                mail_message.send()
+                notified = True
+        if not notified:
+            msg_subject = msg_subject + ' [No library recipients]'
+            mail_message = EmailMessage(
+                subject=msg_subject,
+                body=msg_body,
+                from_email=settings.MYCORRHIZA_EMAIL_FROM,
+                to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
+            )
+            mail_message.send()
 
     elif op == 'split-author':
         reindex = main_object.split_into_multiple(other_objects, user=user)
