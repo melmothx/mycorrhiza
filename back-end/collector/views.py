@@ -128,7 +128,18 @@ def manipulate(op, user, main_id, *ids, create=None):
         reindex = main_object.unsplit(user=user)
         out['success'] = "Removed"
 
-    elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
+    elif op == 'revert-merged-agents':
+        if main_object.canonical_agent:
+            other_objects.append(main_object.canonical_agent)
+        reindex = main_object.unmerge(user=user)
+        if reindex:
+            out['success'] = "Removed merge"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'revert-merged-entries':
+        if main_object.canonical_entry:
+            other_objects.append(main_object.canonical_entry)
         reindex = main_object.unmerge(user=user)
         if reindex:
             out['success'] = "Removed merge"
@@ -143,6 +154,8 @@ def manipulate(op, user, main_id, *ids, create=None):
             out['error'] = "Nothing to do"
 
     elif op == 'revert-translations':
+        if main_object.original_entry:
+            other_objects.append(main_object.original_entry)
         reindex = main_object.untranslate(user=user)
         if reindex:
             out['success'] = "Removed translations"
@@ -174,23 +187,41 @@ def manipulate(op, user, main_id, *ids, create=None):
             "subject": "[{}] Merged authors into {}",
             "dashboard_name": 'merged-agents',
             "show_entries": True,
-            "action": "{} merged these authors into: {}",
+            "action": "{} merged these authors:",
         },
         "merge-entries": {
             "subject": "[{}] Merged entries into {}",
             "dashboard_name": 'merged-entries',
             "show_entries": False,
-            "action": "{} merged these entries into: {}",
+            "action": "{} merged these entries:",
         },
         "add-translations": {
             "subject": "[{}] Translation added to {}",
             "dashboard_name": 'translations',
             "show_entries": False,
-            "action": "{} set the following records as translations for: {}",
-        }
+            "action": "{} set the following records as translations (first listed is the original):",
+        },
+        "revert-translations": {
+            "subject": "[{}] {} is not a translation anymore",
+            "dashboard_name": 'translations',
+            "show_entries": True,
+            "action": "{} removed the translation relationship between these records:",
+        },
+        "revert-merged-agents": {
+            "subject": "[{}] reverted the merge for author {}",
+            "dashboard_name": 'merge-agents',
+            "show_entries": True,
+            "action": "{} reverted the merge between these authors:",
+        },
+        "revert-merged-entries": {
+            "subject": "[{}] reverted the merge for entry {}",
+            "dashboard_name": 'merge-entries',
+            "show_entries": True,
+            "action": "{} reverted the merge between these entries:",
+        },
     }
     notification = notification_map.get(op)
-    if notification:
+    if out.get('success') and notification:
         notify = Library.objects.filter(
             sites__datasource__entry__in=reindex
         ).distinct()
@@ -199,14 +230,11 @@ def manipulate(op, user, main_id, *ids, create=None):
         msg_body = render_to_string(
             "collector/emails/merge-notification.txt",
             {
-                "merged_records": other_objects,
+                "merged_records": [ main_object ] + other_objects,
                 "merged_into": main_object,
                 "entries": [ e for e in reindex ],
                 "show_entries": notification['show_entries'],
-                "action": notification['action'].format(
-                    user_email,
-                    main_object.display_name(),
-                ),
+                "action": notification['action'].format(user_email),
                 "dashboard_url": "{}/dashboard/{}".format(
                     settings.CANONICAL_ADDRESS,
                     notification['dashboard_name']
