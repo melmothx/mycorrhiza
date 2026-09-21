@@ -119,54 +119,6 @@ def manipulate(op, user, main_id, *ids, create=None):
     if op == 'merge-agents' or op == 'merge-entries':
         reindex = cls.merge_records(main_object, other_objects, user=user)
         out['success'] = "Merged"
-        notify = Library.objects.filter(
-            sites__datasource__entry__in=reindex
-        ).distinct()
-        merged_into = main_object.display_name()
-        msg_map = {
-            "merge-agents": {
-                "subject": "[{}] Merged authors into {}",
-                "url": "{}/library/author/{}",
-            },
-            "merge-entries": {
-                "subject": "[{}] Merged entries into {}",
-                "url": "{}/entry/{}",
-            },
-        }
-        msg_body = render_to_string(
-            "collector/emails/merge-notification.txt",
-            {
-                "merged_records": other_objects,
-                "merged_into": main_object,
-                "entries": [ e for e in reindex ],
-                "url": msg_map[op]['url'].format(settings.CANONICAL_ADDRESS,
-                                                 main_object.id),
-            })
-        site_name = General.settings().get('site_name', '')
-        msg_subject = msg_map[op]['subject'].format(site_name,
-                                                    main_object.display_name())
-        notified = False
-        for library in notify:
-            recipient = library.email_internal or library.email_public
-            if recipient:
-                mail_message = EmailMessage(
-                    subject=msg_subject,
-                    body=msg_body,
-                    from_email=settings.MYCORRHIZA_EMAIL_FROM,
-                    to=[recipient],
-                    cc=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
-                )
-                mail_message.send()
-                notified = True
-        if not notified:
-            msg_subject = msg_subject + ' [No library recipients]'
-            mail_message = EmailMessage(
-                subject=msg_subject,
-                body=msg_body,
-                from_email=settings.MYCORRHIZA_EMAIL_FROM,
-                to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
-            )
-            mail_message.send()
 
     elif op == 'split-author':
         reindex = main_object.split_into_multiple(other_objects, user=user)
@@ -216,6 +168,67 @@ def manipulate(op, user, main_id, *ids, create=None):
             entry.last_indexed = now
             entry.save()
         xapian_index_records.delay_on_commit([ e.id for e in reindex ])
+
+    notification_map = {
+        "merge-agents": {
+            "subject": "[{}] Merged authors into {}",
+            "dashboard_name": 'merged-agents',
+            "show_entries": True,
+            "action": "{} merged these authors into: {}",
+        },
+        "merge-entries": {
+            "subject": "[{}] Merged entries into {}",
+            "dashboard_name": 'merged-entries',
+            "show_entries": False,
+            "action": "{} merged these entries into: {}",
+        },
+        "add-translations": {
+            "subject": "[{}] Translation added to {}",
+            "dashboard_name": 'translations',
+            "show_entries": False,
+            "action": "{} set the following records as translations for: {}",
+        }
+    }
+    notification = notification_map.get(op)
+    if notification:
+        notify = Library.objects.filter(
+            sites__datasource__entry__in=reindex
+        ).distinct()
+        merged_into = main_object.display_name()
+        user_email = user.email or "Unknown user"
+        msg_body = render_to_string(
+            "collector/emails/merge-notification.txt",
+            {
+                "merged_records": other_objects,
+                "merged_into": main_object,
+                "entries": [ e for e in reindex ],
+                "show_entries": notification['show_entries'],
+                "action": notification['action'].format(
+                    user_email,
+                    main_object.display_name(),
+                ),
+                "dashboard_url": "{}/dashboard/{}".format(
+                    settings.CANONICAL_ADDRESS,
+                    notification['dashboard_name']
+                ),
+            })
+        site_name = General.settings().get('site_name', '')
+        msg_subject = notification['subject'].format(
+            site_name,
+            main_object.display_name()
+        )
+        recipients = [ x.email_public for x in notify if x.email_public ]
+        if settings.MYCORRHIZA_NOTIFICATIONS_EMAIL:
+            recipients.extend(settings.MYCORRHIZA_NOTIFICATIONS_EMAIL)
+        if recipients:
+            mail_message = EmailMessage(
+                    subject=msg_subject,
+                    body=msg_body,
+                    from_email=settings.MYCORRHIZA_EMAIL_FROM,
+                    to=recipients,
+                    reply_to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
+            )
+            mail_message.send()
     return out
 
 def user_is_library_admin(user):

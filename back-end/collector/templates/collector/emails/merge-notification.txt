@@ -1,25 +1,28 @@
+{% autoescape off %}
+
 Greetings,
 
-These records:
+{{ action }}
 
 {% for rec in merged_records %}
- - "{{ rec.display_name }}"
+ - {{ rec.display_name }}
 {% endfor %}
 
-were merged into "{{ merged_into.display_name }}"
+Please see: {{ merged_into.frontend_url }}
 
-Please see: {{ url }}
+Dashboard: {{ dashboard_url }}
 
+{% if show_entries %}
 Affected entries:
 
 {% for entry in entries %}
  - {{ entry.display_name }}
    {{ entry.frontend_url }}
 {% endfor %}
+{% endif %}
 
 You are receiving this email because your library owns related
 records.
 
 Thanks
-
-
+{% endautoescape %}
