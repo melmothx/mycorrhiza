@@ -707,6 +707,9 @@ class Agent(models.Model):
     def display_name(self):
         return self.name
 
+    def frontend_url(self):
+        return "{}/library/author/{}".format(settings.CANONICAL_ADDRESS, self.id)
+
     def as_api_dict(self, get_canonical=False):
         out = {}
         for f in ("id", "name", "wikidata_id"):
@@ -851,7 +854,11 @@ class Entry(models.Model):
         return out
 
     def display_name(self):
-        return self.title
+        authors = ', '.join([ x.display_name() for x in self.authors.all() ])
+        if authors:
+            return ' — '.join([ authors, self.title ])
+        else:
+            return self.title
 
     def frontend_url(self):
         return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, self.id)
