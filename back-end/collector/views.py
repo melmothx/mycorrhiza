@@ -997,9 +997,9 @@ def api_listing(request, target):
         out['records'] = merged
         out['fields'] = [
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
-            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'author_page' },
             { 'name': 'name', 'label': 'Name' },
-            { 'name': 'id', 'label': 'Id' },
+            { 'name': 'id', 'label': 'Id', 'link': 'author_page' },
         ]
 
     elif target == 'translations' and user_can_merge(request.user):
