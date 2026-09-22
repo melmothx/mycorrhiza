@@ -203,20 +203,17 @@ def manipulate(op, user, main_id, *ids, create=None):
         },
         "revert-translations": {
             "subject": "[{}] {} is not a translation anymore",
-            "dashboard_name": 'translations',
-            "show_entries": True,
+            "show_entries": False,
             "action": "{} removed the translation relationship between these records:",
         },
         "revert-merged-agents": {
             "subject": "[{}] reverted the merge for author {}",
-            "dashboard_name": 'merge-agents',
             "show_entries": True,
             "action": "{} reverted the merge between these authors:",
         },
         "revert-merged-entries": {
             "subject": "[{}] reverted the merge for entry {}",
-            "dashboard_name": 'merge-entries',
-            "show_entries": True,
+            "show_entries": False,
             "action": "{} reverted the merge between these entries:",
         },
     }
@@ -227,6 +224,13 @@ def manipulate(op, user, main_id, *ids, create=None):
         ).distinct()
         merged_into = main_object.display_name()
         user_email = user.email or "Unknown user"
+        dashboard_url = None
+        if notification.get('dashboard_name'):
+            dashboard_url = "{}/dashboard/{}".format(
+                settings.CANONICAL_ADDRESS,
+                notification['dashboard_name']
+            )
+
         msg_body = render_to_string(
             "collector/emails/merge-notification.txt",
             {
@@ -235,10 +239,7 @@ def manipulate(op, user, main_id, *ids, create=None):
                 "entries": [ e for e in reindex ],
                 "show_entries": notification['show_entries'],
                 "action": notification['action'].format(user_email),
-                "dashboard_url": "{}/dashboard/{}".format(
-                    settings.CANONICAL_ADDRESS,
-                    notification['dashboard_name']
-                ),
+                "dashboard_url": dashboard_url,
             })
         site_name = General.settings().get('site_name', '')
         msg_subject = notification['subject'].format(

@@ -6,11 +6,12 @@ Greetings,
 
 {% for rec in merged_records %}
  - {{ rec.display_name }}
+   {{ rec.frontend_url }}
 {% endfor %}
 
-Please see: {{ merged_into.frontend_url }}
-
+{% if dashboard_url %}
 Dashboard: {{ dashboard_url }}
+{% endif %}
 
 {% if show_entries %}
 Affected entries:
