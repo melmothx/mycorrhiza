@@ -241,7 +241,8 @@ def manipulate(op, user, main_id, *ids, create=None):
                 "action": notification['action'].format(user_email),
                 "dashboard_url": dashboard_url,
             })
-        site_name = General.settings().get('site_name', '')
+        gs = General.settings()
+        site_name = gs.get('site_acronym', '') or gs.get('site_name', '')
         msg_subject = notification['subject'].format(
             site_name,
             main_object.display_name()

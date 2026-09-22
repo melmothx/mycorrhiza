@@ -113,6 +113,7 @@ class General(models.Model):
         ("site_description", "Site Description"),
         ("contact_email", "Contact Email"),
         ("amusewiki_doc_site", "Amusewiki Site of Documentation"),
+        ("site_acronym", "Site Acronym"),
     ]
     name = models.CharField(max_length=32,
                             choices=GENERAL_VALUE_NAMES,
