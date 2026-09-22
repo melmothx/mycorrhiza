@@ -10,7 +10,10 @@ Greetings,
 {% endfor %}
 
 {% if dashboard_url %}
-Dashboard: {{ dashboard_url }}
+You can manage these relationships here: {{ dashboard_url }}
+
+The IDs in the table are the last numeric part of the URLs listed
+above. You can search by ID or name/title.
 {% endif %}
 
 {% if show_entries %}
