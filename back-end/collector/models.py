@@ -855,10 +855,14 @@ class Entry(models.Model):
 
     def display_name(self):
         authors = ', '.join([ x.display_name() for x in self.authors.all() ])
+        languages = ' '.join(
+            [ "[{}]".format(lang.code) for lang in self.languages.all() ]
+        )
+        title = "{} {}".format(self.title, languages)
         if authors:
-            return ' — '.join([ authors, self.title ])
+            return ' — '.join([ authors, title ])
         else:
-            return self.title
+            return title
 
     def frontend_url(self):
         return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, self.id)
