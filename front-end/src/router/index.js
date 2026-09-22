@@ -85,6 +85,7 @@ const router = createRouter({
         },
         {
             path: '/library/author/:id',
+            name: "author_page",
             redirect: to => {
                 return { name: 'search',
                          query: {

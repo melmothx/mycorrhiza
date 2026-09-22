@@ -157,8 +157,8 @@
       <tbody>
         <tr v-for="record in records" :id="record.id" class="bg-perl-bush-50 odd:bg-perl-bush-100">
           <td class="p-1" v-for="f in fields" :key="f.name">
-            <template v-if="f.link == 'entry'">
-              <router-link :to="{ name: 'entry', params: { id: record[f.name] } }">
+            <template v-if="f.link">
+              <router-link class="mcrz-link font-bold" :to="{ name: f.link, params: { id: record[f.name] } }">
                 {{ record[f.name] }}
               </router-link>
             </template>
