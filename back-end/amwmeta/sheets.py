@@ -25,6 +25,15 @@ def sheet_definitions():
                 return str(value)
         else:
             return None
+    def handle_eutopia_lang(name, value):
+        if value:
+            m = re.search(r'\[?(\w\w)\]?', value)
+            if m:
+                cleaned = m.group(1)
+                if cleaned == 'ελ':
+                    cleaned = 'el'
+                return cleaned
+        return None
 
     definitions = {
         "calibre": {
@@ -96,14 +105,16 @@ def sheet_definitions():
             "type": "excel",
 # Τίτλος	Συγγραφέας	Επιμελιτής	Εκδότης	Έτος	Περιοχή	Έκδοση	Θεματική/Tags
             "mapping": [
-                ('title', 'Τίτλος'),
-                ('creator', 'Συγγραφέας', re.compile(r'\s*,\s*')),
-                ('creator', 'Επιμελιτής', re.compile(r'\s*,\s*')),
-                ('publisher', 'Εκδότης'),
-                ('date', 'Έτος'),
-                ('place_date_of_publication_distribution', 'Περιοχή'),
-                ('edition_statement', 'Έκδοση'),
-                ('subject', 'Θεματική/Tags'),
+                ('title', 'Title'),
+                ('language', 'Language', None, (handle_eutopia_lang,)),
+                ('subtitle', 'Subtitle'),
+                ('creator', 'Author', re.compile(r'\s*,\s*')),
+                ('creator', 'Editor', re.compile(r'\s*,\s*')),
+                ('publisher', 'Publisher'),
+                ('date', 'Year of Print'),
+                ('place_date_of_publication_distribution', 'Place of Printing'),
+                ('edition_statement', 'Edition'),
+                ('subject', 'Topic/Tags'),
             ],
         },
         "belladonna": {
