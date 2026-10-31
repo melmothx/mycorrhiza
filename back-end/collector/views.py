@@ -187,13 +187,13 @@ def manipulate(op, user, main_id, *ids, create=None):
             "subject": "[{}] Merged authors into {}",
             "dashboard_name": 'merged-agents',
             "show_entries": True,
-            "action": "{} merged these authors:",
+            "action": "{} merged these authors (first listed is the chosen canonical form):",
         },
         "merge-entries": {
             "subject": "[{}] Merged entries into {}",
             "dashboard_name": 'merged-entries',
             "show_entries": False,
-            "action": "{} merged these entries:",
+            "action": "{} merged these entries (first listed is the chosen canonical form):",
         },
         "add-translations": {
             "subject": "[{}] Translation added to {}",
@@ -222,7 +222,6 @@ def manipulate(op, user, main_id, *ids, create=None):
         notify = Library.objects.filter(
             sites__datasource__entry__in=reindex
         ).distinct()
-        merged_into = main_object.display_name()
         user_email = user.email or "Unknown user"
         dashboard_url = None
         if notification.get('dashboard_name'):
@@ -235,7 +234,6 @@ def manipulate(op, user, main_id, *ids, create=None):
             "collector/emails/merge-notification.txt",
             {
                 "merged_records": [ main_object ] + other_objects,
-                "merged_into": main_object,
                 "entries": [ e for e in reindex ],
                 "show_entries": notification['show_entries'],
                 "action": notification['action'].format(user_email),
