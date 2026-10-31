@@ -245,18 +245,29 @@ def manipulate(op, user, main_id, *ids, create=None):
             site_name,
             main_object.display_name()
         )
-        recipients = [ x.email_public for x in notify if x.email_public ]
+        reply_to = []
+        if user.email:
+            reply_to.append(user.email)
+        recipients = []
+        for library in notify:
+            lib_email = library.email_internal or library.email_public
+            if lib_email:
+                recipients.append(lib_email)
+        if not recipients:
+            msg_subject += ' [No library recipients]'
+
         if settings.MYCORRHIZA_NOTIFICATIONS_EMAIL:
             recipients.extend(settings.MYCORRHIZA_NOTIFICATIONS_EMAIL)
-        if recipients:
-            mail_message = EmailMessage(
+            reply_to.extend(settings.MYCORRHIZA_NOTIFICATIONS_EMAIL)
+            for recipient in recipients:
+                mail_message = EmailMessage(
                     subject=msg_subject,
                     body=msg_body,
                     from_email=settings.MYCORRHIZA_EMAIL_FROM,
-                    to=recipients,
-                    reply_to=settings.MYCORRHIZA_NOTIFICATIONS_EMAIL,
-            )
-            mail_message.send()
+                    to=[recipient],
+                    reply_to=reply_to,
+                )
+                mail_message.send()
     return out
 
 def user_is_library_admin(user):
