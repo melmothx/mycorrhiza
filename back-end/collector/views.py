@@ -20,6 +20,7 @@ from .tasks import process_spreadsheet_upload, xapian_index_records
 from django.contrib import messages
 from django.contrib.syndication.views import Feed
 from django.core.mail import send_mail, EmailMessage
+from django.template.loader import render_to_string
 from secrets import token_urlsafe
 from http import HTTPStatus
 from urllib.parse import urlparse
@@ -127,7 +128,18 @@ def manipulate(op, user, main_id, *ids, create=None):
         reindex = main_object.unsplit(user=user)
         out['success'] = "Removed"
 
-    elif op == 'revert-merged-agents' or op == 'revert-merged-entries':
+    elif op == 'revert-merged-agents':
+        if main_object.canonical_agent:
+            other_objects.append(main_object.canonical_agent)
+        reindex = main_object.unmerge(user=user)
+        if reindex:
+            out['success'] = "Removed merge"
+        else:
+            out['error'] = "Nothing to do"
+
+    elif op == 'revert-merged-entries':
+        if main_object.canonical_entry:
+            other_objects.append(main_object.canonical_entry)
         reindex = main_object.unmerge(user=user)
         if reindex:
             out['success'] = "Removed merge"
@@ -142,6 +154,8 @@ def manipulate(op, user, main_id, *ids, create=None):
             out['error'] = "Nothing to do"
 
     elif op == 'revert-translations':
+        if main_object.original_entry:
+            other_objects.append(main_object.original_entry)
         reindex = main_object.untranslate(user=user)
         if reindex:
             out['success'] = "Removed translations"
@@ -167,6 +181,93 @@ def manipulate(op, user, main_id, *ids, create=None):
             entry.last_indexed = now
             entry.save()
         xapian_index_records.delay_on_commit([ e.id for e in reindex ])
+
+    notification_map = {
+        "merge-agents": {
+            "subject": "[{}] Merged authors into {}",
+            "dashboard_name": 'merged-agents',
+            "show_entries": True,
+            "action": "{} merged these authors (first listed is the chosen canonical form):",
+        },
+        "merge-entries": {
+            "subject": "[{}] Merged entries into {}",
+            "dashboard_name": 'merged-entries',
+            "show_entries": False,
+            "action": "{} merged these entries (first listed is the chosen canonical form):",
+        },
+        "add-translations": {
+            "subject": "[{}] Translation added to {}",
+            "dashboard_name": 'translations',
+            "show_entries": False,
+            "action": "{} set the following records as translations (first listed is the original):",
+        },
+        "revert-translations": {
+            "subject": "[{}] {} is not a translation anymore",
+            "show_entries": False,
+            "action": "{} removed the translation relationship between these records:",
+        },
+        "revert-merged-agents": {
+            "subject": "[{}] reverted the merge for author {}",
+            "show_entries": True,
+            "action": "{} reverted the merge between these authors:",
+        },
+        "revert-merged-entries": {
+            "subject": "[{}] reverted the merge for entry {}",
+            "show_entries": False,
+            "action": "{} reverted the merge between these entries:",
+        },
+    }
+    notification = notification_map.get(op)
+    if out.get('success') and notification:
+        notify = Library.objects.filter(
+            sites__datasource__entry__in=reindex
+        ).distinct()
+        user_email = user.email or "Unknown user"
+        dashboard_url = None
+        if notification.get('dashboard_name'):
+            dashboard_url = "{}/dashboard/{}".format(
+                settings.CANONICAL_ADDRESS,
+                notification['dashboard_name']
+            )
+
+        msg_body = render_to_string(
+            "collector/emails/merge-notification.txt",
+            {
+                "merged_records": [ main_object ] + other_objects,
+                "entries": [ e for e in reindex ],
+                "show_entries": notification['show_entries'],
+                "action": notification['action'].format(user_email),
+                "dashboard_url": dashboard_url,
+            })
+        gs = General.settings()
+        site_name = gs.get('site_acronym', '') or gs.get('site_name', '')
+        msg_subject = notification['subject'].format(
+            site_name,
+            main_object.display_name()
+        )
+        reply_to = []
+        if user.email:
+            reply_to.append(user.email)
+        recipients = []
+        for library in notify:
+            lib_email = library.email_internal or library.email_public
+            if lib_email:
+                recipients.append(lib_email)
+        if not recipients:
+            msg_subject += ' [No library recipients]'
+
+        if settings.MYCORRHIZA_NOTIFICATIONS_EMAIL:
+            recipients.extend(settings.MYCORRHIZA_NOTIFICATIONS_EMAIL)
+            reply_to.extend(settings.MYCORRHIZA_NOTIFICATIONS_EMAIL)
+            for recipient in recipients:
+                mail_message = EmailMessage(
+                    subject=msg_subject,
+                    body=msg_body,
+                    from_email=settings.MYCORRHIZA_EMAIL_FROM,
+                    to=[recipient],
+                    reply_to=reply_to,
+                )
+                mail_message.send()
     return out
 
 def user_is_library_admin(user):
@@ -906,9 +1007,9 @@ def api_listing(request, target):
         out['records'] = merged
         out['fields'] = [
             { 'name': 'canonical_name', 'label': 'Canonical Name' },
-            { 'name': 'canonical_id', 'label': 'Canonical ID' },
+            { 'name': 'canonical_id', 'label': 'Canonical ID', 'link': 'author_page' },
             { 'name': 'name', 'label': 'Name' },
-            { 'name': 'id', 'label': 'Id' },
+            { 'name': 'id', 'label': 'Id', 'link': 'author_page' },
         ]
 
     elif target == 'translations' and user_can_merge(request.user):

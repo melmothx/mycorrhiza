@@ -113,6 +113,7 @@ class General(models.Model):
         ("site_description", "Site Description"),
         ("contact_email", "Contact Email"),
         ("amusewiki_doc_site", "Amusewiki Site of Documentation"),
+        ("site_acronym", "Site Acronym"),
     ]
     name = models.CharField(max_length=32,
                             choices=GENERAL_VALUE_NAMES,
@@ -707,6 +708,9 @@ class Agent(models.Model):
     def display_name(self):
         return self.name
 
+    def frontend_url(self):
+        return "{}/library/author/{}".format(settings.CANONICAL_ADDRESS, self.id)
+
     def as_api_dict(self, get_canonical=False):
         out = {}
         for f in ("id", "name", "wikidata_id"):
@@ -851,7 +855,18 @@ class Entry(models.Model):
         return out
 
     def display_name(self):
-        return self.title
+        authors = ', '.join([ x.display_name() for x in self.authors.all() ])
+        languages = ' '.join(
+            [ "[{}]".format(lang.code) for lang in self.languages.all() ]
+        )
+        title = "{} {}".format(self.title, languages)
+        if authors:
+            return ' — '.join([ authors, title ])
+        else:
+            return title
+
+    def frontend_url(self):
+        return "{}/entry/{}".format(settings.CANONICAL_ADDRESS, self.id)
 
     def sort_display_datasources(self, ds):
         download_key = 0
